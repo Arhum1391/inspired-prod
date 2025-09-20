@@ -1,7 +1,7 @@
 import { MongoClient } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
 
-const MONGODB_URI = 'mongodb+srv://maxpace94:Changezi123@cluster-01.c4wkmmk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster-01';
+const MONGODB_URI = process.env.MONGODB_URI;
 const DB_NAME = 'inspired-analyst';
 const COLLECTION_NAME = 'newsletter';
 

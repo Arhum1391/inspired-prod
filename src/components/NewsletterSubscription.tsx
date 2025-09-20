@@ -45,50 +45,66 @@ export default function NewsletterSubscription() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div className="text-center">
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Subscribe to Our Newsletter
-        </h3>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          Stay updated with our latest insights, tips, and exclusive content.
-        </p>
+    <div className="max-w-6xl mx-auto">
+      <div className="relative bg-[#1F1F1F] rounded-2xl p-10 overflow-hidden">
+        {/* Background Gradient Blur */}
+        <div className="absolute -top-96 -left-52 w-96 h-96 gradient-blur opacity-50 rounded-full transform rotate-90"></div>
 
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-          <div className="flex gap-3">
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email address"
-              className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-              disabled={status === 'loading'}
-              required
-            />
-            <button
-              type="submit"
-              disabled={status === 'loading'}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold transition-colors whitespace-nowrap"
-            >
-              {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
-            </button>
+        {/* Decorative Background Shape */}
+        <div className="absolute top-0 right-0 w-96 h-full newsletter-gradient transform rotate-12 opacity-30"></div>
+
+        {/* Content */}
+        <div className="relative z-10 max-w-lg">
+          <div className="space-y-10">
+            {/* Header */}
+            <div className="space-y-6">
+              <h2 className="text-3xl md:text-4xl font-semibold text-white">Stay Ahead of the Markets</h2>
+              <p className="text-gray-300 leading-relaxed">
+                Join 25,000+ subscribers who rely on our research-backed analysis to make smarter investment decisions.
+              </p>
+            </div>
+
+            {/* Email Signup Form */}
+            <div className="space-y-6">
+              <form onSubmit={handleSubmit}>
+                <div className="flex flex-col sm:flex-row border border-white/40 rounded-full p-1 space-y-2 sm:space-y-0">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email address"
+                    className="flex-1 bg-transparent px-4 py-2 text-white placeholder-gray-300 focus:outline-none"
+                    disabled={status === 'loading'}
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={status === 'loading'}
+                    className="bg-white text-[#0A0A0A] px-6 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
+                  </button>
+                </div>
+              </form>
+
+              {/* Status Message */}
+              {message && (
+                <div className={`p-3 rounded-lg text-sm ${
+                  status === 'success'
+                    ? 'bg-green-900/20 text-green-400 border border-green-400/20'
+                    : 'bg-red-900/20 text-red-400 border border-red-400/20'
+                }`}>
+                  {message}
+                </div>
+              )}
+
+              {/* Disclaimer */}
+              <p className="text-center text-sm text-white/80 font-medium">
+                NO SPAM. I never send spam. You can unsubscribe at any time!
+              </p>
+            </div>
           </div>
-        </form>
-
-        {/* Status Message */}
-        {message && (
-          <div className={`mt-4 p-3 rounded-lg text-sm ${
-            status === 'success' 
-              ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' 
-              : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'
-          }`}>
-            {message}
-          </div>
-        )}
-
-        <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
-          We respect your privacy. Unsubscribe at any time.
-        </p>
+        </div>
       </div>
     </div>
   );

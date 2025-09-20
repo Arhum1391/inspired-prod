@@ -1,26 +1,128 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0A0A0A;
+  --foreground: #ffffff;
+  --card-bg: #1F1F1F;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-inter);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), sans-serif;
+}
+
+/* Gradient Border Background Effect */
+.gradient-border-bg {
+  position: fixed;
+  top: -250px;
+  left: -250px;
+  right: -250px;
+  bottom: -250px;
+  border: 250px solid;
+  border-image-source: linear-gradient(106.22deg, #3813F3 0%, #05B0B3 31.35%, #4B25FD 62.69%, #B9B9E9 78.36%, #DE50EC 97.95%);
+  border-image-slice: 1;
+  filter: blur(100px);
+  z-index: -1; /* Ensure it's behind everything */
+}
+
+/* Custom class for the image fade effect on the right column */
+.fade-mask {
+  mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+}
+
+/* Custom keyframes for the continuous vertical scrolling animation */
+@keyframes scrollUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+/* Utility class to apply the scrolling animation */
+.animate-scrollUp {
+  animation: scrollUp 40s linear infinite;
+}
+
+/* Custom animations for landing page */
+@keyframes scroll-vertical {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+
+.scroll-container {
+  animation: scroll-vertical 20s linear infinite;
+}
+
+/* Custom gradient backgrounds */
+.gradient-blur {
+  background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+  filter: blur(200px);
+}
+
+.newsletter-gradient {
+  background: linear-gradient(180deg, #333333 0%, #1F1F1F 100%);
+}
+
+.mask-gradient {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 24%, #FFFFFF 86%, rgba(255, 255, 255, 0) 100%);
+}
+
+/* Scrollbar hide for horizontal scroll */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Additional hover effects and animations */
+.hover-scale {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+}
+
+/* Video card play button animation */
+.play-button {
+  transition: all 0.3s ease;
+}
+
+.play-button:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 1);
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Focus states for accessibility */
+a:focus,
+button:focus,
+input:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+/* Custom scroll behavior */
+html {
+  scroll-behavior: smooth;
 }

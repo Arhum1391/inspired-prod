@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import NewsletterSubscription from '@/components/NewsletterSubscription';
 
 // Meeting types configuration - matches your existing Calendly events
 const meetingTypes = [
@@ -163,6 +164,11 @@ export default function BookingPage() {
                 </div>
               </div>
             </div>
+          </div>
+
+          {/* Newsletter Subscription */}
+          <div className="mt-12">
+            <NewsletterSubscription />
           </div>
         </div>
       </div>

@@ -1,3 +1,5 @@
+import NewsletterSubscription from '@/components/NewsletterSubscription';
+
 export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -80,6 +82,11 @@ export default function Home() {
                 $75
               </div>
             </div>
+          </div>
+
+          {/* Newsletter Subscription */}
+          <div className="mt-20">
+            <NewsletterSubscription />
           </div>
         </div>
       </div>

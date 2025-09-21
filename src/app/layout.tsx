@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
 
 export const metadata: Metadata = {
   title: "Inspired Analyst - Making Finance & Tech Accessible",
@@ -20,8 +13,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link href="https://fonts.cdnfonts.com/css/gilroy-bold" rel="stylesheet" />
+        <link href="https://db.onlinewebfonts.com/c/1dc8ecd8056a5ea7aa7de1db42b5b639?family=Gilroy-Regular" rel="stylesheet" />
+      </head>
       <body
-        className={`${inter.variable} font-inter antialiased bg-[#0A0A0A] text-white`}
+        className="font-gilroy antialiased bg-[#0A0A0A] text-white"
       >
         {children}
       </body>

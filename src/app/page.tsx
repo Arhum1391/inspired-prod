@@ -1,106 +1,184 @@
 import NewsletterSubscription from '@/components/NewsletterSubscription';
 import HeroSection from '@/components/HeroSection';
+import TailoredGuidanceSection from '@/components/TailoredGuidanceSection';
+import React from 'react';
+
+// Define the TypeScript interface for a single video object
+interface Video {
+  episode: string;
+  title: string;
+  thumbnail: string;
+  link: string;
+}
+
+// You can replace this with your actual video data, now typed with the Video interface
+const videos: Video[] = [
+  {
+    episode: 'EPISODE 69',
+    title: 'CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68',
+    thumbnail: 'https://placehold.co/600x400/000000/FFFFFF?text=Video+Thumbnail',
+    link: '#',
+  },
+  {
+    episode: 'EPISODE 69',
+    title: 'CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68',
+    thumbnail: 'https://placehold.co/600x400/000000/FFFFFF?text=Video+Thumbnail',
+    link: '#',
+  },
+  {
+    episode: 'EPISODE 69',
+    title: 'CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68',
+    thumbnail: 'https://placehold.co/600x400/000000/FFFFFF?text=Video+Thumbnail',
+    link: '#',
+  },
+   {
+    episode: 'EPISODE 69',
+    title: 'CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68',
+    thumbnail: 'https://placehold.co/600x400/000000/FFFFFF?text=Video+Thumbnail',
+    link: '#',
+  },
+];
+
+const LatestVideos: React.FC = () => {
+  return (
+    <div className="text-white py-20 font-gilroy">
+      <div className="container mx-auto px-4">
+        <h2 className="text-4xl font-bold text-center mb-12" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+          Check Out My Latest Videos
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {videos.map((video, index) => (
+            <div
+              key={index}
+              className="bg-[#1C1C1E] rounded-2xl overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300"
+            >
+              <div className="relative">
+                <img
+                  src={video.thumbnail}
+                  alt={video.title}
+                  className="w-full h-auto"
+                />
+                <div className="absolute top-4 left-4 bg-black bg-opacity-50 text-yellow-400 text-xs font-semibold px-3 py-1 rounded-full flex items-center" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.636 5.636a9 9 0 0112.728 0m-12.728 0a9 9 0 0012.728 12.728" />
+                    </svg>
+                  {video.episode}
+                </div>
+              </div>
+              <div className="p-6">
+                <h3 className="text-lg font-semibold mb-4 h-20 overflow-hidden" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                  {video.title}
+                </h3>
+                <a
+                  href={video.link}
+                  className="text-gray-400 group-hover:text-white transition-colors duration-300 flex items-center" style={{fontFamily: 'Gilroy'}}
+                >
+                  Watch Video
+                  <svg
+                    className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    ></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Home() {
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative">
-      {/* Gradient Border Background Effect */}
-      <div className="gradient-border-bg"></div>
-
-      {/* Option 1: Original Hero Section (commented out) */}
-      {/*
-      <section className="relative z-10 px-5 md:px-20 py-16 md:py-32">
-        <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight text-white">
-              Making Finance & Tech Accessible Through Data-Driven Content
-            </h1>
-            <p className="text-lg text-gray-300 font-medium">
-              Expert analysis on stocks, crypto, and data science - delivered with clarity and humor
-            </p>
-            <div className="flex flex-col sm:flex-row gap-5 pt-6">
-              <a href="/book" className="bg-white text-[#0A0A0A] px-6 py-4 rounded-full text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 text-center">
-                Book a 1v1 Call
-              </a>
-              <a href="#services" className="border border-white text-white px-6 py-4 rounded-full text-sm font-semibold hover:bg-white hover:text-[#0A0A0A] transition-all hover:scale-105 text-center">
-                Learn More
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-      */}
-
-      {/* Option 2: New HeroSection Component */}
+      {/* HeroSection Component with background */}
       <main>
         <HeroSection />
       </main>
 
-      {/* Main Content Section */}
-      <section className="relative z-10 px-5 md:px-20 py-16 md:py-24">
-        <div className="max-w-6xl mx-auto">
-          {/* Section Header with Decorative Images */}
-          <div className="relative mb-16">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-center leading-relaxed px-4 text-white">
-              Breaking Down Markets, Crypto & Data Into Clear, Actionable Insights - So You Can Learn, Grow & Succeed Without The Jargon.
+      {/* Main Content Section - Minimal horizontal padding for more text space */}
+      <section className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
+        <div className="max-w-5xl mx-auto">
+          {/* Section Header with Inline Images - Minimal padding for 2-line display */}
+          <div className="mb-12 sm:mb-16 lg:mb-20">
+            <h2 className="gilroy-heading text-white flex flex-wrap items-center justify-center px-1 sm:px-2">
+              <span>Breaking Down Markets,</span>
+              <img
+                src="\charts\Rectangle 51.png"
+                alt="Chart"
+                className="inline-block w-10 sm:w-16 md:w-16 lg:w-20 h-6 sm:h-8 md:h-10 lg:h-12 rounded-xl transform -rotate-5"
+              />
+              <span>Crypto & Data Into Clear, Actionable</span>
+              <img
+                src="\charts\Rectangle 50.png"
+                alt="Chart"
+                className="inline-block w-10 sm:w-16 md:w-16 lg:w-20 h-6 sm:h-8 md:h-10 lg:h-12 rounded-xl transform -rotate-5"
+              />
+              <span>Insights - So You Can Learn, Grow & Succeed Without The</span>
+              <img
+                src="\charts\Rectangle 52.png"
+                alt="Chart"
+                className="inline-block w-10 sm:w-16 md:w-16 lg:w-20 h-6 sm:h-8 md:h-10 lg:h-12 rounded-xl transform -rotate-5"
+              />
+              <span>Jargon.</span>
             </h2>
-
-            {/* Decorative Images */}
-            <div className="absolute top-16 left-48 w-20 h-12 transform rotate-3 hidden lg:block">
-              <img src="https://placehold.co/87x50/ffffff/000000?text=Chart1" alt="Chart" className="rounded-lg" />
-            </div>
-            <div className="absolute top-2 right-80 w-20 h-12 transform rotate-3 hidden lg:block">
-              <img src="https://placehold.co/85x50/ffffff/000000?text=Chart2" alt="Chart" className="rounded-lg" />
-            </div>
-            <div className="absolute bottom-0 right-48 w-20 h-12 transform -rotate-5 hidden lg:block">
-              <img src="https://placehold.co/87x50/ffffff/000000?text=Chart3" alt="Chart" className="rounded-lg" />
-            </div>
           </div>
 
-          {/* Two Column Layout */}
-          <div className="grid lg:grid-cols-2 gap-12 items-start">
-            {/* Feature Cards Grid */}
-            <div className="space-y-5">
+          {/* Two Column Layout - Increased gap */}
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-start">
+            {/* Feature Cards Grid - Increased spacing */}
+            <div className="space-y-4 sm:space-y-8">
               {/* Top Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {/* Data-Driven Approach Card */}
-                <div className="bg-[#1F1F1F] p-4 rounded-2xl space-y-4">
-                  <h3 className="text-xl font-semibold text-white">Data-Driven Approach</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">Every analysis is backed by comprehensive research</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                {/* Data-Driven Approach Card - Smaller padding */}
+                <div className="bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 rounded-2xl space-y-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Data-Driven Approach</h3>
+                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
                 </div>
 
                 {/* Educational Focus Card */}
-                <div className="bg-[#1F1F1F] p-4 rounded-2xl space-y-4">
-                  <h3 className="text-xl font-semibold text-white">Educational Focus</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">Complex concepts broken down into actionable insights</p>
+                <div className="bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 rounded-2xl space-y-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Educational Focus</h3>
+                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
                 </div>
               </div>
 
               {/* Bottom Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {/* Real-Time Coverage Card */}
-                <div className="bg-[#1F1F1F] p-4 rounded-2xl space-y-4">
-                  <h3 className="text-xl font-semibold text-white">Real-Time Coverage</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">Live trading sessions and immediate market commentary</p>
+                <div className="bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 rounded-2xl space-y-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Real-Time Coverage</h3>
+                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
                 </div>
 
                 {/* Community-First Card */}
-                <div className="bg-[#1F1F1F] p-4 rounded-2xl space-y-4">
-                  <h3 className="text-xl font-semibold text-white">Community-First</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">Building a supportive learning environment</p>
+                <div className="bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 rounded-2xl space-y-3">
+                  <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Community-First</h3>
+                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
                 </div>
               </div>
             </div>
 
-            {/* About Text & CTA */}
-            <div className="space-y-6">
-              <p className="text-gray-300 leading-relaxed text-lg">
+            {/* About Text & CTA - Smaller text and increased spacing */}
+            <div className="space-y-5 sm:space-y-6 lg:space-y-8">
+              <p className="text-gray-300 leading-relaxed text-sm sm:text-base lg:text-lg" style={{fontFamily: 'Gilroy'}}>
                 I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations. Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
               </p>
 
               <a
                 href="/book"
-                className="bg-white text-[#0A0A0A] px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-block"
+                className="bg-white text-[#0A0A0A] px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-block" style={{fontFamily: 'Gilroy', fontWeight: 600}}
               >
                 Book 1:1 Meeting
               </a>
@@ -109,129 +187,71 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Social Proof Section */}
-      <section className="relative z-10 px-5 md:px-20 py-12">
+      {/* Brand Logos Section with Vector Background */}
+      <section className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-center space-x-8 md:space-x-16 lg:space-x-24 opacity-70 flex-wrap gap-y-8">
-            {/* Logo placeholders */}
-            <div className="w-20 h-6 flex-shrink-0">
-              <img src="https://placehold.co/90x24/ffffff/000000?text=TradingView" alt="TradingView" className="opacity-70 w-full h-full object-contain" />
-            </div>
-            <div className="w-24 h-8 flex-shrink-0">
-              <img src="https://placehold.co/111x30/ffffff/000000?text=Bloomberg" alt="Bloomberg" className="opacity-70 w-full h-full object-contain" />
-            </div>
-            <div className="w-20 h-4 flex-shrink-0">
-              <img src="https://placehold.co/102x16/ffffff/000000?text=Reuters" alt="Reuters" className="opacity-70 w-full h-full object-contain" />
-            </div>
-            <div className="w-20 h-6 flex-shrink-0">
-              <img src="https://placehold.co/97x24/ffffff/000000?text=Yahoo" alt="Yahoo Finance" className="opacity-70 w-full h-full object-contain" />
+          {/* Vector Background Container with responsive dimensions based on 1064x310 */}
+          <div
+            className="relative w-full max-w-4xl mx-auto rounded-lg overflow-hidden"
+            style={{
+              aspectRatio: '1064/310',
+              border: '1px solid transparent',
+              background: `
+                url("/Vector (1).png"),
+                linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+              `,
+              backgroundSize: 'contain, cover, cover',
+              backgroundPosition: 'center, center, center',
+              backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+            }}
+          >
+            {/* Brand Logos Overlay */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="flex items-center justify-center space-x-6 sm:space-x-8 md:space-x-12 lg:space-x-16 xl:space-x-20 opacity-90 flex-wrap gap-y-4 sm:gap-y-6 px-4 sm:px-6 md:px-8">
+                {/* Actual Brand Images - Responsive sizes */}
+                <div className="w-16 sm:w-20 md:w-24 lg:w-28 xl:w-32 h-auto flex-shrink-0">
+                  <img
+                    src="/brand_images/Group 10.png"
+                    alt="Brand Logo"
+                    className="opacity-80 w-full h-auto object-contain max-h-8 sm:max-h-10 lg:max-h-12"
+                  />
+                </div>
+                <div className="w-16 sm:w-20 md:w-24 lg:w-28 xl:w-32 h-auto flex-shrink-0">
+                  <img
+                    src="/brand_images/image 2.png"
+                    alt="Brand Logo"
+                    className="opacity-80 w-full h-auto object-contain max-h-8 sm:max-h-10 lg:max-h-12"
+                  />
+                </div>
+                <div className="w-16 sm:w-20 md:w-24 lg:w-28 xl:w-32 h-auto flex-shrink-0">
+                  <img
+                    src="/brand_images/image 4.png"
+                    alt="Brand Logo"
+                    className="opacity-80 w-full h-auto object-contain max-h-8 sm:max-h-10 lg:max-h-12"
+                  />
+                </div>
+                <div className="w-16 sm:w-20 md:w-24 lg:w-28 xl:w-32 h-auto flex-shrink-0">
+                  <img
+                    src="/brand_images/Vector (1).png"
+                    alt="Brand Logo"
+                    className="opacity-80 w-full h-auto object-contain max-h-8 sm:max-h-10 lg:max-h-12"
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Tailored Guidance Section with Calendar */}
+      <TailoredGuidanceSection />
 
       {/* Latest Videos Section */}
-      <section className="relative z-10 px-5 md:px-20 py-16">
-        <div className="max-w-6xl mx-auto space-y-8">
-          <h2 className="text-2xl md:text-3xl font-semibold text-white">Latest Videos</h2>
+      <LatestVideos />
 
-          {/* Horizontal Scrolling Container */}
-          <div className="flex overflow-x-auto space-x-5 scrollbar-hide snap-x snap-mandatory pb-4">
-            {/* Video Card 1 */}
-            <div className="flex-none w-80 bg-[#1F1F1F] rounded-2xl overflow-hidden snap-start hover:scale-105 transition-transform duration-300">
-              <div className="aspect-video bg-gray-600 relative">
-                <img src="https://placehold.co/320x180/1F1F1F/ffffff?text=Market+Analysis" alt="Market Analysis Video" className="w-full h-full object-cover" />
-                {/* Play button overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all cursor-pointer">
-                    <div className="w-0 h-0 border-l-[12px] border-l-black border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold mb-2 text-white">Market Analysis: Q4 Predictions</h3>
-                <p className="text-sm text-gray-300">Deep dive into market trends and predictions for the upcoming quarter</p>
-                <div className="mt-3 text-xs text-gray-400">12:45 • 2 weeks ago</div>
-              </div>
-            </div>
-
-            {/* Video Card 2 */}
-            <div className="flex-none w-80 bg-[#1F1F1F] rounded-2xl overflow-hidden snap-start hover:scale-105 transition-transform duration-300">
-              <div className="aspect-video bg-gray-600 relative">
-                <img src="https://placehold.co/320x180/1F1F1F/ffffff?text=Crypto+Strategy" alt="Crypto Strategy Video" className="w-full h-full object-cover" />
-                {/* Play button overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all cursor-pointer">
-                    <div className="w-0 h-0 border-l-[12px] border-l-black border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold mb-2 text-white">Crypto Portfolio Strategy</h3>
-                <p className="text-sm text-gray-300">Building a diversified cryptocurrency portfolio for long-term growth</p>
-                <div className="mt-3 text-xs text-gray-400">18:32 • 1 week ago</div>
-              </div>
-            </div>
-
-            {/* Video Card 3 */}
-            <div className="flex-none w-80 bg-[#1F1F1F] rounded-2xl overflow-hidden snap-start hover:scale-105 transition-transform duration-300">
-              <div className="aspect-video bg-gray-600 relative">
-                <img src="https://placehold.co/320x180/1F1F1F/ffffff?text=Data+Science" alt="Data Science Video" className="w-full h-full object-cover" />
-                {/* Play button overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all cursor-pointer">
-                    <div className="w-0 h-0 border-l-[12px] border-l-black border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold mb-2 text-white">Data Science in Trading</h3>
-                <p className="text-sm text-gray-300">How to leverage data science techniques for better trading decisions</p>
-                <div className="mt-3 text-xs text-gray-400">25:18 • 3 days ago</div>
-              </div>
-            </div>
-
-            {/* Video Card 4 */}
-            <div className="flex-none w-80 bg-[#1F1F1F] rounded-2xl overflow-hidden snap-start hover:scale-105 transition-transform duration-300">
-              <div className="aspect-video bg-gray-600 relative">
-                <img src="https://placehold.co/320x180/1F1F1F/ffffff?text=Beginner+Guide" alt="Beginner Guide Video" className="w-full h-full object-cover" />
-                {/* Play button overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all cursor-pointer">
-                    <div className="w-0 h-0 border-l-[12px] border-l-black border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold mb-2 text-white">Beginner&apos;s Guide to Stocks</h3>
-                <p className="text-sm text-gray-300">Everything you need to know to start your investing journey</p>
-                <div className="mt-3 text-xs text-gray-400">15:45 • 1 month ago</div>
-              </div>
-            </div>
-
-            {/* Video Card 5 */}
-            <div className="flex-none w-80 bg-[#1F1F1F] rounded-2xl overflow-hidden snap-start hover:scale-105 transition-transform duration-300">
-              <div className="aspect-video bg-gray-600 relative">
-                <img src="https://placehold.co/320x180/1F1F1F/ffffff?text=Technical+Analysis" alt="Technical Analysis Video" className="w-full h-full object-cover" />
-                {/* Play button overlay */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center hover:bg-opacity-100 transition-all cursor-pointer">
-                    <div className="w-0 h-0 border-l-[12px] border-l-black border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4">
-                <h3 className="font-semibold mb-2 text-white">Technical Analysis Masterclass</h3>
-                <p className="text-sm text-gray-300">Advanced charting techniques and pattern recognition</p>
-                <div className="mt-3 text-xs text-gray-400">32:12 • 2 weeks ago</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Newsletter Subscription */}
-      <div className="px-5 md:px-20 py-16">
+      {/* Newsletter Subscription - More responsive */}
+      <div className="px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
         <NewsletterSubscription />
       </div>
     </div>

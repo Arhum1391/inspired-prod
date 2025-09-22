@@ -23,19 +23,19 @@ export default function Home() {
               <img
                 src="\charts\Rectangle 51.png"
                 alt="Chart"
-                className="inline-block w-10 sm:w-16 md:w-16 lg:w-20 h-6 sm:h-8 md:h-10 lg:h-12 rounded-xl transform -rotate-5"
+                className="inline-block w-10 sm:w-16 md:w-16 lg:w-20 h-6 sm:h-8 md:h-10 lg:h-12 rounded-xl transform rotate-4"
               />
               <span>Crypto & Data Into Clear, Actionable</span>
               <img
                 src="\charts\Rectangle 50.png"
                 alt="Chart"
-                className="inline-block w-10 sm:w-16 md:w-16 lg:w-20 h-6 sm:h-8 md:h-10 lg:h-12 rounded-xl transform -rotate-5"
+                className="inline-block w-10 sm:w-16 md:w-16 lg:w-20 h-6 sm:h-8 md:h-10 lg:h-12 rounded-xl transform rotate-6"
               />
               <span>Insights - So You Can Learn, Grow & Succeed Without The</span>
               <img
                 src="\charts\Rectangle 52.png"
                 alt="Chart"
-                className="inline-block w-10 sm:w-16 md:w-16 lg:w-20 h-6 sm:h-8 md:h-10 lg:h-12 rounded-xl transform -rotate-5"
+                className="inline-block w-10 sm:w-16 md:w-16 lg:w-20 h-6 sm:h-8 md:h-10 lg:h-12 rounded-xl transform -rotate-3"
               />
               <span>Jargon.</span>
             </h2>

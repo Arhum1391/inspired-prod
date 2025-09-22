@@ -1,47 +1,89 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
+
+// A simple Icon component for the avatar image
+const AvatarIcon = () => (
+  <svg width="60" height="32" viewBox="0 0 60 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute -top-6 -left-2 transform -rotate-12">
+    <g clipPath="url(#clip0_101_2)">
+      <rect width="60" height="32" rx="16" fill="#3B82F6"/>
+      {/* Placeholder for two faces - using simple shapes */}
+      <circle cx="22" cy="16" r="8" fill="#D1E3FF"/>
+      <circle cx="38" cy="16" r="8" fill="#A9C9FF"/>
+      <path d="M19 24 C 21 21, 23 21, 25 24" stroke="#60A5FA" strokeWidth="1.5" fill="none"/>
+      <path d="M35 24 C 37 21, 39 21, 41 24" stroke="#60A5FA" strokeWidth="1.5" fill="none"/>
+    </g>
+    <defs>
+      <clipPath id="clip0_101_2">
+        <rect width="60" height="32" rx="16" fill="white"/>
+      </clipPath>
+    </defs>
+  </svg>
+);
 
 const TailoredGuidanceSection = () => {
   // --- Calendar Data for September 2025 ---
   const year = 2025;
-  const month = 8; // In JavaScript's Date, months are 0-indexed (0=Jan, 8=Sep)
   const monthName = "September";
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
   // These are the highlighted, available dates
   const availableDates = [2, 3, 6, 11, 13];
 
-  // --- Calendar Logic ---
-  const firstDayOfMonth = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  // Cursor effect state
+  const [isHovering, setIsHovering] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+  const containerRef = useRef(null);
 
-  const calendarDays = [];
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
 
-  // Add empty cells for the days before the month starts
-  for (let i = 0; i < firstDayOfMonth; i++) {
-    calendarDays.push(null);
-  }
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+  };
 
-  // Add the actual days of the month
-  for (let i = 1; i <= daysInMonth; i++) {
-    calendarDays.push(i);
-  }
+  const handleMouseMove = (e) => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      setCursorPosition({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      });
+    }
+  };
 
   return (
     <section className="relative z-10 px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
       <div className="max-w-4xl mx-auto">
-        {/* Main Component Container */}
-        <div className="relative p-6 sm:p-8 md:p-12 w-full text-white">
+        {/* Main Component Container - Clickable */}
+        <a
+          href="/book"
+          ref={containerRef}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onMouseMove={handleMouseMove}
+          className="block relative p-6 sm:p-8 md:p-12 w-full text-white rounded-xl transition-transform duration-300 hover:scale-[1.005]"
+          style={{ cursor: isHovering ? 'none' : 'pointer' }}
+        >
 
           {/* Floating "Book a 1v1 Call" Button */}
-          <a
-            href="/book"
-            className="absolute -top-3 sm:-top-4 lg:-top-5 right-4 sm:right-6 lg:right-8 bg-white text-[#0A0A0A] px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold shadow-lg transition-all duration-300 transform -rotate-4 hover:-rotate-2 hover:scale-105"
-            style={{fontFamily: 'Gilroy', fontWeight: 600}}
+          <span
+            className="absolute bg-white text-[#0A0A0A] px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold shadow-lg z-50 pointer-events-none"
+            style={{
+              fontFamily: 'Gilroy',
+              fontWeight: 600,
+              left: isHovering ? `${cursorPosition.x}px` : 'auto',
+              top: isHovering ? `${cursorPosition.y}px` : 'auto',
+              right: isHovering ? 'auto' : '1rem',
+              transform: isHovering ? 'translate(-50%, -50%)' : 'translateY(-1.25rem) rotate(-4deg)',
+              transition: isHovering ? 'none' : 'all 0.3s ease',
+              opacity: isHovering ? 1 : 1,
+              whiteSpace: 'nowrap'
+            }}
           >
             Book a 1v1 Call
-          </a>
+          </span>
 
           {/* Header Section */}
           <div className="mb-8 sm:mb-10">
@@ -65,65 +107,73 @@ const TailoredGuidanceSection = () => {
             </p>
           </div>
 
-          {/* Calendar Section */}
+          {/* New Calendar Section */}
           <div
-            className="p-4 sm:p-6 rounded-xl"
+            className="rounded-3xl p-4 sm:p-6 lg:p-8 relative"
             style={{
-              border: '1px solid transparent',
+              border: '2px solid transparent',
               background: `
-                transparent padding-box,
-                linear-gradient(180deg, #404040 0%, #0A0A0A 50.21%) border-box
-              `,
-              backgroundColor: '#2A2A2A'
+                linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                linear-gradient(180deg, rgba(128, 128, 128, 0.3) 0%, rgba(128, 128, 128, 0.2) 30%, rgba(64, 64, 64, 0.1) 60%, rgba(10, 10, 10, 0) 80%) border-box
+              `
             }}
           >
-            {/* Calendar Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-2">
-              <p className="font-semibold text-base sm:text-lg flex items-center" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                {monthName}, {year}
-                <span className="ml-2 sm:ml-3 w-2 h-2 rounded-full bg-green-500"></span>
-              </p>
-              <a href="/book" className="text-xs sm:text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1" style={{fontFamily: 'Gilroy'}}>
-                Schedule a call
-                <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            </div>
+            
 
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-y-2 sm:gap-y-3 text-center">
-              {/* Days of the week headers */}
-              {daysOfWeek.map(day => (
-                <div key={day} className="text-xs font-semibold text-gray-500 tracking-wider py-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                  {day}
+            {/* Calendar Card Container */}
+            <div
+              className="rounded-2xl p-4 sm:p-6 text-white relative overflow-hidden"
+              style={{
+                background: 'linear-gradient(180deg, #3A3A3A 0%, #2A2A2A 20%, #1A1A1A 40%, #151515 60%, #101010 80%, #0A0A0A 100%)'
+              }}
+            >
+
+              {/* Calendar Header */}
+              <div className="flex items-center justify-between mb-4 sm:mb-6 z-10 relative">
+                <h2 className="font-semibold text-base sm:text-lg text-gray-100" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                  {monthName}, {year}
+                </h2>
+                <div className="flex items-center space-x-2">
+                  <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                  <span className="text-gray-400 text-xs sm:text-sm font-medium" style={{fontFamily: 'Gilroy'}}>Schedule a call</span>
                 </div>
-              ))}
+              </div>
 
-              {/* Calendar day numbers */}
-              {calendarDays.map((day, index) => {
-                const isAvailable = day && availableDates.includes(day);
-                const isPlaceholder = day === null;
-
-                return (
-                  <div
-                    key={index}
-                    className={`
-                      w-8 sm:w-10 h-8 sm:h-10 mx-auto flex items-center justify-center rounded-full transition-colors duration-200 text-sm
-                      ${isPlaceholder ? 'cursor-default' : ''}
-                      ${isAvailable
-                        ? 'bg-gray-600 hover:bg-gray-500 cursor-pointer'
-                        : 'text-gray-500 cursor-not-allowed'}
-                    `}
-                    style={{fontFamily: 'Gilroy', fontWeight: 500}}
-                  >
-                    {day}
+              {/* Calendar Grid Container */}
+              <div className="relative">
+                <div className="space-y-3 sm:space-y-4">
+                  {/* Days of the week */}
+                  <div className="grid grid-cols-7 text-center text-xs text-gray-500 font-semibold">
+                    {daysOfWeek.map(day => (
+                      <span key={day} style={{fontFamily: 'Gilroy', fontWeight: 600}}>{day}</span>
+                    ))}
                   </div>
-                );
-              })}
+
+                  {/* Dates Grid */}
+                  <div className="grid grid-cols-7 text-center text-sm gap-y-2 sm:gap-y-3">
+                    <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>1</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>2</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>3</span>
+                    <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>4</span>
+                    <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>5</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>6</span>
+                    <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>7</span>
+                    <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>8</span>
+                    <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>9</span>
+                    <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>10</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>11</span>
+                    <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>12</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>13</span>
+                    <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>14</span>
+                  </div>
+                </div>
+
+                {/* Enhanced Blur Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 h-4/5 bg-gradient-to-t from-[#0A0A0A]/60 via-[#0A0A0A]/30 to-transparent pointer-events-none"></div>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
       </div>
     </section>
   );

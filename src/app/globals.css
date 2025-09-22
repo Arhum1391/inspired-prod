@@ -105,10 +105,44 @@ body {
   }
 }
 
+/* Custom keyframes for the continuous vertical scrolling animation - downward */
+@keyframes scrollDown {
+  0% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 /* Utility class to apply the scrolling animation */
 .animate-scrollUp {
-  animation: scrollUp 40s linear infinite;
+  animation: scrollUp 120s linear infinite;
 }
+
+/* Utility class to apply the downward scrolling animation */
+.animate-scrollDown {
+  animation: scrollDown 120s linear infinite;
+}
+
+/* Keyframes for zoom wave motion on background */
+@keyframes zoomWave {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Utility class for background zoom animation */
+.animate-zoom-wave {
+  animation: zoomWave 5s ease-in-out infinite;
+}
+
 
 /* Custom animations for landing page */
 @keyframes scroll-vertical {
@@ -169,6 +203,19 @@ body {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+
+/* Calendar vignette effect - simplified for smooth transition */
+.inner-shadow-vignette::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, transparent 0%, transparent 60%, rgba(10, 10, 10, 0.2) 100%);
+  pointer-events: none;
 }
 
 /* Focus states for accessibility */

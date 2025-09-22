@@ -140,7 +140,7 @@ const HeroSection = () => {
           {/* CTA Button - Smaller and more responsive */}
           <div className="flex items-center">
             <a
-              href="/book"
+              href="/meetings"
               className="bg-white text-[#0A0A0A] px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors"
             >
               <span className="hidden sm:inline">Book 1:1 Meeting</span>
@@ -164,9 +164,9 @@ const HeroSection = () => {
               Expert analysis on stocks, crypto, and data science - delivered with clarity and humor
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-3">
-              <button className="bg-white text-[#0A0A0A] text-xs sm:text-sm font-semibold rounded-full py-2.5 sm:py-3 px-5 sm:px-6 hover:brightness-90 transition-all text-center">
+              <a href="/meetings" className="bg-white text-[#0A0A0A] text-xs sm:text-sm font-semibold rounded-full py-2.5 sm:py-3 px-5 sm:px-6 hover:brightness-90 transition-all text-center">
                 Book a 1v1 Call
-              </button>
+              </a>
               <button className="border border-white text-white text-xs sm:text-sm font-semibold rounded-full py-2.5 sm:py-3 px-5 sm:px-6 hover:bg-white/10 transition-all text-center">
                 Learn More
               </button>

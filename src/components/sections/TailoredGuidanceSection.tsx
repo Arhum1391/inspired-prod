@@ -2,24 +2,6 @@
 
 import React, { useState, useRef } from 'react';
 
-// A simple Icon component for the avatar image
-const AvatarIcon = () => (
-  <svg width="60" height="32" viewBox="0 0 60 32" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute -top-6 -left-2 transform -rotate-12">
-    <g clipPath="url(#clip0_101_2)">
-      <rect width="60" height="32" rx="16" fill="#3B82F6"/>
-      {/* Placeholder for two faces - using simple shapes */}
-      <circle cx="22" cy="16" r="8" fill="#D1E3FF"/>
-      <circle cx="38" cy="16" r="8" fill="#A9C9FF"/>
-      <path d="M19 24 C 21 21, 23 21, 25 24" stroke="#60A5FA" strokeWidth="1.5" fill="none"/>
-      <path d="M35 24 C 37 21, 39 21, 41 24" stroke="#60A5FA" strokeWidth="1.5" fill="none"/>
-    </g>
-    <defs>
-      <clipPath id="clip0_101_2">
-        <rect width="60" height="32" rx="16" fill="white"/>
-      </clipPath>
-    </defs>
-  </svg>
-);
 
 const TailoredGuidanceSection = () => {
   // --- Calendar Data for September 2025 ---
@@ -27,13 +9,11 @@ const TailoredGuidanceSection = () => {
   const monthName = "September";
   const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-  // These are the highlighted, available dates
-  const availableDates = [2, 3, 6, 11, 13];
 
   // Cursor effect state
   const [isHovering, setIsHovering] = useState(false);
   const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-  const containerRef = useRef(null);
+  const containerRef = useRef<HTMLAnchorElement>(null);
 
   const handleMouseEnter = () => {
     setIsHovering(true);
@@ -43,7 +23,7 @@ const TailoredGuidanceSection = () => {
     setIsHovering(false);
   };
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent) => {
     if (containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
       setCursorPosition({
@@ -58,7 +38,7 @@ const TailoredGuidanceSection = () => {
       <div className="max-w-4xl mx-auto">
         {/* Main Component Container - Clickable */}
         <a
-          href="/book"
+          href="/meetings"
           ref={containerRef}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -103,7 +83,7 @@ const TailoredGuidanceSection = () => {
               <span>Tailored Guidance?</span>
             </h2>
             <p className="text-gray-300 mt-4 sm:mt-6 max-w-2xl mx-auto leading-relaxed text-sm sm:text-base text-center" style={{fontFamily: 'Gilroy'}}>
-              Get personalized support through a 1:1 session - whether you're exploring your first investment or refining advanced strategies. Book a meeting and get advice tailored to your goals.
+              Get personalized support through a 1:1 session - whether you&apos;re exploring your first investment or refining advanced strategies. Book a meeting and get advice tailored to your goals.
             </p>
           </div>
 

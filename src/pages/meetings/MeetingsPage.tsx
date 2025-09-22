@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 // import { useRouter } from 'next/navigation'; // Removed to prevent compilation error
-import { ChevronDown, ChevronLeft, CheckCircle2 } from 'lucide-react';
-import Image from 'next/image';
+import { ChevronDown, ChevronLeft } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
 // --- TYPE DEFINITIONS ---
@@ -379,11 +378,7 @@ const MeetingsPage: React.FC = () => {
                                 maskSize: 'contain',
                                 maskRepeat: 'no-repeat',
                                 maskPosition: 'center',
-                                imageRendering: 'pixelated',
-                                WebkitImageRendering: 'pixelated',
-                                imageRendering: '-moz-crisp-edges',
-                                imageRendering: '-webkit-optimize-contrast',
-                                imageRendering: 'optimize-contrast',
+                                imageRendering: 'pixelated' as const,
                                 transform: 'scale(0.95) translateZ(0)',
                                 transformOrigin: 'center',
                                 filter: 'contrast(1.1) brightness(1.05)',

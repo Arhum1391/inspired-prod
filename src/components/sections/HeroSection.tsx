@@ -241,7 +241,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 2/WhatsApp Image 2025-03-13 at 09.42.55_c04ab3c9 1.png")',
+                        backgroundImage: 'url("/rectangle 2/8c32b6a7d2dc3f1c6145f0d8ce2f4cbf7624bdb9.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'

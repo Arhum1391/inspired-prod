@@ -28,8 +28,8 @@ const Navbar = () => {
             <Image
               src="/Vector.svg"
               alt="Inspired Analyst Logo"
-              width={100}
-              height={18}
+              width={120}
+              height={22}
               className="w-full h-auto object-contain"
               priority
             />

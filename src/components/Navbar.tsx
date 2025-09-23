@@ -133,7 +133,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             href="/meetings"
             className="bg-white text-[#0A0A0A] px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors"
           >
-            <span className="hidden sm:inline">Book 1:1 Meeting</span>
+            <span className="hidden sm:inline">Book a Meeting</span>
             <span className="sm:hidden">Book Call</span>
           </a>
         </div>

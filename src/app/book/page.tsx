@@ -1,4 +1,4 @@
-import BookPage from '@/pages/book/BookPage';
+import BookPage from '@/components/pages/BookPage';
 
 export default function Book() {
   return <BookPage />;

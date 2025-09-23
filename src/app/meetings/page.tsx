@@ -1,4 +1,4 @@
-import MeetingsPage from '@/pages/meetings/MeetingsPage';
+import MeetingsPage from '@/components/pages/MeetingsPage';
 
 export default function Meetings() {
   return <MeetingsPage />;

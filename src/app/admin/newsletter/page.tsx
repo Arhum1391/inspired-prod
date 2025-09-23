@@ -1,4 +1,4 @@
-import NewsletterAdminPage from '@/pages/admin/newsletter/NewsletterAdminPage';
+import NewsletterAdminPage from '@/components/pages/NewsletterAdminPage';
 
 export default function NewsletterAdmin() {
   return <NewsletterAdminPage />;

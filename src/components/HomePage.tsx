@@ -88,7 +88,7 @@ export default function Home() {
                 href="/meetings"
                 className="bg-white text-[#0A0A0A] px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-block" style={{fontFamily: 'Gilroy', fontWeight: 600}}
               >
-                Book 1:1 Meeting
+                Book a Meeting
               </a>
             </div>
           </div>

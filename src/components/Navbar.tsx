@@ -26,7 +26,7 @@ const Navbar = () => {
         <div className="flex items-center">
           <div className="w-24 sm:w-28 lg:w-36 h-5 sm:h-6 lg:h-7 rounded flex items-center justify-center px-2">
             <Image
-              src="/Vector.png"
+              src="/Vector.svg"
               alt="Inspired Analyst Logo"
               width={100}
               height={18}

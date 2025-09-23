@@ -3,7 +3,11 @@
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 
-const Navbar = () => {
+interface NavbarProps {
+  variant?: 'default' | 'hero';
+}
+
+const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Close menu when clicking outside
@@ -19,10 +23,15 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMobileMenuOpen]);
 
+  // Different padding based on variant
+  const paddingClass = variant === 'hero'
+    ? "py-1 sm:py-2"
+    : "py-3 sm:py-4";
+
   return (
-    <div className="relative z-20 w-full px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
+    <div className={`relative z-20 w-full px-3 sm:px-4 lg:px-6 ${paddingClass}`}>
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo with Vector.png */}
+        {/* Logo with Vector.svg */}
         <div className="flex items-center">
           <div className="w-32 sm:w-36 lg:w-44 h-6 sm:h-7 lg:h-9 rounded flex items-center justify-center px-2">
             <Image

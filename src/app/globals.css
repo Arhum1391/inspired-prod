@@ -160,6 +160,65 @@ body {
   filter: blur(200px);
 }
 
+.newsletter-ellipse {
+  background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+  border-radius: 50%;
+}
+
+.newsletter-background-ellipse {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+  border-radius: 50%;
+  width: 1100px;
+  height: 800px;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(80px);
+  mask: radial-gradient(circle, white 40%, rgba(255,255,255,0.6) 55%, rgba(255,255,255,0.2) 70%, transparent 80%);
+  -webkit-mask: radial-gradient(circle, white 40%, rgba(255,255,255,0.6) 55%, rgba(255,255,255,0.2) 70%, transparent 80%);
+}
+
+/* Make ellipse only visible within newsletter container */
+.newsletter-container {
+  position: relative;
+  isolation: isolate;
+}
+
+.newsletter-container .newsletter-background-ellipse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+}
+
+/* Footer container */
+.footer-container {
+  position: relative;
+  isolation: isolate;
+}
+
+/* Social media icon boxes */
+.social-icon-box {
+  background-color: #12171f !important;
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  border-radius: 0.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  z-index: 50 !important;
+  transition: background-color 0.2s !important;
+}
+
+.social-icon-box:hover {
+  background-color: #374151 !important;
+}
+
 .newsletter-gradient {
   background: linear-gradient(180deg, #333333 0%, #1F1F1F 100%);
 }
@@ -229,4 +288,14 @@ input:focus {
 /* Custom scroll behavior */
 html {
   scroll-behavior: smooth;
+}
+
+/* Horizontal infinite scroll animation for video carousel */
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }

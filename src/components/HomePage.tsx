@@ -2,6 +2,8 @@ import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import HeroSection from '@/components/sections/HeroSection';
 import TailoredGuidanceSection from '@/components/sections/TailoredGuidanceSection';
 import LatestVideos from '@/components/sections/LatestVideos';
+import FeaturesSection from '@/components/sections/FeaturesSection';
+import Footer from '@/components/Footer';
 import React from 'react';
 
 export default function Home() {
@@ -156,10 +158,16 @@ export default function Home() {
       {/* Latest Videos Section */}
       <LatestVideos />
 
+      {/* Features Section */}
+      <FeaturesSection />
+
       {/* Newsletter Subscription - More responsive */}
       <div className="px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
         <NewsletterSubscription />
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

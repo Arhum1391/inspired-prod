@@ -354,8 +354,8 @@ const MeetingsPage: React.FC = () => {
             ></div>
             
             {/* Navigation Header */}
-            <Navbar />
-            
+            <Navbar variant="hero" />
+
             <div className="flex items-center justify-center p-4 sm:p-6 lg:p-8">
                 <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
                 
@@ -400,7 +400,7 @@ const MeetingsPage: React.FC = () => {
 
                     {/* Title and Progress Steps */}
                     <div className="flex items-center justify-between mb-8">
-                        <h1 className="text-4xl font-bold">Book 1:1 Meeting</h1>
+                        <h1 className="text-4xl font-bold">Book a Meeting</h1>
                         
                         {/* Progress Indicator - Scaled Down */}
                         <div className="w-64">

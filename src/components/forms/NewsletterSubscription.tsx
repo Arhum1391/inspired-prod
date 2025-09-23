@@ -38,7 +38,7 @@ export default function NewsletterSubscription() {
         setStatus('error');
         setMessage(data.error || 'Something went wrong. Please try again.');
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
       setMessage('Network error. Please check your connection and try again.');
     }
@@ -46,15 +46,20 @@ export default function NewsletterSubscription() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="relative bg-[#1F1F1F] rounded-2xl p-10 overflow-hidden">
+      <div className="newsletter-container relative bg-[#1F1F1F] rounded-2xl p-10 overflow-hidden">
+        {/* Background Ellipse */}
+        <div className="newsletter-background-ellipse"></div>
+
         {/* Background Gradient Blur */}
         <div className="absolute -top-96 -left-52 w-96 h-96 gradient-blur opacity-50 rounded-full transform rotate-90"></div>
 
-        {/* Decorative Background Shape */}
-        <div className="absolute top-0 right-0 w-96 h-full newsletter-gradient transform rotate-12 opacity-30"></div>
+        {/* Decorative Background Logo */}
+        <div className="absolute -top-4 right-0 w-108 h-full transform rotate-6 opacity-40">
+          <img src="/big logo.svg" alt="" className="w-full h-full object-contain" />
+        </div>
 
         {/* Content */}
-        <div className="relative z-10 max-w-lg">
+        <div className="relative z-20 max-w-lg">
           <div className="space-y-10">
             {/* Header */}
             <div className="space-y-6">

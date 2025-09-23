@@ -1,5 +1,8 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState, useRef, useEffect } from 'react';
 
 interface Video {
   episode: string;
@@ -36,6 +39,89 @@ const videos: Video[] = [
 ];
 
 const LatestVideos = () => {
+  // Duplicate videos array for seamless infinite scroll
+  const duplicatedVideos = [...videos, ...videos];
+
+  // State for drag functionality and infinite scroll
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+  const [isAnimationPaused, setIsAnimationPaused] = useState(false);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number | null>(null);
+
+  
+  // Auto-scroll functionality
+  useEffect(() => {
+    if (isAnimationPaused || isDragging) return;
+
+    const autoScroll = () => {
+      if (!containerRef.current) return;
+
+      const container = containerRef.current;
+      const maxScroll = container.scrollWidth / 2; // Half way point for seamless loop
+
+      // Smooth auto-scroll
+      container.scrollLeft += 0.5; // Adjust speed here
+
+      // Reset to beginning when we reach halfway (end of first set)
+      if (container.scrollLeft >= maxScroll) {
+        container.scrollLeft = 0;
+      }
+
+      animationRef.current = requestAnimationFrame(autoScroll);
+    };
+
+    animationRef.current = requestAnimationFrame(autoScroll);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isAnimationPaused, isDragging]);
+
+  // Handle mouse down
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    setIsDragging(true);
+    setIsAnimationPaused(true);
+    setDragStart(e.pageX - containerRef.current.offsetLeft);
+    setScrollLeft(containerRef.current.scrollLeft);
+  };
+
+  // Handle mouse move
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging || !containerRef.current) return;
+    e.preventDefault();
+    const x = e.pageX - containerRef.current.offsetLeft;
+    const walk = (x - dragStart) * 2;
+    const newScrollLeft = scrollLeft - walk;
+
+    const container = containerRef.current;
+    const maxScroll = container.scrollWidth / 2;
+
+    // Handle infinite loop during drag
+    if (newScrollLeft < 0) {
+      container.scrollLeft = maxScroll + newScrollLeft;
+      setScrollLeft(maxScroll);
+      setDragStart(x);
+    } else if (newScrollLeft >= maxScroll) {
+      container.scrollLeft = newScrollLeft - maxScroll;
+      setScrollLeft(0);
+      setDragStart(x);
+    } else {
+      container.scrollLeft = newScrollLeft;
+    }
+  };
+
+  // Handle mouse up/leave
+  const handleMouseUp = () => {
+    setIsDragging(false);
+    setIsAnimationPaused(false);
+  };
+
   return (
     <div className="text-white py-20 font-gilroy">
       <div className="container mx-auto px-4">
@@ -46,32 +132,47 @@ const LatestVideos = () => {
           Check Out My Latest Videos
         </h2>
 
-        {/* Carousel Wrapper with gradient borders and edge blur */}
+        {/* Carousel Wrapper with edge vignette effect */}
         <div className="relative rounded-3xl overflow-hidden">
-          {/* Left gradient border */}
-          <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-pink-500 via-purple-500 to-blue-500 blur-sm opacity-70 z-20"></div>
 
-          {/* Right gradient border */}
-          <div className="absolute right-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-pink-500 via-purple-500 to-blue-500 blur-sm opacity-70 z-20"></div>
+          {/* Left edge vignette overlay */}
+          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10 pointer-events-none"></div>
 
-          {/* Left edge blur overlay */}
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent z-10 pointer-events-none"></div>
-
-          {/* Right edge blur overlay */}
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent z-10 pointer-events-none"></div>
+          {/* Right edge vignette overlay */}
+          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10 pointer-events-none"></div>
 
           {/* Carousel Content */}
           <div className="relative bg-[#0A0A0A] rounded-3xl p-8">
-            <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-4" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {videos.map((video, index) => {
+            <div
+              ref={containerRef}
+              className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 cursor-grab"
+              style={{
+                cursor: isDragging ? 'grabbing' : 'grab',
+                scrollBehavior: isDragging ? 'auto' : 'smooth'
+              }}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+              onMouseLeave={handleMouseUp}
+            >
+              <div
+                ref={carouselRef}
+                className="flex gap-6"
+                onMouseEnter={() => !isDragging && setIsAnimationPaused(true)}
+                onMouseLeave={() => !isDragging && setIsAnimationPaused(false)}
+              >
+                {duplicatedVideos.map((video, index) => {
                 const isExternal = video.thumbnail.startsWith('http');
                 return (
-                  <div
+                  <Link
                     key={index}
-                    className="bg-[#1C1C1E] rounded-2xl overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex-shrink-0 w-80"
+                    href={video.link}
+                    className="bg-[#1C1C1E] rounded-2xl overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex-shrink-0 w-80 block cursor-pointer"
+                    onClick={(e) => isDragging && e.preventDefault()}
+                    style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
                   >
-                    <div className="bg-[#1C1C1E] p-4">
-                      <div className="relative aspect-video">
+                    <div className="bg-[#1C1C1E] p-2">
+                      <div className="relative" style={{ aspectRatio: '16/8' }}>
                         {isExternal ? (
                           <img
                             src={video.thumbnail}
@@ -90,7 +191,7 @@ const LatestVideos = () => {
                         <div className="absolute inset-0 bg-gray-800 bg-opacity-30 rounded-lg"></div>
                         <div
                           className="absolute top-4 left-4 bg-black bg-opacity-50 text-yellow-400 text-xs font-semibold px-3 py-1 rounded-full flex items-center"
-                          style={{ fontFamily: 'Gilroy', fontWeight: 600 }}
+                          style={{ fontFamily: 'Gilroy', fontWeight: 400 }}
                         >
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -110,16 +211,14 @@ const LatestVideos = () => {
                         </div>
                       </div>
                     </div>
-                    <div className="p-6">
+                    <div className="py-3 px-3">
                       <h3
-                        className="text-lg font-semibold mb-4 h-16 overflow-hidden"
-                        style={{ fontFamily: 'Gilroy', fontWeight: 600 }}
+                        className="text-lg font-semibold mb-4 line-clamp-2 sm:line-clamp-3"
+                        style={{ fontFamily: 'Gilroy', fontWeight: 400 }}
                       >
                         {video.title}
                       </h3>
-                      <Link
-                        href={video.link}
-                        className="text-gray-400 group-hover:text-white transition-colors duration-300 flex items-center"
+                      <div className="text-gray-400 group-hover:text-white transition-colors duration-300 flex items-center"
                         style={{ fontFamily: 'Gilroy' }}
                       >
                         Watch Video
@@ -134,14 +233,15 @@ const LatestVideos = () => {
                             strokeLinecap="round"
                             strokeLinejoin="round"
                             strokeWidth="2"
-                            d="M17 8l4 4m0 0l-4 4m4-4H3"
+                            d="M7 17l9.2-9.2M17 17V7h-10"
                           ></path>
                         </svg>
-                      </Link>
+                      </div>
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
+              </div>
             </div>
           </div>
         </div>

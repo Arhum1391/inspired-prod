@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 
@@ -22,7 +22,7 @@ const meetings = [
     { id: 3, title: '60-Min Deep', duration: '60 minutes' }
 ];
 
-const BookingSuccessPage: React.FC = () => {
+const BookingSuccessContent: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showSuccess, setShowSuccess] = useState(false);
@@ -185,6 +185,21 @@ const BookingSuccessPage: React.FC = () => {
                 </div>
             </div>
         </div>
+    );
+};
+
+const BookingSuccessPage: React.FC = () => {
+    return (
+        <Suspense fallback={
+            <div className="bg-[#0D0D0D] min-h-screen text-white font-sans flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p>Loading...</p>
+                </div>
+            </div>
+        }>
+            <BookingSuccessContent />
+        </Suspense>
     );
 };
 

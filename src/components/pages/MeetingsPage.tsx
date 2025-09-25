@@ -391,8 +391,6 @@ const MeetingsPage: React.FC = () => {
                 setCurrentStep(4);
             } else {
                 // Complete booking - redirect to success page with data
-                const selectedAnalystData = analysts.find(a => a.id === selectedAnalyst);
-                const selectedMeetingData = meetings.find(m => m.id === selectedMeeting);
                 const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
                 
                 const params = new URLSearchParams({

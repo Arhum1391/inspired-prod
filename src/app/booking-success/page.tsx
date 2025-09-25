@@ -105,9 +105,9 @@ const BookingSuccessPage: React.FC = () => {
 
                 {/* Success Message */}
                 <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-white mb-4">You're Booked!</h1>
+                    <h1 className="text-4xl font-bold text-white mb-4">You&apos;re Booked!</h1>
                     <p className="text-gray-400 text-lg">
-                        Your meeting has been confirmed. We've sent a confirmation to your email.
+                        Your meeting has been confirmed. We&apos;ve sent a confirmation to your email.
                     </p>
                 </div>
 

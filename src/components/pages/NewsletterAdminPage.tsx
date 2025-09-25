@@ -30,7 +30,7 @@ export default function NewsletterAdmin() {
       } else {
         setError(data.error || 'Failed to fetch subscribers');
       }
-    } catch (error) {
+    } catch {
       setError('Network error');
     } finally {
       setLoading(false);
@@ -52,7 +52,7 @@ export default function NewsletterAdmin() {
       } else {
         alert('Failed to update status');
       }
-    } catch (error) {
+    } catch {
       alert('Network error');
     }
   };

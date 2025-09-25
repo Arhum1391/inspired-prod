@@ -218,7 +218,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
             <div className="relative z-10">
                 <div className="flex justify-between items-start mb-3">
                     <h3 className="text-xl font-bold text-white">{meeting.title}</h3>
-                    <span className="bg-gray-900/70 text-gray-300 text-xs font-semibold px-3 py-1 rounded-full">{meeting.price}</span>
+                    <span className="bg-gray-900/70 text-gray-300 text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 group-hover:border-gray-500/70 transition-colors duration-300">{meeting.price}</span>
                 </div>
                 <div className="mb-3">
                     <span className={`inline-block px-3 py-1 text-xs rounded-full bg-opacity-20 ${
@@ -237,25 +237,46 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
 
 // --- MAIN PAGE COMPONENT ---
 const MeetingsPage: React.FC = () => {
+    const [currentStep, setCurrentStep] = useState<number>(2);
     const [selectedMeeting, setSelectedMeeting] = useState<number | null>(null); // No default selection
     const [selectedTimezone, setSelectedTimezone] = useState<string>('');
     const [isTimezoneOpen, setIsTimezoneOpen] = useState<boolean>(false);
     const [hoveredTimezone, setHoveredTimezone] = useState<string>('');
     const [timezoneSearch, setTimezoneSearch] = useState<string>('');
+    const [selectedDate, setSelectedDate] = useState<string>('');
+    const [selectedTime, setSelectedTime] = useState<string>('');
+    const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+    const [fullName, setFullName] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [notes, setNotes] = useState<string>('');
     // const router = useRouter(); // Removed to prevent compilation error
 
-    const isContinueDisabled = !selectedMeeting || !selectedTimezone;
+    const isContinueDisabled = currentStep === 2 ? (!selectedMeeting || !selectedTimezone) : 
+                               currentStep === 3 ? (!selectedDate || !selectedTime) :
+                               currentStep === 4 ? (!fullName || !email) : false;
 
     const handleContinue = () => {
         if (!isContinueDisabled) {
-            // Navigate to the next step using standard web APIs
-            window.location.href = '/book-meeting/date-time';
+            if (currentStep === 2) {
+                setCurrentStep(3);
+            } else if (currentStep === 3) {
+                setCurrentStep(4);
+            } else {
+                // Complete booking - redirect to success page
+                window.location.href = '/booking-success';
+            }
         }
     };
 
     const handleBack = () => {
+        if (currentStep === 3) {
+            setCurrentStep(2);
+        } else if (currentStep === 4) {
+            setCurrentStep(3);
+        } else {
         // Navigate to the landing page using standard web APIs
         window.location.href = '/';
+        }
     };
 
     const handleTimezoneSelect = (timezone: string) => {
@@ -265,10 +286,6 @@ const MeetingsPage: React.FC = () => {
         setTimezoneSearch('');
     };
 
-    const getSelectedTimezoneLabel = () => {
-        const timezone = allTimezones.find(tz => tz.value === selectedTimezone);
-        return timezone ? timezone.label : 'Select Timezone';
-    };
 
     // Get current time for a timezone (simplified - in real app you'd use a proper timezone library)
     const getCurrentTime = (timezoneValue: string): string => {
@@ -317,6 +334,101 @@ const MeetingsPage: React.FC = () => {
         setIsTimezoneOpen(true);
     };
 
+    // Calendar helper functions
+    const navigateMonth = (direction: 'prev' | 'next') => {
+        const newMonth = new Date(currentMonth);
+        if (direction === 'prev') {
+            newMonth.setMonth(newMonth.getMonth() - 1);
+        } else {
+            newMonth.setMonth(newMonth.getMonth() + 1);
+        }
+        setCurrentMonth(newMonth);
+    };
+
+    const getDaysInMonth = (date: Date) => {
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        const daysInMonth = lastDay.getDate();
+        const startingDayOfWeek = firstDay.getDay();
+
+        const days = [];
+        
+        // Add empty cells for days before the first day of the month
+        for (let i = 0; i < startingDayOfWeek; i++) {
+            days.push(null);
+        }
+        
+        // Add days of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+            days.push(new Date(year, month, day));
+        }
+        
+        return days;
+    };
+
+    const formatDate = (date: Date) => {
+        return date.toISOString().split('T')[0];
+    };
+
+    const isDateAvailable = (date: Date) => {
+        // For now, make all future dates available for testing
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return date >= today;
+    };
+
+    const isDateSelected = (date: Date) => {
+        return selectedDate === formatDate(date);
+    };
+
+    const handleDateSelect = (date: Date) => {
+        if (isDateAvailable(date)) {
+            setSelectedDate(formatDate(date));
+        }
+    };
+
+    // Available time slots
+    const timeSlots = [
+        '9:00 AM', '10:00 AM', '11:30 AM', '12:30 PM', 
+        '1:30 PM', '2:00 PM', '2:30 PM', '5:30 PM'
+    ];
+
+    const handleTimeSelect = (time: string) => {
+        setSelectedTime(time);
+    };
+
+    // Helper functions for booking summary
+    const getSelectedMeetingData = () => {
+        return meetings.find(meeting => meeting.id === selectedMeeting);
+    };
+
+    const getSelectedTimezoneLabel = () => {
+        const timezone = allTimezones.find(tz => tz.value === selectedTimezone);
+        return timezone ? timezone.label : 'Unknown Timezone';
+    };
+
+    const getTimezoneDisplayLabel = () => {
+        const timezone = allTimezones.find(tz => tz.value === selectedTimezone);
+        return timezone ? timezone.label : 'Select Timezone';
+    };
+
+    const formatSelectedDate = () => {
+        if (!selectedDate) return '';
+        const date = new Date(selectedDate);
+        return date.toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    };
+
+    const getMeetingPrice = () => {
+        const meeting = getSelectedMeetingData();
+        return meeting ? meeting.price : '0 BNB';
+    };
+
     return (
         <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative">
             {/* Lower Corner Gradients */}
@@ -356,7 +468,7 @@ const MeetingsPage: React.FC = () => {
             {/* Navigation Header */}
             <Navbar variant="hero" />
 
-            <div className="flex items-center justify-center p-4 sm:p-6 lg:p-8">
+            <div className="flex items-center justify-center p-4 sm:p-6 lg:p-8 -mt-8 lg:-mt-12">
                 <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
                 
                 {/* Left Side: Image Belts */}
@@ -512,10 +624,10 @@ const MeetingsPage: React.FC = () => {
                                 ></div>
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
-                                    style={{
+                            style={{
                                         backgroundImage: 'url("/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg")',
                                         backgroundSize: 'cover',
-                                        backgroundPosition: 'center',
+                                backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
                                     }}
                                 ></div>
@@ -526,33 +638,41 @@ const MeetingsPage: React.FC = () => {
 
                 {/* Right Side: Booking Form */}
                 <div className="w-full lg:col-span-2">
-                    <button onClick={handleBack} className="flex items-center text-gray-400 hover:text-white transition-colors mb-6">
+                    {/* Back Button */}
+                    <div className="mb-1 mt-16 -ml-4">
+                        <button onClick={handleBack} className="flex items-center text-gray-400 hover:text-white transition-colors">
                         <ChevronLeft size={20} className="mr-1" />
                         Back
                     </button>
+                    </div>
 
                     {/* Title and Progress Steps */}
-                    <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center justify-between mb-8 mt-8 -ml-4">
                         <h1 className="text-4xl font-bold">Book a Meeting</h1>
                         
                         {/* Progress Indicator - Scaled Down */}
-                        <div className="w-64">
+                        <div className="w-80">
                             <div className="flex items-center">
-                                <CircleStep step={1} isActive={true} />
-                                <Line isActive={true} />
-                                <CircleStep step={2} isActive={false} />
-                                <Line isActive={false} />
-                                <CircleStep step={3} isActive={false} />
+                                <CircleStep step={1} isActive={currentStep >= 1} />
+                                <Line isActive={currentStep >= 2} />
+                                <CircleStep step={2} isActive={currentStep >= 2} />
+                                <Line isActive={currentStep >= 3} />
+                                <CircleStep step={3} isActive={currentStep >= 3} />
+                                <Line isActive={currentStep >= 4} />
+                                <CircleStep step={4} isActive={currentStep >= 4} />
                             </div>
                             <div className="flex justify-between mt-1">
-                                <p className="text-xs text-white w-1/3 text-left">Select Meeting</p>
-                                <p className="text-xs text-gray-400 w-1/3 text-center">Pick Date & Time</p>
-                                <p className="text-xs text-gray-400 w-1/3 text-right">Pay & Confirm</p>
+                                <p className={`text-xs w-1/4 text-left ${currentStep >= 1 ? 'text-white' : 'text-gray-400'}`}>Step 1</p>
+                                <p className={`text-xs w-1/4 text-center ${currentStep >= 2 ? 'text-white' : 'text-gray-400'}`}>Select Meeting</p>
+                                <p className={`text-xs w-1/4 text-center ${currentStep >= 3 ? 'text-white' : 'text-gray-400'}`}>Pick Date & Time</p>
+                                <p className={`text-xs w-1/4 text-right ${currentStep >= 4 ? 'text-white' : 'text-gray-400'}`}>Pay & Confirm</p>
                             </div>
                         </div>
                     </div>
 
-                    {/* Meeting Selection */}
+                    {/* Step 2: Meeting Selection */}
+                    {currentStep === 2 && (
+                        <>
                     <div className="space-y-6">
                         <div>
                             <h2 className="text-2xl font-semibold mb-2">Select Meeting</h2>
@@ -578,7 +698,7 @@ const MeetingsPage: React.FC = () => {
                             <div className="relative">
                                 <input
                                     type="text"
-                                    value={timezoneSearch || (selectedTimezone ? getSelectedTimezoneLabel() : '')}
+                                            value={timezoneSearch || (selectedTimezone ? getTimezoneDisplayLabel() : '')}
                                     onChange={(e) => handleTimezoneSearch(e.target.value)}
                                     onFocus={handleTimezoneInputFocus}
                                     placeholder="Search timezone..."
@@ -666,9 +786,224 @@ const MeetingsPage: React.FC = () => {
                             )}
                         </div>
                     </div>
+                        </>
+                    )}
 
-                    {/* Continue Button */}
-                    <div className="mt-12 flex justify-end">
+                    {/* Step 3: Date & Time Selection */}
+                    {currentStep === 3 && (
+                        <div className="space-y-6">
+                            <div className="flex gap-8 items-start">
+                                {/* Left side - Calendar with header */}
+                                <div className="flex-[1.2]">
+                                    <div>
+                                        <h2 className="text-2xl font-semibold mb-2">Pick a Date & Time</h2>
+                                        <p className="text-gray-400">Select when you would like to schedule your meeting</p>
+                                    </div>
+                                    
+                                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 mt-6">
+                                        {/* Calendar Header */}
+                                        <div className="flex items-center justify-between mb-3">
+                                            <button
+                                                onClick={() => navigateMonth('prev')}
+                                                className="text-gray-400 hover:text-white transition-colors"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                </svg>
+                                            </button>
+                                            <h3 className="text-lg font-semibold text-white">
+                                                {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                            </h3>
+                                            <button
+                                                onClick={() => navigateMonth('next')}
+                                                className="text-gray-400 hover:text-white transition-colors"
+                                            >
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </button>
+                                        </div>
+
+                                        {/* Days of Week Header */}
+                                        <div className="grid grid-cols-7 gap-1 mb-2">
+                                            {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day) => (
+                                                <div key={day} className="text-center text-xs font-medium text-gray-400 py-1">
+                                                    {day}
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Calendar Grid */}
+                                        <div className="grid grid-cols-7 gap-1">
+                                            {getDaysInMonth(currentMonth).map((day, index) => (
+                                                <div key={index} className="h-8 flex items-center justify-center">
+                                                    {day ? (
+                                                        <button
+                                                            onClick={() => handleDateSelect(day)}
+                                                            disabled={!isDateAvailable(day)}
+                                                            className={`
+                                                                w-full h-full rounded-lg text-sm font-medium transition-all duration-200
+                                                                ${isDateSelected(day)
+                                                                    ? 'bg-white text-black border-2 border-white'
+                                                                    : isDateAvailable(day)
+                                                                    ? 'bg-gray-700 text-white hover:bg-gray-600 cursor-pointer'
+                                                                    : 'text-gray-500 cursor-not-allowed'
+                                                                }
+                                                            `}
+                                                        >
+                                                            {day.getDate()}
+                                                        </button>
+                                                    ) : null}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right side - Time Slots */}
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-semibold text-white mb-2">Available Time Slots</h3>
+                                    <p className="text-sm text-gray-400 mb-4">Times shown in Berlin, Germany</p>
+                                    
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {timeSlots.map((time) => (
+                                            <button
+                                                key={time}
+                                                onClick={() => handleTimeSelect(time)}
+                                                className={`
+                                                    py-2 px-3 rounded-lg text-xs font-medium transition-all duration-200
+                                                    ${selectedTime === time
+                                                        ? 'bg-white text-black border-2 border-white'
+                                                        : 'bg-[#0D0D0D] text-white hover:bg-gray-800 border border-gray-600'
+                                                    }
+                                                `}
+                                            >
+                                                {time}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Step 4: Pay & Confirm */}
+                    {currentStep === 4 && (
+                        <div className="space-y-6">
+                            <div className="flex gap-8 items-start -ml-4">
+                                {/* Left side - Payment Form */}
+                                <div className="flex-[1.2]">
+                                    <div className="-mt-4">
+                                        <h2 className="text-xl font-semibold mb-2">Pay & Confirm</h2>
+                                        <p className="text-gray-400 text-sm">Complete your booking by providing your details and payment</p>
+                                    </div>
+                                    
+                                    {/* Your Information */}
+                                    <div className="mt-4 space-y-4">
+                                        <h3 className="text-base font-semibold text-white">Your Information</h3>
+                                        
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+                                                <input
+                                                    type="text"
+                                                    value={fullName}
+                                                    onChange={(e) => setFullName(e.target.value)}
+                                                    placeholder="Enter Name"
+                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-gray-400 focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                />
+                                            </div>
+                                            
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                                                <input
+                                                    type="email"
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    placeholder="abc@example.com"
+                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-gray-400 focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">Notes (Optional)</label>
+                                            <textarea
+                                                value={notes}
+                                                onChange={(e) => setNotes(e.target.value)}
+                                                placeholder="Let us know if you want to discuss specific topics..."
+                                                rows={4}
+                                                className="w-full bg-black border-2 border-gray-500 rounded-lg py-3 px-4 text-gray-400 focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors resize-none"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Payment Details */}
+                                    <div className="mt-6">
+                                        <h3 className="text-base font-semibold text-white">Payment Details</h3>
+                                        <img src="/logo/Binance.svg" alt="Binance" className="w-32 h-32 -mt-8" />
+                                        <p className="text-xs text-gray-400 leading-relaxed -mt-8">
+                                            By completing this booking, you agree to our Terms of Service and Privacy Policy. All services are provided for informational purposes only. Results may vary.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Right side - Booking Summary */}
+                                <div className="flex-1">
+                                    <div className="bg-gray-800/50 border border-gray-600/50 rounded-lg p-6">
+                                        <h3 className="text-lg font-semibold text-white mb-4">Booking Summary</h3>
+                                        
+                                        <div className="space-y-4">
+                                            {/* Meeting Type */}
+                                            <div className="flex items-center justify-between">
+                                                <h4 className="text-sm font-medium text-gray-300">{getSelectedMeetingData()?.title}</h4>
+                                                <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+                                                    selectedMeeting === 1 ? 'bg-teal-400/20 text-teal-300' :
+                                                    selectedMeeting === 2 ? 'bg-purple-400/20 text-purple-300' :
+                                                    'bg-yellow-400/20 text-yellow-300'
+                                                }`}>
+                                                    {getSelectedMeetingData()?.duration}
+                                                </span>
+                                            </div>
+                                            
+                                            {/* Date and Time */}
+                                            <div>
+                                                <p className="text-base text-gray-300">{formatSelectedDate()}</p>
+                                                <p className="text-xs text-gray-300">{selectedTime} ({getSelectedTimezoneLabel()})</p>
+                                            </div>
+                                            
+                                            {/* Price */}
+                                            <div className="border-t border-gray-600 pt-4">
+                                                <div className="flex justify-between text-sm mb-2">
+                                                    <span className="text-gray-300">Price</span>
+                                                    <span className="text-white">{getMeetingPrice()}</span>
+                                                </div>
+                                                <div className="flex justify-between text-sm mb-2">
+                                                    <span className="text-gray-300">Tax (10%)</span>
+                                                    <span className="text-white">0.1 BNB</span>
+                                                </div>
+                                                <div className="flex justify-between text-base font-semibold border-t border-gray-600 pt-2">
+                                                    <span className="text-white">Total</span>
+                                                    <span className="text-white">{getMeetingPrice()}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="mt-12 flex justify-end gap-4">
+                        {(currentStep === 3 || currentStep === 4) && (
+                            <button
+                                onClick={handleBack}
+                                className="px-10 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white hover:bg-gray-800 border border-gray-700 hover:border-gray-600"
+                            >
+                                Back
+                            </button>
+                        )}
                         <button
                             onClick={handleContinue}
                             disabled={isContinueDisabled}

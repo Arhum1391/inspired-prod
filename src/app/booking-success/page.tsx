@@ -154,17 +154,21 @@ const BookingSuccessPage: React.FC = () => {
                 <div className="flex gap-4 mb-8">
                     {/* Google Calendar */}
                     <button className="bg-white text-black px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
-                        <div className="w-5 h-5 bg-blue-500 rounded-sm flex items-center justify-center">
-                            <span className="text-white text-xs font-bold">31</span>
-                        </div>
+                        <img 
+                            src="/logo/calendar.svg" 
+                            alt="Google Calendar" 
+                            className="w-5 h-5"
+                        />
                         Google Calendar
                     </button>
 
                     {/* Outlook Calendar */}
                     <button className="bg-gray-800 border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors">
-                        <div className="w-5 h-5 bg-blue-600 rounded-sm flex items-center justify-center">
-                            <span className="text-white text-xs font-bold">O</span>
-                        </div>
+                        <img 
+                            src="/logo/outlook.svg" 
+                            alt="Outlook Calendar" 
+                            className="w-5 h-5"
+                        />
                         Outlook Calendar
                     </button>
 

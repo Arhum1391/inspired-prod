@@ -292,7 +292,10 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
                                 onError={(e) => {
                                     // Fallback to placeholder if image doesn't exist
                                     e.currentTarget.style.display = 'none';
-                                    e.currentTarget.nextElementSibling.style.display = 'flex';
+                                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                                    if (nextElement) {
+                                        nextElement.style.display = 'flex';
+                                    }
                                 }}
                             />
                             <div className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-gray-300 text-xs font-bold" style={{display: 'none'}}>

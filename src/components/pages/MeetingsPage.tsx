@@ -15,9 +15,22 @@ type Meeting = {
   color: string;
 };
 
+type Analyst = {
+  id: number;
+  name: string;
+  description: string;
+  image: string;
+};
+
 // --- COMPONENT PROPS ---
 interface MeetingCardProps {
   meeting: Meeting;
+  isSelected: boolean;
+  onSelect: (id: number) => void;
+}
+
+interface AnalystCardProps {
+  analyst: Analyst;
   isSelected: boolean;
   onSelect: (id: number) => void;
 }
@@ -28,6 +41,57 @@ interface Timezone {
 }
 
 // --- MOCK DATA ---
+const analysts: Analyst[] = [
+  {
+    id: 0,
+    name: 'Adnan',
+    description: 'Content creator specializing in stocks, crypto, data science, & side hustles.',
+    image: '/analysts/adnan.jpg'
+  },
+  {
+    id: 1,
+    name: 'Assassin',
+    description: 'Better known as Assassin Co-Founder of Inspired Analyst Discord Server, Trading crypto since 2019. My expertise is in Fibonacci Retracements, Trend-based-Fibs, Quant Analysis, Institutional Orderflow, Volume Profiling, Orderblocks, Fair Value Gaps, Supply/Demand, ICT Concepts, and textbook charts/candlestick patterns.',
+    image: '/analysts/assassin.jpg'
+  },
+  {
+    id: 2,
+    name: 'Hassan Tariq',
+    description: 'I am Hassan Tariq and I have been trading crypto solely since 2020. I have been a part of Inspired Analyst team since April 2023. My expertise is in Fibonacci Retracements, Trend-based-Fibs, Fixed Range Volume Profile, Harmonics and Supply & Demand Concept.',
+    image: '/analysts/hassan-tariq.jpg'
+  },
+  {
+    id: 3,
+    name: 'Hamza Ali',
+    description: 'My name is Hamza Ali and I have 5 years of experience in trading I specialize in risk management and consistent profit-making. My core strategy is price action trading, which naturally covers SMC, ICT, and other advanced concepts in a simplified way I keep my charts clean and to the point no unnecessary complications, just clarity and precision.',
+    image: '/analysts/hamza-ali.jpg'
+  },
+  {
+    id: 4,
+    name: 'Hassan Khan',
+    description: 'I\'m Hassankhan, Co-founder of Inspired Analyst Forex Server, I don\'t just trade gold — I eat, breathe, and live XAU. I am also leading the CIVIC CHALLENGE, one of the most recognized and respected trading challenges across local Discord communities. With over 4–5 years of dedicated experience in trading gold, I\'ve developed a deep understanding of market movements, risk management, and profitable trading strategies.',
+    image: '/analysts/hassan-khan.jpg'
+  },
+  {
+    id: 5,
+    name: 'Meower',
+    description: 'I\'m Meower, a 17-year-old cryptocurrency trader with experience in the market since February 2021. I specialize in breakout trading, focusing on large percentage moves on centralized exchanges. My strategy is based on a high-risk-to-reward framework, with a consistent win rate of over 85%. In 2025, I completed a publicly tracked $1,000 to $2,000 trading challenge.',
+    image: '/analysts/meower.jpg'
+  },
+  {
+    id: 6,
+    name: 'Mohid',
+    description: 'Stop wasting time on outdated trading strategies that don\'t work anymore. As a professional trader with over 5 years of experience, I specialize in teaching advanced, fresh ICT concepts that are both simple to grasp and highly effective. My unique approach is built on two core trading models, the Fractal Model and the Forever Model, designed for maximum accuracy and clarity.',
+    image: '/analysts/mohid.jpg'
+  },
+  {
+    id: 7,
+    name: 'M. Usama',
+    description: 'I\'m Muhammad Usama, and I\'ve been trading crypto since 2020, and I started trading forex in 2023. This experience has taught me how to navigate everything from bull runs to brutal bear markets. I trade on indicators to refine my entries and exits, and try to keep my trading simple by using the price action. What keeps me consistent is blending institutional concepts with simple, practical tools.',
+    image: '/analysts/m-usama.jpg'
+  }
+];
+
 const meetings: Meeting[] = [
   {
     id: 1,
@@ -190,6 +254,66 @@ const Line = ({ isActive }: { isActive: boolean }) => (
 );
 
 
+// Reusable Analyst Card Component
+const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect }) => {
+    return (
+        <div
+            onClick={() => onSelect(analyst.id)}
+            className={`cursor-pointer bg-gray-800/50 p-3 rounded-xl border-2 transition-all duration-300 w-full relative overflow-hidden group
+                ${isSelected ? 'border-purple-500 bg-gray-700/80' : 'border-gray-700 hover:border-gray-500'}`}
+        >
+            {/* Gradient Overlay for Selected Card */}
+            {isSelected && (
+                <div 
+                    className="absolute inset-0 rounded-xl opacity-80"
+                    style={{
+                        backgroundImage: 'url("/gradient/Ellipse 2.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                    }}
+                />
+            )}
+            
+            {/* Glint Effect */}
+            <div className="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+            
+            {/* Content with relative positioning to appear above gradient */}
+            <div className="relative z-10">
+                <div className="flex flex-col">
+                    {/* Top row: Image and Name */}
+                    <div className="flex items-start gap-3 mb-3">
+                        {/* Circular Image */}
+                        <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                            <img 
+                                src={analyst.image} 
+                                alt={analyst.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                    // Fallback to placeholder if image doesn't exist
+                                    e.currentTarget.style.display = 'none';
+                                    e.currentTarget.nextElementSibling.style.display = 'flex';
+                                }}
+                            />
+                            <div className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-gray-300 text-xs font-bold" style={{display: 'none'}}>
+                                {analyst.name.charAt(0)}
+                            </div>
+                        </div>
+                        
+                        {/* Name */}
+                        <h3 className="text-sm font-bold text-white">{analyst.name}</h3>
+                    </div>
+                    
+                    {/* Description */}
+                    <div className="w-full">
+                        <p className="text-gray-400 text-xs leading-relaxed line-clamp-4">{analyst.description}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 // Reusable Meeting Card Component
 const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect }) => {
     return (
@@ -237,7 +361,8 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
 
 // --- MAIN PAGE COMPONENT ---
 const MeetingsPage: React.FC = () => {
-    const [currentStep, setCurrentStep] = useState<number>(2);
+    const [currentStep, setCurrentStep] = useState<number>(1);
+    const [selectedAnalyst, setSelectedAnalyst] = useState<number | null>(null); // No default selection
     const [selectedMeeting, setSelectedMeeting] = useState<number | null>(null); // No default selection
     const [selectedTimezone, setSelectedTimezone] = useState<string>('');
     const [isTimezoneOpen, setIsTimezoneOpen] = useState<boolean>(false);
@@ -251,25 +376,43 @@ const MeetingsPage: React.FC = () => {
     const [notes, setNotes] = useState<string>('');
     // const router = useRouter(); // Removed to prevent compilation error
 
-    const isContinueDisabled = currentStep === 2 ? (!selectedMeeting || !selectedTimezone) : 
+    const isContinueDisabled = currentStep === 1 ? (selectedAnalyst === null) :
+                               currentStep === 2 ? (selectedMeeting === null || !selectedTimezone) : 
                                currentStep === 3 ? (!selectedDate || !selectedTime) :
                                currentStep === 4 ? (!fullName || !email) : false;
 
     const handleContinue = () => {
         if (!isContinueDisabled) {
-            if (currentStep === 2) {
+            if (currentStep === 1) {
+                setCurrentStep(2);
+            } else if (currentStep === 2) {
                 setCurrentStep(3);
             } else if (currentStep === 3) {
                 setCurrentStep(4);
             } else {
-                // Complete booking - redirect to success page
-                window.location.href = '/booking-success';
+                // Complete booking - redirect to success page with data
+                const selectedAnalystData = analysts.find(a => a.id === selectedAnalyst);
+                const selectedMeetingData = meetings.find(m => m.id === selectedMeeting);
+                const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
+                
+                const params = new URLSearchParams({
+                    analyst: selectedAnalyst?.toString() || '0',
+                    meeting: selectedMeeting?.toString() || '1',
+                    date: selectedDate || '',
+                    time: selectedTime || '',
+                    timezone: selectedTimezoneData?.label || '',
+                    notes: notes || ''
+                });
+                
+                window.location.href = `/booking-success?${params.toString()}`;
             }
         }
     };
 
     const handleBack = () => {
-        if (currentStep === 3) {
+        if (currentStep === 2) {
+            setCurrentStep(1);
+        } else if (currentStep === 3) {
             setCurrentStep(2);
         } else if (currentStep === 4) {
             setCurrentStep(3);
@@ -433,35 +576,29 @@ const MeetingsPage: React.FC = () => {
         <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative">
             {/* Lower Corner Gradients */}
             <div 
-                className="fixed bottom-0 left-0 w-96 h-96 pointer-events-none opacity-100"
+                className="fixed bottom-0 left-0 w-[500px] h-[500px] pointer-events-none opacity-100"
                 style={{
-                    backgroundImage: 'url("/gradient/Ellipse 4.svg")',
-                    backgroundSize: '250%',
-                    backgroundPosition: 'bottom left',
-                    backgroundRepeat: 'no-repeat',
-                    transform: 'rotate(0deg) translate(-40px, 260px)',
+                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                    transform: 'rotate(0deg) translate(-50px, 300px)',
                     transformOrigin: 'bottom left',
                     borderRadius: '50%',
-                    maskImage: 'radial-gradient(circle at center, black 60%, transparent 100%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 60%, transparent 100%)',
-                    filter: 'brightness(1.3) contrast(1.2) blur(10px)',
-                    WebkitFilter: 'brightness(1.3) contrast(1.2) blur(10px)'
+                    maskImage: 'radial-gradient(circle at center, black 20%, transparent 70%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 20%, transparent 70%)',
+                    filter: 'blur(150px)',
+                    WebkitFilter: 'blur(150px)'
                 }}
             ></div>
             <div 
-                className="fixed bottom-0 right-0 w-96 h-96 pointer-events-none opacity-100"
+                className="fixed bottom-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-100"
                 style={{
-                    backgroundImage: 'url("/gradient/Ellipse 4.svg")',
-                    backgroundSize: '250%',
-                    backgroundPosition: 'bottom right',
-                    backgroundRepeat: 'no-repeat',
-                    transform: 'rotate(-45deg) translate(350px, 150px)',
+                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                    transform: 'rotate(-45deg) translate(400px, 200px)',
                     transformOrigin: 'bottom right',
                     borderRadius: '50%',
-                    maskImage: 'radial-gradient(circle at center, black 10%, transparent 80%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 20%, transparent 80%)',
-                    filter: 'brightness(1.3) contrast(1.2) blur(7px)',
-                    WebkitFilter: 'brightness(1.3) contrast(1.2) blur(7px)'
+                    maskImage: 'radial-gradient(circle at center, black 20%, transparent 70%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 20%, transparent 70%)',
+                    filter: 'blur(150px)',
+                    WebkitFilter: 'blur(150px)'
                 }}
             ></div>
             
@@ -480,10 +617,10 @@ const MeetingsPage: React.FC = () => {
                                 {/* First set of images */}
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
-                                    style={{
+                            style={{
                                         backgroundImage: 'url("/rectangle 1/0a1b3220b634dbcbf74285bbbef61b759ccc34ab.jpg")',
                                         backgroundSize: 'cover',
-                                        backgroundPosition: 'center',
+                                backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
                                     }}
                                 ></div>
@@ -651,7 +788,7 @@ const MeetingsPage: React.FC = () => {
                         <h1 className="text-4xl font-bold">Book a Meeting</h1>
                         
                         {/* Progress Indicator - Scaled Down */}
-                        <div className="w-80">
+                        <div className="w-80 relative">
                             <div className="flex items-center">
                                 <CircleStep step={1} isActive={currentStep >= 1} />
                                 <Line isActive={currentStep >= 2} />
@@ -661,14 +798,34 @@ const MeetingsPage: React.FC = () => {
                                 <Line isActive={currentStep >= 4} />
                                 <CircleStep step={4} isActive={currentStep >= 4} />
                             </div>
-                            <div className="flex justify-between mt-1">
-                                <p className={`text-xs w-1/4 text-left ${currentStep >= 1 ? 'text-white' : 'text-gray-400'}`}>Step 1</p>
-                                <p className={`text-xs w-1/4 text-center ${currentStep >= 2 ? 'text-white' : 'text-gray-400'}`}>Select Meeting</p>
-                                <p className={`text-xs w-1/4 text-center ${currentStep >= 3 ? 'text-white' : 'text-gray-400'}`}>Pick Date & Time</p>
-                                <p className={`text-xs w-1/4 text-right ${currentStep >= 4 ? 'text-white' : 'text-gray-400'}`}>Pay & Confirm</p>
+                            <div className="mt-1">
+                                <p className={`text-xs absolute left-[-17px] text-center ${currentStep >= 1 ? 'text-white' : 'text-gray-400'}`}>Select Analyst</p>
+                                <p className={`text-xs absolute left-[77px] text-center ${currentStep >= 2 ? 'text-white' : 'text-gray-400'}`}>Select Meeting</p>
+                                <p className={`text-xs absolute left-[170px] text-center ${currentStep >= 3 ? 'text-white' : 'text-gray-400'}`}>Pick Date & Time</p>
+                                <p className={`text-xs absolute left-[282px] text-center ${currentStep >= 4 ? 'text-white' : 'text-gray-400'}`}>Pay & Confirm</p>
                             </div>
                         </div>
                     </div>
+
+                    {/* Step 1: Analyst Selection */}
+                    {currentStep === 1 && (
+                        <div className="space-y-6">
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-2">Select Your Analyst</h2>
+                                <p className="text-gray-400">Choose the expert who best matches your needs and investment goals</p>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                {analysts.map((analyst) => (
+                                    <AnalystCard
+                                        key={analyst.id}
+                                        analyst={analyst}
+                                        isSelected={selectedAnalyst === analyst.id}
+                                        onSelect={setSelectedAnalyst}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Step 2: Meeting Selection */}
                     {currentStep === 2 && (
@@ -996,7 +1153,7 @@ const MeetingsPage: React.FC = () => {
 
                     {/* Action Buttons */}
                     <div className="mt-12 flex justify-end gap-4">
-                        {(currentStep === 3 || currentStep === 4) && (
+                        {(currentStep === 2 || currentStep === 3 || currentStep === 4) && (
                             <button
                                 onClick={handleBack}
                                 className="px-10 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white hover:bg-gray-800 border border-gray-700 hover:border-gray-600"

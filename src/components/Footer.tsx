@@ -5,16 +5,17 @@ import Link from 'next/link';
 const Footer = () => {
   return (
     <div className="px-2 sm:px-4 md:px-6 lg:px-10 py-12 sm:py-14 lg:py-16">
-      <div className="max-w-6xl mx-auto">
-        <footer className="footer-container relative bg-[#1F1F1F] rounded-2xl p-10 overflow-hidden">
-          {/* Footer SVG Background */}
+      <div className="max-w-7xl mx-auto">
+        <footer className="footer-container relative bg-[#141414] rounded-2xl p-10 overflow-hidden">
+          {/* Footer SVG Background with Enhanced Colors */}
           <div
-            className="absolute inset-0 w-full h-full opacity-60 z-0"
+            className="absolute inset-0 w-full h-full opacity-100 z-0 p-12"
             style={{
-              backgroundImage: 'url("/footer stroke.svg")',
+              backgroundImage: 'url("/footer stroke.png")',
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-              backgroundRepeat: 'no-repeat'
+              backgroundRepeat: 'no-repeat',
+              filter: 'hue-rotate(5deg) saturate(1) brightness(1)'
             }}
           ></div>
 
@@ -24,34 +25,18 @@ const Footer = () => {
         <div className="flex flex-col">
           <div className="flex items-center mb-4">
             {/* Logo with colored overlay */}
-            <div className="relative w-9 h-9" style={{ isolation: 'isolate' }}>
+            <div className="relative w-6 h-6" style={{ isolation: 'isolate' }}>
               <Image
-                src="/logo/Vector.svg"
+                src="/footer logo.svg"
                 alt="Inspired Analyst Logo"
                 width={36}
                 height={36}
                 className="absolute inset-0 z-10 w-full h-full object-contain"
               />
               {/* Color overlay - only affects the logo */}
-              <div
-                className="absolute inset-0 z-20 w-full h-full"
-                style={{
-                  backgroundImage: 'url("/8a3325e52855cc85f54ea64083c9158305c7e600 (1).png")',
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  mixBlendMode: 'multiply',
-                  maskImage: 'url("/logo/Vector.svg")',
-                  WebkitMaskImage: 'url("/logo/Vector.svg")',
-                  maskSize: 'contain',
-                  WebkitMaskSize: 'contain',
-                  maskRepeat: 'no-repeat',
-                  WebkitMaskRepeat: 'no-repeat',
-                  maskPosition: '4px center',
-                  WebkitMaskPosition: '4px center'
-                }}
-              ></div>
+              
             </div>
-            <span className="text-2xl font-bold ml-2">Inspired Analyst</span>
+            <span className="text-2xl font-bold">Inspired Analyst</span>
           </div>
           <p className="text-gray-300 leading-relaxed max-w-sm mb-6">
             I simplify stocks, crypto, and data science with humor and clarity. My content turns complex ideas into practical tips-helping you stand out, level up, and crush your goals, without the boring jargon.

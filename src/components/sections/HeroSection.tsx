@@ -28,12 +28,12 @@ const HeroSection = () => {
       <Navbar variant="hero" />
 
       {/* Main Content Container - Mobile optimized */}
-      <div className="relative z-10 px-5 sm:px-4 lg:px-6 -mt-14 sm:-mt-16 lg:-mt-18">
+      <div className="relative z-10 px-5 sm:px-4 lg:px-6 -mt-12 sm:-mt-14 lg:-mt-16">
         <div className="mx-auto max-w-7xl">
           <div className="grid lg:grid-cols-2 items-center gap-16 sm:gap-20 lg:gap-24">
 
           {/* Left Column: Text and Buttons - Reduced sizes */}
-          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5">
+          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 -mt-12 sm:-mt-16 lg:-mt-20">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold leading-tight text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
               Making Finance & Tech Accessible Through Data-Driven Content
             </h1>
@@ -51,9 +51,9 @@ const HeroSection = () => {
           </div>
 
           {/* Right Column: Responsive Images - Now visible on mobile */}
-          <div className="block mt-6 lg:mt-0">
+          <div className="block mt-6 lg:mt-0 pt-16 sm:pt-20 lg:pt-24">
             {/* Container with responsive dimensions approximating 305x702 ratio */}
-            <div className="relative w-full max-w-[12rem] sm:max-w-[16rem] md:max-w-[19rem] lg:max-w-[22rem] xl:max-w-[24rem] mx-auto" style={{aspectRatio: '305/702'}}>
+            <div className="relative w-full max-w-[8.5rem] sm:max-w-[11.5rem] md:max-w-[13.5rem] lg:max-w-[15.5rem] xl:max-w-[17.5rem] ml-auto mr-4 sm:mr-6 lg:mr-8 overflow-hidden" style={{aspectRatio: '305/702'}}>
               <div className="absolute inset-0 fade-mask overflow-hidden">
                 <div className="flex h-[200%] w-full gap-2 sm:gap-3 lg:gap-4">
                   {/* Column 1 */}
@@ -134,7 +134,7 @@ const HeroSection = () => {
                     ></div>
                   </div>
                   {/* Column 2 */}
-                  <div className="animate-scrollDown flex w-1/3 flex-col gap-2 sm:gap-3 lg:gap-4 pt-4 sm:pt-6 lg:pt-8">
+                  <div className="animate-scrollDown flex w-1/3 flex-col gap-2 sm:gap-3 lg:gap-4">
                     {/* First set of images */}
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
@@ -211,7 +211,7 @@ const HeroSection = () => {
                     ></div>
                   </div>
                   {/* Column 3 */}
-                  <div className="animate-scrollUp flex w-1/3 flex-col gap-2 sm:gap-3 lg:gap-4 pt-8 sm:pt-12 lg:pt-16">
+                  <div className="animate-scrollUp flex w-1/3 flex-col gap-2 sm:gap-3 lg:gap-4">
                     {/* First set of images */}
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"

@@ -35,7 +35,7 @@ const TailoredGuidanceSection = () => {
 
   return (
     <section className="relative z-10 px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Main Component Container - Clickable */}
         <a
           href="/meetings"
@@ -82,14 +82,14 @@ const TailoredGuidanceSection = () => {
               </div>
               <span>Tailored Guidance?</span>
             </h2>
-            <p className="text-gray-300 mt-4 sm:mt-6 max-w-2xl mx-auto leading-relaxed text-sm sm:text-base text-center" style={{fontFamily: 'Gilroy'}}>
+            <p className="text-gray-300 mt-4 sm:mt-6 max-w-4xl mx-auto leading-relaxed text-sm sm:text-base text-center" style={{fontFamily: 'Gilroy'}}>
               Get personalized support through a 1:1 session - whether you&apos;re exploring your first investment or refining advanced strategies. Book a meeting and get advice tailored to your goals.
             </p>
           </div>
 
           {/* New Calendar Section */}
           <div
-            className="rounded-3xl p-4 sm:p-6 lg:p-8 relative"
+            className="rounded-3xl p-4 sm:p-6 lg:p-8 mx-24 relative"
             style={{
               border: '2px solid transparent',
               background: `
@@ -109,12 +109,12 @@ const TailoredGuidanceSection = () => {
             >
 
               {/* Calendar Header */}
-              <div className="flex items-center justify-between mb-4 sm:mb-6 z-10 relative">
+              <div className="flex items-center space-x-4 mb-4 sm:mb-6 z-10 relative">
                 <h2 className="font-semibold text-base sm:text-lg text-gray-100" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
                   {monthName}, {year}
                 </h2>
                 <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                  <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
                   <span className="text-gray-400 text-xs sm:text-sm font-medium" style={{fontFamily: 'Gilroy'}}>Schedule a call</span>
                 </div>
               </div>

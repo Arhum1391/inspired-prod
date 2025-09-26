@@ -16,8 +16,8 @@ export default function Home() {
       </main>
 
       {/* Main Content Section - Minimal horizontal padding for more text space */}
-      <section className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
-        <div className="max-w-5xl mx-auto">
+      <section className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 md:py-16 mt-8 sm:mt-12 md:mt-16">
+        <div className="max-w-6xl mx-auto">
           {/* Section Header with Inline Images - Minimal padding for 2-line display */}
           <div className="mb-12 sm:mb-16 lg:mb-20">
             <h2 className="gilroy-heading text-white flex flex-wrap items-center justify-center px-1 sm:px-2">
@@ -44,44 +44,44 @@ export default function Home() {
           </div>
 
           {/* Two Column Layout - Increased gap */}
-          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-16 items-start">
+          <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 sm:gap-10 lg:gap-16 items-start">
             {/* Feature Cards Grid - Increased spacing */}
-            <div className="space-y-4 sm:space-y-8">
+            <div className="space-y-6 sm:space-y-8">
               {/* Top Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                {/* Data-Driven Approach Card - Smaller padding */}
-                <div className="bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 rounded-2xl space-y-3">
-                  <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Data-Driven Approach</h3>
-                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
+                {/* Data-Driven Approach Card - Increased padding */}
+                <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Data-Driven Approach</h3>
+                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
                 </div>
 
                 {/* Educational Focus Card */}
-                <div className="bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 rounded-2xl space-y-3">
-                  <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Educational Focus</h3>
-                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
+                <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Educational Focus</h3>
+                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
                 </div>
               </div>
 
               {/* Bottom Row */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 {/* Real-Time Coverage Card */}
-                <div className="bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 rounded-2xl space-y-3">
-                  <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Real-Time Coverage</h3>
-                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
+                <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Real-Time Coverage</h3>
+                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
                 </div>
 
                 {/* Community-First Card */}
-                <div className="bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 rounded-2xl space-y-3">
-                  <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Community-First</h3>
-                  <p className="text-gray-300 text-xs sm:text-sm leading-relaxed" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
+                <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
+                  <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Community-First</h3>
+                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
                 </div>
               </div>
             </div>
 
             {/* About Text & CTA - Smaller text and increased spacing */}
-            <div className="space-y-5 sm:space-y-6 lg:space-y-8">
+            <div className="space-y-3 sm:space-y-4 lg:space-y-5">
               <p className="text-gray-300 leading-relaxed text-sm sm:text-base lg:text-lg" style={{fontFamily: 'Gilroy'}}>
-                I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations. Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
+                I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations. <br></br> Whether you're a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
               </p>
 
               <a

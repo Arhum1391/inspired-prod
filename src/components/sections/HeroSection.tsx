@@ -1,29 +1,11 @@
 'use client';
 
-import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
 const HeroSection = () => {
   return (
     // Hero section container with responsive height
     <section className="relative min-h-[70vh] sm:min-h-[75vh] lg:min-h-[80vh] overflow-hidden">
-      {/* Background Image: Positioned to cover hero section with natural fade */}
-      <div className="absolute inset-0 w-full h-full">
-        <div className="animate-zoom-wave w-full h-full">
-          <Image
-            src="/Vector 1.png"
-            alt="Abstract gradient background"
-            quality={100}
-            fill
-            sizes="100vw"
-            className="object-cover"
-            priority
-          />
-        </div>
-        {/* Gradient fade at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#0A0A0A] to-transparent"></div>
-      </div>
-
       {/* Navigation Header */}
       <Navbar variant="hero" />
 
@@ -62,7 +44,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 1/0a1b3220b634dbcbf74285bbbef61b759ccc34ab.jpg")',
+                        backgroundImage: 'url("inspired analysts team/6.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -80,7 +62,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 1/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                        backgroundImage: 'url("inspired analysts team/5.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -99,7 +81,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 1/0a1b3220b634dbcbf74285bbbef61b759ccc34ab.jpg")',
+                        backgroundImage: 'url("inspired analysts team/6.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -117,7 +99,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 1/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                        backgroundImage: 'url("inspired analysts team/5.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -139,7 +121,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 2/4b9330666fbce22736fe4a8911e962c0d7b01e58.jpg")',
+                        backgroundImage: 'url("inspired analysts team/1.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -157,7 +139,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 2/8c32b6a7d2dc3f1c6145f0d8ce2f4cbf7624bdb9.jpg")',
+                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -176,7 +158,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 2/4b9330666fbce22736fe4a8911e962c0d7b01e58.jpg")',
+                        backgroundImage: 'url("inspired analysts team/1.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -194,7 +176,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 2/8c32b6a7d2dc3f1c6145f0d8ce2f4cbf7624bdb9.jpg")',
+                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -216,7 +198,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 3/2a66b175d40bf4c06b427ad1cc6a4084ca34030c.jpg")',
+                        backgroundImage: 'url("inspired analysts team/3.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -234,7 +216,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 3/132fa934817ce6538d83af9a779000a996e4971c.jpg")',
+                        backgroundImage: 'url("inspired analysts team/4 - colored.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -243,7 +225,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 3/f4c909c24fdcf4f8d7c51c7f56229d42b0d2b490.jpg")',
+                        backgroundImage: 'url("inspired analysts team/7.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -253,7 +235,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 3/2a66b175d40bf4c06b427ad1cc6a4084ca34030c.jpg")',
+                        backgroundImage: 'url("inspired analysts team/3.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -271,7 +253,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 3/132fa934817ce6538d83af9a779000a996e4971c.jpg")',
+                        backgroundImage: 'url("inspired analysts team/4 - colored.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -280,7 +262,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("/rectangle 3/f4c909c24fdcf4f8d7c51c7f56229d42b0d2b490.jpg")',
+                        backgroundImage: 'url("inspired analysts team/7.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -295,6 +277,7 @@ const HeroSection = () => {
           </div>
         </div>
       </div>
+      
     </section>
   );
 };

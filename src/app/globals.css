@@ -204,8 +204,8 @@ body {
 /* Social media icon boxes */
 .social-icon-box {
   background-color: #12171f !important;
-  width: 2.5rem !important;
-  height: 2.5rem !important;
+  width: 2rem !important;
+  height: 2rem !important;
   border-radius: 0.5rem !important;
   display: flex !important;
   align-items: center !important;

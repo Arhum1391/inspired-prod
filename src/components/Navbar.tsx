@@ -64,6 +64,9 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             <a href="#" className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors">
               Our Team
             </a>
+            <a href="#" className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors">
+              Bootcamp
+            </a>
           </div>
 
           {/* Mobile Hamburger Menu */}

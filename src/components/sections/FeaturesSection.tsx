@@ -1,26 +1,26 @@
 'use client';
 
 import React from 'react';
-import { Briefcase, Calculator, FlaskConical, Landmark, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 const featuresData = [
   {
-    icon: <FlaskConical size={24} className="text-gray-400" />,
+    icon: <img src="/landing cards icons/Sparks--Streamline-Iconoir.svg" alt="Sparks" width={22} height={22} className="text-gray-400" />,
     title: 'Premium Research',
     description: 'Access exclusive market analysis and data-driven insights that go beyond surface-level trends. Our research combines technical analysis with fundamental metrics to identify high-probability opportunities before they become mainstream.',
   },
   {
-    icon: <Calculator size={24} className="text-gray-400" />,
+    icon: <img src="/landing cards icons/Calculator--Streamline-Iconoir.svg" alt="Calculator" width={22} height={22} className="text-gray-400" />,
     title: 'Position Sizing Calculator',
     description: 'Take the guesswork out of risk management with our proprietary calculator that determines optimal trade sizes. Never risk too much on a single position again - protect your capital while maximizing growth potential.',
   },
   {
-    icon: <Briefcase size={24} className="text-gray-400" />,
+    icon: <img src="/landing cards icons/User-Star--Streamline-Iconoir.svg" alt="User Star" width={22} height={22} className="text-gray-400" />,
     title: 'Portfolio',
     description: 'Get transparent access to real portfolio performance and trade rationale behind every decision. Learn from actual positions, wins, losses, and the strategic thinking that drives long-term wealth building.',
   },
   {
-    icon: <Landmark size={24} className="text-gray-400" />,
+    icon: <img src="/landing cards icons/Bright-Crown--Streamline-Iconoir.svg" alt="Crown" width={22} height={22} className="text-gray-400" />,
     title: 'Shariah Projects',
     description: 'Discover halal investment opportunities that align with Islamic principles without compromising on returns. Comprehensive analysis of Shariah-compliant stocks, crypto projects, and alternative investments for the conscious Muslim investor.',
   },
@@ -36,26 +36,77 @@ interface FeatureCardProps {
 const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, index }) => {
   return (
     <div className="cursor-pointer bg-gray-800/50 p-6 rounded-2xl border-2 border-transparent hover:border-gray-400/30 transition-all duration-300 w-full relative overflow-hidden group">
-    {/* SVG Overlay - rounded and blended */}
-    <div
-      className="absolute inset-0 rounded-2xl opacity-60"
-      style={{
-        backgroundImage: index === 0
-          ? 'url("/landing boxes/Ellipse tl.svg")' // Top left - Premium Research
-          : index === 1
-          ? 'url("/landing boxes/Ellipse tr.svg")' // Top right - Position Calculator
-          : index === 2
-          ? 'url("/landing boxes/Ellipse 2 bl.svg")' // Bottom left - Portfolio
-          : 'url("/landing boxes/Ellipse 2 br.svg")', // Bottom right - Shariah Projects
-        backgroundSize: '82%',
-        backgroundPosition: 'top 0% right 0%',
-        backgroundRepeat: 'no-repeat',
-        maskImage: 'radial-gradient(circle at top right, black 60%, transparent 80%)',
-        WebkitMaskImage: 'radial-gradient(circle at top right, black 60%, transparent 80%)',
-        filter: 'blur(5px)',
-        WebkitFilter: 'blur(1px)'
-      }}
-    />
+    {/* CSS Ellipse Gradient - positioned for first card (top left) */}
+    {index === 0 && (
+      <div
+        className="absolute rounded-2xl opacity-60"
+        style={{
+          position: 'absolute',
+          width: '588px',
+          height: '588px',
+          left: '489px',
+          top: '-376px',
+          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+          filter: 'blur(100px)',
+          transform: 'rotate(90deg)',
+          zIndex: 2,
+        }}
+      />
+    )}
+
+    {/* CSS Ellipse Gradient - positioned for second card (top right) */}
+    {index === 1 && (
+      <div
+        className="absolute rounded-2xl opacity-60"
+        style={{
+          position: 'absolute',
+          width: '588px',
+          height: '588px',
+          left: '367.22px',
+          top: '-497.78px',
+          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+          filter: 'blur(100px)',
+          transform: 'rotate(135deg)',
+          zIndex: 2,
+        }}
+      />
+    )}
+
+    {/* CSS Ellipse Gradient - positioned for fourth card (bottom right) */}
+    {index === 3 && (
+      <div
+        className="absolute rounded-2xl opacity-60"
+        style={{
+          position: 'absolute',
+          width: '588px',
+          height: '588px',
+          left: '381.39px',
+          top: '-483.61px',
+          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+          filter: 'blur(100px)',
+          transform: 'rotate(-30deg)',
+          zIndex: 2,
+        }}
+      />
+    )}
+
+    {/* CSS Ellipse Gradient - positioned for third card (bottom left) */}
+    {index === 2 && (
+      <div
+        className="absolute rounded-2xl opacity-60"
+        style={{
+          position: 'absolute',
+          width: '588px',
+          height: '588px',
+          left: '422.92px',
+          top: '-442.07px',
+          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+          filter: 'blur(100px)',
+          transform: 'rotate(15deg)',
+          zIndex: 2,
+        }}
+      />
+    )}
 
     {/* Glint Effect */}
     <div className="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
@@ -73,7 +124,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, ind
           Coming Soon
         </span>
       </div>
-      <p className="text-gray-300 mt-4 text-sm sm:text-base flex-grow" style={{fontFamily: 'Gilroy', fontWeight: 400, fontSize: '16px', lineHeight: '130%', letterSpacing: '0%'}}>
+      <p className="text-gray-300 mt-4 text-sm sm:text-base flex-grow" style={{fontFamily: 'Gilroy', fontWeight: 400, fontSize: '18px', lineHeight: '130%', letterSpacing: '0%'}}>
         {description}
       </p>
       <a href="#" className="text-white font-medium mt-6 flex items-center group text-sm sm:text-base" style={{fontFamily: 'Gilroy', fontWeight: 600}}>

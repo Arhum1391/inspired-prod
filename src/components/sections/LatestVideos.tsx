@@ -13,28 +13,40 @@ interface Video {
 
 const videos: Video[] = [
   {
-    episode: 'EPISODE 69',
-    title: 'CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68',
-    thumbnail: 'https://placehold.co/600x400/000000/FFFFFF?text=Video+Thumbnail',
-    link: '#',
+    episode: 'LATEST',
+    title: 'CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68 | Inspired Analyst',
+    thumbnail: 'https://i.ytimg.com/vi/NCRvbqQ_lNk/maxresdefault.jpg',
+    link: 'https://www.youtube.com/watch?v=NCRvbqQ_lNk',
   },
   {
-    episode: 'EPISODE 69',
-    title: 'CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68',
-    thumbnail: 'https://placehold.co/600x400/000000/FFFFFF?text=Video+Thumbnail',
-    link: '#',
+    episode: 'LATEST',
+    title: "The Next Bear Market Will Be Brutal? | Silver's Next Move towards $100? | Ep 67 | Inspired Analyst",
+    thumbnail: 'https://i.ytimg.com/vi/m1b1iqjcdTE/maxresdefault.jpg',
+    link: 'https://www.youtube.com/watch?v=m1b1iqjcdTE',
   },
   {
-    episode: 'EPISODE 69',
-    title: 'CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68',
-    thumbnail: 'https://placehold.co/600x400/000000/FFFFFF?text=Video+Thumbnail',
-    link: '#',
+    episode: 'LATEST',
+    title: 'XRP Holders NEED to See This | DEXRP Breakdown',
+    thumbnail: 'https://i.ytimg.com/vi/MFOqAymJ4IE/maxresdefault.jpg',
+    link: 'https://www.youtube.com/watch?v=MFOqAymJ4IE',
   },
   {
-    episode: 'EPISODE 69',
-    title: 'CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68',
-    thumbnail: 'https://placehold.co/600x400/000000/FFFFFF?text=Video+Thumbnail',
-    link: '#',
+    episode: 'LATEST',
+    title: "142% Return from Google Trends?! | Spotting Fan Token Hype Early | Ep 66 | Inspired Analyst",
+    thumbnail: 'https://i.ytimg.com/vi/1kMJCVNE3EM/maxresdefault.jpg',
+    link: 'https://www.youtube.com/watch?v=1kMJCVNE3EM',
+  },
+  {
+    episode: 'LATEST',
+    title: 'Inflation, Rates & BlackRock’s Moves - What’s Next for Crypto Markets? | Ep#65 | Inspired Analyst',
+    thumbnail: 'https://i.ytimg.com/vi/n-H-TVejLEE/maxresdefault.jpg',
+    link: 'https://www.youtube.com/watch?v=n-H-TVejLEE',
+  },
+  {
+    episode: 'LATEST',
+    title: 'Binance Shariah Earn: HALAL Profits Explained! | Forex and Crypto Updates | Inspired analyst | Ep 64',
+    thumbnail: 'https://i.ytimg.com/vi/Lzeypsy3c1o/maxresdefault.jpg',
+    link: 'https://www.youtube.com/watch?v=Lzeypsy3c1o',
   },
 ];
 
@@ -129,7 +141,7 @@ const LatestVideos = () => {
           className="text-4xl font-bold text-center mb-12"
           style={{ fontFamily: 'Gilroy', fontWeight: 600 }}
         >
-          Check Out My Latest Videos
+          Check Out the Weekly Crypto & Forex Podcasts with <br></br>Team Inspired Analyst
         </h2>
 
         {/* Carousel Wrapper with edge vignette effect */}
@@ -164,51 +176,53 @@ const LatestVideos = () => {
                 {duplicatedVideos.map((video, index) => {
                 const isExternal = video.thumbnail.startsWith('http');
                 return (
-                  <Link
+                  <a
                     key={index}
                     href={video.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="bg-[#1C1C1E] rounded-2xl overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex-shrink-0 w-80 block cursor-pointer"
-                    onClick={(e) => isDragging && e.preventDefault()}
-                    style={{ pointerEvents: isDragging ? 'none' : 'auto' }}
+                    onClick={(e) => {
+                      if (isDragging) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        return false;
+                      }
+                    }}
+                    onMouseDown={(e) => e.stopPropagation()}
                   >
                     <div className="bg-[#1C1C1E] p-2">
-                      <div className="relative" style={{ aspectRatio: '16/8' }}>
-                        {isExternal ? (
-                          <img
-                            src={video.thumbnail}
-                            alt={video.title}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        ) : (
-                          <Image
-                            src={video.thumbnail}
-                            alt={video.title}
-                            width={600}
-                            height={337}
-                            className="w-full h-full object-cover rounded-lg"
-                          />
-                        )}
-                        <div className="absolute inset-0 bg-gray-800 bg-opacity-30 rounded-lg"></div>
-                        <div
-                          className="absolute top-4 left-4 bg-black bg-opacity-50 text-yellow-400 text-xs font-semibold px-3 py-1 rounded-full flex items-center"
-                          style={{ fontFamily: 'Gilroy', fontWeight: 400 }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-4 w-4 mr-1"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.636 5.636a9 9 0 0112.728 0m-12.728 0a9 9 0 0012.728 12.728"
-                            />
-                          </svg>
-                          {video.episode}
-                        </div>
+                      <div className="relative bg-gray-700" style={{ aspectRatio: '16/8' }}>
+                        <img
+                          src={video.thumbnail}
+                          alt={video.title}
+                          className="w-full h-full object-cover rounded-lg relative z-10"
+                          onError={(e) => {
+                            console.log('Image failed to load:', video.thumbnail);
+                            const target = e.currentTarget;
+                            const videoId = video.link.split('v=')[1]?.split('&')[0];
+                            console.log('Video ID:', videoId);
+
+                            // Try different thumbnail URLs in order
+                            if (target.src.includes('maxresdefault')) {
+                              console.log('Trying hqdefault...');
+                              target.src = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+                            } else if (target.src.includes('hqdefault')) {
+                              console.log('Trying mqdefault...');
+                              target.src = `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
+                            } else if (target.src.includes('mqdefault')) {
+                              console.log('Trying default...');
+                              target.src = `https://i.ytimg.com/vi/${videoId}/default.jpg`;
+                            } else {
+                              console.log('Using placeholder fallback');
+                              // Final fallback - placeholder
+                              target.src = 'https://via.placeholder.com/600x337/404040/FFFFFF?text=Video+Thumbnail';
+                            }
+                          }}
+                          onLoad={() => {
+                            console.log(`Thumbnail loaded successfully: ${video.thumbnail}`);
+                          }}
+                        />
                       </div>
                     </div>
                     <div className="py-3 px-3">
@@ -238,7 +252,7 @@ const LatestVideos = () => {
                         </svg>
                       </div>
                     </div>
-                  </Link>
+                  </a>
                 );
               })}
               </div>

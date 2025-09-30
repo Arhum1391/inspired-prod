@@ -89,7 +89,7 @@ const TailoredGuidanceSection = () => {
 
           {/* New Calendar Section */}
           <div
-            className="rounded-3xl p-4 sm:p-6 lg:p-8 mx-24 relative"
+            className="rounded-3xl sm:p-1 lg:p-2 mx-24 relative"
             style={{
               border: '2px solid transparent',
               background: `

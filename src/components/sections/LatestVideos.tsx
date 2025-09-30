@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
 
 interface Video {
@@ -174,7 +172,6 @@ const LatestVideos = () => {
                 onMouseLeave={() => !isDragging && setIsAnimationPaused(false)}
               >
                 {duplicatedVideos.map((video, index) => {
-                const isExternal = video.thumbnail.startsWith('http');
                 return (
                   <a
                     key={index}

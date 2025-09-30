@@ -361,7 +361,7 @@ export default function CollaborationForm() {
               {/* Status Messages */}
               {status === 'success' && (
                 <p className="text-green-400 text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
-                  Thank you! We'll get back to you soon.
+                  Thank you! We&apos;ll get back to you soon.
                 </p>
               )}
               {status === 'error' && (

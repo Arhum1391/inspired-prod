@@ -240,8 +240,8 @@ body {
 /* Social media icon boxes */
 .social-icon-box {
   background-color: #12171f !important;
-  width: 2rem !important;
-  height: 2rem !important;
+  width: 1.75rem !important;
+  height: 1.75rem !important;
   border-radius: 0.5rem !important;
   display: flex !important;
   align-items: center !important;

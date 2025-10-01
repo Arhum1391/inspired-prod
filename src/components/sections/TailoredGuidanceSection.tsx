@@ -62,7 +62,7 @@ const TailoredGuidanceSection = () => {
               whiteSpace: 'nowrap'
             }}
           >
-            Book a Meeting
+            Book Mentorship
           </span>
 
           {/* Header Section */}

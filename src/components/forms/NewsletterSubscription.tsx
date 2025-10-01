@@ -181,13 +181,13 @@ export default function NewsletterSubscription() {
             {/* Email Signup Form */}
             <div className="space-y-6">
               <form onSubmit={handleSubmit}>
-                <div className="flex items-center border border-white/40 rounded-full p-1 gap-1">
+                <div className="flex items-center border border-white/40 rounded-full p-1 gap-0.5">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email"
-                    className="flex-1 bg-transparent px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-0 focus:border-transparent outline-none"
+                    placeholder="Enter email"
+                    className="flex-1 bg-transparent px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-0 focus:border-transparent outline-none min-w-0"
                     disabled={status === 'loading'}
                     required
                     style={{ outline: 'none', boxShadow: 'none' }}
@@ -195,7 +195,7 @@ export default function NewsletterSubscription() {
                   <button
                     type="submit"
                     disabled={status === 'loading'}
-                    className="bg-white text-[#0A0A0A] px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0"
+                    className="bg-white text-[#0A0A0A] px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0"
                   >
                     {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
                   </button>

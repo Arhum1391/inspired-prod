@@ -107,6 +107,9 @@ const Footer = () => {
               </div>
             </Link>
           </div>
+
+          {/* Divider line for mobile - below social icons */}
+          <div className="block md:hidden mt-8 border-t border-gray-600"></div>
         </div>
 
         {/* Right Section: General Links */}

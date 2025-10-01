@@ -13,7 +13,7 @@ import React from 'react';
 export default function Home() {
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] relative overflow-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
       {/* Vector Background Image */}
       <div
         className="absolute z-0"
@@ -86,53 +86,50 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* Two Column Layout - Increased gap */}
-          <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 sm:gap-10 lg:gap-16 items-start">
-            {/* Feature Cards Grid - Increased spacing */}
-            <div className="space-y-6 sm:space-y-8">
-              {/* Top Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                {/* Data-Driven Approach Card - Increased padding */}
-                <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
-                  <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Data-Driven Approach</h3>
-                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
-                </div>
+          {/* About Text & CTA - Smaller text and increased spacing */}
+          <div className="space-y-3 sm:space-y-4 lg:space-y-5 mb-8 sm:mb-10 lg:mb-12">
+            <p className="text-gray-300 leading-relaxed text-sm sm:text-base lg:text-lg" style={{fontFamily: 'Gilroy'}}>
+              I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations. <br></br> Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
+            </p>
 
-                {/* Educational Focus Card */}
-                <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
-                  <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Educational Focus</h3>
-                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
-                </div>
+            <a
+              href="/meetings"
+              className="bg-white text-[#0A0A0A] px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-block" style={{fontFamily: 'Gilroy', fontWeight: 600}}
+            >
+              Book a Meeting
+            </a>
+          </div>
+
+          {/* Feature Cards Grid - Increased spacing */}
+          <div className="space-y-6 sm:space-y-8">
+            {/* Top Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              {/* Data-Driven Approach Card - Increased padding */}
+              <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
+                <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Data-Driven Approach</h3>
+                <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
               </div>
 
-              {/* Bottom Row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-                {/* Real-Time Coverage Card */}
-                <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
-                  <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Real-Time Coverage</h3>
-                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
-                </div>
-
-                {/* Community-First Card */}
-                <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
-                  <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Community-First</h3>
-                  <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
-                </div>
+              {/* Educational Focus Card */}
+              <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
+                <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Educational Focus</h3>
+                <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
               </div>
             </div>
 
-            {/* About Text & CTA - Smaller text and increased spacing */}
-            <div className="space-y-3 sm:space-y-4 lg:space-y-5">
-              <p className="text-gray-300 leading-relaxed text-sm sm:text-base lg:text-lg" style={{fontFamily: 'Gilroy'}}>
-                I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations. <br></br> Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
-              </p>
+            {/* Bottom Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              {/* Real-Time Coverage Card */}
+              <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
+                <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Real-Time Coverage</h3>
+                <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
+              </div>
 
-              <a
-                href="/meetings"
-                className="bg-white text-[#0A0A0A] px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-block" style={{fontFamily: 'Gilroy', fontWeight: 600}}
-              >
-                Book a Meeting
-              </a>
+              {/* Community-First Card */}
+              <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
+                <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Community-First</h3>
+                <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
+              </div>
             </div>
           </div>
         </div>
@@ -152,7 +149,7 @@ export default function Home() {
       <section className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16">
         <div className="max-w-6xl mx-auto">
           {/* Our Valued Partners Header - Centered and smaller */}
-          <div className="text-center">
+          <div className="text-center mb-4 sm:mb-6 md:mb-12">
             <h2
               className="text-xl sm:text-2xl md:text-3xl font-semibold text-white"
               style={{fontFamily: 'Gilroy', fontWeight: 600}}
@@ -160,8 +157,58 @@ export default function Home() {
               Our Valued Partners
             </h2>
           </div>
-          {/* Container for overlapping grids - Responsive height */}
-          <div className="relative w-full max-w-4xl mx-auto h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] xl:h-[724px]">
+
+          {/* Mobile Carousel View */}
+          <div className="block md:hidden relative w-full mx-auto h-[180px]">
+            {/* Single Vector Background for Mobile */}
+            <div
+              className="absolute w-full top-1/2 transform -translate-y-1/2 max-w-md mx-auto left-0 right-0"
+              style={{
+                aspectRatio: '1064/310',
+                background: `
+                  url("/Vector (1).png"),
+                  linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                  radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+                `,
+                backgroundSize: 'contain, cover, cover',
+                backgroundPosition: 'center, center, center',
+                backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+              }}
+            />
+
+            {/* Carousel Container */}
+            <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 w-full overflow-hidden">
+              <div className="flex animate-carousel gap-16 items-center">
+                {/* All brand logos in a row that will scroll */}
+                <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/memotech.svg" alt="Memotech" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/creati.svg" alt="Creati" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/binance.svg" alt="Binance" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/exness.svg" alt="Exness" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/capcut.svg" alt="CapCut" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/algorand.svg" alt="Algorand" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/wegic.svg" alt="Wegic" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/ledger.svg" alt="Ledger" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                {/* Duplicate for seamless loop */}
+                <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/memotech.svg" alt="Memotech" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/creati.svg" alt="Creati" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/binance.svg" alt="Binance" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/exness.svg" alt="Exness" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/capcut.svg" alt="CapCut" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/algorand.svg" alt="Algorand" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/wegic.svg" alt="Wegic" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <img src="/brand_images/ledger.svg" alt="Ledger" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop/Tablet Grid View */}
+          <div className="hidden md:block relative w-full max-w-4xl mx-auto h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] xl:h-[724px]">
 
             {/* Group 13 - First Vector Grid Background */}
             <div

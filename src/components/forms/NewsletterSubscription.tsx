@@ -172,8 +172,8 @@ export default function NewsletterSubscription() {
           <div className="space-y-10">
             {/* Header */}
             <div className="space-y-6">
-              <h2 className="text-3xl md:text-4xl font-semibold text-white">Stay Ahead of the Markets</h2>
-              <p className="text-gray-300 text-lg leading-relaxed">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white">Stay Ahead of the Markets</h2>
+              <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
                 Join 25,000+ subscribers who rely on our research-backed analysis to make smarter investment decisions.
               </p>
             </div>
@@ -181,13 +181,13 @@ export default function NewsletterSubscription() {
             {/* Email Signup Form */}
             <div className="space-y-6">
               <form onSubmit={handleSubmit}>
-                <div className="flex flex-col sm:flex-row border border-white/40 rounded-full p-1 space-y-2 sm:space-y-0">
+                <div className="flex items-center border border-white/40 rounded-full p-1 gap-1">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
-                    className="flex-1 bg-transparent px-4 py-2 text-white placeholder-gray-300 focus:outline-none focus:ring-0 focus:border-transparent outline-none"
+                    placeholder="Enter your email"
+                    className="flex-1 bg-transparent px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-0 focus:border-transparent outline-none"
                     disabled={status === 'loading'}
                     required
                     style={{ outline: 'none', boxShadow: 'none' }}
@@ -195,7 +195,7 @@ export default function NewsletterSubscription() {
                   <button
                     type="submit"
                     disabled={status === 'loading'}
-                    className="bg-white text-[#0A0A0A] px-6 py-2 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-white text-[#0A0A0A] px-4 sm:px-6 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0"
                   >
                     {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
                   </button>

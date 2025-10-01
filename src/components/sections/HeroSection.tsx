@@ -5,39 +5,255 @@ import Navbar from '@/components/Navbar';
 const HeroSection = () => {
   return (
     // Hero section container with responsive height
-    <section className="relative min-h-[70vh] sm:min-h-[75vh] lg:min-h-[80vh] overflow-hidden">
+    <section className="relative min-h-[70vh] sm:min-h-[75vh] lg:min-h-[80vh]">
       {/* Navigation Header */}
       <Navbar variant="hero" />
 
       {/* Main Content Container - Mobile optimized */}
-      <div className="relative z-10 px-5 sm:px-4 lg:px-6 -mt-12 sm:-mt-14 lg:-mt-16">
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-6 pt-12 sm:pt-8 lg:-mt-16">
         <div className="mx-auto max-w-7xl">
-          <div className="grid lg:grid-cols-2 items-center gap-16 sm:gap-20 lg:gap-24">
+          <div className="grid lg:grid-cols-2 items-center gap-6 sm:gap-16 lg:gap-24">
 
-          {/* Left Column: Text and Buttons - Reduced sizes */}
-          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-5 -mt-12 sm:-mt-16 lg:-mt-20">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-semibold leading-tight text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-              Making Finance & Tech Accessible Through Data-Driven Content
+          {/* Left Column: Text and Buttons - Responsive widths for all screen sizes */}
+          {/* Mobile (<400px): 343px, Tablets (400-768px): progressive, Desktop (768px+): max 700px */}
+          <div className="flex flex-col items-start gap-6 md:gap-4 lg:gap-5 mt-8 md:mt-0 lg:-mt-20 w-[343px] min-[400px]:w-[380px] min-[500px]:w-[460px] min-[600px]:w-[560px] min-[700px]:w-[660px] md:w-full md:max-w-[700px]">
+            <h1 className="text-[32px] leading-[120%] min-[400px]:text-[36px] md:text-3xl lg:text-4xl xl:text-5xl font-semibold text-white w-full" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+              Making AI, Finance & Tech Accessible Through Data-Driven Content
             </h1>
-            <p className="text-sm sm:text-base lg:text-lg text-white/90 leading-relaxed">
+            <p className="text-base leading-[100%] min-[400px]:text-[17px] md:text-base lg:text-lg text-white w-full" style={{fontFamily: 'Gilroy'}}>
               Expert analysis on stocks, crypto, and data science - delivered with clarity and humor
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-3">
-              <a href="/meetings" className="bg-white text-[#0A0A0A] text-xs sm:text-sm font-semibold rounded-full py-2.5 sm:py-3 px-5 sm:px-6 hover:brightness-90 transition-all text-center">
-                Book a Meeting
+            <div className="flex flex-col md:flex-row gap-5 md:gap-4 w-full">
+              <a href="/meetings" className="bg-white text-[#0A0A0A] text-sm font-semibold rounded-full py-[18px] px-3 hover:brightness-90 transition-all text-center flex items-center justify-center h-[50px]" style={{fontFamily: 'Gilroy'}}>
+                Book Mentorship
               </a>
-              <button className="border border-white text-white text-xs sm:text-sm font-semibold rounded-full py-2.5 sm:py-3 px-5 sm:px-6 hover:bg-white/10 transition-all text-center">
+              <button className="border border-white text-white text-sm font-semibold rounded-full py-[18px] px-3 hover:bg-white/10 transition-all text-center flex items-center justify-center h-[48px]" style={{fontFamily: 'Gilroy'}}>
                 Learn More
               </button>
             </div>
           </div>
 
           {/* Right Column: Responsive Images - Now visible on mobile */}
-          <div className="block mt-6 lg:mt-0 pt-16 sm:pt-20 lg:pt-24">
-            {/* Container with responsive dimensions approximating 305x702 ratio */}
-            <div className="relative w-full max-w-[8.5rem] sm:max-w-[11.5rem] md:max-w-[13.5rem] lg:max-w-[15.5rem] xl:max-w-[17.5rem] ml-auto mr-4 sm:mr-6 lg:mr-8 overflow-hidden" style={{aspectRatio: '305/702'}}>
+          <div className="block mt-8 lg:mt-0 pt-4 sm:pt-6 lg:pt-24">
+            {/* Mobile: Horizontal scrolling layout */}
+            <div className="lg:hidden relative w-full overflow-hidden">
+              <div className="fade-mask">
+                <div className="flex flex-col gap-3 sm:gap-4 pb-2">
+                  {/* Row 1 */}
+                  <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4" >
+                    {/* First set of images */}
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/6.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/5.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    {/* Duplicate set for seamless loop */}
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/6.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/5.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                  </div>
+                  {/* Row 2 */}
+                  <div className="animate-scrollDown flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4" >
+                    {/* First set of images */}
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/1.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/2 improved.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 20%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    {/* Duplicate set for seamless loop */}
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/1.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/2 improved.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 20%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                  </div>
+                  {/* Row 3 */}
+                  <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
+                    {/* First set of images */}
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/3.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 10%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/4 - colored.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 10%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/7.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    {/* Duplicate set for seamless loop */}
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/3.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 10%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/4 - colored.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 10%' }}
+                      />
+                    </div>
+                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
+                      <img
+                        src="inspired analysts team/7.png"
+                        alt="Team member"
+                        className="w-full h-full object-cover"
+                        style={{ objectPosition: 'center 30%' }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop: Vertical scrolling layout (original) */}
+            <div className="hidden lg:block relative w-full max-w-[15.5rem] xl:max-w-[17.5rem] ml-auto mr-8 overflow-hidden" style={{aspectRatio: '305/702'}}>
               <div className="absolute inset-0 fade-mask overflow-hidden">
-                <div className="flex h-[200%] w-full gap-2 sm:gap-3 lg:gap-4">
+                <div className="flex h-[200%] w-full gap-4">
                   {/* Column 1 */}
                   <div className="animate-scrollUp flex w-1/3 flex-col gap-2 sm:gap-3 lg:gap-4">
                     {/* First set of images */}

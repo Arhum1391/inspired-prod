@@ -47,7 +47,7 @@ export default function CollaborationForm() {
     <section className="relative z-10 bg-[#0A0A0A] px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
       <div className="max-w-6xl mx-auto">
         <div
-          className="relative bg-[#1F1F1F] rounded-2xl p-10 overflow-hidden flex flex-row justify-center items-center"
+          className="relative bg-[#1F1F1F] rounded-2xl p-6 sm:p-8 md:p-10 overflow-hidden flex flex-row justify-center items-center"
           style={{
             width: '100%',
             minHeight: '510px',
@@ -70,8 +70,9 @@ export default function CollaborationForm() {
             }}
           />
 
-          {/* Ellipse 3 - Right gradient */}
+          {/* Ellipse 3 - Right gradient (Desktop) */}
           <div
+            className="hidden md:block"
             style={{
               position: 'absolute',
               width: '588px',
@@ -85,287 +86,124 @@ export default function CollaborationForm() {
             }}
           />
 
-          {/* Main Content Frame */}
+          {/* Ellipse 3 - Mobile gradient (bottom right) */}
           <div
-            className="relative z-20 flex flex-col items-start"
+            className="block md:hidden"
             style={{
-              width: '100%',
-              maxWidth: '630px',
-              height: '430px',
-              gap: '40px',
-              margin: '0 auto'
+              position: 'absolute',
+              width: '555.79px',
+              height: '555.79px',
+              left: '270.56px',
+              top: '356.91px',
+              background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+              filter: 'blur(100px)',
+              transform: 'rotate(-92.63deg)',
+              zIndex: 0,
             }}
-          >
+          />
+
+          {/* Main Content Frame */}
+          <div className="relative z-20 w-full max-w-[630px] mx-auto">
             {/* Header Frame */}
-            <div
-              className="flex flex-col items-start"
-              style={{
-                width: '100%',
-                height: '64px',
-                gap: '16px'
-              }}
-            >
-              <h2
-                className="text-white"
-                style={{
-                  width: '100%',
-                  height: '32px',
-                  fontFamily: 'Gilroy, sans-serif',
-                  fontWeight: 600,
-                  fontSize: '32px',
-                  lineHeight: '100%'
-                }}
-              >
+            <div className="mb-6 sm:mb-8 md:mb-10">
+              <h2 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-[32px] font-semibold mb-3 sm:mb-4" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                 Work with Inspired Analyst
               </h2>
-              <p
-                className="text-white"
-                style={{
-                  width: '100%',
-                  height: '16px',
-                  fontFamily: 'Gilroy, sans-serif',
-                  fontWeight: 400,
-                  fontSize: '16px',
-                  lineHeight: '100%'
-                }}
-              >
+              <p className="text-white text-sm sm:text-base" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                 For collaboration, drop us a message.
               </p>
             </div>
 
             {/* Form Container */}
-            <form onSubmit={handleSubmit} className="flex flex-col items-start" style={{ width: '100%', height: '326px', gap: '24px' }}>
-              {/* First Row - Brand Name and Email */}
-              <div className="flex flex-row items-start" style={{ width: '100%', height: '58px', gap: '24px' }}>
+            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
+              {/* Brand Name and Email - Stack on mobile, side by side on desktop */}
+              <div className="flex flex-col md:flex-row gap-4 sm:gap-5 md:gap-6">
                 {/* Brand Name Field */}
-                <div className="flex flex-col items-start flex-1" style={{ gap: '4px', height: '58px' }}>
-                  <label
-                    className="text-white"
-                    style={{
-                      width: '100%',
-                      height: '14px',
-                      fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%'
-                    }}
-                  >
+                <div className="flex flex-col flex-1 gap-1 sm:gap-1.5">
+                  <label className="text-white text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                     Brand Name
                   </label>
-                  <div
-                    className="flex flex-row justify-center items-center"
-                    style={{
-                      width: '100%',
-                      height: '40px',
-                      padding: '8px 12px',
-                      gap: '10px',
-                      border: '1px solid rgba(255, 255, 255, 0.3)',
-                      borderRadius: '8px',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    <input
-                      type="text"
-                      name="brandName"
-                      value={formData.brandName}
-                      onChange={handleInputChange}
-                      placeholder="Enter Name"
-                      className="bg-transparent text-white placeholder-white/30 outline-none border-none flex-1 focus:outline-none focus:ring-0 focus:border-transparent"
-                      style={{
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        height: '14px',
-                        outline: 'none',
-                        boxShadow: 'none'
-                      }}
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Email Field */}
-                <div className="flex flex-col items-start flex-1" style={{ gap: '4px', height: '58px' }}>
-                  <label
-                    className="text-white"
-                    style={{
-                      width: '100%',
-                      height: '14px',
-                      fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%'
-                    }}
-                  >
-                    Email Address
-                  </label>
-                  <div
-                    className="flex flex-row justify-center items-center"
-                    style={{
-                      width: '100%',
-                      height: '40px',
-                      padding: '8px 12px',
-                      gap: '10px',
-                      border: '1px solid rgba(255, 255, 255, 0.3)',
-                      borderRadius: '8px',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      placeholder="abc@example.com"
-                      className="bg-transparent text-white placeholder-white/30 outline-none border-none flex-1 focus:outline-none focus:ring-0 focus:border-transparent"
-                      style={{
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        height: '14px',
-                        outline: 'none',
-                        boxShadow: 'none'
-                      }}
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Second Row - Brand Website */}
-              <div className="flex flex-row items-start" style={{ width: '100%', height: '58px', gap: '24px' }}>
-                <div className="flex flex-col items-start flex-1" style={{ gap: '4px', height: '58px' }}>
-                  <label
-                    className="text-white"
-                    style={{
-                      width: '100%',
-                      height: '14px',
-                      fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%'
-                    }}
-                  >
-                    Brand Website
-                  </label>
-                  <div
-                    className="flex flex-row justify-center items-center"
-                    style={{
-                      width: '100%',
-                      height: '40px',
-                      padding: '8px 12px',
-                      gap: '10px',
-                      border: '1px solid rgba(255, 255, 255, 0.3)',
-                      borderRadius: '8px',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    <input
-                      type="url"
-                      name="website"
-                      value={formData.website}
-                      onChange={handleInputChange}
-                      placeholder="https://yourbrand.com"
-                      className="bg-transparent text-white placeholder-white/30 outline-none border-none flex-1 focus:outline-none focus:ring-0 focus:border-transparent"
-                      style={{
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        height: '14px',
-                        outline: 'none',
-                        boxShadow: 'none'
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Third Row - Message */}
-              <div className="flex flex-col items-start" style={{ width: '100%', height: '90px', gap: '4px' }}>
-                <label
-                  className="text-white"
-                  style={{
-                    width: '100%',
-                    height: '14px',
-                    fontFamily: 'Gilroy, sans-serif',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '100%'
-                  }}
-                >
-                  Message
-                </label>
-                <div
-                  className="flex flex-row items-start"
-                  style={{
-                    width: '100%',
-                    height: '72px',
-                    padding: '8px 12px',
-                    gap: '10px',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    borderRadius: '8px',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  <textarea
-                    name="message"
-                    value={formData.message}
+                  <input
+                    type="text"
+                    name="brandName"
+                    value={formData.brandName}
                     onChange={handleInputChange}
-                    placeholder="Tell us about your collaboration idea..."
-                    className="bg-transparent text-white placeholder-white/30 outline-none border-none flex-1 resize-none focus:outline-none focus:ring-0 focus:border-transparent"
-                    style={{
-                      fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      height: '48px',
-                      outline: 'none',
-                      boxShadow: 'none'
-                    }}
-                    rows={3}
+                    placeholder="Enter Name"
+                    className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 w-full text-xs sm:text-sm focus:outline-none focus:ring-0 focus:border-white/30"
+                    style={{ fontFamily: 'Gilroy, sans-serif', boxShadow: 'none', outline: 'none' }}
                     required
                   />
                 </div>
+
+                {/* Email Field */}
+                <div className="flex flex-col flex-1 gap-1 sm:gap-1.5">
+                  <label className="text-white text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="abc@example.com"
+                    className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 w-full text-xs sm:text-sm focus:outline-none focus:ring-0 focus:border-white/30"
+                    style={{ fontFamily: 'Gilroy, sans-serif', boxShadow: 'none', outline: 'none' }}
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Brand Website */}
+              <div className="flex flex-col gap-1 sm:gap-1.5">
+                <label className="text-white text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+                  Brand Website
+                </label>
+                <input
+                  type="url"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleInputChange}
+                  placeholder="https://yourbrand.com"
+                  className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 w-full text-xs sm:text-sm focus:outline-none focus:ring-0 focus:border-white/30"
+                  style={{ fontFamily: 'Gilroy, sans-serif', boxShadow: 'none', outline: 'none' }}
+                />
+              </div>
+
+              {/* Message */}
+              <div className="flex flex-col gap-1 sm:gap-1.5">
+                <label className="text-white text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+                  Message
+                </label>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  placeholder="Tell us about your collaboration idea..."
+                  className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 w-full resize-none text-xs sm:text-sm focus:outline-none focus:ring-0 focus:border-white/30"
+                  style={{ fontFamily: 'Gilroy, sans-serif', boxShadow: 'none', outline: 'none', minHeight: '60px' }}
+                  rows={3}
+                  required
+                />
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="flex flex-row justify-center items-center bg-white text-[#0A0A0A] rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 cursor-pointer"
-                style={{
-                  width: '187px',
-                  height: '48px',
-                  padding: '12px 16px',
-                  gap: '10px'
-                }}
+                className="bg-white text-[#0A0A0A] rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 cursor-pointer px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold"
+                style={{ fontFamily: 'Gilroy, sans-serif' }}
               >
-                <span
-                  style={{
-                    width: '107px',
-                    height: '12px',
-                    fontFamily: 'Gilroy, sans-serif',
-                    fontWeight: 600,
-                    fontSize: '14px',
-                    lineHeight: '100%',
-                    textAlign: 'center'
-                  }}
-                >
-                  {status === 'loading' ? 'Sending...' : status === 'success' ? 'Sent!' : status === 'error' ? 'Failed' : 'Send Message'}
-                </span>
+                {status === 'loading' ? 'Sending...' : status === 'success' ? 'Sent!' : status === 'error' ? 'Failed' : 'Send Message'}
               </button>
 
               {/* Status Messages */}
               {status === 'success' && (
-                <p className="text-green-400 text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+                <p className="text-green-400 text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                   Thank you! We&apos;ll get back to you soon.
                 </p>
               )}
               {status === 'error' && (
-                <p className="text-red-400 text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+                <p className="text-red-400 text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                   Something went wrong. Please try again.
                 </p>
               )}

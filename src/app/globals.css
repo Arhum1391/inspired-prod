@@ -89,40 +89,76 @@ body {
   z-index: -1; /* Ensure it's behind everything */
 }
 
-/* Custom class for the image fade effect on the right column */
+/* Custom class for the image fade effect - horizontal on mobile, vertical on desktop */
 .fade-mask {
-  mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
 }
 
-/* Custom keyframes for the continuous vertical scrolling animation */
+@media (min-width: 1024px) {
+  .fade-mask {
+    mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+  }
+}
+
+/* Custom keyframes for horizontal scrolling (mobile) */
+/* Exact same logic as vertical: both move same distance, start at different positions */
+@keyframes scrollLeftMobile {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollRightMobile {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Custom keyframes for vertical scrolling (desktop) */
 @keyframes scrollUp {
-  0% {
+  from {
     transform: translateY(0);
   }
-  100% {
+  to {
     transform: translateY(-50%);
   }
 }
 
-/* Custom keyframes for the continuous vertical scrolling animation - downward */
 @keyframes scrollDown {
-  0% {
+  from {
     transform: translateY(-50%);
   }
-  100% {
+  to {
     transform: translateY(0);
   }
 }
 
-/* Utility class to apply the scrolling animation */
+/* Mobile: Horizontal scrolling - use separate keyframes for true opposite movement */
 .animate-scrollUp {
-  animation: scrollUp 120s linear infinite;
+  animation: scrollLeftMobile 60s linear infinite;
 }
 
-/* Utility class to apply the downward scrolling animation */
 .animate-scrollDown {
-  animation: scrollDown 120s linear infinite;
+  animation: scrollRightMobile 60s linear infinite;
+}
+
+/* Desktop: Vertical scrolling - slower for desktop */
+@media (min-width: 1024px) {
+  .animate-scrollUp {
+    animation: scrollUp 80s linear infinite;
+  }
+
+  .animate-scrollDown {
+    animation: scrollDown 80s linear infinite;
+  }
 }
 
 /* Keyframes for zoom wave motion on background */
@@ -257,8 +293,8 @@ body {
   background-color: rgba(255, 255, 255, 1);
 }
 
-/* Smooth transitions for all interactive elements */
-* {
+/* Smooth transitions for all interactive elements - except animated scroll elements */
+*:not(.animate-scrollUp):not(.animate-scrollDown):not(.animate-zoom-wave) {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
@@ -298,4 +334,23 @@ html {
   100% {
     transform: translateX(-50%);
   }
+}
+
+/* Brand logos carousel animation */
+@keyframes carousel {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-100% / 2));
+  }
+}
+
+.animate-carousel {
+  animation: carousel 40s linear infinite;
+  width: max-content;
+}
+
+.animate-carousel:hover {
+  animation-play-state: paused;
 }

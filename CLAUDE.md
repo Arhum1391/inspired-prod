@@ -8,7 +8,6 @@ This is "Inspired Analyst" - a Next.js 15 consulting business website with a Cal
 
 ## Key Commands
 
-
 ### Development
 - `npm run dev` - Start development server (http://localhost:3000)
 - `npm run build` - Build for production

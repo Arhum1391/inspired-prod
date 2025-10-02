@@ -33,6 +33,7 @@ interface AnalystCardProps {
   analyst: Analyst;
   isSelected: boolean;
   onSelect: (id: number) => void;
+  onAdvance: () => void;
 }
 
 interface Timezone {
@@ -46,61 +47,53 @@ const analysts: Analyst[] = [
     id: 0,
     name: 'Adnan',
     description: 'Content creator specializing in stocks, crypto, data science, & side hustles.',
-    image: '/analysts/adnan.jpg'
+    image: '/team dark/Adnan.png'
   },
   {
     id: 1,
     name: 'Assassin',
     description: 'Better known as Assassin Co-Founder of Inspired Analyst Discord Server, Trading crypto since 2019. My expertise is in Fibonacci Retracements, Trend-based-Fibs, Quant Analysis, Institutional Orderflow, Volume Profiling, Orderblocks, Fair Value Gaps, Supply/Demand, ICT Concepts, and textbook charts/candlestick patterns.',
-    image: '/analysts/assassin.jpg'
+    image: '/team dark/Assassin.png'
   },
   {
     id: 2,
     name: 'Hassan Tariq',
     description: 'I am Hassan Tariq and I have been trading crypto solely since 2020. I have been a part of Inspired Analyst team since April 2023. My expertise is in Fibonacci Retracements, Trend-based-Fibs, Fixed Range Volume Profile, Harmonics and Supply & Demand Concept.',
-    image: '/analysts/hassan-tariq.jpg'
+    image: '/team dark/Hassan Tariq.png'
   },
   {
     id: 3,
     name: 'Hamza Ali',
     description: 'My name is Hamza Ali and I have 5 years of experience in trading I specialize in risk management and consistent profit-making. My core strategy is price action trading, which naturally covers SMC, ICT, and other advanced concepts in a simplified way I keep my charts clean and to the point no unnecessary complications, just clarity and precision.',
-    image: '/analysts/hamza-ali.jpg'
+    image: '/team dark/Hamza Ali.png'
   },
   {
     id: 4,
     name: 'Hassan Khan',
     description: 'I\'m Hassankhan, Co-founder of Inspired Analyst Forex Server, I don\'t just trade gold — I eat, breathe, and live XAU. I am also leading the CIVIC CHALLENGE, one of the most recognized and respected trading challenges across local Discord communities. With over 4–5 years of dedicated experience in trading gold, I\'ve developed a deep understanding of market movements, risk management, and profitable trading strategies.',
-    image: '/analysts/hassan-khan.jpg'
+    image: '/team dark/Hassan Khan.png'
   },
   {
     id: 5,
     name: 'Meower',
     description: 'I\'m Meower, a 17-year-old cryptocurrency trader with experience in the market since February 2021. I specialize in breakout trading, focusing on large percentage moves on centralized exchanges. My strategy is based on a high-risk-to-reward framework, with a consistent win rate of over 85%. In 2025, I completed a publicly tracked $1,000 to $2,000 trading challenge.',
-    image: '/analysts/meower.jpg'
+    image: '/team dark/Meower.png'
   },
   {
     id: 6,
     name: 'Mohid',
     description: 'Stop wasting time on outdated trading strategies that don\'t work anymore. As a professional trader with over 5 years of experience, I specialize in teaching advanced, fresh ICT concepts that are both simple to grasp and highly effective. My unique approach is built on two core trading models, the Fractal Model and the Forever Model, designed for maximum accuracy and clarity.',
-    image: '/analysts/mohid.jpg'
+    image: '/team dark/Mohid.png'
   },
   {
     id: 7,
     name: 'M. Usama',
     description: 'I\'m Muhammad Usama, and I\'ve been trading crypto since 2020, and I started trading forex in 2023. This experience has taught me how to navigate everything from bull runs to brutal bear markets. I trade on indicators to refine my entries and exits, and try to keep my trading simple by using the price action. What keeps me consistent is blending institutional concepts with simple, practical tools.',
-    image: '/analysts/m-usama.jpg'
+    image: '/team dark/M. Usama.png'
   }
 ];
 
 const meetings: Meeting[] = [
-  {
-    id: 1,
-    title: '15-Min Intro',
-    duration: '15 minutes',
-    price: '1 BNB',
-    description: 'Quick introduction to discuss your needs and see if we\'re a good fit for your goals.',
-    color: 'text-teal-400',
-  },
   {
     id: 2,
     title: '30-Min Strategy',
@@ -255,63 +248,114 @@ const Line = ({ isActive }: { isActive: boolean }) => (
 
 
 // Reusable Analyst Card Component
-const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect }) => {
+const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect, onAdvance }) => {
+    const handleClick = () => {
+        onSelect(analyst.id);
+        // Auto-advance to next step after selection
+        setTimeout(() => {
+            onAdvance();
+        }, 100);
+    };
+
     return (
         <div
-            onClick={() => onSelect(analyst.id)}
-            className={`cursor-pointer bg-gray-800/50 p-3 rounded-xl border-2 transition-all duration-300 w-full relative overflow-hidden group
-                ${isSelected ? 'border-purple-500 bg-gray-700/80' : 'border-gray-700 hover:border-gray-500'}`}
+            onClick={handleClick}
+            className="cursor-pointer relative overflow-hidden group transition-all duration-300"
+            style={{
+                boxSizing: 'border-box',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '16px',
+                gap: '16px',
+                width: '196.75px',
+                height: '176px',
+                background: '#1F1F1F',
+                borderRadius: '16px',
+                flex: 'none',
+                order: 0,
+                alignSelf: 'stretch',
+                flexGrow: 1,
+                border: isSelected ? '2px solid #8B5CF6' : 'none'
+            }}
         >
             {/* Gradient Overlay for Selected Card */}
             {isSelected && (
                 <div 
-                    className="absolute inset-0 rounded-xl opacity-80"
+                    className="absolute inset-0 opacity-80"
                     style={{
                         backgroundImage: 'url("/gradient/Ellipse 2.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
+                        borderRadius: '16px'
                     }}
                 />
             )}
             
-            {/* Glint Effect */}
-            <div className="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+            {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+            <div 
+                className="absolute top-0 right-0 w-8 h-8 opacity-60"
+                style={{
+                    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                    borderRadius: '16px 16px 0 0'
+                }}
+            ></div>
+            
+            {/* Enhanced Top Border Glint */}
+            <div 
+                className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
+                style={{
+                    background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
+                }}
+            ></div>
+            
+            {/* Enhanced Right Border Glint */}
+            <div 
+                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70"
+                style={{
+                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)'
+                }}
+            ></div>
+            
             
             {/* Content with relative positioning to appear above gradient */}
-            <div className="relative z-10">
-                <div className="flex flex-col">
-                    {/* Top row: Image and Name */}
-                    <div className="flex items-start gap-3 mb-3">
-                        {/* Circular Image */}
-                        <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <img 
-                                src={analyst.image} 
-                                alt={analyst.name}
-                                className="w-full h-full object-cover"
-                                onError={(e) => {
-                                    // Fallback to placeholder if image doesn't exist
-                                    e.currentTarget.style.display = 'none';
-                                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                                    if (nextElement) {
-                                        nextElement.style.display = 'flex';
-                                    }
-                                }}
-                            />
-                            <div className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-gray-300 text-xs font-bold" style={{display: 'none'}}>
-                                {analyst.name.charAt(0)}
-                            </div>
-                        </div>
-                        
-                        {/* Name */}
-                        <h3 className="text-sm font-bold text-white">{analyst.name}</h3>
-                    </div>
-                    
-                    {/* Description */}
-                    <div className="w-full">
-                        <p className="text-gray-400 text-xs leading-relaxed line-clamp-4">{analyst.description}</p>
+            <div className="relative z-10 flex flex-col items-center text-center">
+                {/* Large Circular Image */}
+                <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    <img 
+                        src={analyst.image} 
+                        alt={analyst.name}
+                        className="w-full h-full object-cover filter grayscale"
+                        onError={(e) => {
+                            // Fallback to placeholder if image doesn't exist
+                            e.currentTarget.style.display = 'none';
+                            const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                            if (nextElement) {
+                                nextElement.style.display = 'flex';
+                            }
+                        }}
+                    />
+                    <div className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-gray-300 text-lg font-bold" style={{display: 'none'}}>
+                        {analyst.name.charAt(0)}
                     </div>
                 </div>
+                
+                {/* Name */}
+                <h3 className="text-sm font-bold text-white mb-1">{analyst.name}</h3>
+                
+                {/* Role - Extract from description or use predefined roles */}
+                <p className="text-gray-400 text-xs leading-tight line-clamp-2">
+                    {analyst.name === 'Adnan' ? 'Content Creator & Analyst' :
+                     analyst.name === 'Assassin' ? 'Co-Founder & Trading Expert' :
+                     analyst.name === 'Hassan Tariq' ? 'Senior Crypto Analyst' :
+                     analyst.name === 'Hamza Ali' ? 'Risk Management Specialist' :
+                     analyst.name === 'Hassan Khan' ? 'Gold Trading Expert' :
+                     analyst.name === 'Meower' ? 'Breakout Trading Specialist' :
+                     analyst.name === 'Mohid' ? 'Advanced ICT Mentor' :
+                     analyst.name === 'M. Usama' ? 'Multi-Asset Trader' :
+                     'Trading Expert'}
+                </p>
             </div>
         </div>
     );
@@ -322,8 +366,23 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
     return (
         <div
             onClick={() => onSelect(meeting.id)}
-            className={`cursor-pointer bg-gray-800/50 p-5 rounded-2xl border-2 transition-all duration-300 w-full relative overflow-hidden group
-                ${isSelected ? 'border-purple-500 bg-gray-700/80' : 'border-gray-700 hover:border-gray-500'}`}
+            className="cursor-pointer relative overflow-hidden group transition-all duration-300 hover:border-gray-500"
+            style={{
+                boxSizing: 'border-box',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: '20px',
+                gap: '16px',
+                width: '100%',
+                background: '#1F1F1F',
+                borderRadius: '16px',
+                border: '2px solid transparent',
+                flex: 'none',
+                order: 0,
+                alignSelf: 'stretch',
+                flexGrow: 1
+            }}
         >
             {/* Gradient Overlay for Selected Card */}
             {isSelected && (
@@ -338,18 +397,40 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
                 />
             )}
             
-            {/* Glint Effect */}
-            <div className="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+            {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+            <div 
+                className="absolute top-0 right-0 w-8 h-8 opacity-60"
+                style={{
+                    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                    borderRadius: '16px 16px 0 0'
+                }}
+            ></div>
+            
+            {/* Enhanced Top Border Glint */}
+            <div 
+                className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
+                style={{
+                    background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
+                }}
+            ></div>
+            
+            {/* Enhanced Right Border Glint */}
+            <div 
+                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70"
+                style={{
+                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)'
+                }}
+            ></div>
+            
             
             {/* Content with relative positioning to appear above gradient */}
-            <div className="relative z-10">
-                <div className="flex justify-between items-start mb-3">
+            <div className="relative z-10 flex flex-col items-center text-center">
+                <div className="flex justify-between items-start mb-3 w-full">
                     <h3 className="text-xl font-bold text-white">{meeting.title}</h3>
                     <span className="bg-gray-900/70 text-gray-300 text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 group-hover:border-gray-500/70 transition-colors duration-300">{meeting.price}</span>
                 </div>
                 <div className="mb-3">
                     <span className={`inline-block px-3 py-1 text-xs rounded-full bg-opacity-20 ${
-                        meeting.id === 1 ? 'bg-teal-400/20 text-teal-300' :
                         meeting.id === 2 ? 'bg-purple-400/20 text-purple-300' :
                         'bg-yellow-400/20 text-yellow-300'
                     }`}>
@@ -379,19 +460,13 @@ const MeetingsPage: React.FC = () => {
     const [notes, setNotes] = useState<string>('');
     // const router = useRouter(); // Removed to prevent compilation error
 
-    const isContinueDisabled = currentStep === 1 ? (selectedAnalyst === null) :
-                               currentStep === 2 ? (selectedMeeting === null || !selectedTimezone) : 
-                               currentStep === 3 ? (!selectedDate || !selectedTime) :
-                               currentStep === 4 ? (!fullName || !email) : false;
+    const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
+                               currentStep === 3 ? (!fullName || !email) : false;
 
     const handleContinue = () => {
         if (!isContinueDisabled) {
-            if (currentStep === 1) {
-                setCurrentStep(2);
-            } else if (currentStep === 2) {
+            if (currentStep === 2) {
                 setCurrentStep(3);
-            } else if (currentStep === 3) {
-                setCurrentStep(4);
             } else {
                 // Complete booking - redirect to success page with data
                 const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
@@ -415,8 +490,6 @@ const MeetingsPage: React.FC = () => {
             setCurrentStep(1);
         } else if (currentStep === 3) {
             setCurrentStep(2);
-        } else if (currentStep === 4) {
-            setCurrentStep(3);
         } else {
         // Navigate to the landing page using standard web APIs
         window.location.href = '/';
@@ -619,7 +692,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                             style={{
-                                        backgroundImage: 'url("/rectangle 1/0a1b3220b634dbcbf74285bbbef61b759ccc34ab.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/1.png")',
                                         backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -628,7 +701,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -637,7 +710,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 1/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/3.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -646,7 +719,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/4.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -656,7 +729,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 1/0a1b3220b634dbcbf74285bbbef61b759ccc34ab.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/1.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -665,7 +738,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -674,7 +747,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 1/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/3.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -683,7 +756,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/4.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -699,7 +772,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/5.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -708,7 +781,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 2/4b9330666fbce22736fe4a8911e962c0d7b01e58.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/6.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -717,7 +790,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 2/8c32b6a7d2dc3f1c6145f0d8ce2f4cbf7624bdb9.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/7.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -726,7 +799,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/2.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -736,7 +809,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/5.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -745,7 +818,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 2/4b9330666fbce22736fe4a8911e962c0d7b01e58.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/6.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -754,7 +827,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("/rectangle 2/8c32b6a7d2dc3f1c6145f0d8ce2f4cbf7624bdb9.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/7.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -763,7 +836,7 @@ const MeetingsPage: React.FC = () => {
                                 <div
                                     className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                             style={{
-                                        backgroundImage: 'url("/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg")',
+                                        backgroundImage: 'url("inspired analysts team/2.jpg")',
                                         backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -777,35 +850,16 @@ const MeetingsPage: React.FC = () => {
                 {/* Right Side: Booking Form */}
                 <div className="w-full lg:col-span-2">
                     {/* Back Button */}
-                    <div className="mb-1 mt-16 -ml-4">
-                        <button onClick={handleBack} className="flex items-center text-gray-400 hover:text-white transition-colors">
+                    <div className="mb-1 mt-16">
+                        <button onClick={handleBack} className="flex items-center text-white hover:text-gray-300 transition-colors">
                         <ChevronLeft size={20} className="mr-1" />
                         Back
                     </button>
                     </div>
 
-                    {/* Title and Progress Steps */}
-                    <div className="flex items-center justify-between mb-8 mt-8 -ml-4">
-                        <h1 className="text-4xl font-bold">Book a Meeting</h1>
-                        
-                        {/* Progress Indicator - Scaled Down */}
-                        <div className="w-80 relative">
-                            <div className="flex items-center">
-                                <CircleStep step={1} isActive={currentStep >= 1} />
-                                <Line isActive={currentStep >= 2} />
-                                <CircleStep step={2} isActive={currentStep >= 2} />
-                                <Line isActive={currentStep >= 3} />
-                                <CircleStep step={3} isActive={currentStep >= 3} />
-                                <Line isActive={currentStep >= 4} />
-                                <CircleStep step={4} isActive={currentStep >= 4} />
-                            </div>
-                            <div className="mt-1">
-                                <p className={`text-xs absolute left-[-17px] text-center ${currentStep >= 1 ? 'text-white' : 'text-gray-400'}`}>Select Analyst</p>
-                                <p className={`text-xs absolute left-[77px] text-center ${currentStep >= 2 ? 'text-white' : 'text-gray-400'}`}>Select Meeting</p>
-                                <p className={`text-xs absolute left-[170px] text-center ${currentStep >= 3 ? 'text-white' : 'text-gray-400'}`}>Pick Date & Time</p>
-                                <p className={`text-xs absolute left-[282px] text-center ${currentStep >= 4 ? 'text-white' : 'text-gray-400'}`}>Pay & Confirm</p>
-                            </div>
-                        </div>
+                    {/* Title */}
+                    <div className="mb-8 mt-8">
+                        <h1 className="text-4xl font-bold">Book Mentorship</h1>
                     </div>
 
                     {/* Step 1: Analyst Selection */}
@@ -822,231 +876,428 @@ const MeetingsPage: React.FC = () => {
                                         analyst={analyst}
                                         isSelected={selectedAnalyst === analyst.id}
                                         onSelect={setSelectedAnalyst}
+                                        onAdvance={() => setCurrentStep(2)}
                                     />
                                 ))}
                             </div>
                         </div>
                     )}
 
-                    {/* Step 2: Meeting Selection */}
+                    {/* Step 2: Meeting Selection, Timezone, Date & Time */}
                     {currentStep === 2 && (
-                        <>
-                    <div className="space-y-6">
-                        <div>
-                            <h2 className="text-2xl font-semibold mb-2">Select Meeting</h2>
-                            <p className="text-gray-400">Choose the session that best fits your needs</p>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {meetings.map((meeting) => (
-                                <MeetingCard
-                                    key={meeting.id}
-                                    meeting={meeting}
-                                    isSelected={selectedMeeting === meeting.id}
-                                    onSelect={setSelectedMeeting}
-                                />
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Timezone Selection */}
-                    <div className="mt-8">
-                        <h2 className="text-2xl font-semibold mb-2">Select Time Zone</h2>
-                        <div className="relative max-w-md">
-                            {/* Search Input */}
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                            value={timezoneSearch || (selectedTimezone ? getTimezoneDisplayLabel() : '')}
-                                    onChange={(e) => handleTimezoneSearch(e.target.value)}
-                                    onFocus={handleTimezoneInputFocus}
-                                    placeholder="Search timezone..."
-                                    className="w-full bg-gray-800/50 border-2 border-gray-700 rounded-lg py-3 px-4 pr-10 text-white focus:outline-none focus:border-purple-500 hover:border-purple-400 transition-colors"
-                                />
-                                <ChevronDown 
-                                    size={20} 
-                                    className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-transform duration-200 ${isTimezoneOpen ? 'rotate-180' : ''}`}
-                                />
+                        <div className="space-y-8">
+                            {/* Meeting Selection */}
+                            <div className="space-y-6">
+                                <div>
+                                    <h2 className="text-2xl font-semibold mb-2">Select Meeting</h2>
+                                    <p className="text-gray-400">Choose the session that best fits your needs</p>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    {meetings.map((meeting) => (
+                                        <MeetingCard
+                                            key={meeting.id}
+                                            meeting={meeting}
+                                            isSelected={selectedMeeting === meeting.id}
+                                            onSelect={setSelectedMeeting}
+                                        />
+                                    ))}
+                                </div>
                             </div>
 
-                            {/* Custom Dropdown Options */}
-                            {isTimezoneOpen && (
-                                <div className="absolute z-50 w-full mt-1 bg-gray-800 border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto">
-                                    {timezoneSearch ? (
-                                        // Show filtered results when searching
-                                        filteredTimezones.length > 0 ? (
-                                            filteredTimezones.map((tz) => (
-                                                <button
-                                                    key={tz.value}
-                                                    type="button"
-                                                    onClick={() => handleTimezoneSelect(tz.value)}
-                                                    onMouseEnter={() => setHoveredTimezone(tz.value)}
-                                                    onMouseLeave={() => setHoveredTimezone('')}
-                                                    className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
-                                                        selectedTimezone === tz.value
-                                                            ? 'bg-purple-600 text-white'
-                                                            : hoveredTimezone === tz.value
-                                                            ? 'bg-purple-500 text-white'
-                                                            : 'bg-gray-800 text-white hover:bg-gray-700'
-                                                    }`}
-                                                >
-                                                    <span>{tz.label}</span>
-                                                    <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
-                                                </button>
-                                            ))
-                                        ) : (
-                                            <div className="px-4 py-3 text-sm text-gray-400 text-center">
-                                                No timezones found
-                                            </div>
-                                        )
-                                    ) : (
-                                        // Show grouped results when not searching
-                                        timezoneGroups.map((group) => (
-                                            <div key={group.region}>
-                                                {/* Region Header */}
-                                                <div className="px-4 py-2 text-xs font-semibold text-gray-300 bg-gray-700/50 border-b border-gray-600">
-                                                    {group.region}
-                                                </div>
-                                                {/* Timezone Options */}
-                                                {group.timezones.map((tz) => (
-                                                    <button
-                                                        key={tz.value}
-                                                        type="button"
-                                                        onClick={() => handleTimezoneSelect(tz.value)}
-                                                        onMouseEnter={() => setHoveredTimezone(tz.value)}
-                                                        onMouseLeave={() => setHoveredTimezone('')}
-                                                        className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
-                                                            selectedTimezone === tz.value
-                                                                ? 'bg-purple-600 text-white'
-                                                                : hoveredTimezone === tz.value
-                                                                ? 'bg-purple-500 text-white'
-                                                                : 'bg-gray-800 text-white hover:bg-gray-700'
-                                                        }`}
-                                                    >
-                                                        <span>{tz.label}</span>
-                                                        <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        ))
+                            {/* Timezone Selection */}
+                            <div>
+                                <h2 className="text-2xl font-semibold mb-2">Select Time Zone</h2>
+                                <div className="relative max-w-md">
+                                    {/* Search Input */}
+                                    <div className="relative">
+                                        <div 
+                                            className="relative"
+                                            style={{
+                                                width: '414px',
+                                                height: '41px',
+                                                background: '#0A0A0A',
+                                                borderRadius: '8px',
+                                                border: '1px solid #404040',
+                                                display: 'flex',
+                                                flexDirection: 'row',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                gap: '10px',
+                                                boxSizing: 'border-box'
+                                            }}
+                                        >
+                                            {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                                            <div 
+                                                className="absolute top-0 right-0 opacity-60 overflow-hidden"
+                                                style={{
+                                                    width: '24px',
+                                                    height: '24px',
+                                                    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                                                    borderRadius: '8px 8px 0 0'
+                                                }}
+                                            ></div>
+                                            
+                                            {/* Enhanced Top Border Glint */}
+                                            <div 
+                                                className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
+                                                style={{
+                                                    background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
+                                                }}
+                                            ></div>
+                                            
+                                            {/* Enhanced Right Border Glint */}
+                                            <div 
+                                                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70 overflow-hidden"
+                                                style={{
+                                                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                                                    borderRadius: '0 8px 8px 0'
+                                                }}
+                                            ></div>
+
+                                            <input
+                                                type="text"
+                                                value={timezoneSearch || (selectedTimezone ? getTimezoneDisplayLabel() : '')}
+                                                onChange={(e) => handleTimezoneSearch(e.target.value)}
+                                                onFocus={handleTimezoneInputFocus}
+                                                placeholder="Select Timezone"
+                                                className="w-full text-white placeholder-white focus:outline-none transition-colors relative z-10"
+                                                style={{
+                                                    background: 'transparent',
+                                                    border: 'none',
+                                                    padding: '12px 16px',
+                                                    width: '100%',
+                                                    height: '100%',
+                                                    borderRadius: '8px'
+                                                }}
+                                            />
+                                            <ChevronDown 
+                                                size={20} 
+                                                className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-transform duration-200 z-10 ${isTimezoneOpen ? 'rotate-180' : ''}`}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Custom Dropdown Options */}
+                                    {isTimezoneOpen && (
+                                        <div 
+                                            className="absolute z-50 mt-1 bg-black border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto relative"
+                                            style={{ width: '414px' }}
+                                        >
+                                            {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                                            <div 
+                                                className="absolute top-0 right-0 w-12 h-12 opacity-60"
+                                                style={{
+                                                    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                                                    borderRadius: '8px 8px 0 0'
+                                                }}
+                                            ></div>
+                                            
+                                            {/* Enhanced Top Border Glint */}
+                                            <div 
+                                                className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
+                                                style={{
+                                                    background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
+                                                }}
+                                            ></div>
+                                            
+                                            {/* Enhanced Right Border Glint */}
+                                            <div 
+                                                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70"
+                                                style={{
+                                                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)'
+                                                }}
+                                            ></div>
+                                            {timezoneSearch ? (
+                                                // Show filtered results when searching
+                                                filteredTimezones.length > 0 ? (
+                                                    filteredTimezones.map((tz) => (
+                                                        <button
+                                                            key={tz.value}
+                                                            type="button"
+                                                            onClick={() => handleTimezoneSelect(tz.value)}
+                                                            onMouseEnter={() => setHoveredTimezone(tz.value)}
+                                                            onMouseLeave={() => setHoveredTimezone('')}
+                                                            className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
+                                                                selectedTimezone === tz.value
+                                                                    ? 'bg-purple-600 text-white'
+                                                                    : hoveredTimezone === tz.value
+                                                                    ? 'bg-purple-500 text-white'
+                                                                    : 'bg-black text-white hover:bg-gray-800'
+                                                            }`}
+                                                        >
+                                                            <span>{tz.label}</span>
+                                                            <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
+                                                        </button>
+                                                    ))
+                                                ) : (
+                                                    <div className="px-4 py-3 text-sm text-gray-400 text-center">
+                                                        No timezones found
+                                                    </div>
+                                                )
+                                            ) : (
+                                                // Show grouped results when not searching
+                                                timezoneGroups.map((group) => (
+                                                    <div key={group.region}>
+                                                        {/* Region Header */}
+                                                        <div className="px-4 py-2 text-xs font-semibold text-gray-300 bg-gray-800/50 border-b border-gray-600">
+                                                            {group.region}
+                                                        </div>
+                                                        {/* Timezone Options */}
+                                                        {group.timezones.map((tz) => (
+                                                            <button
+                                                                key={tz.value}
+                                                                type="button"
+                                                                onClick={() => handleTimezoneSelect(tz.value)}
+                                                                onMouseEnter={() => setHoveredTimezone(tz.value)}
+                                                                onMouseLeave={() => setHoveredTimezone('')}
+                                                                className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
+                                                                    selectedTimezone === tz.value
+                                                                        ? 'bg-purple-600 text-white'
+                                                                        : hoveredTimezone === tz.value
+                                                                        ? 'bg-purple-500 text-white'
+                                                                        : 'bg-black text-white hover:bg-gray-800'
+                                                                }`}
+                                                            >
+                                                                <span>{tz.label}</span>
+                                                                <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Backdrop to close dropdown */}
+                                    {isTimezoneOpen && (
+                                        <div 
+                                            className="fixed inset-0 z-40" 
+                                            onClick={() => {
+                                                setIsTimezoneOpen(false);
+                                                setTimezoneSearch('');
+                                            }}
+                                        />
                                     )}
                                 </div>
-                            )}
+                            </div>
 
-                            {/* Backdrop to close dropdown */}
-                            {isTimezoneOpen && (
-                                <div 
-                                    className="fixed inset-0 z-40" 
-                                    onClick={() => {
-                                        setIsTimezoneOpen(false);
-                                        setTimezoneSearch('');
-                                    }}
-                                />
-                            )}
-                        </div>
-                    </div>
-                        </>
-                    )}
-
-                    {/* Step 3: Date & Time Selection */}
-                    {currentStep === 3 && (
-                        <div className="space-y-6">
-                            <div className="flex gap-8 items-start">
-                                {/* Left side - Calendar with header */}
-                                <div className="flex-[1.2]">
-                                    <div>
-                                        <h2 className="text-2xl font-semibold mb-2">Pick a Date & Time</h2>
-                                        <p className="text-gray-400">Select when you would like to schedule your meeting</p>
-                                    </div>
-                                    
-                                    <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 mt-6">
-                                        {/* Calendar Header */}
-                                        <div className="flex items-center justify-between mb-3">
-                                            <button
-                                                onClick={() => navigateMonth('prev')}
-                                                className="text-gray-400 hover:text-white transition-colors"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                                </svg>
-                                            </button>
-                                            <h3 className="text-lg font-semibold text-white">
-                                                {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                                            </h3>
-                                            <button
-                                                onClick={() => navigateMonth('next')}
-                                                className="text-gray-400 hover:text-white transition-colors"
-                                            >
-                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                </svg>
-                                            </button>
+                            {/* Date & Time Selection */}
+                            <div className="space-y-6">
+                                <div className="flex gap-8 items-start">
+                                    {/* Left side - Calendar with header */}
+                                    <div className="flex-[1.2]">
+                                        <div>
+                                            <h2 className="text-2xl font-semibold mb-2">Pick a Date & Time</h2>
+                                            <p className="text-gray-400">Select when you would like to schedule your meeting</p>
                                         </div>
+                                        
+                                        <div 
+                                            className="bg-[#1F1F1F] border border-gray-700 rounded-xl mt-6 relative"
+                                            style={{
+                                                width: '412px',
+                                                height: '284px',
+                                                padding: '16px',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'flex-start',
+                                                gap: '10px'
+                                            }}
+                                        >
+                                            {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                                            <div 
+                                                className="absolute top-0 right-0 opacity-60 overflow-hidden"
+                                                style={{
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                                                    borderRadius: '12px 12px 0 0'
+                                                }}
+                                            ></div>
+                                            
+                                            {/* Enhanced Top Border Glint */}
+                                            <div 
+                                                className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
+                                                style={{
+                                                    background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
+                                                }}
+                                            ></div>
+                                            
+                                            {/* Enhanced Right Border Glint */}
+                                            <div 
+                                                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70 overflow-hidden"
+                                                style={{
+                                                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                                                    borderRadius: '0 12px 12px 0'
+                                                }}
+                                            ></div>
 
-                                        {/* Days of Week Header */}
-                                        <div className="grid grid-cols-7 gap-1 mb-2">
-                                            {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day) => (
-                                                <div key={day} className="text-center text-xs font-medium text-gray-400 py-1">
-                                                    {day}
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        {/* Calendar Grid */}
-                                        <div className="grid grid-cols-7 gap-1">
-                                            {getDaysInMonth(currentMonth).map((day, index) => (
-                                                <div key={index} className="h-8 flex items-center justify-center">
-                                                    {day ? (
+                                            {/* Calendar Content Container */}
+                                            <div 
+                                                className="relative z-10 w-full"
+                                                style={{
+                                                    width: '380px',
+                                                    height: '252px',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    gap: '16px'
+                                                }}
+                                            >
+                                                {/* Calendar Header */}
+                                                <div 
+                                                    className="flex items-center justify-between"
+                                                    style={{
+                                                        width: '380px',
+                                                        height: '15.56px',
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        gap: '24px'
+                                                    }}
+                                                >
+                                                    <h3 
+                                                        className="text-white font-medium"
+                                                        style={{
+                                                            width: '118px',
+                                                            height: '14px',
+                                                            fontSize: '14px',
+                                                            lineHeight: '100%'
+                                                        }}
+                                                    >
+                                                        {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                                                    </h3>
+                                                    <div className="flex gap-2">
                                                         <button
-                                                            onClick={() => handleDateSelect(day)}
-                                                            disabled={!isDateAvailable(day)}
-                                                            className={`
-                                                                w-full h-full rounded-lg text-sm font-medium transition-all duration-200
-                                                                ${isDateSelected(day)
-                                                                    ? 'bg-white text-black border-2 border-white'
-                                                                    : isDateAvailable(day)
-                                                                    ? 'bg-gray-700 text-white hover:bg-gray-600 cursor-pointer'
-                                                                    : 'text-gray-500 cursor-not-allowed'
-                                                                }
-                                                            `}
+                                                            onClick={() => navigateMonth('prev')}
+                                                            className="text-white hover:text-gray-300 transition-colors"
+                                                            style={{ width: '16px', height: '16px' }}
                                                         >
-                                                            {day.getDate()}
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                            </svg>
                                                         </button>
-                                                    ) : null}
+                                                        <button
+                                                            onClick={() => navigateMonth('next')}
+                                                            className="text-white hover:text-gray-300 transition-colors"
+                                                            style={{ width: '16px', height: '16px' }}
+                                                        >
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            ))}
+
+                                                {/* Calendar Grid */}
+                                                <div 
+                                                    className="grid grid-cols-7 gap-1"
+                                                    style={{
+                                                        width: '376.77px',
+                                                        height: '213.1px',
+                                                        display: 'flex',
+                                                        flexDirection: 'row',
+                                                        alignItems: 'flex-start',
+                                                        gap: '20px'
+                                                    }}
+                                                >
+                                                    {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day, dayIndex) => (
+                                                        <div 
+                                                            key={day} 
+                                                            className="flex flex-col items-center"
+                                                            style={{
+                                                                width: dayIndex === 0 ? '35.76px' : dayIndex === 1 ? '40.59px' : dayIndex === 2 ? '38.35px' : dayIndex === 3 ? '33.64px' : dayIndex === 4 ? '32px' : dayIndex === 5 ? '34.3px' : '32px',
+                                                                height: '219.16px',
+                                                                gap: '16px'
+                                                            }}
+                                                        >
+                                                            {/* Day Header */}
+                                                            <div 
+                                                                className="text-center text-xs font-medium text-gray-400"
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '11.16px',
+                                                                    fontSize: '11px',
+                                                                    lineHeight: '100%',
+                                                                    color: '#909090'
+                                                                }}
+                                                            >
+                                                                {day}
+                                                            </div>
+                                                            
+                                                            {/* Date Column */}
+                                                            <div 
+                                                                className="flex flex-col items-center"
+                                                                style={{
+                                                                    width: '100%',
+                                                                    height: '192px',
+                                                                    gap: '8px'
+                                                                }}
+                                                            >
+                                                                {getDaysInMonth(currentMonth).filter((_, index) => index % 7 === dayIndex).map((day, weekIndex) => (
+                                                                    <button
+                                                                        key={weekIndex}
+                                                                        onClick={() => day && handleDateSelect(day)}
+                                                                        disabled={!day || !isDateAvailable(day)}
+                                                                        className={`
+                                                                            flex items-center justify-center transition-all duration-200
+                                                                            ${day && isDateSelected(day)
+                                                                                ? 'bg-white text-black'
+                                                                                : day && isDateAvailable(day)
+                                                                                ? 'bg-[#404040] text-white hover:bg-gray-500 cursor-pointer'
+                                                                                : 'text-[#909090] cursor-not-allowed'
+                                                                            }
+                                                                        `}
+                                                                        style={{
+                                                                            width: '32px',
+                                                                            height: '32px',
+                                                                            borderRadius: '8px',
+                                                                            fontSize: '14px',
+                                                                            lineHeight: '100%',
+                                                                            fontFamily: 'Gilroy-Medium',
+                                                                            fontWeight: '400'
+                                                                        }}
+                                                                    >
+                                                                        {day?.getDate()}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {/* Right side - Time Slots */}
-                                <div className="flex-1">
-                                    <h3 className="text-lg font-semibold text-white mb-2">Available Time Slots</h3>
-                                    <p className="text-sm text-gray-400 mb-4">Times shown in Berlin, Germany</p>
-                                    
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {timeSlots.map((time) => (
-                                            <button
-                                                key={time}
-                                                onClick={() => handleTimeSelect(time)}
-                                                className={`
-                                                    py-2 px-3 rounded-lg text-xs font-medium transition-all duration-200
-                                                    ${selectedTime === time
-                                                        ? 'bg-white text-black border-2 border-white'
-                                                        : 'bg-[#0D0D0D] text-white hover:bg-gray-800 border border-gray-600'
-                                                    }
-                                                `}
-                                            >
-                                                {time}
-                                            </button>
-                                        ))}
+                                    {/* Right side - Time Slots */}
+                                    <div className="flex-1">
+                                        <h3 className="text-lg font-semibold text-white mb-2">Available Time Slots</h3>
+                                        
+                                        <div className="grid grid-cols-4 gap-2 mb-4">
+                                            {timeSlots.map((time) => (
+                                                <button
+                                                    key={time}
+                                                    onClick={() => handleTimeSelect(time)}
+                                                    className={`
+                                                        py-2 px-2 rounded-lg text-xs font-medium transition-all duration-200 w-20
+                                                        ${selectedTime === time
+                                                            ? 'bg-white text-black border-2 border-white'
+                                                            : 'bg-[#0D0D0D] text-white hover:bg-gray-800 border border-white'
+                                                        }
+                                                    `}
+                                                >
+                                                    {time}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        <p className="text-sm text-gray-400">Times shown in Berlin, Germany</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* Step 4: Pay & Confirm */}
-                    {currentStep === 4 && (
+                    {/* Step 3: Pay & Confirm */}
+                    {currentStep === 3 && (
                         <div className="space-y-6">
                             <div className="flex gap-8 items-start -ml-4">
                                 {/* Left side - Payment Form */}
@@ -1153,24 +1404,26 @@ const MeetingsPage: React.FC = () => {
                     )}
 
                     {/* Action Buttons */}
-                    <div className="mt-12 flex justify-end gap-4">
-                        {(currentStep === 2 || currentStep === 3 || currentStep === 4) && (
+                    {currentStep !== 1 && (
+                        <div className="mt-12 flex justify-end gap-4">
+                            {(currentStep === 2 || currentStep === 3) && (
+                                <button
+                                    onClick={handleBack}
+                                    className="px-10 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white hover:bg-gray-800 border border-gray-700 hover:border-gray-600"
+                                >
+                                    Back
+                                </button>
+                            )}
                             <button
-                                onClick={handleBack}
-                                className="px-10 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white hover:bg-gray-800 border border-gray-700 hover:border-gray-600"
+                                onClick={handleContinue}
+                                disabled={isContinueDisabled}
+                                className={`px-10 py-3 rounded-3xl font-semibold transition-all duration-300
+                                ${isContinueDisabled ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
                             >
-                                Back
+                                {currentStep === 3 ? 'Complete Booking' : 'Proceed to Pay'}
                             </button>
-                        )}
-                        <button
-                            onClick={handleContinue}
-                            disabled={isContinueDisabled}
-                            className={`px-10 py-3 rounded-3xl font-semibold transition-all duration-300
-                            ${isContinueDisabled ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
-                        >
-                            Continue
-                        </button>
-                    </div>
+                        </div>
+                    )}
                 </div>
                 </div>
             </div>

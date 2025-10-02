@@ -17,7 +17,6 @@ const analysts = [
 ];
 
 const meetings = [
-    { id: 1, title: '15-Min Intro', duration: '15 minutes' },
     { id: 2, title: '30-Min Strategy', duration: '30 minutes' },
     { id: 3, title: '60-Min Deep', duration: '60 minutes' }
 ];

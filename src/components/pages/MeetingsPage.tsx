@@ -234,17 +234,6 @@ const timezoneGroups: TimezoneGroup[] = [
 
 // --- HELPER COMPONENTS ---
 
-// A simple Circle icon for the progress steps
-const CircleStep = ({ step, isActive }: { step: number; isActive: boolean }) => (
-    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 border-2 ${isActive ? 'bg-blue-500 border-blue-500 text-white' : 'bg-[#0D0D0D] border-gray-600 text-gray-400'}`}>
-        {step}
-    </div>
-);
-
-// A line segment to connect the circles with proper spacing
-const Line = ({ isActive }: { isActive: boolean }) => (
-    <div className={`flex-1 h-0.5 mx-2 ${isActive ? 'bg-blue-500' : 'bg-gray-700'}`}></div>
-);
 
 
 // Reusable Analyst Card Component

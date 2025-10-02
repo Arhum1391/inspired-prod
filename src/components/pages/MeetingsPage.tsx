@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDown, ChevronLeft } from 'lucide-react';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
 // --- TYPE DEFINITIONS ---
@@ -34,6 +35,7 @@ interface AnalystCardProps {
   isSelected: boolean;
   onSelect: (id: number) => void;
   onAdvance: () => void;
+  isTeamDataLoaded: boolean;
 }
 
 interface Timezone {
@@ -237,7 +239,7 @@ const timezoneGroups: TimezoneGroup[] = [
 
 
 // Reusable Analyst Card Component
-const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect, onAdvance }) => {
+const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect, onAdvance, isTeamDataLoaded }) => {
     const handleClick = () => {
         onSelect(analyst.id);
         // Auto-advance to next step after selection
@@ -303,10 +305,12 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
             <div className="relative z-10 flex flex-col items-center text-center">
                 {/* Large Circular Image */}
                 <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <img 
+                            <Image 
                                 src={analyst.image} 
                                 alt={analyst.name}
-                        className="w-full h-full object-cover filter grayscale"
+                                width={80}
+                                height={80}
+                                className="w-full h-full object-cover filter grayscale"
                                 onError={(e) => {
                                     // Fallback to placeholder if image doesn't exist
                                     e.currentTarget.style.display = 'none';
@@ -326,7 +330,9 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
                 
                 {/* Role - Use dynamic role from MongoDB */}
                 <p className="text-gray-400 text-sm leading-tight line-clamp-2">
-                    {analyst.description}
+                    {isTeamDataLoaded ? analyst.description : (
+                        <span className="inline-block w-20 h-3 bg-gray-600 rounded animate-pulse"></span>
+                    )}
                 </p>
             </div>
         </div>
@@ -448,8 +454,8 @@ const MeetingsPage: React.FC = () => {
     const [analystAbout, setAnalystAbout] = useState<string>('');
     const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
     const [isTimezoneOpen, setIsTimezoneOpen] = useState<boolean>(false);
-    const [teamData, setTeamData] = useState<any[]>([]);
-    const [analysts, setAnalysts] = useState<Analyst[]>([]);
+    const [teamData, setTeamData] = useState<{name: string, role: string}[]>([]);
+    const [analysts, setAnalysts] = useState<Analyst[]>(baseAnalysts);
     const [isTeamDataLoaded, setIsTeamDataLoaded] = useState<boolean>(false);
 
     // Function to fetch analyst about data from MongoDB
@@ -505,14 +511,13 @@ const MeetingsPage: React.FC = () => {
             }
         } catch (error) {
             console.error('Error fetching team data:', error);
-            // Fallback to base analysts if API fails
-            setAnalysts(baseAnalysts);
+            // Keep existing analysts with default descriptions
             setIsTeamDataLoaded(true);
         }
     };
 
     // Function to update analysts array with team data
-    const updateAnalystsWithTeamData = (team: any[]) => {
+    const updateAnalystsWithTeamData = (team: {name: string, role: string}[]) => {
         const updatedAnalysts = baseAnalysts.map(analyst => {
             const teamMember = team.find(member => member.name === analyst.name);
             if (teamMember && teamMember.role) {
@@ -538,7 +543,7 @@ const MeetingsPage: React.FC = () => {
     // Fetch team data on component mount
     useEffect(() => {
         fetchTeamData();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Fetch analyst about data when analyst is selected
     useEffect(() => {
@@ -548,7 +553,7 @@ const MeetingsPage: React.FC = () => {
                 fetchAnalystAbout(analystName);
             }
         }
-    }, [selectedAnalyst]);
+    }, [selectedAnalyst, analysts]); // eslint-disable-line react-hooks/exhaustive-deps
     // const router = useRouter(); // Removed to prevent compilation error
 
     const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
@@ -1020,9 +1025,11 @@ const MeetingsPage: React.FC = () => {
                                             borderRadius: '50%'
                                         }}
                                     >
-                                        <img
+                                        <Image
                                             src={analysts.find(a => a.id === selectedAnalyst)?.image || '/team dark/Adnan.png'}
                                             alt={analysts.find(a => a.id === selectedAnalyst)?.name || 'Analyst'}
+                                            width={64}
+                                            height={64}
                                             className="w-full h-full object-cover filter grayscale"
                                         />
                             </div>
@@ -1219,66 +1226,16 @@ const MeetingsPage: React.FC = () => {
                                 <p className="text-gray-400">Choose the expert who best matches your needs and investment goals</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {!isTeamDataLoaded ? (
-                                    // Loading skeleton
-                                    Array.from({ length: 8 }, (_, index) => (
-                                        <div
-                                            key={index}
-                                            className="relative overflow-hidden group transition-all duration-300"
-                                            style={{
-                                                boxSizing: 'border-box',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                padding: '16px',
-                                                gap: '16px',
-                                                width: '196.75px',
-                                                height: '176px',
-                                                background: '#1F1F1F',
-                                                borderRadius: '16px',
-                                                flex: 'none',
-                                                order: 0,
-                                                alignSelf: 'stretch',
-                                                flexGrow: 1,
-                                                position: 'relative'
-                                            }}
-                                        >
-                                            {/* Curved Gradient Border */}
-                                            <div
-                                                className="absolute inset-0 pointer-events-none"
-                                                style={{
-                                                    borderRadius: '16px',
-                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                                                    padding: '1px'
-                                                }}
-                                            >
-                                                <div
-                                                    className="w-full h-full rounded-[15px]"
-                                                    style={{
-                                                        background: '#1F1F1F'
-                                                    }}
-                                                ></div>
-                                            </div>
-                                            
-                                            {/* Loading content */}
-                                            <div className="relative z-10 flex flex-col items-center text-center">
-                                                <div className="w-20 h-20 rounded-full bg-gray-700 animate-pulse"></div>
-                                                <div className="w-16 h-4 bg-gray-700 rounded animate-pulse mt-2"></div>
-                                                <div className="w-24 h-3 bg-gray-700 rounded animate-pulse mt-1"></div>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    analysts.map((analyst) => (
-                                        <AnalystCard
-                                            key={analyst.id}
-                                            analyst={analyst}
-                                            isSelected={selectedAnalyst === analyst.id}
-                                            onSelect={setSelectedAnalyst}
-                                            onAdvance={() => setCurrentStep(2)}
-                                        />
-                                    ))
-                                )}
+                                {analysts.map((analyst) => (
+                                    <AnalystCard
+                                        key={analyst.id}
+                                        analyst={analyst}
+                                        isSelected={selectedAnalyst === analyst.id}
+                                        onSelect={setSelectedAnalyst}
+                                        onAdvance={() => setCurrentStep(2)}
+                                        isTeamDataLoaded={isTeamDataLoaded}
+                                    />
+                                ))}
                             </div>
                         </div>
                     )}
@@ -1738,7 +1695,7 @@ const MeetingsPage: React.FC = () => {
                                     {/* Payment Details */}
                                     <div className="mt-6">
                                         <h3 className="text-base font-semibold text-white">Payment Details</h3>
-                                        <img src="/logo/Binance.svg" alt="Binance" className="w-32 h-32 -mt-8" />
+                                        <Image src="/logo/Binance.svg" alt="Binance" width={128} height={128} className="w-32 h-32 -mt-8" />
                                         <p className="text-xs text-gray-400 leading-relaxed -mt-8">
                                             By completing this booking, you agree to our Terms of Service and Privacy Policy. All services are provided for informational purposes only. Results may vary.
                                         </p>

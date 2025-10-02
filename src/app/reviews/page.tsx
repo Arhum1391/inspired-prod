@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
 // Mock reviews data
@@ -338,9 +339,11 @@ const ReviewsContent: React.FC = () => {
                                                             {/* Avatar and Name - Bottom Left */}
                                                             <div className="flex items-center gap-2">
                                                                 <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden">
-                                                                    <img 
+                                                                    <Image 
                                                                         src="/logo/review.svg" 
                                                                         alt="Review avatar" 
+                                                                        width={24}
+                                                                        height={24}
                                                                         className="w-full h-full object-cover"
                                                                     />
                                                                 </div>

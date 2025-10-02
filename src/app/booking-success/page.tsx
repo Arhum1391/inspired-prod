@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
 // Analyst data - should match the data from MeetingsPage
@@ -153,9 +154,11 @@ const BookingSuccessContent: React.FC = () => {
                 <div className="flex gap-4 mb-8">
                     {/* Google Calendar */}
                     <button className="bg-white text-black px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
-                        <img 
+                        <Image 
                             src="/logo/calendar.svg" 
                             alt="Google Calendar" 
+                            width={20}
+                            height={20}
                             className="w-5 h-5"
                         />
                         Google Calendar
@@ -163,9 +166,11 @@ const BookingSuccessContent: React.FC = () => {
 
                     {/* Outlook Calendar */}
                     <button className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
-                        <img 
+                        <Image 
                             src="/logo/outlook.png" 
                             alt="Outlook Calendar" 
+                            width={20}
+                            height={20}
                             className="w-5 h-5"
                         />
                         Outlook Calendar

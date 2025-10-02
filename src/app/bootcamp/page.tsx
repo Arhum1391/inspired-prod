@@ -337,7 +337,7 @@ export default function BootcampPage() {
                       Hands-on Learning
                     </h3>
                     <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
-                      Forget outdated theory. Our mentorship is built around real market case studies, live examples, and practical exercises so you can immediately apply what you learn. You'll gain not just knowledge, but the confidence to use it in real-world scenarios.
+                      Forget outdated theory. Our mentorship is built around real market case studies, live examples, and practical exercises so you can immediately apply what you learn. You&apos;ll gain not just knowledge, but the confidence to use it in real-world scenarios.
                     </p>
                   </div>
                 </div>
@@ -360,7 +360,7 @@ export default function BootcampPage() {
                       Proven Expertise
                     </h3>
                     <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
-                      Learn directly from Inspired Analyst experts with years of trading, investing, and data-driven experience. Our mentors have guided hundreds of learners and bring insider knowledge, strategies, and industry insights you won't find in standard courses.
+                      Learn directly from Inspired Analyst experts with years of trading, investing, and data-driven experience. Our mentors have guided hundreds of learners and bring insider knowledge, strategies, and industry insights you won&apos;t find in standard courses.
                     </p>
                   </div>
                 </div>

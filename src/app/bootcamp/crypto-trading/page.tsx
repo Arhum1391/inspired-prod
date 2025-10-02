@@ -2,7 +2,6 @@
 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target } from 'lucide-react';
 import Image from 'next/image';
 
@@ -49,12 +48,12 @@ export default function CryptoTradingBootcampPage() {
 
                   {/* Description Paragraph 1 */}
                   <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
-                    The Crypto Trading Bootcamp is designed for anyone who wants to confidently trade cryptocurrencies by combining technical analysis, market psychology, and practical strategies. Over 6 weeks, you'll learn how to read charts, identify trends, manage risks, and build a sustainable trading approach that suits your goals.
+                    The Crypto Trading Bootcamp is designed for anyone who wants to confidently trade cryptocurrencies by combining technical analysis, market psychology, and practical strategies. Over 6 weeks, you&apos;ll learn how to read charts, identify trends, manage risks, and build a sustainable trading approach that suits your goals.
                   </p>
 
                   {/* Description Paragraph 2 */}
                   <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
-                    Unlike generic trading courses, this mentorship bootcamp is interactive and guided by a Senior Crypto Analyst with years of hands-on experience. You'll work on real market scenarios, case studies, and live examples — ensuring that you not only learn but also apply the strategies in real time.
+                    Unlike generic trading courses, this mentorship bootcamp is interactive and guided by a Senior Crypto Analyst with years of hands-on experience. You&apos;ll work on real market scenarios, case studies, and live examples — ensuring that you not only learn but also apply the strategies in real time.
                   </p>
                 </div>
 
@@ -336,7 +335,7 @@ export default function CryptoTradingBootcampPage() {
               <div className="flex flex-col items-center gap-6 w-full">
                 {/* Title */}
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white text-center max-w-[888px]" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '130%'}}>
-                  What You'll Learn
+                  What You&apos;ll Learn
                 </h2>
 
                 {/* Subtitle */}

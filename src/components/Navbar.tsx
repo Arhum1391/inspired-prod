@@ -92,11 +92,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                   <div className="flex flex-col gap-2">
                     <a
                       href="#"
-                      className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors ${
-                        activeLink === 'Research' ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                      }`}
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
                       onClick={() => {
-                        setActiveLink('Research');
                         setIsMobileMenuOpen(false);
                       }}
                     >
@@ -104,11 +101,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                     </a>
                     <a
                       href="#"
-                      className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors ${
-                        activeLink === 'Calculator' ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                      }`}
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
                       onClick={() => {
-                        setActiveLink('Calculator');
                         setIsMobileMenuOpen(false);
                       }}
                     >
@@ -116,11 +110,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                     </a>
                     <a
                       href="#"
-                      className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors ${
-                        activeLink === 'Portfolio' ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                      }`}
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
                       onClick={() => {
-                        setActiveLink('Portfolio');
                         setIsMobileMenuOpen(false);
                       }}
                     >
@@ -128,11 +119,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                     </a>
                     <a
                       href="#"
-                      className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors ${
-                        activeLink === 'Shariah' ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                      }`}
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
                       onClick={() => {
-                        setActiveLink('Shariah');
                         setIsMobileMenuOpen(false);
                       }}
                     >
@@ -140,11 +128,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                     </a>
                     <a
                       href="#"
-                      className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors ${
-                        activeLink === 'Our Team' ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                      }`}
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
                       onClick={() => {
-                        setActiveLink('Our Team');
                         setIsMobileMenuOpen(false);
                       }}
                     >

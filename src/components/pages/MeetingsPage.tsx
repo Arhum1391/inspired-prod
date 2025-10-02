@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-// import { useRouter } from 'next/navigation'; // Removed to prevent compilation error
+import { useRouter } from 'next/navigation';
 import { ChevronDown, ChevronLeft } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
@@ -42,7 +42,7 @@ interface Timezone {
 }
 
 // --- MOCK DATA ---
-const analysts: Analyst[] = [
+const baseAnalysts: Analyst[] = [
   {
     id: 0,
     name: 'Adnan',
@@ -265,9 +265,26 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
                 order: 0,
                 alignSelf: 'stretch',
                 flexGrow: 1,
-                border: isSelected ? '2px solid #8B5CF6' : 'none'
+                position: 'relative'
             }}
         >
+            {/* Curved Gradient Border */}
+            <div 
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                    borderRadius: '16px',
+                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                    padding: '1px'
+                }}
+            >
+                <div 
+                    className="w-full h-full rounded-[15px]"
+                    style={{
+                        background: '#1F1F1F'
+                    }}
+                ></div>
+            </div>
+            
             {/* Gradient Overlay for Selected Card */}
             {isSelected && (
                 <div 
@@ -281,34 +298,6 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
                     }}
                 />
             )}
-            
-            {/* Enhanced Shiny Glint Effect - Top Right Corner */}
-            <div 
-                className="absolute top-0 right-0 w-8 h-8 opacity-60"
-                style={{
-                    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                    borderRadius: '16px 16px 0 0'
-                }}
-            ></div>
-            
-            {/* Enhanced Top Border Glint */}
-            <div 
-                className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
-                style={{
-                    background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
-                }}
-            ></div>
-            
-            {/* Enhanced Right Border Glint */}
-            <div 
-                className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
-                style={{
-                    height: '32px',
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                    borderRadius: '0 16px 0 0'
-                }}
-            ></div>
-            
             
             {/* Content with relative positioning to appear above gradient */}
             <div className="relative z-10 flex flex-col items-center text-center">
@@ -333,19 +322,11 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
                         </div>
                         
                         {/* Name */}
-                <h3 className="text-sm font-bold text-white mb-1">{analyst.name}</h3>
+                <h3 className="text-sm font-bold text-white mb-2">{analyst.name}</h3>
                 
-                {/* Role - Extract from description or use predefined roles */}
-                <p className="text-gray-400 text-xs leading-tight line-clamp-2">
-                    {analyst.name === 'Adnan' ? 'Content Creator & Analyst' :
-                     analyst.name === 'Assassin' ? 'Co-Founder & Trading Expert' :
-                     analyst.name === 'Hassan Tariq' ? 'Senior Crypto Analyst' :
-                     analyst.name === 'Hamza Ali' ? 'Risk Management Specialist' :
-                     analyst.name === 'Hassan Khan' ? 'Gold Trading Expert' :
-                     analyst.name === 'Meower' ? 'Breakout Trading Specialist' :
-                     analyst.name === 'Mohid' ? 'Advanced ICT Mentor' :
-                     analyst.name === 'M. Usama' ? 'Multi-Asset Trader' :
-                     'Trading Expert'}
+                {/* Role - Use dynamic role from MongoDB */}
+                <p className="text-gray-400 text-sm leading-tight line-clamp-2">
+                    {analyst.description}
                 </p>
             </div>
         </div>
@@ -368,56 +349,46 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
                 width: '100%',
                 background: '#1F1F1F',
                 borderRadius: '16px',
-                border: '2px solid transparent',
                 flex: 'none',
                 order: 0,
                 alignSelf: 'stretch',
-                flexGrow: 1
+                flexGrow: 1,
+                position: 'relative'
             }}
         >
             {/* Gradient Overlay for Selected Card */}
             {isSelected && (
                 <div 
-                    className="absolute inset-0 rounded-2xl opacity-80"
+                    className="absolute inset-0 rounded-2xl opacity-80 pointer-events-none"
                     style={{
                         backgroundImage: 'url("/gradient/Ellipse 2.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
+                        zIndex: 5
                     }}
                 />
             )}
             
-            {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+            {/* Curved Gradient Border */}
             <div 
-                className="absolute top-0 right-0 w-8 h-8 opacity-60"
+                className="absolute inset-0 pointer-events-none"
                 style={{
-                    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                    borderRadius: '16px 16px 0 0'
+                    borderRadius: '16px',
+                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                    padding: '1px'
                 }}
-            ></div>
-            
-            {/* Enhanced Top Border Glint */}
-            <div 
-                className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
-                style={{
-                    background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
-                }}
-            ></div>
-            
-            {/* Enhanced Right Border Glint */}
-            <div 
-                className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
-                style={{
-                    height: '32px',
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                    borderRadius: '0 16px 0 0'
-                }}
-            ></div>
-            
+            >
+                <div 
+                    className="w-full h-full rounded-[15px]"
+                    style={{
+                        background: '#1F1F1F'
+                    }}
+                ></div>
+            </div>
             
             {/* Content with relative positioning to appear above gradient */}
-            <div className="relative z-10 flex flex-col items-start text-left w-full">
+            <div className="relative z-20 flex flex-col items-start text-left w-full">
                 <div className="flex justify-between items-start mb-1 w-full">
                     <h3 className="text-xl font-bold text-white">{meeting.title}</h3>
                     <div className="relative overflow-hidden rounded-full">
@@ -454,9 +425,9 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
                 </div>
                 </div>
                 <div className="mb-2">
-                    <span className={`inline-block px-3 py-1 text-xs rounded-full bg-opacity-20 ${
-                        meeting.id === 2 ? 'bg-purple-400/20 text-purple-300' :
-                        'bg-yellow-400/20 text-yellow-300'
+                    <span className={`inline-block px-3 py-1 text-xs rounded-full bg-[#1F1F1F] border ${
+                        meeting.id === 2 ? 'text-purple-300 border-purple-300/50' :
+                        'text-yellow-300 border-yellow-300/50'
                     }`}>
                         {meeting.duration}
                     </span>
@@ -469,6 +440,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
 
 // --- MAIN PAGE COMPONENT ---
 const MeetingsPage: React.FC = () => {
+    const router = useRouter();
     const [currentStep, setCurrentStep] = useState<number>(1);
     const [selectedAnalyst, setSelectedAnalyst] = useState<number | null>(null); // No default selection
     const [selectedMeeting, setSelectedMeeting] = useState<number | null>(null); // No default selection
@@ -476,6 +448,9 @@ const MeetingsPage: React.FC = () => {
     const [analystAbout, setAnalystAbout] = useState<string>('');
     const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
     const [isTimezoneOpen, setIsTimezoneOpen] = useState<boolean>(false);
+    const [teamData, setTeamData] = useState<any[]>([]);
+    const [analysts, setAnalysts] = useState<Analyst[]>([]);
+    const [isTeamDataLoaded, setIsTeamDataLoaded] = useState<boolean>(false);
 
     // Function to fetch analyst about data from MongoDB
     const fetchAnalystAbout = async (analystName: string) => {
@@ -504,6 +479,53 @@ const MeetingsPage: React.FC = () => {
             setIsLoadingAbout(false);
         }
     };
+
+    // Function to fetch team data from MongoDB
+    const fetchTeamData = async () => {
+        try {
+            // First try to get from sessionStorage (pre-fetched from landing page)
+            const cachedData = sessionStorage.getItem('teamData');
+            if (cachedData) {
+                const team = JSON.parse(cachedData);
+                setTeamData(team);
+                updateAnalystsWithTeamData(team);
+                setIsTeamDataLoaded(true);
+                return;
+            }
+
+            // If not in cache, fetch from API
+            const response = await fetch('/api/team');
+            if (response.ok) {
+                const data = await response.json();
+                setTeamData(data.team);
+                updateAnalystsWithTeamData(data.team);
+                // Cache for future use
+                sessionStorage.setItem('teamData', JSON.stringify(data.team));
+                setIsTeamDataLoaded(true);
+            }
+        } catch (error) {
+            console.error('Error fetching team data:', error);
+            // Fallback to base analysts if API fails
+            setAnalysts(baseAnalysts);
+            setIsTeamDataLoaded(true);
+        }
+    };
+
+    // Function to update analysts array with team data
+    const updateAnalystsWithTeamData = (team: any[]) => {
+        const updatedAnalysts = baseAnalysts.map(analyst => {
+            const teamMember = team.find(member => member.name === analyst.name);
+            if (teamMember && teamMember.role) {
+                return {
+                    ...analyst,
+                    description: teamMember.role
+                };
+            }
+            return analyst;
+        });
+        setAnalysts(updatedAnalysts);
+    };
+
     const [hoveredTimezone, setHoveredTimezone] = useState<string>('');
     const [timezoneSearch, setTimezoneSearch] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>('');
@@ -512,6 +534,11 @@ const MeetingsPage: React.FC = () => {
     const [fullName, setFullName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [notes, setNotes] = useState<string>('');
+
+    // Fetch team data on component mount
+    useEffect(() => {
+        fetchTeamData();
+    }, []);
 
     // Fetch analyst about data when analyst is selected
     useEffect(() => {
@@ -719,7 +746,7 @@ const MeetingsPage: React.FC = () => {
                 className="fixed bottom-0 left-0 w-[500px] h-[500px] pointer-events-none opacity-100"
                 style={{
                     background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                    transform: 'rotate(0deg) translate(-50px, 300px)',
+                    transform: 'rotate(0deg) translate(-160px, 300px)',
                     transformOrigin: 'bottom left',
                     borderRadius: '50%',
                     maskImage: 'radial-gradient(circle at center, black 20%, transparent 70%)',
@@ -732,7 +759,7 @@ const MeetingsPage: React.FC = () => {
                 className="fixed bottom-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-100"
                 style={{
                     background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                    transform: 'rotate(-45deg) translate(400px, 200px)',
+                    transform: 'rotate(-45deg) translate(300px, 200px)',
                     transformOrigin: 'bottom right',
                     borderRadius: '50%',
                     maskImage: 'radial-gradient(circle at center, black 20%, transparent 70%)',
@@ -943,7 +970,7 @@ const MeetingsPage: React.FC = () => {
 
                     {/* Selected Analyst Display */}
                     {selectedAnalyst !== null && currentStep === 2 && (
-                        <div className="mb-6 mt-8">
+                        <div className="mb-6 mt-8 -ml-4">
                             <div className="flex flex-col lg:flex-row gap-6 justify-center items-start">
                                 {/* Analyst Profile Tile */}
                                 <div
@@ -963,37 +990,26 @@ const MeetingsPage: React.FC = () => {
                                         flex: 'none',
                                         order: 0,
                                         alignSelf: 'flex-start',
-                                        flexGrow: 0
+                                        flexGrow: 0,
+                                        position: 'relative'
                                     }}
                                 >
-                                    {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                                    {/* Curved Gradient Border */}
                                     <div 
-                                        className="absolute top-0 right-0 opacity-60 overflow-hidden"
+                                        className="absolute inset-0 pointer-events-none"
                                         style={{
-                                            width: '32px',
-                                            height: '32px',
-                                            background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                                            borderRadius: '16px 16px 0 0'
+                                            borderRadius: '16px',
+                                            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                                            padding: '1px'
                                         }}
-                                    ></div>
-                                    
-                                    {/* Enhanced Top Border Glint */}
-                                    <div 
-                                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
-                                        style={{
-                                            background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
-                                        }}
-                                    ></div>
-                                    
-                                    {/* Enhanced Right Border Glint */}
-                                    <div 
-                                        className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
-                                        style={{
-                                            height: '32px',
-                                            background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                                            borderRadius: '0 16px 0 0'
-                                        }}
-                                    ></div>
+                                    >
+                                        <div 
+                                            className="w-full h-full rounded-[15px]"
+                                            style={{
+                                                background: '#1F1F1F'
+                                            }}
+                                        ></div>
+                                    </div>
 
                                     {/* Profile Image */}
                                     <div 
@@ -1038,14 +1054,7 @@ const MeetingsPage: React.FC = () => {
                                             fontFamily: 'Gilroy-Medium'
                                         }}
                                     >
-                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Adnan' && 'Content Creator & Data Scientist'}
-                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Assassin' && 'Crypto Trading Expert'}
-                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Hassan Tariq' && 'Technical Analysis Specialist'}
-                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Hamza Ali' && 'Risk Management Specialist'}
-                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Hassan Khan' && 'Gold Trading Expert'}
-                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Meower' && 'Market Analysis Expert'}
-                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Mohid' && 'Investment Strategist'}
-                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'M. Usama' && 'Financial Advisor'}
+                                        {analysts.find(a => a.id === selectedAnalyst)?.description}
                                     </p>
 
                                     {/* Rating Stars */}
@@ -1102,6 +1111,7 @@ const MeetingsPage: React.FC = () => {
 
                                     {/* View All Reviews Button */}
                                     <button 
+                                        onClick={() => router.push(`/reviews?analyst=${selectedAnalyst}`)}
                                         className="flex flex-row justify-center items-center relative z-10"
                                         style={{
                                             width: '164.75px',
@@ -1146,37 +1156,26 @@ const MeetingsPage: React.FC = () => {
                                         flex: 'none',
                                         order: 1,
                                         alignSelf: 'stretch',
-                                        flexGrow: 1
+                                        flexGrow: 1,
+                                        position: 'relative'
                                     }}
                                 >
-                                    {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                                    {/* Curved Gradient Border */}
                                     <div 
-                                        className="absolute top-0 right-0 opacity-60 overflow-hidden"
+                                        className="absolute inset-0 pointer-events-none"
                                         style={{
-                                            width: '32px',
-                                            height: '32px',
-                                            background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                                            borderRadius: '16px 16px 0 0'
+                                            borderRadius: '16px',
+                                            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                                            padding: '1px'
                                         }}
-                                    ></div>
-                                    
-                                    {/* Enhanced Top Border Glint */}
-                                    <div 
-                                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
-                                        style={{
-                                            background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
-                                        }}
-                                    ></div>
-                                    
-                                    {/* Enhanced Right Border Glint */}
-                                    <div 
-                                        className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
-                                        style={{
-                                            height: '32px',
-                                            background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                                            borderRadius: '0 16px 0 0'
-                                        }}
-                                    ></div>
+                                    >
+                                        <div 
+                                            className="w-full h-full rounded-[15px]"
+                                            style={{
+                                                background: '#1F1F1F'
+                                            }}
+                                        ></div>
+                                    </div>
 
                                     {/* Selected State Gradient Overlay */}
                                     <div 
@@ -1214,21 +1213,72 @@ const MeetingsPage: React.FC = () => {
 
                     {/* Step 1: Analyst Selection */}
                     {currentStep === 1 && (
-                        <div className="space-y-6">
+                        <div className="space-y-6 -ml-4">
                             <div>
                                 <h2 className="text-2xl font-semibold mb-2">Select Your Analyst</h2>
                                 <p className="text-gray-400">Choose the expert who best matches your needs and investment goals</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {analysts.map((analyst) => (
-                                    <AnalystCard
-                                        key={analyst.id}
-                                        analyst={analyst}
-                                        isSelected={selectedAnalyst === analyst.id}
-                                        onSelect={setSelectedAnalyst}
-                                        onAdvance={() => setCurrentStep(2)}
-                                    />
-                                ))}
+                                {!isTeamDataLoaded ? (
+                                    // Loading skeleton
+                                    Array.from({ length: 8 }, (_, index) => (
+                                        <div
+                                            key={index}
+                                            className="relative overflow-hidden group transition-all duration-300"
+                                            style={{
+                                                boxSizing: 'border-box',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                padding: '16px',
+                                                gap: '16px',
+                                                width: '196.75px',
+                                                height: '176px',
+                                                background: '#1F1F1F',
+                                                borderRadius: '16px',
+                                                flex: 'none',
+                                                order: 0,
+                                                alignSelf: 'stretch',
+                                                flexGrow: 1,
+                                                position: 'relative'
+                                            }}
+                                        >
+                                            {/* Curved Gradient Border */}
+                                            <div
+                                                className="absolute inset-0 pointer-events-none"
+                                                style={{
+                                                    borderRadius: '16px',
+                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                                                    padding: '1px'
+                                                }}
+                                            >
+                                                <div
+                                                    className="w-full h-full rounded-[15px]"
+                                                    style={{
+                                                        background: '#1F1F1F'
+                                                    }}
+                                                ></div>
+                                            </div>
+                                            
+                                            {/* Loading content */}
+                                            <div className="relative z-10 flex flex-col items-center text-center">
+                                                <div className="w-20 h-20 rounded-full bg-gray-700 animate-pulse"></div>
+                                                <div className="w-16 h-4 bg-gray-700 rounded animate-pulse mt-2"></div>
+                                                <div className="w-24 h-3 bg-gray-700 rounded animate-pulse mt-1"></div>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    analysts.map((analyst) => (
+                                        <AnalystCard
+                                            key={analyst.id}
+                                            analyst={analyst}
+                                            isSelected={selectedAnalyst === analyst.id}
+                                            onSelect={setSelectedAnalyst}
+                                            onAdvance={() => setCurrentStep(2)}
+                                        />
+                                    ))
+                                )}
                             </div>
                         </div>
                     )}
@@ -1237,7 +1287,7 @@ const MeetingsPage: React.FC = () => {
                     {currentStep === 2 && (
                         <div className="space-y-8">
                             {/* Meeting Selection */}
-                    <div className="space-y-6">
+                    <div className="space-y-6 -ml-4">
                         <div>
                             <h2 className="text-2xl font-semibold mb-2">Select Meeting</h2>
                             <p className="text-gray-400">Choose the session that best fits your needs</p>
@@ -1255,7 +1305,7 @@ const MeetingsPage: React.FC = () => {
                     </div>
 
                     {/* Timezone Selection */}
-                            <div>
+                            <div className="-ml-4">
                         <h2 className="text-2xl font-semibold mb-2">Select Time Zone</h2>
                         <div className="relative max-w-md">
                             {/* Search Input */}
@@ -1267,43 +1317,31 @@ const MeetingsPage: React.FC = () => {
                                                 height: '41px',
                                                 background: '#0A0A0A',
                                                 borderRadius: '8px',
-                                                border: '1px solid #404040',
                                                 display: 'flex',
                                                 flexDirection: 'row',
                                                 justifyContent: 'center',
                                                 alignItems: 'center',
                                                 gap: '10px',
-                                                boxSizing: 'border-box'
+                                                boxSizing: 'border-box',
+                                                position: 'relative'
                                             }}
                                         >
-                                            {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                                            {/* Curved Gradient Border */}
                                             <div 
-                                                className="absolute top-0 right-0 opacity-60 overflow-hidden"
+                                                className="absolute inset-0 pointer-events-none"
                                                 style={{
-                                                    width: '24px',
-                                                    height: '24px',
-                                                    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                                                    borderRadius: '8px 8px 0 0'
+                                                    borderRadius: '8px',
+                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                                                    padding: '1px'
                                                 }}
-                                            ></div>
-                                            
-                                            {/* Enhanced Top Border Glint */}
-                                            <div 
-                                                className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
-                                                style={{
-                                                    background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
-                                                }}
-                                            ></div>
-                                            
-                                            {/* Enhanced Right Border Glint */}
-                                            <div 
-                                                className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
-                                                style={{
-                                                    height: '20px',
-                                                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                                                    borderRadius: '0 8px 0 0'
-                                                }}
-                                            ></div>
+                                            >
+                                                <div 
+                                                    className="w-full h-full rounded-[7px]"
+                                                    style={{
+                                                        background: '#0A0A0A'
+                                                    }}
+                                                ></div>
+                                            </div>
 
                                 <input
                                     type="text"
@@ -1321,19 +1359,27 @@ const MeetingsPage: React.FC = () => {
                                                     borderRadius: '8px'
                                                 }}
                                 />
+                                <button
+                                    onClick={() => setIsTimezoneOpen(!isTimezoneOpen)}
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 z-10"
+                                >
                                 <ChevronDown 
                                     size={20} 
-                                                className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-transform duration-200 z-10 ${isTimezoneOpen ? 'rotate-180' : ''}`}
+                                        className={`transition-transform duration-200 ${isTimezoneOpen ? 'rotate-180' : ''}`}
                                 />
+                                </button>
                                         </div>
                             </div>
 
                             {/* Custom Dropdown Options */}
-                            {isTimezoneOpen && (
-                                        <div 
-                                            className="absolute z-50 mt-1 bg-black border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto relative"
-                                            style={{ width: '414px' }}
-                                        >
+                            <div 
+                                className={`absolute z-50 mt-1 bg-black border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto transition-all duration-300 ease-in-out ${
+                                    isTimezoneOpen 
+                                        ? 'opacity-100 translate-y-0 pointer-events-auto' 
+                                        : 'opacity-0 -translate-y-2 pointer-events-none'
+                                }`}
+                                style={{ width: '414px' }}
+                            >
                                             {/* Enhanced Shiny Glint Effect - Top Right Corner */}
                                             <div 
                                                 className="absolute top-0 right-0 w-12 h-12 opacity-60"
@@ -1419,23 +1465,22 @@ const MeetingsPage: React.FC = () => {
                                         ))
                                     )}
                                 </div>
-                            )}
 
                             {/* Backdrop to close dropdown */}
-                            {isTimezoneOpen && (
                                 <div 
-                                    className="fixed inset-0 z-40" 
+                                className={`fixed inset-0 z-40 transition-opacity duration-300 ${
+                                    isTimezoneOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+                                }`}
                                     onClick={() => {
                                         setIsTimezoneOpen(false);
                                         setTimezoneSearch('');
                                     }}
                                 />
-                            )}
                         </div>
                     </div>
 
                             {/* Date & Time Selection */}
-                        <div className="space-y-6">
+                        <div className="space-y-6 -ml-4">
                             <div className="flex gap-8 items-start">
                                 {/* Left side - Calendar with header */}
                                 <div className="flex-[1.2]">
@@ -1445,7 +1490,7 @@ const MeetingsPage: React.FC = () => {
                                     </div>
                                     
                                         <div 
-                                            className="bg-[#1F1F1F] border border-gray-700 rounded-xl mt-6 relative overflow-hidden"
+                                            className="bg-[#1F1F1F] rounded-xl mt-6 relative overflow-hidden"
                                             style={{
                                                 width: '412px',
                                                 height: '284px',
@@ -1453,37 +1498,26 @@ const MeetingsPage: React.FC = () => {
                                                 display: 'flex',
                                                 flexDirection: 'column',
                                                 alignItems: 'flex-start',
-                                                gap: '10px'
+                                                gap: '10px',
+                                                position: 'relative'
                                             }}
                                         >
-                                            {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                                            {/* Curved Gradient Border */}
                                             <div 
-                                                className="absolute top-0 right-0 opacity-60 overflow-hidden"
+                                                className="absolute inset-0 pointer-events-none"
                                                 style={{
-                                                    width: '32px',
-                                                    height: '32px',
-                                                    background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                                                    borderRadius: '12px 12px 0 0'
+                                                    borderRadius: '12px',
+                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                                                    padding: '1px'
                                                 }}
-                                            ></div>
-                                            
-                                            {/* Enhanced Top Border Glint */}
-                                            <div 
-                                                className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
-                                                style={{
-                                                    background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
-                                                }}
-                                            ></div>
-                                            
-                                            {/* Enhanced Right Border Glint */}
-                                            <div 
-                                                className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
-                                                style={{
-                                                    height: '24px',
-                                                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                                                    borderRadius: '0 12px 0 0'
-                                                }}
-                                            ></div>
+                                            >
+                                                <div 
+                                                    className="w-full h-full rounded-[11px]"
+                                                    style={{
+                                                        background: '#1F1F1F'
+                                                    }}
+                                                ></div>
+                                            </div>
 
                                             {/* Calendar Content Container */}
                                             <div 
@@ -1673,7 +1707,7 @@ const MeetingsPage: React.FC = () => {
                                                     value={fullName}
                                                     onChange={(e) => setFullName(e.target.value)}
                                                     placeholder="Enter Name"
-                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-gray-400 focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
                                                 />
                                             </div>
                                             
@@ -1684,7 +1718,7 @@ const MeetingsPage: React.FC = () => {
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder="abc@example.com"
-                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-gray-400 focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
                                                 />
                                             </div>
                                         </div>
@@ -1696,7 +1730,7 @@ const MeetingsPage: React.FC = () => {
                                                 onChange={(e) => setNotes(e.target.value)}
                                                 placeholder="Let us know if you want to discuss specific topics..."
                                                 rows={4}
-                                                className="w-full bg-black border-2 border-gray-500 rounded-lg py-3 px-4 text-gray-400 focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors resize-none"
+                                                className="w-full bg-black border-2 border-gray-500 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors resize-none"
                                             />
                                         </div>
                                     </div>
@@ -1719,13 +1753,13 @@ const MeetingsPage: React.FC = () => {
                                         {/* Meeting Type - Moved to top */}
                                         <div className="flex items-center justify-between mb-4">
                                             <h4 className="text-xl font-bold text-white">{getSelectedMeetingData()?.title}</h4>
-                                            <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                                                selectedMeeting === 1 ? 'bg-teal-400/20 text-teal-300' :
-                                                selectedMeeting === 2 ? 'bg-purple-400/20 text-purple-300' :
-                                                'bg-yellow-400/20 text-yellow-300'
-                                            }`}>
-                                                {getSelectedMeetingData()?.duration}
-                                            </span>
+                                                <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+                                                    selectedMeeting === 1 ? 'bg-teal-400/20 text-teal-300' :
+                                                    selectedMeeting === 2 ? 'bg-purple-400/20 text-purple-300' :
+                                                    'bg-yellow-400/20 text-yellow-300'
+                                                }`}>
+                                                    {getSelectedMeetingData()?.duration}
+                                                </span>
                                         </div>
                                         
                                         {/* Separation Line */}
@@ -1769,7 +1803,7 @@ const MeetingsPage: React.FC = () => {
                                                 <div 
                                                     className="mb-2 mx-auto"
                                                     style={{
-                                                        width: '250px',
+                                                        width: '2,50px',
                                                         height: '0px',
                                                         border: '1px solid #404040',
                                                         flex: 'none',

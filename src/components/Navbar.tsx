@@ -30,7 +30,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
     : "py-3 sm:py-4";
 
   return (
-    <div className={`relative z-20 w-full px-3 sm:px-4 lg:px-6 ${paddingClass}`}>
+    <div className={`relative z-20 w-full px-3 sm:px-4 lg:px-6 mt-4 ${paddingClass}`}>
       {/* Mobile Layout - Toggle and Logo left, Button right */}
       <div className="lg:hidden max-w-7xl mx-auto flex items-center justify-between">
         {/* Mobile Hamburger Menu & Logo - Left */}
@@ -63,7 +63,12 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                 {/* Logo Section */}
                 <div className="px-6 pt-8 pb-6">
                   <div className="flex items-center">
-                    <Link href="/" className="hover:opacity-80 transition-opacity" onClick={() => setIsMobileMenuOpen(false)}>
+                    <Link 
+                        href="/" 
+                        className="hover:opacity-80 transition-opacity outline-none focus:outline-none" 
+                        style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    >
                       <Image
                         src="/sidebar logo.svg"
                         alt="Inspired Analyst Logo"
@@ -159,7 +164,11 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
 
           {/* Logo - Next to toggle button */}
           <div className="flex items-center">
-            <Link href="/" className="w-28 sm:w-32 h-5 sm:h-6 rounded flex items-center justify-center hover:opacity-80 transition-opacity">
+            <Link 
+                href="/" 
+                className="w-28 sm:w-32 h-5 sm:h-6 rounded flex items-center justify-center hover:opacity-80 transition-opacity outline-none focus:outline-none" 
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+            >
               <Image
                 src="/Vector.svg"
                 alt="Inspired Analyst Logo"
@@ -187,7 +196,11 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
       <div className="hidden lg:flex max-w-7xl mx-auto items-center justify-between">
         {/* Logo with Vector.svg */}
         <div className="flex items-center">
-          <Link href="/" className="w-44 h-9 rounded flex items-center justify-center px-2 hover:opacity-80 transition-opacity">
+          <Link 
+              href="/" 
+              className="w-44 h-9 rounded flex items-center justify-center px-2 hover:opacity-80 transition-opacity outline-none focus:outline-none" 
+              style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+          >
             <Image
               src="/Vector.svg"
               alt="Inspired Analyst Logo"

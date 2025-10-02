@@ -82,15 +82,15 @@ const BookingSuccessContent: React.FC = () => {
             {/* Main Content */}
             <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
                 {/* Success Icon */}
-                <div className="flex items-center justify-center mb-8 mt-8">
+                <div className="flex items-center justify-center mb-4 mt-4">
                     <div className="relative">
                         {/* Circle Background */}
                         <div 
-                            className="w-16 h-16 rounded-full bg-transparent border-2 border-green-500 flex items-center justify-center"
+                            className="w-12 h-12 rounded-full bg-transparent border-2 border-green-500 flex items-center justify-center"
                         >
                             {/* Checkmark */}
                             <div 
-                                className={`w-8 h-8 transition-all duration-500 ${showSuccess ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+                                className={`w-6 h-6 transition-all duration-500 ${showSuccess ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
                                 style={{
                                     backgroundImage: 'url("/logo/Tick.svg")',
                                     backgroundSize: 'contain',
@@ -103,7 +103,7 @@ const BookingSuccessContent: React.FC = () => {
                 </div>
 
                 {/* Success Message */}
-                <div className="text-center mb-12">
+                <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-white mb-4">You&apos;re Booked!</h1>
                     <p className="text-white text-lg">
                         Your meeting has been confirmed. We&apos;ve sent a confirmation to your email.
@@ -111,7 +111,7 @@ const BookingSuccessContent: React.FC = () => {
                 </div>
 
                 {/* Meeting Details Card */}
-                <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-xl p-6 max-w-lg w-full mb-6 -mt-8">
+                <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-xl p-6 max-w-lg w-full mb-6 mt-4">
                     <div className="space-y-4">
                         {/* Meeting Type */}
                         <div className="flex items-center justify-between">

@@ -1,3 +1,5 @@
+'use client';
+
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import HeroSection from '@/components/sections/HeroSection';
 import TailoredGuidanceSection from '@/components/sections/TailoredGuidanceSection';
@@ -8,9 +10,26 @@ import BrandStories from '@/components/sections/BrandStories';
 import CollaborationForm from '@/components/sections/CollaborationForm';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export default function Home() {
+  // Pre-fetch team data when landing page loads
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        const response = await fetch('/api/team');
+        if (response.ok) {
+          const data = await response.json();
+          // Store in sessionStorage for use in meetings page
+          sessionStorage.setItem('teamData', JSON.stringify(data.team));
+        }
+      } catch (error) {
+        console.error('Error pre-fetching team data:', error);
+      }
+    };
+
+    fetchTeamData();
+  }, []);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">

@@ -35,6 +35,7 @@ interface AnalystCardProps {
   isSelected: boolean;
   onSelect: (id: number) => void;
   onAdvance: () => void;
+  isTeamDataLoaded: boolean;
 }
 
 interface Timezone {
@@ -238,7 +239,7 @@ const timezoneGroups: TimezoneGroup[] = [
 
 
 // Reusable Analyst Card Component
-const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect, onAdvance }) => {
+const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect, onAdvance, isTeamDataLoaded }) => {
     const handleClick = () => {
         onSelect(analyst.id);
         // Auto-advance to next step after selection
@@ -329,7 +330,9 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
                 
                 {/* Role - Use dynamic role from MongoDB */}
                 <p className="text-gray-400 text-sm leading-tight line-clamp-2">
-                    {analyst.description}
+                    {isTeamDataLoaded ? analyst.description : (
+                        <span className="inline-block w-20 h-3 bg-gray-600 rounded animate-pulse"></span>
+                    )}
                 </p>
             </div>
         </div>
@@ -452,7 +455,7 @@ const MeetingsPage: React.FC = () => {
     const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
     const [isTimezoneOpen, setIsTimezoneOpen] = useState<boolean>(false);
     const [teamData, setTeamData] = useState<{name: string, role: string}[]>([]);
-    const [analysts, setAnalysts] = useState<Analyst[]>([]);
+    const [analysts, setAnalysts] = useState<Analyst[]>(baseAnalysts);
     const [isTeamDataLoaded, setIsTeamDataLoaded] = useState<boolean>(false);
 
     // Function to fetch analyst about data from MongoDB
@@ -508,8 +511,7 @@ const MeetingsPage: React.FC = () => {
             }
         } catch (error) {
             console.error('Error fetching team data:', error);
-            // Fallback to base analysts if API fails
-            setAnalysts(baseAnalysts);
+            // Keep existing analysts with default descriptions
             setIsTeamDataLoaded(true);
         }
     };
@@ -1224,66 +1226,16 @@ const MeetingsPage: React.FC = () => {
                                 <p className="text-gray-400">Choose the expert who best matches your needs and investment goals</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {!isTeamDataLoaded ? (
-                                    // Loading skeleton
-                                    Array.from({ length: 8 }, (_, index) => (
-                                        <div
-                                            key={index}
-                                            className="relative overflow-hidden group transition-all duration-300"
-                                            style={{
-                                                boxSizing: 'border-box',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                padding: '16px',
-                                                gap: '16px',
-                                                width: '196.75px',
-                                                height: '176px',
-                                                background: '#1F1F1F',
-                                                borderRadius: '16px',
-                                                flex: 'none',
-                                                order: 0,
-                                                alignSelf: 'stretch',
-                                                flexGrow: 1,
-                                                position: 'relative'
-                                            }}
-                                        >
-                                            {/* Curved Gradient Border */}
-                                            <div
-                                                className="absolute inset-0 pointer-events-none"
-                                                style={{
-                                                    borderRadius: '16px',
-                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                                                    padding: '1px'
-                                                }}
-                                            >
-                                                <div
-                                                    className="w-full h-full rounded-[15px]"
-                                                    style={{
-                                                        background: '#1F1F1F'
-                                                    }}
-                                                ></div>
-                                            </div>
-                                            
-                                            {/* Loading content */}
-                                            <div className="relative z-10 flex flex-col items-center text-center">
-                                                <div className="w-20 h-20 rounded-full bg-gray-700 animate-pulse"></div>
-                                                <div className="w-16 h-4 bg-gray-700 rounded animate-pulse mt-2"></div>
-                                                <div className="w-24 h-3 bg-gray-700 rounded animate-pulse mt-1"></div>
-                                            </div>
-                                        </div>
-                                    ))
-                                ) : (
-                                    analysts.map((analyst) => (
+                                {analysts.map((analyst) => (
                                     <AnalystCard
                                         key={analyst.id}
                                         analyst={analyst}
                                         isSelected={selectedAnalyst === analyst.id}
                                         onSelect={setSelectedAnalyst}
-                                            onAdvance={() => setCurrentStep(2)}
+                                        onAdvance={() => setCurrentStep(2)}
+                                        isTeamDataLoaded={isTeamDataLoaded}
                                     />
-                                    ))
-                                )}
+                                ))}
                             </div>
                         </div>
                     )}

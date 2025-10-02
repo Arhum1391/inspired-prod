@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 // import { useRouter } from 'next/navigation'; // Removed to prevent compilation error
 import { ChevronDown, ChevronLeft } from 'lucide-react';
 import Navbar from '@/components/Navbar';
@@ -301,9 +301,11 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
             
             {/* Enhanced Right Border Glint */}
             <div 
-                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70"
+                className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
                 style={{
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)'
+                    height: '32px',
+                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                    borderRadius: '0 16px 0 0'
                 }}
             ></div>
             
@@ -312,25 +314,25 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
             <div className="relative z-10 flex flex-col items-center text-center">
                 {/* Large Circular Image */}
                 <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                    <img 
-                        src={analyst.image} 
-                        alt={analyst.name}
+                            <img 
+                                src={analyst.image} 
+                                alt={analyst.name}
                         className="w-full h-full object-cover filter grayscale"
-                        onError={(e) => {
-                            // Fallback to placeholder if image doesn't exist
-                            e.currentTarget.style.display = 'none';
-                            const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                            if (nextElement) {
-                                nextElement.style.display = 'flex';
-                            }
-                        }}
-                    />
+                                onError={(e) => {
+                                    // Fallback to placeholder if image doesn't exist
+                                    e.currentTarget.style.display = 'none';
+                                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                                    if (nextElement) {
+                                        nextElement.style.display = 'flex';
+                                    }
+                                }}
+                            />
                     <div className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-gray-300 text-lg font-bold" style={{display: 'none'}}>
-                        {analyst.name.charAt(0)}
-                    </div>
-                </div>
-                
-                {/* Name */}
+                                {analyst.name.charAt(0)}
+                            </div>
+                        </div>
+                        
+                        {/* Name */}
                 <h3 className="text-sm font-bold text-white mb-1">{analyst.name}</h3>
                 
                 {/* Role - Extract from description or use predefined roles */}
@@ -405,20 +407,53 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
             
             {/* Enhanced Right Border Glint */}
             <div 
-                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70"
+                className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
                 style={{
-                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)'
+                    height: '32px',
+                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                    borderRadius: '0 16px 0 0'
                 }}
             ></div>
             
             
             {/* Content with relative positioning to appear above gradient */}
-            <div className="relative z-10 flex flex-col items-center text-center">
-                <div className="flex justify-between items-start mb-3 w-full">
+            <div className="relative z-10 flex flex-col items-start text-left w-full">
+                <div className="flex justify-between items-start mb-1 w-full">
                     <h3 className="text-xl font-bold text-white">{meeting.title}</h3>
-                    <span className="bg-gray-900/70 text-gray-300 text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 group-hover:border-gray-500/70 transition-colors duration-300">{meeting.price}</span>
+                    <div className="relative overflow-hidden rounded-full">
+                        {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                        <div 
+                            className="absolute top-0 right-0 opacity-60"
+                            style={{
+                                width: '12px',
+                                height: '12px',
+                                background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                                borderRadius: '6px 6px 0 0'
+                            }}
+                        ></div>
+                        
+                        {/* Enhanced Top Border Glint */}
+                        <div 
+                            className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
+                            style={{
+                                background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
+                            }}
+                        ></div>
+                        
+                        {/* Enhanced Right Border Glint */}
+                        <div 
+                            className="absolute top-0 right-0 w-0.5 opacity-70"
+                            style={{
+                                height: '16px',
+                                background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                                borderRadius: '0 6px 0 0'
+                            }}
+                        ></div>
+                        
+                        <span className="relative z-10 bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 group-hover:border-gray-500/70 transition-colors duration-300">{meeting.price}</span>
                 </div>
-                <div className="mb-3">
+                </div>
+                <div className="mb-2">
                     <span className={`inline-block px-3 py-1 text-xs rounded-full bg-opacity-20 ${
                         meeting.id === 2 ? 'bg-purple-400/20 text-purple-300' :
                         'bg-yellow-400/20 text-yellow-300'
@@ -426,7 +461,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
                         {meeting.duration}
                     </span>
                 </div>
-                <p className="text-gray-400 text-sm leading-tight line-clamp-2">{meeting.description}</p>
+                <p className="text-gray-400 text-sm leading-tight line-clamp-3">{meeting.description}</p>
             </div>
         </div>
     );
@@ -438,7 +473,37 @@ const MeetingsPage: React.FC = () => {
     const [selectedAnalyst, setSelectedAnalyst] = useState<number | null>(null); // No default selection
     const [selectedMeeting, setSelectedMeeting] = useState<number | null>(null); // No default selection
     const [selectedTimezone, setSelectedTimezone] = useState<string>('');
+    const [analystAbout, setAnalystAbout] = useState<string>('');
+    const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
     const [isTimezoneOpen, setIsTimezoneOpen] = useState<boolean>(false);
+
+    // Function to fetch analyst about data from MongoDB
+    const fetchAnalystAbout = async (analystName: string) => {
+        setIsLoadingAbout(true);
+        setAnalystAbout(''); // Clear previous data immediately
+        
+        try {
+            const response = await fetch('/api/analyst-about', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: analystName }),
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                setAnalystAbout(data.about || 'No additional information available.');
+            } else {
+                setAnalystAbout('No additional information available.');
+            }
+        } catch (error) {
+            console.error('Error fetching analyst about data:', error);
+            setAnalystAbout('No additional information available.');
+        } finally {
+            setIsLoadingAbout(false);
+        }
+    };
     const [hoveredTimezone, setHoveredTimezone] = useState<string>('');
     const [timezoneSearch, setTimezoneSearch] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>('');
@@ -447,6 +512,16 @@ const MeetingsPage: React.FC = () => {
     const [fullName, setFullName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [notes, setNotes] = useState<string>('');
+
+    // Fetch analyst about data when analyst is selected
+    useEffect(() => {
+        if (selectedAnalyst !== null) {
+            const analystName = analysts.find(a => a.id === selectedAnalyst)?.name;
+            if (analystName) {
+                fetchAnalystAbout(analystName);
+            }
+        }
+    }, [selectedAnalyst]);
     // const router = useRouter(); // Removed to prevent compilation error
 
     const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
@@ -637,7 +712,9 @@ const MeetingsPage: React.FC = () => {
 
     return (
         <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative">
-            {/* Lower Corner Gradients */}
+            {/* Lower Corner Gradients - Hidden on step 2 (booking section) */}
+            {currentStep !== 2 && (
+                <>
             <div 
                 className="fixed bottom-0 left-0 w-[500px] h-[500px] pointer-events-none opacity-100"
                 style={{
@@ -664,6 +741,24 @@ const MeetingsPage: React.FC = () => {
                     WebkitFilter: 'blur(150px)'
                 }}
             ></div>
+                </>
+            )}
+
+            {/* Mid Left Gradient - Only visible on step 2 (booking section) */}
+            {currentStep === 2 && (
+                <div 
+                    className="absolute pointer-events-none opacity-100"
+                    style={{
+                        width: '588px',
+                        height: '588px',
+                        left: '-600px',
+                        top: '50%',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                        filter: 'blur(120px)'
+                    }}
+                ></div>
+            )}
             
             {/* Navigation Header */}
             <Navbar variant="hero" />
@@ -839,15 +934,281 @@ const MeetingsPage: React.FC = () => {
                 {/* Right Side: Booking Form */}
                 <div className="w-full lg:col-span-2">
                     {/* Back Button */}
-                    <div className="mb-1 mt-16">
+                    <div className="mb-1 mt-16 -ml-4">
                         <button onClick={handleBack} className="flex items-center text-white hover:text-gray-300 transition-colors">
                         <ChevronLeft size={20} className="mr-1" />
                         Back
                     </button>
                     </div>
 
+                    {/* Selected Analyst Display */}
+                    {selectedAnalyst !== null && currentStep === 2 && (
+                        <div className="mb-6 mt-8">
+                            <div className="flex flex-col lg:flex-row gap-6 justify-center items-start">
+                                {/* Analyst Profile Tile */}
+                                <div
+                                    className="relative overflow-hidden group transition-all duration-300"
+                                    style={{
+                                        boxSizing: 'border-box',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'flex-start',
+                                        padding: '16px',
+                                        gap: '8px',
+                                        width: '196.75px',
+                                        height: '220px',
+                                        background: '#1F1F1F',
+                                        borderRadius: '16px',
+                                        flex: 'none',
+                                        order: 0,
+                                        alignSelf: 'flex-start',
+                                        flexGrow: 0
+                                    }}
+                                >
+                                    {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                                    <div 
+                                        className="absolute top-0 right-0 opacity-60 overflow-hidden"
+                                        style={{
+                                            width: '32px',
+                                            height: '32px',
+                                            background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                                            borderRadius: '16px 16px 0 0'
+                                        }}
+                                    ></div>
+                                    
+                                    {/* Enhanced Top Border Glint */}
+                                    <div 
+                                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
+                                        style={{
+                                            background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
+                                        }}
+                                    ></div>
+                                    
+                                    {/* Enhanced Right Border Glint */}
+                                    <div 
+                                        className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
+                                        style={{
+                                            height: '32px',
+                                            background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                                            borderRadius: '0 16px 0 0'
+                                        }}
+                                    ></div>
+
+                                    {/* Profile Image */}
+                                    <div 
+                                        className="rounded-full overflow-hidden relative z-10"
+                                        style={{
+                                            width: '64px',
+                                            height: '64px',
+                                            borderRadius: '50%'
+                                        }}
+                                    >
+                                        <img
+                                            src={analysts.find(a => a.id === selectedAnalyst)?.image || '/team dark/Adnan.png'}
+                                            alt={analysts.find(a => a.id === selectedAnalyst)?.name || 'Analyst'}
+                                            className="w-full h-full object-cover filter grayscale"
+                                        />
+                            </div>
+
+                                    {/* Name */}
+                                    <h3 
+                                        className="text-white text-center relative z-10"
+                                        style={{
+                                            width: '164.75px',
+                                            height: '18px',
+                                            fontSize: '18px',
+                                            lineHeight: '100%',
+                                            fontWeight: '400',
+                                            fontFamily: 'Gilroy-SemiBold'
+                                        }}
+                                    >
+                                        {analysts.find(a => a.id === selectedAnalyst)?.name || 'Analyst'}
+                                    </h3>
+
+                                    {/* Role Display for Reviews Section */}
+                                    <p 
+                                        className="text-gray-400 text-center relative z-10"
+                                        style={{
+                                            width: '164.75px',
+                                            minHeight: '16px',
+                                            fontSize: '14px',
+                                            lineHeight: '130%',
+                                            fontWeight: '400',
+                                            fontFamily: 'Gilroy-Medium'
+                                        }}
+                                    >
+                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Adnan' && 'Content Creator & Data Scientist'}
+                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Assassin' && 'Crypto Trading Expert'}
+                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Hassan Tariq' && 'Technical Analysis Specialist'}
+                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Hamza Ali' && 'Risk Management Specialist'}
+                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Hassan Khan' && 'Gold Trading Expert'}
+                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Meower' && 'Market Analysis Expert'}
+                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'Mohid' && 'Investment Strategist'}
+                                        {analysts.find(a => a.id === selectedAnalyst)?.name === 'M. Usama' && 'Financial Advisor'}
+                                    </p>
+
+                                    {/* Rating Stars */}
+                                    <div 
+                                        className="flex flex-row items-center justify-center relative z-10"
+                                        style={{
+                                            width: '164.75px',
+                                            height: '14px',
+                                            gap: '4px'
+                                        }}
+                                    >
+                                        {/* Star */}
+                                        <div 
+                                            className="flex items-center justify-center"
+                                            style={{
+                                                width: '12px',
+                                                height: '12px',
+                                                flex: 'none',
+                                                order: 0,
+                                                flexGrow: 0
+                                            }}
+                                        >
+                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                                <path d="M6 0L7.5 4.5L12 4.5L8.25 7.5L9.75 12L6 9L2.25 12L3.75 7.5L0 4.5L4.5 4.5L6 0Z" fill="#DE50EC"/>
+                                            </svg>
+                            </div>
+                                        
+                                        {/* Rating Text */}
+                                        <span 
+                                            className="text-gray-400"
+                                            style={{
+                                                fontSize: '14px',
+                                                lineHeight: '100%',
+                                                fontWeight: '400',
+                                                fontFamily: 'Gilroy-Medium'
+                                            }}
+                                        >
+                                            4.9
+                                        </span>
+                                        
+                                        {/* Reviews Count */}
+                                        <span 
+                                            className="text-gray-400"
+                                            style={{
+                                                fontSize: '14px',
+                                                lineHeight: '100%',
+                                                fontWeight: '400',
+                                                fontFamily: 'Gilroy-Medium'
+                                            }}
+                                        >
+                                            (21 reviews)
+                                        </span>
+                        </div>
+
+                                    {/* View All Reviews Button */}
+                                    <button 
+                                        className="flex flex-row justify-center items-center relative z-10"
+                                        style={{
+                                            width: '164.75px',
+                                            height: '24px',
+                                            background: '#FFFFFF',
+                                            borderRadius: '40px',
+                                            padding: '10px',
+                                            gap: '10px'
+                                        }}
+                                    >
+                                        <span 
+                                            style={{
+                                                width: '89px',
+                                                height: '12px',
+                                                fontSize: '12px',
+                                                lineHeight: '100%',
+                                                fontWeight: '400',
+                                                fontFamily: 'Gilroy-Medium',
+                                                color: '#1F1F1F'
+                                            }}
+                                        >
+                                            View All Reviews
+                                        </span>
+                                    </button>
+                                </div>
+
+                                {/* About Tile */}
+                                <div
+                                    className="relative overflow-hidden group transition-all duration-300"
+                                    style={{
+                                        boxSizing: 'border-box',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'flex-start',
+                                        padding: '16px',
+                                        gap: '16px',
+                                        isolation: 'isolate',
+                                        width: '630.25px',
+                                        height: '220px',
+                                        background: '#1F1F1F',
+                                        borderRadius: '16px',
+                                        flex: 'none',
+                                        order: 1,
+                                        alignSelf: 'stretch',
+                                        flexGrow: 1
+                                    }}
+                                >
+                                    {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                                    <div 
+                                        className="absolute top-0 right-0 opacity-60 overflow-hidden"
+                                        style={{
+                                            width: '32px',
+                                            height: '32px',
+                                            background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                                            borderRadius: '16px 16px 0 0'
+                                        }}
+                                    ></div>
+                                    
+                                    {/* Enhanced Top Border Glint */}
+                                    <div 
+                                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
+                                        style={{
+                                            background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
+                                        }}
+                                    ></div>
+                                    
+                                    {/* Enhanced Right Border Glint */}
+                                    <div 
+                                        className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
+                                        style={{
+                                            height: '32px',
+                                            background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                                            borderRadius: '0 16px 0 0'
+                                        }}
+                                    ></div>
+
+                                    {/* Selected State Gradient Overlay */}
+                                    <div 
+                                        className="absolute inset-0 rounded-2xl opacity-80 pointer-events-none"
+                                        style={{
+                                            backgroundImage: 'url("/gradient/Ellipse 2.png")',
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center',
+                                            backgroundRepeat: 'no-repeat'
+                                        }}
+                                    ></div>
+
+                                    {/* About Content */}
+                                    <div className="relative z-10 w-full h-full">
+                                        <h3 className="text-white text-lg font-semibold mb-3">About</h3>
+                                        {isLoadingAbout ? (
+                                            <div className="flex items-center justify-center py-8">
+                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                                            </div>
+                                        ) : (
+                                            <p className="text-gray-400 text-sm leading-relaxed">
+                                                {analystAbout || 'No additional information available.'}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Title */}
-                    <div className="mb-8 mt-8">
+                    <div className="mb-8 mt-8 -ml-4">
                         <h1 className="text-4xl font-bold">Book Mentorship</h1>
                     </div>
 
@@ -876,29 +1237,29 @@ const MeetingsPage: React.FC = () => {
                     {currentStep === 2 && (
                         <div className="space-y-8">
                             {/* Meeting Selection */}
-                            <div className="space-y-6">
-                                <div>
-                                    <h2 className="text-2xl font-semibold mb-2">Select Meeting</h2>
-                                    <p className="text-gray-400">Choose the session that best fits your needs</p>
-                                </div>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    {meetings.map((meeting) => (
-                                        <MeetingCard
-                                            key={meeting.id}
-                                            meeting={meeting}
-                                            isSelected={selectedMeeting === meeting.id}
-                                            onSelect={setSelectedMeeting}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
+                    <div className="space-y-6">
+                        <div>
+                            <h2 className="text-2xl font-semibold mb-2">Select Meeting</h2>
+                            <p className="text-gray-400">Choose the session that best fits your needs</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {meetings.map((meeting) => (
+                                <MeetingCard
+                                    key={meeting.id}
+                                    meeting={meeting}
+                                    isSelected={selectedMeeting === meeting.id}
+                                    onSelect={setSelectedMeeting}
+                                />
+                            ))}
+                        </div>
+                    </div>
 
-                            {/* Timezone Selection */}
+                    {/* Timezone Selection */}
                             <div>
-                                <h2 className="text-2xl font-semibold mb-2">Select Time Zone</h2>
-                                <div className="relative max-w-md">
-                                    {/* Search Input */}
-                                    <div className="relative">
+                        <h2 className="text-2xl font-semibold mb-2">Select Time Zone</h2>
+                        <div className="relative max-w-md">
+                            {/* Search Input */}
+                            <div className="relative">
                                         <div 
                                             className="relative"
                                             style={{
@@ -936,18 +1297,19 @@ const MeetingsPage: React.FC = () => {
                                             
                                             {/* Enhanced Right Border Glint */}
                                             <div 
-                                                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70 overflow-hidden"
+                                                className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
                                                 style={{
+                                                    height: '20px',
                                                     background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                                                    borderRadius: '0 8px 8px 0'
+                                                    borderRadius: '0 8px 0 0'
                                                 }}
                                             ></div>
 
-                                            <input
-                                                type="text"
-                                                value={timezoneSearch || (selectedTimezone ? getTimezoneDisplayLabel() : '')}
-                                                onChange={(e) => handleTimezoneSearch(e.target.value)}
-                                                onFocus={handleTimezoneInputFocus}
+                                <input
+                                    type="text"
+                                            value={timezoneSearch || (selectedTimezone ? getTimezoneDisplayLabel() : '')}
+                                    onChange={(e) => handleTimezoneSearch(e.target.value)}
+                                    onFocus={handleTimezoneInputFocus}
                                                 placeholder="Select Timezone"
                                                 className="w-full text-white placeholder-white focus:outline-none transition-colors relative z-10"
                                                 style={{
@@ -958,16 +1320,16 @@ const MeetingsPage: React.FC = () => {
                                                     height: '100%',
                                                     borderRadius: '8px'
                                                 }}
-                                            />
-                                            <ChevronDown 
-                                                size={20} 
+                                />
+                                <ChevronDown 
+                                    size={20} 
                                                 className={`absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 transition-transform duration-200 z-10 ${isTimezoneOpen ? 'rotate-180' : ''}`}
-                                            />
+                                />
                                         </div>
-                                    </div>
+                            </div>
 
-                                    {/* Custom Dropdown Options */}
-                                    {isTimezoneOpen && (
+                            {/* Custom Dropdown Options */}
+                            {isTimezoneOpen && (
                                         <div 
                                             className="absolute z-50 mt-1 bg-black border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto relative"
                                             style={{ width: '414px' }}
@@ -991,97 +1353,99 @@ const MeetingsPage: React.FC = () => {
                                             
                                             {/* Enhanced Right Border Glint */}
                                             <div 
-                                                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70"
+                                                className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
                                                 style={{
-                                                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)'
+                                                    height: '20px',
+                                                    background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                                                    borderRadius: '0 8px 0 0'
                                                 }}
                                             ></div>
-                                            {timezoneSearch ? (
-                                                // Show filtered results when searching
-                                                filteredTimezones.length > 0 ? (
-                                                    filteredTimezones.map((tz) => (
-                                                        <button
-                                                            key={tz.value}
-                                                            type="button"
-                                                            onClick={() => handleTimezoneSelect(tz.value)}
-                                                            onMouseEnter={() => setHoveredTimezone(tz.value)}
-                                                            onMouseLeave={() => setHoveredTimezone('')}
-                                                            className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
-                                                                selectedTimezone === tz.value
-                                                                    ? 'bg-purple-600 text-white'
-                                                                    : hoveredTimezone === tz.value
-                                                                    ? 'bg-purple-500 text-white'
+                                    {timezoneSearch ? (
+                                        // Show filtered results when searching
+                                        filteredTimezones.length > 0 ? (
+                                            filteredTimezones.map((tz) => (
+                                                <button
+                                                    key={tz.value}
+                                                    type="button"
+                                                    onClick={() => handleTimezoneSelect(tz.value)}
+                                                    onMouseEnter={() => setHoveredTimezone(tz.value)}
+                                                    onMouseLeave={() => setHoveredTimezone('')}
+                                                    className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
+                                                        selectedTimezone === tz.value
+                                                            ? 'bg-purple-600 text-white'
+                                                            : hoveredTimezone === tz.value
+                                                            ? 'bg-purple-500 text-white'
                                                                     : 'bg-black text-white hover:bg-gray-800'
-                                                            }`}
-                                                        >
-                                                            <span>{tz.label}</span>
-                                                            <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
-                                                        </button>
-                                                    ))
-                                                ) : (
-                                                    <div className="px-4 py-3 text-sm text-gray-400 text-center">
-                                                        No timezones found
-                                                    </div>
-                                                )
-                                            ) : (
-                                                // Show grouped results when not searching
-                                                timezoneGroups.map((group) => (
-                                                    <div key={group.region}>
-                                                        {/* Region Header */}
+                                                    }`}
+                                                >
+                                                    <span>{tz.label}</span>
+                                                    <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
+                                                </button>
+                                            ))
+                                        ) : (
+                                            <div className="px-4 py-3 text-sm text-gray-400 text-center">
+                                                No timezones found
+                                            </div>
+                                        )
+                                    ) : (
+                                        // Show grouped results when not searching
+                                        timezoneGroups.map((group) => (
+                                            <div key={group.region}>
+                                                {/* Region Header */}
                                                         <div className="px-4 py-2 text-xs font-semibold text-gray-300 bg-gray-800/50 border-b border-gray-600">
-                                                            {group.region}
-                                                        </div>
-                                                        {/* Timezone Options */}
-                                                        {group.timezones.map((tz) => (
-                                                            <button
-                                                                key={tz.value}
-                                                                type="button"
-                                                                onClick={() => handleTimezoneSelect(tz.value)}
-                                                                onMouseEnter={() => setHoveredTimezone(tz.value)}
-                                                                onMouseLeave={() => setHoveredTimezone('')}
-                                                                className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
-                                                                    selectedTimezone === tz.value
-                                                                        ? 'bg-purple-600 text-white'
-                                                                        : hoveredTimezone === tz.value
-                                                                        ? 'bg-purple-500 text-white'
+                                                    {group.region}
+                                                </div>
+                                                {/* Timezone Options */}
+                                                {group.timezones.map((tz) => (
+                                                    <button
+                                                        key={tz.value}
+                                                        type="button"
+                                                        onClick={() => handleTimezoneSelect(tz.value)}
+                                                        onMouseEnter={() => setHoveredTimezone(tz.value)}
+                                                        onMouseLeave={() => setHoveredTimezone('')}
+                                                        className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
+                                                            selectedTimezone === tz.value
+                                                                ? 'bg-purple-600 text-white'
+                                                                : hoveredTimezone === tz.value
+                                                                ? 'bg-purple-500 text-white'
                                                                         : 'bg-black text-white hover:bg-gray-800'
-                                                                }`}
-                                                            >
-                                                                <span>{tz.label}</span>
-                                                                <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                ))
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* Backdrop to close dropdown */}
-                                    {isTimezoneOpen && (
-                                        <div 
-                                            className="fixed inset-0 z-40" 
-                                            onClick={() => {
-                                                setIsTimezoneOpen(false);
-                                                setTimezoneSearch('');
-                                            }}
-                                        />
+                                                        }`}
+                                                    >
+                                                        <span>{tz.label}</span>
+                                                        <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        ))
                                     )}
                                 </div>
-                            </div>
+                            )}
+
+                            {/* Backdrop to close dropdown */}
+                            {isTimezoneOpen && (
+                                <div 
+                                    className="fixed inset-0 z-40" 
+                                    onClick={() => {
+                                        setIsTimezoneOpen(false);
+                                        setTimezoneSearch('');
+                                    }}
+                                />
+                            )}
+                        </div>
+                    </div>
 
                             {/* Date & Time Selection */}
-                            <div className="space-y-6">
-                                <div className="flex gap-8 items-start">
-                                    {/* Left side - Calendar with header */}
-                                    <div className="flex-[1.2]">
-                                        <div>
-                                            <h2 className="text-2xl font-semibold mb-2">Pick a Date & Time</h2>
-                                            <p className="text-gray-400">Select when you would like to schedule your meeting</p>
-                                        </div>
-                                        
+                        <div className="space-y-6">
+                            <div className="flex gap-8 items-start">
+                                {/* Left side - Calendar with header */}
+                                <div className="flex-[1.2]">
+                                    <div>
+                                        <h2 className="text-2xl font-semibold mb-2">Pick a Date & Time</h2>
+                                        <p className="text-gray-400">Select when you would like to schedule your meeting</p>
+                                    </div>
+                                    
                                         <div 
-                                            className="bg-[#1F1F1F] border border-gray-700 rounded-xl mt-6 relative"
+                                            className="bg-[#1F1F1F] border border-gray-700 rounded-xl mt-6 relative overflow-hidden"
                                             style={{
                                                 width: '412px',
                                                 height: '284px',
@@ -1113,10 +1477,11 @@ const MeetingsPage: React.FC = () => {
                                             
                                             {/* Enhanced Right Border Glint */}
                                             <div 
-                                                className="absolute top-0 right-0 bottom-0 w-0.5 opacity-70 overflow-hidden"
+                                                className="absolute top-0 right-0 w-0.5 opacity-70 overflow-hidden"
                                                 style={{
+                                                    height: '24px',
                                                     background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                                                    borderRadius: '0 12px 12px 0'
+                                                    borderRadius: '0 12px 0 0'
                                                 }}
                                             ></div>
 
@@ -1131,7 +1496,7 @@ const MeetingsPage: React.FC = () => {
                                                     gap: '16px'
                                                 }}
                                             >
-                                                {/* Calendar Header */}
+                                        {/* Calendar Header */}
                                                 <div 
                                                     className="flex items-center justify-between"
                                                     style={{
@@ -1156,26 +1521,26 @@ const MeetingsPage: React.FC = () => {
                                                         {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                                                     </h3>
                                                     <div className="flex gap-2">
-                                                        <button
-                                                            onClick={() => navigateMonth('prev')}
+                                            <button
+                                                onClick={() => navigateMonth('prev')}
                                                             className="text-white hover:text-gray-300 transition-colors"
                                                             style={{ width: '16px', height: '16px' }}
-                                                        >
+                                            >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                                            </svg>
-                                                        </button>
-                                                        <button
-                                                            onClick={() => navigateMonth('next')}
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                                </svg>
+                                            </button>
+                                            <button
+                                                onClick={() => navigateMonth('next')}
                                                             className="text-white hover:text-gray-300 transition-colors"
                                                             style={{ width: '16px', height: '16px' }}
-                                                        >
+                                            >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                            </svg>
-                                                        </button>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </button>
                                                     </div>
-                                                </div>
+                                        </div>
 
                                                 {/* Calendar Grid */}
                                                 <div 
@@ -1201,18 +1566,18 @@ const MeetingsPage: React.FC = () => {
                                                         >
                                                             {/* Day Header */}
                                                             <div 
-                                                                className="text-center text-xs font-medium text-gray-400"
+                                                                className="text-center font-medium text-gray-400"
                                                                 style={{
                                                                     width: '100%',
                                                                     height: '11.16px',
-                                                                    fontSize: '11px',
+                                                                    fontSize: '14px',
                                                                     lineHeight: '100%',
                                                                     color: '#909090'
                                                                 }}
                                                             >
-                                                                {day}
-                                                            </div>
-                                                            
+                                                    {day}
+                                        </div>
+
                                                             {/* Date Column */}
                                                             <div 
                                                                 className="flex flex-col items-center"
@@ -1223,11 +1588,11 @@ const MeetingsPage: React.FC = () => {
                                                                 }}
                                                             >
                                                                 {getDaysInMonth(currentMonth).filter((_, index) => index % 7 === dayIndex).map((day, weekIndex) => (
-                                                                    <button
+                                                        <button
                                                                         key={weekIndex}
                                                                         onClick={() => day && handleDateSelect(day)}
                                                                         disabled={!day || !isDateAvailable(day)}
-                                                                        className={`
+                                                            className={`
                                                                             flex items-center justify-center transition-all duration-200
                                                                             ${day && isDateSelected(day)
                                                                                 ? 'bg-white text-black'
@@ -1247,36 +1612,36 @@ const MeetingsPage: React.FC = () => {
                                                                         }}
                                                                     >
                                                                         {day?.getDate()}
-                                                                    </button>
+                                                        </button>
                                                                 ))}
                                                             </div>
-                                                        </div>
-                                                    ))}
                                                 </div>
-                                            </div>
+                                            ))}
+                                                </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    {/* Right side - Time Slots */}
-                                    <div className="flex-1">
-                                        <h3 className="text-lg font-semibold text-white mb-2">Available Time Slots</h3>
-                                        
+                                {/* Right side - Time Slots */}
+                                <div className="flex-1">
+                                    <h3 className="text-lg font-semibold text-white mb-2">Available Time Slots</h3>
+                                    
                                         <div className="grid grid-cols-4 gap-2 mb-4">
-                                            {timeSlots.map((time) => (
-                                                <button
-                                                    key={time}
-                                                    onClick={() => handleTimeSelect(time)}
-                                                    className={`
+                                        {timeSlots.map((time) => (
+                                            <button
+                                                key={time}
+                                                onClick={() => handleTimeSelect(time)}
+                                                className={`
                                                         py-2 px-2 rounded-lg text-xs font-medium transition-all duration-200 w-20
-                                                        ${selectedTime === time
-                                                            ? 'bg-white text-black border-2 border-white'
+                                                    ${selectedTime === time
+                                                        ? 'bg-white text-black border-2 border-white'
                                                             : 'bg-[#0D0D0D] text-white hover:bg-gray-800 border border-white'
-                                                        }
-                                                    `}
-                                                >
-                                                    {time}
-                                                </button>
-                                            ))}
+                                                    }
+                                                `}
+                                            >
+                                                {time}
+                                            </button>
+                                        ))}
                                         </div>
                                         <p className="text-sm text-gray-400">Times shown in Berlin, Germany</p>
                                     </div>
@@ -1347,40 +1712,73 @@ const MeetingsPage: React.FC = () => {
                                 </div>
 
                                 {/* Right side - Booking Summary */}
-                                <div className="flex-1">
-                                    <div className="bg-gray-800/50 border border-gray-600/50 rounded-lg p-6">
+                                <div className="w-80">
+                                    <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-lg p-6">
                                         <h3 className="text-lg font-semibold text-white mb-4">Booking Summary</h3>
                                         
+                                        {/* Meeting Type - Moved to top */}
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h4 className="text-xl font-bold text-white">{getSelectedMeetingData()?.title}</h4>
+                                            <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+                                                selectedMeeting === 1 ? 'bg-teal-400/20 text-teal-300' :
+                                                selectedMeeting === 2 ? 'bg-purple-400/20 text-purple-300' :
+                                                'bg-yellow-400/20 text-yellow-300'
+                                            }`}>
+                                                {getSelectedMeetingData()?.duration}
+                                            </span>
+                                        </div>
+                                        
+                                        {/* Separation Line */}
+                                        <div 
+                                            className="mb-4 mx-auto"
+                                            style={{
+                                                width: '250px',
+                                                height: '0px',
+                                                border: '1px solid #404040',
+                                                flex: 'none',
+                                                order: 1,
+                                                alignSelf: 'stretch',
+                                                flexGrow: 0
+                                            }}
+                                        ></div>
+                                        
                                         <div className="space-y-4">
-                                            {/* Meeting Type */}
-                                            <div className="flex items-center justify-between">
-                                                <h4 className="text-sm font-medium text-gray-300">{getSelectedMeetingData()?.title}</h4>
-                                                <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                                                    selectedMeeting === 1 ? 'bg-teal-400/20 text-teal-300' :
-                                                    selectedMeeting === 2 ? 'bg-purple-400/20 text-purple-300' :
-                                                    'bg-yellow-400/20 text-yellow-300'
-                                                }`}>
-                                                    {getSelectedMeetingData()?.duration}
-                                                </span>
+                                            {/* Your Analyst */}
+                                            <div className="flex justify-between">
+                                                <span className="text-sm text-gray-300">Your Analyst</span>
+                                                <span className="text-sm text-white">{analysts.find(a => a.id === selectedAnalyst)?.name}</span>
                                             </div>
                                             
                                             {/* Date and Time */}
                                             <div>
-                                                <p className="text-base text-gray-300">{formatSelectedDate()}</p>
-                                                <p className="text-xs text-gray-300">{selectedTime} ({getSelectedTimezoneLabel()})</p>
+                                                <p className="text-lg text-white">{formatSelectedDate()}</p>
+                                                <p className="text-xs text-white">{selectedTime} ({getSelectedTimezoneLabel()})</p>
                                             </div>
                                             
                                             {/* Price */}
-                                            <div className="border-t border-gray-600 pt-4">
-                                                <div className="flex justify-between text-sm mb-2">
+                                            <div className="pt-1">
+                                                <div className="flex justify-between text-sm mb-4">
                                                     <span className="text-gray-300">Price</span>
                                                     <span className="text-white">{getMeetingPrice()}</span>
                                                 </div>
                                                 <div className="flex justify-between text-sm mb-2">
-                                                    <span className="text-gray-300">Tax (10%)</span>
-                                                    <span className="text-white">0.1 BNB</span>
+                                                    <span className="text-gray-300">Tax</span>
+                                                    <span className="text-white">10%</span>
                                                 </div>
-                                                <div className="flex justify-between text-base font-semibold border-t border-gray-600 pt-2">
+                                                {/* Separation Line Above Total */}
+                                                <div 
+                                                    className="mb-2 mx-auto"
+                                                    style={{
+                                                        width: '250px',
+                                                        height: '0px',
+                                                        border: '1px solid #404040',
+                                                        flex: 'none',
+                                                        order: 1,
+                                                        alignSelf: 'stretch',
+                                                        flexGrow: 0
+                                                    }}
+                                                ></div>
+                                                <div className="flex justify-between text-base font-semibold">
                                                     <span className="text-white">Total</span>
                                                     <span className="text-white">{getMeetingPrice()}</span>
                                                 </div>
@@ -1394,24 +1792,24 @@ const MeetingsPage: React.FC = () => {
 
                     {/* Action Buttons */}
                     {currentStep !== 1 && (
-                        <div className="mt-12 flex justify-end gap-4">
+                    <div className="mt-12 flex justify-end gap-4">
                             {(currentStep === 2 || currentStep === 3) && (
-                                <button
-                                    onClick={handleBack}
-                                    className="px-10 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white hover:bg-gray-800 border border-gray-700 hover:border-gray-600"
-                                >
-                                    Back
-                                </button>
-                            )}
                             <button
-                                onClick={handleContinue}
-                                disabled={isContinueDisabled}
-                                className={`px-10 py-3 rounded-3xl font-semibold transition-all duration-300
-                                ${isContinueDisabled ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
+                                onClick={handleBack}
+                                className="px-10 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white hover:bg-gray-800 border border-gray-700 hover:border-gray-600"
                             >
-                                {currentStep === 3 ? 'Complete Booking' : 'Proceed to Pay'}
+                                Back
                             </button>
-                        </div>
+                        )}
+                        <button
+                            onClick={handleContinue}
+                            disabled={isContinueDisabled}
+                            className={`px-10 py-3 rounded-3xl font-semibold transition-all duration-300
+                            ${isContinueDisabled ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
+                        >
+                                {currentStep === 3 ? 'Complete Booking' : 'Proceed to Pay'}
+                        </button>
+                    </div>
                     )}
                 </div>
                 </div>

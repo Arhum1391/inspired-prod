@@ -105,20 +105,14 @@ const BookingSuccessContent: React.FC = () => {
                 {/* Success Message */}
                 <div className="text-center mb-12">
                     <h1 className="text-4xl font-bold text-white mb-4">You&apos;re Booked!</h1>
-                    <p className="text-gray-400 text-lg">
+                    <p className="text-white text-lg">
                         Your meeting has been confirmed. We&apos;ve sent a confirmation to your email.
                     </p>
                 </div>
 
                 {/* Meeting Details Card */}
-                <div className="bg-gray-800/50 border border-gray-600/50 rounded-xl p-8 max-w-lg w-full mb-8">
-                    <div className="space-y-6">
-                        {/* Analyst Name */}
-                        <div>
-                            <p className="text-gray-400 text-sm mb-1">Analyst Name</p>
-                            <p className="text-white font-bold text-lg">{selectedAnalyst?.name || 'Unknown'}</p>
-                        </div>
-
+                <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-xl p-6 max-w-lg w-full mb-6 -mt-8">
+                    <div className="space-y-4">
                         {/* Meeting Type */}
                         <div className="flex items-center justify-between">
                             <div>
@@ -128,6 +122,12 @@ const BookingSuccessContent: React.FC = () => {
                             <span className="bg-teal-400/20 text-teal-300 text-xs px-3 py-1 rounded-full">
                                 {selectedMeeting?.duration || 'Unknown'}
                             </span>
+                        </div>
+
+                        {/* Analyst Name */}
+                        <div>
+                            <p className="text-gray-400 text-sm mb-1">Analyst Name</p>
+                            <p className="text-white font-bold text-lg">{selectedAnalyst?.name || 'Unknown'}</p>
                         </div>
 
                         {/* Date & Time */}
@@ -162,9 +162,9 @@ const BookingSuccessContent: React.FC = () => {
                     </button>
 
                     {/* Outlook Calendar */}
-                    <button className="bg-gray-800 border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors">
+                    <button className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
                         <img 
-                            src="/logo/outlook.svg" 
+                            src="/logo/outlook.png" 
                             alt="Outlook Calendar" 
                             className="w-5 h-5"
                         />
@@ -174,7 +174,7 @@ const BookingSuccessContent: React.FC = () => {
                     {/* Back Home Button */}
                     <button 
                         onClick={handleBackHome}
-                        className="bg-gray-800 border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-700 transition-colors"
+                        className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
                     >
                         Back Home
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -172,7 +172,7 @@ export default function NewsletterSubscription() {
           <div className="space-y-10">
             {/* Header */}
             <div className="space-y-6">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white">Stay Ahead of the Markets</h2>
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-semibold text-white">Stay Ahead of the Markets</h2>
               <p className="text-gray-300 text-base sm:text-lg leading-relaxed">
                 Join 25,000+ subscribers who rely on our research-backed analysis to make smarter investment decisions.
               </p>

@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface NavbarProps {
   variant?: 'default' | 'hero';
@@ -10,7 +11,12 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState('Research');
+  const pathname = usePathname();
+
+  const isActive = (path: string) => {
+    if (path === '/') return pathname === '/';
+    return pathname?.startsWith(path);
+  };
 
   // Prevent body scroll when sidebar is open
   useEffect(() => {
@@ -144,18 +150,17 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                     >
                       Our Team
                     </a>
-                    <a
-                      href="#"
+                    <Link
+                      href="/bootcamp"
                       className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors ${
-                        activeLink === 'Bootcamp' ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
+                        isActive('/bootcamp') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
                       }`}
                       onClick={() => {
-                        setActiveLink('Bootcamp');
                         setIsMobileMenuOpen(false);
                       }}
                     >
                       Bootcamp
-                    </a>
+                    </Link>
                   </div>
                 </nav>
               </div>
@@ -230,9 +235,14 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             <a href="#" className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors">
               Our Team
             </a>
-            <a href="#" className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors">
+            <Link
+              href="/bootcamp"
+              className={`text-xs sm:text-sm font-medium transition-colors ${
+                isActive('/bootcamp') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
+              }`}
+            >
               Bootcamp
-            </a>
+            </Link>
           </div>
         </nav>
 

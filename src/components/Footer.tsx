@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 const Footer = () => {
   return (
-    <div className="px-2 sm:px-4 md:px-6 lg:px-10 py-12 sm:py-14 lg:py-16">
+    <div className="px-2 sm:px-4 md:px-6 lg:px-10 py-12 sm:py-14 lg:py-16 pb-6 sm:pb-8 lg:pb-10">
       <div className="max-w-7xl mx-auto">
         <footer className="footer-container relative bg-[#141414] rounded-2xl p-10 overflow-hidden">
           {/* Footer SVG Background with Enhanced Colors */}

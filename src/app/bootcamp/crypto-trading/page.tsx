@@ -3,7 +3,8 @@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
-import { Clock, Globe, Calendar, Award } from 'lucide-react';
+import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target } from 'lucide-react';
+import Image from 'next/image';
 
 export default function CryptoTradingBootcampPage() {
   return (
@@ -66,9 +67,9 @@ export default function CryptoTradingBootcampPage() {
               </div>
 
               {/* Right Info Cards */}
-              <div className="flex flex-col gap-5 w-full lg:w-auto lg:flex-1 lg:justify-between pt-4">
+              <div className="flex flex-col gap-5 w-full lg:w-auto lg:flex-1 lg:justify-between">
                 {/* Row 1 */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-5">
                   {/* Duration Card */}
                   <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-6 relative overflow-hidden">
                     {/* Gradient Ellipse */}
@@ -133,7 +134,7 @@ export default function CryptoTradingBootcampPage() {
                 </div>
 
                 {/* Row 2 */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-5">
                   {/* Interactive Card */}
                   <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-6 relative overflow-hidden">
                     {/* Gradient Ellipse */}
@@ -254,7 +255,15 @@ export default function CryptoTradingBootcampPage() {
                 {/* Mentor Card 1 - Adnan */}
                 <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4">
                   {/* Profile Image */}
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500" />
+                  <div className="w-16 h-16 rounded-full overflow-hidden relative">
+                    <Image
+                      src="/team dark/Adnan.png"
+                      alt="Adnan"
+                      width={64}
+                      height={64}
+                      className="object-cover"
+                    />
+                  </div>
 
                   {/* Mentor Info */}
                   <div className="flex flex-col items-start gap-2 w-full">
@@ -281,7 +290,15 @@ export default function CryptoTradingBootcampPage() {
                 {/* Mentor Card 2 - Assassin */}
                 <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4">
                   {/* Profile Image */}
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500" />
+                  <div className="w-16 h-16 rounded-full overflow-hidden relative">
+                    <Image
+                      src="/team dark/Assassin.png"
+                      alt="Assassin"
+                      width={64}
+                      height={64}
+                      className="object-cover"
+                    />
+                  </div>
 
                   {/* Mentor Info */}
                   <div className="flex flex-col items-start gap-2 w-full">
@@ -310,10 +327,276 @@ export default function CryptoTradingBootcampPage() {
         </div>
       </section>
 
+      {/* What You'll Learn Section */}
+      <section className="relative z-0 py-12 sm:py-16 lg:py-20">
+        <div className="w-full px-4 sm:px-6 lg:px-6">
+          <div className="mx-auto max-w-[1064px]">
+            <div className="flex flex-col items-center gap-8 sm:gap-12 lg:gap-16">
+              {/* Section Header */}
+              <div className="flex flex-col items-center gap-6 w-full">
+                {/* Title */}
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white text-center max-w-[888px]" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '130%'}}>
+                  What You'll Learn
+                </h2>
+
+                {/* Subtitle */}
+                <p className="text-sm sm:text-base text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
+                  Our comprehensive curriculum is designed to take you from beginner to advanced trader
+                </p>
+              </div>
+
+              {/* Curriculum Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
+                {/* Week 1-2: Crypto Fundamentals */}
+                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                  {/* Background Ellipse */}
+                  <div
+                    className="absolute w-[588px] h-[588px] z-0"
+                    style={{
+                      left: '285.45px',
+                      top: '-359.87px',
+                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                      filter: 'blur(100px)',
+                      transform: 'rotate(-172.95deg)',
+                      borderRadius: '50%'
+                    }}
+                  />
+
+                  {/* Header */}
+                  <div className="flex items-start gap-4 relative z-10">
+                    {/* Icon */}
+                    <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-5 h-5 text-white" />
+                    </div>
+
+                    {/* Title */}
+                    <div className="flex flex-col gap-2 flex-1">
+                      <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Week 1-2
+                      </p>
+                      <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
+                        Crypto Fundamentals
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* List Items */}
+                  <div className="flex flex-col gap-4 relative z-10">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Blockchain technology basics
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Understanding market cycles
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Major cryptocurrencies overview
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Wallet security & setup
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Week 3-4: Technical Analysis */}
+                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                  {/* Background Ellipse */}
+                  <div
+                    className="absolute w-[588px] h-[588px] z-0"
+                    style={{
+                      left: '285.11px',
+                      top: '-359.87px',
+                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                      filter: 'blur(100px)',
+                      transform: 'rotate(-172.95deg)',
+                      borderRadius: '50%'
+                    }}
+                  />
+
+                  {/* Header */}
+                  <div className="flex items-start gap-4 relative z-10">
+                    {/* Icon */}
+                    <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-5 h-5 text-white" />
+                    </div>
+
+                    {/* Title */}
+                    <div className="flex flex-col gap-2 flex-1">
+                      <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Week 3-4
+                      </p>
+                      <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
+                        Technical Analysis
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* List Items */}
+                  <div className="flex flex-col gap-4 relative z-10">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Chart patterns & indicators
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Support & resistance levels
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Volume & momentum studies
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Candlestick analysis
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Week 5-6: Advanced Strategies */}
+                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                  {/* Background Ellipse */}
+                  <div
+                    className="absolute w-[588px] h-[588px] z-0"
+                    style={{
+                      left: '285.78px',
+                      top: '-359.87px',
+                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                      filter: 'blur(100px)',
+                      transform: 'rotate(-172.95deg)',
+                      borderRadius: '50%'
+                    }}
+                  />
+
+                  {/* Header */}
+                  <div className="flex items-start gap-4 relative z-10">
+                    {/* Icon */}
+                    <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center flex-shrink-0">
+                      <Target className="w-5 h-5 text-white" />
+                    </div>
+
+                    {/* Title */}
+                    <div className="flex flex-col gap-2 flex-1">
+                      <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Week 5-6
+                      </p>
+                      <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
+                        Advanced Strategies
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* List Items */}
+                  <div className="flex flex-col gap-4 relative z-10">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Risk management techniques
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Portfolio diversification
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        DeFi & yield farming
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Trading psychology
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Who Should Join Section */}
+      <section className="relative z-0 py-22 sm:py-26 lg:py-30">
+        <div className="w-full px-4 sm:px-6 lg:px-6">
+          <div className="mx-auto max-w-[1064px]">
+            <div className="bg-[#1F1F1F] rounded-2xl p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+              {/* Background Ellipse */}
+              <div
+                className="absolute w-[588px] h-[588px] z-0"
+                style={{
+                  right: '-180px',
+                  top: '-456px',
+                  background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                  filter: 'blur(200px)',
+                  transform: 'rotate(90deg)',
+                  borderRadius: '50%'
+                }}
+              />
+
+              {/* Content */}
+              <div className="flex flex-col gap-6 relative z-10">
+                {/* Title */}
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                  Who Should Join?
+                </h2>
+
+                {/* Subtitle */}
+                <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
+                  This bootcamp is perfect for:
+                </p>
+
+                {/* List Items */}
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                    <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                      Beginners who want to enter the crypto trading world with confidence.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                    <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                      Traders who want to refine their strategies and avoid common mistakes.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                    <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                      Investors looking to manage risk and grow their crypto portfolios.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Newsletter and Footer */}
-      <div className="py-12 sm:py-16 lg:py-20">
-        <NewsletterSubscription />
-      </div>
+     
 
       <Footer />
     </div>

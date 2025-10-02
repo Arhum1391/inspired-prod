@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChevronDown, ChevronLeft } from 'lucide-react';
+import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
 // --- TYPE DEFINITIONS ---
@@ -303,10 +304,12 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
             <div className="relative z-10 flex flex-col items-center text-center">
                 {/* Large Circular Image */}
                 <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <img 
+                            <Image 
                                 src={analyst.image} 
                                 alt={analyst.name}
-                        className="w-full h-full object-cover filter grayscale"
+                                width={80}
+                                height={80}
+                                className="w-full h-full object-cover filter grayscale"
                                 onError={(e) => {
                                     // Fallback to placeholder if image doesn't exist
                                     e.currentTarget.style.display = 'none';
@@ -448,7 +451,7 @@ const MeetingsPage: React.FC = () => {
     const [analystAbout, setAnalystAbout] = useState<string>('');
     const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
     const [isTimezoneOpen, setIsTimezoneOpen] = useState<boolean>(false);
-    const [teamData, setTeamData] = useState<any[]>([]);
+    const [teamData, setTeamData] = useState<{name: string, role: string}[]>([]);
     const [analysts, setAnalysts] = useState<Analyst[]>([]);
     const [isTeamDataLoaded, setIsTeamDataLoaded] = useState<boolean>(false);
 
@@ -512,7 +515,7 @@ const MeetingsPage: React.FC = () => {
     };
 
     // Function to update analysts array with team data
-    const updateAnalystsWithTeamData = (team: any[]) => {
+    const updateAnalystsWithTeamData = (team: {name: string, role: string}[]) => {
         const updatedAnalysts = baseAnalysts.map(analyst => {
             const teamMember = team.find(member => member.name === analyst.name);
             if (teamMember && teamMember.role) {
@@ -538,7 +541,7 @@ const MeetingsPage: React.FC = () => {
     // Fetch team data on component mount
     useEffect(() => {
         fetchTeamData();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Fetch analyst about data when analyst is selected
     useEffect(() => {
@@ -548,7 +551,7 @@ const MeetingsPage: React.FC = () => {
                 fetchAnalystAbout(analystName);
             }
         }
-    }, [selectedAnalyst]);
+    }, [selectedAnalyst, analysts]); // eslint-disable-line react-hooks/exhaustive-deps
     // const router = useRouter(); // Removed to prevent compilation error
 
     const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
@@ -1020,9 +1023,11 @@ const MeetingsPage: React.FC = () => {
                                             borderRadius: '50%'
                                         }}
                                     >
-                                        <img
+                                        <Image
                                             src={analysts.find(a => a.id === selectedAnalyst)?.image || '/team dark/Adnan.png'}
                                             alt={analysts.find(a => a.id === selectedAnalyst)?.name || 'Analyst'}
+                                            width={64}
+                                            height={64}
                                             className="w-full h-full object-cover filter grayscale"
                                         />
                             </div>
@@ -1270,13 +1275,13 @@ const MeetingsPage: React.FC = () => {
                                     ))
                                 ) : (
                                     analysts.map((analyst) => (
-                                        <AnalystCard
-                                            key={analyst.id}
-                                            analyst={analyst}
-                                            isSelected={selectedAnalyst === analyst.id}
-                                            onSelect={setSelectedAnalyst}
+                                    <AnalystCard
+                                        key={analyst.id}
+                                        analyst={analyst}
+                                        isSelected={selectedAnalyst === analyst.id}
+                                        onSelect={setSelectedAnalyst}
                                             onAdvance={() => setCurrentStep(2)}
-                                        />
+                                    />
                                     ))
                                 )}
                             </div>
@@ -1738,7 +1743,7 @@ const MeetingsPage: React.FC = () => {
                                     {/* Payment Details */}
                                     <div className="mt-6">
                                         <h3 className="text-base font-semibold text-white">Payment Details</h3>
-                                        <img src="/logo/Binance.svg" alt="Binance" className="w-32 h-32 -mt-8" />
+                                        <Image src="/logo/Binance.svg" alt="Binance" width={128} height={128} className="w-32 h-32 -mt-8" />
                                         <p className="text-xs text-gray-400 leading-relaxed -mt-8">
                                             By completing this booking, you agree to our Terms of Service and Privacy Policy. All services are provided for informational purposes only. Results may vary.
                                         </p>

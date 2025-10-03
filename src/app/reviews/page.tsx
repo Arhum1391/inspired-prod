@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
@@ -29,11 +29,25 @@ const reviews = [
 
 const ReviewsContent: React.FC = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [currentPage, setCurrentPage] = useState(1);
     const reviewsPerPage = 9; // 3x3 grid
 
     const handleBack = () => {
-        router.back();
+        const step = searchParams.get('step');
+        const selectedAnalyst = searchParams.get('selectedAnalyst');
+        if (step) {
+            // Navigate back to the meetings page with the specific step and selected analyst
+            const params = new URLSearchParams();
+            params.set('step', step);
+            if (selectedAnalyst) {
+                params.set('selectedAnalyst', selectedAnalyst);
+            }
+            router.push(`/meetings?${params.toString()}`);
+        } else {
+            // Fallback to browser back
+            router.back();
+        }
     };
 
     // Calculate pagination

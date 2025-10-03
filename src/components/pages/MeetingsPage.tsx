@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown, ChevronLeft } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
@@ -251,58 +251,33 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
     return (
         <div
             onClick={handleClick}
-            className="cursor-pointer relative overflow-hidden group transition-all duration-300"
-            style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                padding: '16px',
-                gap: '16px',
-                width: '196.75px',
-                height: '176px',
-                background: '#1F1F1F',
-                borderRadius: '16px',
-                flex: 'none',
-                order: 0,
-                alignSelf: 'stretch',
-                flexGrow: 1,
-                position: 'relative'
-            }}
+            className="cursor-pointer relative overflow-hidden group transition-all duration-300 flex flex-col items-center p-4 gap-4 w-full min-w-[180px] max-w-[220px] h-44 bg-[#1F1F1F] rounded-2xl"
         >
             {/* Curved Gradient Border */}
             <div 
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
                 style={{
-                    borderRadius: '16px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                    padding: '1px'
+                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
                 }}
             >
-                <div 
-                    className="w-full h-full rounded-[15px]"
-                    style={{
-                        background: '#1F1F1F'
-                    }}
-                ></div>
+                <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
             </div>
             
             {/* Gradient Overlay for Selected Card */}
             {isSelected && (
                 <div 
-                    className="absolute inset-0 opacity-80"
+                    className="absolute inset-0 opacity-80 rounded-2xl"
                     style={{
                         backgroundImage: 'url("/gradient/Ellipse 2.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                        borderRadius: '16px'
+                        backgroundRepeat: 'no-repeat'
                     }}
                 />
             )}
             
             {/* Content with relative positioning to appear above gradient */}
-            <div className="relative z-10 flex flex-col items-center text-center">
+            <div className="relative z-10 flex flex-col items-center text-center w-full">
                 {/* Large Circular Image */}
                 <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
                             <Image 
@@ -326,10 +301,10 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
                         </div>
                         
                         {/* Name */}
-                <h3 className="text-sm font-bold text-white mb-2">{analyst.name}</h3>
+                <h3 className="text-sm font-bold text-white mb-2 mt-3">{analyst.name}</h3>
                 
                 {/* Role - Use dynamic role from MongoDB */}
-                <p className="text-gray-400 text-sm leading-tight line-clamp-2">
+                <p className="text-gray-400 text-xs leading-tight line-clamp-2">
                     {isTeamDataLoaded ? analyst.description : (
                         <span className="inline-block w-20 h-3 bg-gray-600 rounded animate-pulse"></span>
                     )}
@@ -344,90 +319,64 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
     return (
         <div
             onClick={() => onSelect(meeting.id)}
-            className="cursor-pointer relative overflow-hidden group transition-all duration-300 hover:border-gray-500"
-            style={{
-                boxSizing: 'border-box',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                padding: '20px',
-                gap: '16px',
-                width: '100%',
-                background: '#1F1F1F',
-                borderRadius: '16px',
-                flex: 'none',
-                order: 0,
-                alignSelf: 'stretch',
-                flexGrow: 1,
-                position: 'relative'
-            }}
+            className="cursor-pointer relative overflow-hidden group transition-all duration-300 hover:border-gray-500 flex flex-col items-center p-5 gap-4 w-full bg-[#1F1F1F] rounded-2xl"
         >
             {/* Gradient Overlay for Selected Card */}
             {isSelected && (
                 <div 
-                    className="absolute inset-0 rounded-2xl opacity-80 pointer-events-none"
+                    className="absolute inset-0 rounded-2xl opacity-80 pointer-events-none z-[5]"
                     style={{
                         backgroundImage: 'url("/gradient/Ellipse 2.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat',
-                        zIndex: 5
+                        backgroundRepeat: 'no-repeat'
                     }}
                 />
             )}
             
             {/* Curved Gradient Border */}
             <div 
-                className="absolute inset-0 pointer-events-none"
+                className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
                 style={{
-                    borderRadius: '16px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                    padding: '1px'
+                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
                 }}
             >
-                <div 
-                    className="w-full h-full rounded-[15px]"
-                    style={{
-                        background: '#1F1F1F'
-                    }}
-                ></div>
+                <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
             </div>
             
             {/* Content with relative positioning to appear above gradient */}
             <div className="relative z-20 flex flex-col items-start text-left w-full">
-                <div className="flex justify-between items-start mb-1 w-full">
-                    <h3 className="text-xl font-bold text-white">{meeting.title}</h3>
-                    <div className="relative overflow-hidden rounded-full">
+                <div className="flex justify-between items-start mb-1 w-full gap-2">
+                    <h3 className="text-xl font-bold text-white flex-shrink">{meeting.title}</h3>
+                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
                         {/* Enhanced Shiny Glint Effect - Top Right Corner */}
                         <div 
-                            className="absolute top-0 right-0 opacity-60"
+                            className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
                             style={{
-                                width: '12px',
-                                height: '12px',
                                 background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                                borderRadius: '6px 6px 0 0'
+                                borderRadius: '50% 0 0 0'
                             }}
                         ></div>
                         
                         {/* Enhanced Top Border Glint */}
                         <div 
-                            className="absolute top-0 left-0 right-0 h-0.5 opacity-70"
+                            className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
                             style={{
-                                background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)'
+                                background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
+                                borderRadius: '50% 50% 0 0'
                             }}
                         ></div>
                         
                         {/* Enhanced Right Border Glint */}
                         <div 
-                            className="absolute top-0 right-0 w-0.5 opacity-70"
+                            className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
                             style={{
-                                height: '16px',
                                 background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                                borderRadius: '0 6px 0 0'
+                                borderRadius: '0 50% 0 0'
                             }}
                         ></div>
                         
-                        <span className="relative z-10 bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 group-hover:border-gray-500/70 transition-colors duration-300">{meeting.price}</span>
+                        <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 group-hover:border-gray-500/70 transition-colors duration-300 whitespace-nowrap">{meeting.price}</span>
                 </div>
                 </div>
                 <div className="mb-2">
@@ -447,6 +396,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
 // --- MAIN PAGE COMPONENT ---
 const MeetingsPage: React.FC = () => {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [currentStep, setCurrentStep] = useState<number>(1);
     const [selectedAnalyst, setSelectedAnalyst] = useState<number | null>(null); // No default selection
     const [selectedMeeting, setSelectedMeeting] = useState<number | null>(null); // No default selection
@@ -474,7 +424,10 @@ const MeetingsPage: React.FC = () => {
             
             if (response.ok) {
                 const data = await response.json();
-                setAnalystAbout(data.about || 'No additional information available.');
+                let aboutText = data.about || 'No additional information available.';
+                
+                
+                setAnalystAbout(aboutText);
             } else {
                 setAnalystAbout('No additional information available.');
             }
@@ -544,6 +497,26 @@ const MeetingsPage: React.FC = () => {
     useEffect(() => {
         fetchTeamData();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Handle step and selectedAnalyst parameters from URL (for navigation back from reviews page)
+    useEffect(() => {
+        const stepParam = searchParams.get('step');
+        const selectedAnalystParam = searchParams.get('selectedAnalyst');
+        
+        if (stepParam) {
+            const step = parseInt(stepParam);
+            if (step >= 1 && step <= 3) {
+                setCurrentStep(step);
+            }
+        }
+        
+        if (selectedAnalystParam) {
+            const analystId = parseInt(selectedAnalystParam);
+            if (analystId >= 0) {
+                setSelectedAnalyst(analystId);
+            }
+        }
+    }, [searchParams]);
 
     // Fetch analyst about data when analyst is selected
     useEffect(() => {
@@ -795,18 +768,18 @@ const MeetingsPage: React.FC = () => {
             {/* Navigation Header */}
             <Navbar variant="hero" />
 
-            <div className="flex items-center justify-center p-4 sm:p-6 lg:p-8 -mt-8 lg:-mt-12">
-                <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
+            <div className="flex items-center justify-center px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 -mt-8 lg:-mt-12">
+                <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 items-start">
                 
                 {/* Left Side: Image Belts */}
-                <div className="hidden lg:flex justify-center items-start h-full relative w-full max-w-sm">
+                <div className="hidden lg:flex justify-center items-start h-full relative w-full max-w-xs xl:max-w-sm">
                     <div className="flex w-full h-screen">
                         {/* Belt 1 - Rectangle 1 Images */}
                         <div className="flex-1 fade-mask overflow-hidden">
                             <div className="animate-scrollUp flex flex-col gap-6">
                                 {/* First set of images */}
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                             style={{
                                         backgroundImage: 'url("inspired analysts team/1.png")',
                                         backgroundSize: 'cover',
@@ -815,7 +788,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/2 improved.png")',
                                         backgroundSize: 'cover',
@@ -824,7 +797,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/3.jpg")',
                                         backgroundSize: 'cover',
@@ -833,7 +806,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/4.png")',
                                         backgroundSize: 'cover',
@@ -843,7 +816,7 @@ const MeetingsPage: React.FC = () => {
                                 ></div>
                                 {/* Duplicate for seamless loop */}
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/1.png")',
                                         backgroundSize: 'cover',
@@ -852,7 +825,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/2 improved.png")',
                                         backgroundSize: 'cover',
@@ -861,7 +834,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/3.jpg")',
                                         backgroundSize: 'cover',
@@ -870,7 +843,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-auto mr-1"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/4.png")',
                                         backgroundSize: 'cover',
@@ -886,7 +859,7 @@ const MeetingsPage: React.FC = () => {
                             <div className="animate-scrollDown flex flex-col gap-6">
                                 {/* First set of images */}
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/5.png")',
                                         backgroundSize: 'cover',
@@ -895,7 +868,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/6.jpg")',
                                         backgroundSize: 'cover',
@@ -904,7 +877,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/7.png")',
                                         backgroundSize: 'cover',
@@ -913,7 +886,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/2.jpg")',
                                         backgroundSize: 'cover',
@@ -923,7 +896,7 @@ const MeetingsPage: React.FC = () => {
                                 ></div>
                                 {/* Duplicate for seamless loop */}
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/5.png")',
                                         backgroundSize: 'cover',
@@ -932,7 +905,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/6.jpg")',
                                         backgroundSize: 'cover',
@@ -941,7 +914,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
                                         backgroundImage: 'url("inspired analysts team/7.png")',
                                         backgroundSize: 'cover',
@@ -950,7 +923,7 @@ const MeetingsPage: React.FC = () => {
                                     }}
                                 ></div>
                                 <div
-                                    className="aspect-[1/2.2] w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
+                                    className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                             style={{
                                         backgroundImage: 'url("inspired analysts team/2.jpg")',
                                         backgroundSize: 'cover',
@@ -964,182 +937,81 @@ const MeetingsPage: React.FC = () => {
                 </div>
 
                 {/* Right Side: Booking Form */}
-                <div className="w-full lg:col-span-2">
+                <div className="w-full lg:col-span-2 px-2 sm:px-0">
                     {/* Back Button */}
-                    <div className="mb-1 mt-16 -ml-4">
-                        <button onClick={handleBack} className="flex items-center text-white hover:text-gray-300 transition-colors">
+                    <div className="mb-1 mt-8 lg:mt-16">
+                        <button 
+                            onClick={handleBack} 
+                            className="flex items-center text-white hover:text-gray-300 transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none"
+                            style={{ outline: 'none', boxShadow: 'none' }}
+                            onFocus={(e) => e.target.blur()}
+                        >
                         <ChevronLeft size={20} className="mr-1" />
                         Back
                     </button>
                     </div>
 
-                    {/* Selected Analyst Display */}
+                                    {/* Selected Analyst Display */}
                     {selectedAnalyst !== null && currentStep === 2 && (
-                        <div className="mb-6 mt-8 -ml-4">
-                            <div className="flex flex-col lg:flex-row gap-6 justify-center items-start">
+                        <div className="mb-6 mt-8">
+                            <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 justify-start items-start">
                                 {/* Analyst Profile Tile */}
                                 <div
-                                    className="relative overflow-hidden group transition-all duration-300"
-                                    style={{
-                                        boxSizing: 'border-box',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'center',
-                                        justifyContent: 'flex-start',
-                                        padding: '16px',
-                                        gap: '8px',
-                                        width: '196.75px',
-                                        height: '220px',
-                                        background: '#1F1F1F',
-                                        borderRadius: '16px',
-                                        flex: 'none',
-                                        order: 0,
-                                        alignSelf: 'flex-start',
-                                        flexGrow: 0,
-                                        position: 'relative'
-                                    }}
+                                    className="relative overflow-hidden group transition-all duration-300 flex flex-col items-center justify-start p-4 gap-2 w-full sm:w-auto sm:min-w-[200px] sm:max-w-[240px] h-[240px] bg-[#1F1F1F] rounded-2xl"
                                 >
                                     {/* Curved Gradient Border */}
                                     <div 
-                                        className="absolute inset-0 pointer-events-none"
+                                        className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
                                         style={{
-                                            borderRadius: '16px',
-                                            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                                            padding: '1px'
+                                            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
                                         }}
                                     >
-                                        <div 
-                                            className="w-full h-full rounded-[15px]"
-                                            style={{
-                                                background: '#1F1F1F'
-                                            }}
-                                        ></div>
+                                        <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
                                     </div>
 
                                     {/* Profile Image */}
-                                    <div 
-                                        className="rounded-full overflow-hidden relative z-10"
-                                        style={{
-                                            width: '64px',
-                                            height: '64px',
-                                            borderRadius: '50%'
-                                        }}
-                                    >
+                                    <div className="rounded-full overflow-hidden relative z-10 w-20 h-20">
                                         <Image
                                             src={analysts.find(a => a.id === selectedAnalyst)?.image || '/team dark/Adnan.png'}
                                             alt={analysts.find(a => a.id === selectedAnalyst)?.name || 'Analyst'}
-                                            width={64}
-                                            height={64}
+                                            width={80}
+                                            height={80}
                                             className="w-full h-full object-cover filter grayscale"
                                         />
                             </div>
 
                                     {/* Name */}
-                                    <h3 
-                                        className="text-white text-center relative z-10"
-                                        style={{
-                                            width: '164.75px',
-                                            height: '18px',
-                                            fontSize: '18px',
-                                            lineHeight: '100%',
-                                            fontWeight: '400',
-                                            fontFamily: 'Gilroy-SemiBold'
-                                        }}
-                                    >
+                                    <h3 className="text-white text-center relative z-10 text-lg font-semibold w-full px-2">
                                         {analysts.find(a => a.id === selectedAnalyst)?.name || 'Analyst'}
                                     </h3>
 
                                     {/* Role Display for Reviews Section */}
-                                    <p 
-                                        className="text-gray-400 text-center relative z-10"
-                                        style={{
-                                            width: '164.75px',
-                                            minHeight: '16px',
-                                            fontSize: '14px',
-                                            lineHeight: '130%',
-                                            fontWeight: '400',
-                                            fontFamily: 'Gilroy-Medium'
-                                        }}
-                                    >
+                                    <p className="text-gray-400 text-center relative z-10 text-sm leading-tight w-full px-2 flex-1">
                                         {analysts.find(a => a.id === selectedAnalyst)?.description}
                                     </p>
 
                                     {/* Rating Stars */}
-                                    <div 
-                                        className="flex flex-row items-center justify-center relative z-10"
-                                        style={{
-                                            width: '164.75px',
-                                            height: '14px',
-                                            gap: '4px'
-                                        }}
-                                    >
+                                    <div className="flex flex-row items-center justify-center relative z-10 w-full gap-1">
                                         {/* Star */}
-                                        <div 
-                                            className="flex items-center justify-center"
-                                            style={{
-                                                width: '12px',
-                                                height: '12px',
-                                                flex: 'none',
-                                                order: 0,
-                                                flexGrow: 0
-                                            }}
-                                        >
+                                        <div className="flex items-center justify-center w-3 h-3 flex-shrink-0">
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                                 <path d="M6 0L7.5 4.5L12 4.5L8.25 7.5L9.75 12L6 9L2.25 12L3.75 7.5L0 4.5L4.5 4.5L6 0Z" fill="#DE50EC"/>
                                             </svg>
-                            </div>
+                                        </div>
                                         
                                         {/* Rating Text */}
-                                        <span 
-                                            className="text-gray-400"
-                                            style={{
-                                                fontSize: '14px',
-                                                lineHeight: '100%',
-                                                fontWeight: '400',
-                                                fontFamily: 'Gilroy-Medium'
-                                            }}
-                                        >
-                                            4.9
-                                        </span>
+                                        <span className="text-gray-400 text-sm">4.9</span>
                                         
                                         {/* Reviews Count */}
-                                        <span 
-                                            className="text-gray-400"
-                                            style={{
-                                                fontSize: '14px',
-                                                lineHeight: '100%',
-                                                fontWeight: '400',
-                                                fontFamily: 'Gilroy-Medium'
-                                            }}
-                                        >
-                                            (21 reviews)
-                                        </span>
-                        </div>
+                                        <span className="text-gray-400 text-sm">(21 reviews)</span>
+                                    </div>
 
                                     {/* View All Reviews Button */}
                                     <button 
-                                        onClick={() => router.push(`/reviews?analyst=${selectedAnalyst}`)}
-                                        className="flex flex-row justify-center items-center relative z-10"
-                                        style={{
-                                            width: '164.75px',
-                                            height: '24px',
-                                            background: '#FFFFFF',
-                                            borderRadius: '40px',
-                                            padding: '10px',
-                                            gap: '10px'
-                                        }}
+                                        onClick={() => router.push(`/reviews?analyst=${selectedAnalyst}&step=${currentStep}&selectedAnalyst=${selectedAnalyst}`)}
+                                        className="flex flex-row justify-center items-center relative z-10 w-full max-w-[180px] h-7 bg-white rounded-full px-3 py-2 mt-auto"
                                     >
-                                        <span 
-                                            style={{
-                                                width: '89px',
-                                                height: '12px',
-                                                fontSize: '12px',
-                                                lineHeight: '100%',
-                                                fontWeight: '400',
-                                                fontFamily: 'Gilroy-Medium',
-                                                color: '#1F1F1F'
-                                            }}
-                                        >
+                                        <span className="text-xs text-[#1F1F1F] whitespace-nowrap">
                                             View All Reviews
                                         </span>
                                     </button>
@@ -1147,41 +1019,16 @@ const MeetingsPage: React.FC = () => {
 
                                 {/* About Tile */}
                                 <div
-                                    className="relative overflow-hidden group transition-all duration-300"
-                                    style={{
-                                        boxSizing: 'border-box',
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        alignItems: 'flex-start',
-                                        padding: '16px',
-                                        gap: '16px',
-                                        isolation: 'isolate',
-                                        width: '630.25px',
-                                        height: '220px',
-                                        background: '#1F1F1F',
-                                        borderRadius: '16px',
-                                        flex: 'none',
-                                        order: 1,
-                                        alignSelf: 'stretch',
-                                        flexGrow: 1,
-                                        position: 'relative'
-                                    }}
+                                    className="relative overflow-hidden group transition-all duration-300 flex flex-col items-start p-4 gap-4 w-full lg:flex-1 h-[240px] bg-[#1F1F1F] rounded-2xl"
                                 >
                                     {/* Curved Gradient Border */}
                                     <div 
-                                        className="absolute inset-0 pointer-events-none"
+                                        className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
                                         style={{
-                                            borderRadius: '16px',
-                                            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                                            padding: '1px'
+                                            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
                                         }}
                                     >
-                                        <div 
-                                            className="w-full h-full rounded-[15px]"
-                                            style={{
-                                                background: '#1F1F1F'
-                                            }}
-                                        ></div>
+                                        <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
                                     </div>
 
                                     {/* Selected State Gradient Overlay */}
@@ -1196,17 +1043,19 @@ const MeetingsPage: React.FC = () => {
                                     ></div>
 
                                     {/* About Content */}
-                                    <div className="relative z-10 w-full h-full">
+                                    <div className="relative z-10 w-full h-full flex flex-col">
                                         <h3 className="text-white text-lg font-semibold mb-3">About</h3>
-                                        {isLoadingAbout ? (
-                                            <div className="flex items-center justify-center py-8">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-                                            </div>
-                                        ) : (
-                                            <p className="text-gray-400 text-sm leading-relaxed">
-                                                {analystAbout || 'No additional information available.'}
-                                            </p>
-                                        )}
+                                        <div className="flex-1 overflow-y-auto">
+                                            {isLoadingAbout ? (
+                                                <div className="flex items-center justify-center py-8">
+                                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                                                </div>
+                                            ) : (
+                                                <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-line">
+                                                    {analystAbout || 'No additional information available.'}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1214,18 +1063,18 @@ const MeetingsPage: React.FC = () => {
                     )}
 
                     {/* Title */}
-                    <div className="mb-8 mt-8 -ml-4">
-                        <h1 className="text-4xl font-bold">Book Mentorship</h1>
+                    <div className="mb-8 mt-8">
+                        <h1 className="text-3xl sm:text-4xl font-bold">Book Mentorship</h1>
                     </div>
 
                     {/* Step 1: Analyst Selection */}
                     {currentStep === 1 && (
-                        <div className="space-y-6 -ml-4">
+                        <div className="space-y-6">
                             <div>
-                                <h2 className="text-2xl font-semibold mb-2">Select Your Analyst</h2>
-                                <p className="text-gray-400">Choose the expert who best matches your needs and investment goals</p>
+                                <h2 className="text-xl sm:text-2xl font-semibold mb-2">Select Your Analyst</h2>
+                                <p className="text-sm sm:text-base text-gray-400">Choose the expert who best matches your needs and investment goals</p>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 justify-items-start max-w-none">
                                 {analysts.map((analyst) => (
                                     <AnalystCard
                                         key={analyst.id}
@@ -1244,12 +1093,12 @@ const MeetingsPage: React.FC = () => {
                     {currentStep === 2 && (
                         <div className="space-y-8">
                             {/* Meeting Selection */}
-                    <div className="space-y-6 -ml-4">
+                    <div className="space-y-6">
                         <div>
-                            <h2 className="text-2xl font-semibold mb-2">Select Meeting</h2>
-                            <p className="text-gray-400">Choose the session that best fits your needs</p>
+                            <h2 className="text-xl sm:text-2xl font-semibold mb-2">Select Meeting</h2>
+                            <p className="text-sm sm:text-base text-gray-400">Choose the session that best fits your needs</p>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {meetings.map((meeting) => (
                                 <MeetingCard
                                     key={meeting.id}
@@ -1262,42 +1111,22 @@ const MeetingsPage: React.FC = () => {
                     </div>
 
                     {/* Timezone Selection */}
-                            <div className="-ml-4">
-                        <h2 className="text-2xl font-semibold mb-2">Select Time Zone</h2>
-                        <div className="relative max-w-md">
+                            <div>
+                        <h2 className="text-xl sm:text-2xl font-semibold mb-2">Select Time Zone</h2>
+                        <div className="relative w-full max-w-md">
                             {/* Search Input */}
                             <div className="relative">
                                         <div 
-                                            className="relative"
-                                            style={{
-                                                width: '414px',
-                                                height: '41px',
-                                                background: '#0A0A0A',
-                                                borderRadius: '8px',
-                                                display: 'flex',
-                                                flexDirection: 'row',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                gap: '10px',
-                                                boxSizing: 'border-box',
-                                                position: 'relative'
-                                            }}
+                                            className="relative w-full h-[41px] bg-[#0A0A0A] rounded-lg flex flex-row justify-center items-center gap-2.5 border border-[#2A2A2A]"
                                         >
                                             {/* Curved Gradient Border */}
                                             <div 
-                                                className="absolute inset-0 pointer-events-none"
+                                                className="absolute inset-0 pointer-events-none rounded-lg p-[1px]"
                                                 style={{
-                                                    borderRadius: '8px',
-                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                                                    padding: '1px'
+                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
                                                 }}
                                             >
-                                                <div 
-                                                    className="w-full h-full rounded-[7px]"
-                                                    style={{
-                                                        background: '#0A0A0A'
-                                                    }}
-                                                ></div>
+                                                <div className="w-full h-full rounded-[7px] bg-[#0A0A0A]"></div>
                                             </div>
 
                                 <input
@@ -1306,15 +1135,7 @@ const MeetingsPage: React.FC = () => {
                                     onChange={(e) => handleTimezoneSearch(e.target.value)}
                                     onFocus={handleTimezoneInputFocus}
                                                 placeholder="Select Timezone"
-                                                className="w-full text-white placeholder-white focus:outline-none transition-colors relative z-10"
-                                                style={{
-                                                    background: 'transparent',
-                                                    border: 'none',
-                                                    padding: '12px 16px',
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    borderRadius: '8px'
-                                                }}
+                                                className="w-full h-full px-4 py-3 text-white placeholder-white bg-transparent border-none focus:outline-none transition-colors relative z-10 rounded-lg"
                                 />
                                 <button
                                     onClick={() => setIsTimezoneOpen(!isTimezoneOpen)}
@@ -1330,12 +1151,11 @@ const MeetingsPage: React.FC = () => {
 
                             {/* Custom Dropdown Options */}
                             <div 
-                                className={`absolute z-50 mt-1 bg-black border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto transition-all duration-300 ease-in-out ${
+                                className={`absolute z-50 mt-1 w-full bg-black border border-gray-700 rounded-lg shadow-lg max-h-80 overflow-y-auto transition-all duration-300 ease-in-out ${
                                     isTimezoneOpen 
                                         ? 'opacity-100 translate-y-0 pointer-events-auto' 
                                         : 'opacity-0 -translate-y-2 pointer-events-none'
                                 }`}
-                                style={{ width: '414px' }}
                             >
                                             {/* Enhanced Shiny Glint Effect - Top Right Corner */}
                                             <div 
@@ -1437,85 +1257,39 @@ const MeetingsPage: React.FC = () => {
                     </div>
 
                             {/* Date & Time Selection */}
-                        <div className="space-y-6 -ml-4">
-                            <div className="flex gap-8 items-start">
+                        <div className="space-y-6">
+                            <div className="flex flex-col lg:flex-row gap-8 items-start">
                                 {/* Left side - Calendar with header */}
-                                <div className="flex-[1.2]">
+                                <div className="w-full lg:flex-[1.2]">
                                     <div>
-                                        <h2 className="text-2xl font-semibold mb-2">Pick a Date & Time</h2>
-                                        <p className="text-gray-400">Select when you would like to schedule your meeting</p>
+                                        <h2 className="text-xl sm:text-2xl font-semibold mb-2">Pick a Date & Time</h2>
+                                        <p className="text-sm sm:text-base text-gray-400">Select when you would like to schedule your meeting</p>
                                     </div>
                                     
                                         <div 
-                                            className="bg-[#1F1F1F] rounded-xl mt-6 relative overflow-hidden"
-                                            style={{
-                                                width: '412px',
-                                                height: '284px',
-                                                padding: '16px',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'flex-start',
-                                                gap: '10px',
-                                                position: 'relative'
-                                            }}
+                                            className="bg-[#1F1F1F] rounded-xl mt-6 relative overflow-hidden p-4 w-full max-w-[412px] min-h-[284px] flex flex-col items-start gap-2.5"
                                         >
                                             {/* Curved Gradient Border */}
                                             <div 
-                                                className="absolute inset-0 pointer-events-none"
+                                                className="absolute inset-0 pointer-events-none rounded-xl p-[1px]"
                                                 style={{
-                                                    borderRadius: '12px',
-                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                                                    padding: '1px'
+                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
                                                 }}
                                             >
-                                                <div 
-                                                    className="w-full h-full rounded-[11px]"
-                                                    style={{
-                                                        background: '#1F1F1F'
-                                                    }}
-                                                ></div>
+                                                <div className="w-full h-full rounded-[11px] bg-[#1F1F1F]"></div>
                                             </div>
 
                                             {/* Calendar Content Container */}
-                                            <div 
-                                                className="relative z-10 w-full"
-                                                style={{
-                                                    width: '380px',
-                                                    height: '252px',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    gap: '16px'
-                                                }}
-                                            >
+                                            <div className="relative z-10 w-full flex flex-col gap-4">
                                         {/* Calendar Header */}
-                                                <div 
-                                                    className="flex items-center justify-between"
-                                                    style={{
-                                                        width: '380px',
-                                                        height: '15.56px',
-                                                        display: 'flex',
-                                                        flexDirection: 'row',
-                                                        justifyContent: 'space-between',
-                                                        alignItems: 'center',
-                                                        gap: '24px'
-                                                    }}
-                                                >
-                                                    <h3 
-                                                        className="text-white font-medium"
-                                                        style={{
-                                                            width: '118px',
-                                                            height: '14px',
-                                                            fontSize: '14px',
-                                                            lineHeight: '100%'
-                                                        }}
-                                                    >
+                                                <div className="flex items-center justify-between w-full">
+                                                    <h3 className="text-white font-medium text-sm">
                                                         {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                                                     </h3>
                                                     <div className="flex gap-2">
                                             <button
                                                 onClick={() => navigateMonth('prev')}
-                                                            className="text-white hover:text-gray-300 transition-colors"
-                                                            style={{ width: '16px', height: '16px' }}
+                                                            className="text-white hover:text-gray-300 transition-colors w-4 h-4"
                                             >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1523,8 +1297,7 @@ const MeetingsPage: React.FC = () => {
                                             </button>
                                             <button
                                                 onClick={() => navigateMonth('next')}
-                                                            className="text-white hover:text-gray-300 transition-colors"
-                                                            style={{ width: '16px', height: '16px' }}
+                                                            className="text-white hover:text-gray-300 transition-colors w-4 h-4"
                                             >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -1534,57 +1307,26 @@ const MeetingsPage: React.FC = () => {
                                         </div>
 
                                                 {/* Calendar Grid */}
-                                                <div 
-                                                    className="grid grid-cols-7 gap-1"
-                                                    style={{
-                                                        width: '376.77px',
-                                                        height: '213.1px',
-                                                        display: 'flex',
-                                                        flexDirection: 'row',
-                                                        alignItems: 'flex-start',
-                                                        gap: '20px'
-                                                    }}
-                                                >
+                                                <div className="flex flex-row items-start gap-4 w-full">
                                                     {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'].map((day, dayIndex) => (
                                                         <div 
                                                             key={day} 
-                                                            className="flex flex-col items-center"
-                                                            style={{
-                                                                width: dayIndex === 0 ? '35.76px' : dayIndex === 1 ? '40.59px' : dayIndex === 2 ? '38.35px' : dayIndex === 3 ? '33.64px' : dayIndex === 4 ? '32px' : dayIndex === 5 ? '34.3px' : '32px',
-                                                                height: '219.16px',
-                                                                gap: '16px'
-                                                            }}
+                                                            className="flex flex-col items-center flex-1 gap-4 min-w-0"
                                                         >
                                                             {/* Day Header */}
-                                                            <div 
-                                                                className="text-center font-medium text-gray-400"
-                                                                style={{
-                                                                    width: '100%',
-                                                                    height: '11.16px',
-                                                                    fontSize: '14px',
-                                                                    lineHeight: '100%',
-                                                                    color: '#909090'
-                                                                }}
-                                                            >
+                                                            <div className="text-center font-medium text-[#909090] text-xs w-full">
                                                     {day}
                                         </div>
 
                                                             {/* Date Column */}
-                                                            <div 
-                                                                className="flex flex-col items-center"
-                                                                style={{
-                                                                    width: '100%',
-                                                                    height: '192px',
-                                                                    gap: '8px'
-                                                                }}
-                                                            >
+                                                            <div className="flex flex-col items-center w-full gap-2">
                                                                 {getDaysInMonth(currentMonth).filter((_, index) => index % 7 === dayIndex).map((day, weekIndex) => (
                                                         <button
                                                                         key={weekIndex}
                                                                         onClick={() => day && handleDateSelect(day)}
                                                                         disabled={!day || !isDateAvailable(day)}
                                                             className={`
-                                                                            flex items-center justify-center transition-all duration-200
+                                                                            flex items-center justify-center transition-all duration-200 w-8 h-8 rounded-lg text-sm
                                                                             ${day && isDateSelected(day)
                                                                                 ? 'bg-white text-black'
                                                                                 : day && isDateAvailable(day)
@@ -1592,15 +1334,6 @@ const MeetingsPage: React.FC = () => {
                                                                                 : 'text-[#909090] cursor-not-allowed'
                                                                             }
                                                                         `}
-                                                                        style={{
-                                                                            width: '32px',
-                                                                            height: '32px',
-                                                                            borderRadius: '8px',
-                                                                            fontSize: '14px',
-                                                                            lineHeight: '100%',
-                                                                            fontFamily: 'Gilroy-Medium',
-                                                                            fontWeight: '400'
-                                                                        }}
                                                                     >
                                                                         {day?.getDate()}
                                                         </button>
@@ -1614,16 +1347,16 @@ const MeetingsPage: React.FC = () => {
                                 </div>
 
                                 {/* Right side - Time Slots */}
-                                <div className="flex-1">
+                                <div className="w-full lg:flex-1">
                                     <h3 className="text-lg font-semibold text-white mb-2">Available Time Slots</h3>
                                     
-                                        <div className="grid grid-cols-4 gap-2 mb-4">
+                                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 mb-4">
                                         {timeSlots.map((time) => (
                                             <button
                                                 key={time}
                                                 onClick={() => handleTimeSelect(time)}
                                                 className={`
-                                                        py-2 px-2 rounded-lg text-xs font-medium transition-all duration-200 w-20
+                                                        py-2 px-3 rounded-lg text-xs font-medium transition-all duration-200 w-full
                                                     ${selectedTime === time
                                                         ? 'bg-white text-black border-2 border-white'
                                                             : 'bg-[#0D0D0D] text-white hover:bg-gray-800 border border-white'
@@ -1644,12 +1377,12 @@ const MeetingsPage: React.FC = () => {
                     {/* Step 3: Pay & Confirm */}
                     {currentStep === 3 && (
                         <div className="space-y-6">
-                            <div className="flex gap-8 items-start -ml-4">
+                            <div className="flex flex-col lg:flex-row gap-8 items-start">
                                 {/* Left side - Payment Form */}
-                                <div className="flex-[1.2]">
-                                    <div className="-mt-4">
-                                        <h2 className="text-xl font-semibold mb-2">Pay & Confirm</h2>
-                                        <p className="text-gray-400 text-sm">Complete your booking by providing your details and payment</p>
+                                <div className="w-full lg:flex-[1.2]">
+                                    <div>
+                                        <h2 className="text-xl sm:text-2xl font-semibold mb-2">Pay & Confirm</h2>
+                                        <p className="text-sm sm:text-base text-gray-400">Complete your booking by providing your details and payment</p>
                                     </div>
                                     
                                     {/* Your Information */}
@@ -1703,7 +1436,7 @@ const MeetingsPage: React.FC = () => {
                                 </div>
 
                                 {/* Right side - Booking Summary */}
-                                <div className="w-80">
+                                <div className="w-full lg:w-80">
                                     <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-lg p-6">
                                         <h3 className="text-lg font-semibold text-white mb-4">Booking Summary</h3>
                                         
@@ -1720,18 +1453,7 @@ const MeetingsPage: React.FC = () => {
                                         </div>
                                         
                                         {/* Separation Line */}
-                                        <div 
-                                            className="mb-4 mx-auto"
-                                            style={{
-                                                width: '250px',
-                                                height: '0px',
-                                                border: '1px solid #404040',
-                                                flex: 'none',
-                                                order: 1,
-                                                alignSelf: 'stretch',
-                                                flexGrow: 0
-                                            }}
-                                        ></div>
+                                        <div className="mb-4 w-full h-px border-t border-[#404040]"></div>
                                         
                                         <div className="space-y-4">
                                             {/* Your Analyst */}
@@ -1757,18 +1479,7 @@ const MeetingsPage: React.FC = () => {
                                                     <span className="text-white">10%</span>
                                                 </div>
                                                 {/* Separation Line Above Total */}
-                                                <div 
-                                                    className="mb-2 mx-auto"
-                                                    style={{
-                                                        width: '2,50px',
-                                                        height: '0px',
-                                                        border: '1px solid #404040',
-                                                        flex: 'none',
-                                                        order: 1,
-                                                        alignSelf: 'stretch',
-                                                        flexGrow: 0
-                                                    }}
-                                                ></div>
+                                                <div className="mb-2 w-full h-px border-t border-[#404040]"></div>
                                                 <div className="flex justify-between text-base font-semibold">
                                                     <span className="text-white">Total</span>
                                                     <span className="text-white">{getMeetingPrice()}</span>
@@ -1787,7 +1498,9 @@ const MeetingsPage: React.FC = () => {
                             {(currentStep === 2 || currentStep === 3) && (
                             <button
                                 onClick={handleBack}
-                                className="px-10 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white hover:bg-gray-800 border border-gray-700 hover:border-gray-600"
+                                className="w-44 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white hover:bg-gray-800 border border-white hover:border-gray-300 focus:outline-none focus:ring-0 focus:border-none active:outline-none"
+                                style={{ outline: 'none', boxShadow: 'none' }}
+                                onFocus={(e) => e.target.blur()}
                             >
                                 Back
                             </button>
@@ -1795,10 +1508,14 @@ const MeetingsPage: React.FC = () => {
                         <button
                             onClick={handleContinue}
                             disabled={isContinueDisabled}
-                            className={`px-10 py-3 rounded-3xl font-semibold transition-all duration-300
+                            className={`w-44 py-3 rounded-3xl font-semibold transition-all duration-300 relative z-10
                             ${isContinueDisabled ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
+                            style={{ 
+                                opacity: isContinueDisabled ? 0.5 : 1,
+                                backgroundColor: isContinueDisabled ? '#374151' : 'rgba(255, 255, 255, 0.95)'
+                            }}
                         >
-                                {currentStep === 3 ? 'Complete Booking' : 'Proceed to Pay'}
+                                {currentStep === 3 ? 'Continue' : 'Proceed to Pay'}
                         </button>
                     </div>
                     )}

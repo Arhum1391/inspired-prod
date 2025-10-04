@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
@@ -31,7 +31,19 @@ const ReviewsContent: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [currentPage, setCurrentPage] = useState(1);
-    const reviewsPerPage = 9; // 3x3 grid
+    const [isMobile, setIsMobile] = useState(false);
+    const reviewsPerPage = isMobile ? 6 : 9; // 6 for mobile, 9 for desktop (3x3 grid)
+
+    useEffect(() => {
+        const checkIsMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        
+        checkIsMobile();
+        window.addEventListener('resize', checkIsMobile);
+        
+        return () => window.removeEventListener('resize', checkIsMobile);
+    }, []);
 
     const handleBack = () => {
         const step = searchParams.get('step');
@@ -74,10 +86,10 @@ const ReviewsContent: React.FC = () => {
     };
 
     return (
-        <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative">
-            {/* Fixed Left Gradient */}
+        <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative overflow-hidden">
+            {/* Fixed Left Gradient - Desktop Only */}
             <div 
-                className="absolute pointer-events-none opacity-100"
+                className="hidden md:block absolute pointer-events-none opacity-100"
                 style={{
                     width: '588px',
                     height: '588px',
@@ -86,6 +98,34 @@ const ReviewsContent: React.FC = () => {
                     transform: 'translateY(-50%) rotate(45deg)',
                     background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
                     filter: 'blur(120px)'
+                }}
+            ></div>
+
+            {/* Mobile Top Left Gradient - Same as Select Your Analyst screen */}
+            <div 
+                className="md:hidden absolute top-0 left-0 w-[588px] h-[588px] pointer-events-none opacity-100"
+                style={{
+                    transform: 'rotate(0deg) translate(-300px, -350px)',
+                    transformOrigin: 'top left',
+                    background: 'linear-gradient(107.68deg, rgba(75, 37, 253, 0.8) 9.35%, rgba(222, 80, 236, 0.7) 34.7%, rgba(138, 43, 226, 0.6) 60.06%, rgba(147, 112, 219, 0.5) 72.73%, rgba(186, 85, 211, 0.4) 88.58%)',
+                    filter: 'blur(120px)',
+                    maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)'
+                }}
+            ></div>
+
+            {/* Mobile Bottom Right Gradient - Same as Select Your Analyst screen */}
+            <div 
+                className="md:hidden absolute bottom-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-100"
+                style={{
+                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                    transform: 'rotate(-45deg) translate(250px, 250px)',
+                    transformOrigin: 'bottom right',
+                    borderRadius: '50%',
+                    maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+                    filter: 'blur(150px)',
+                    WebkitFilter: 'blur(150px)'
                 }}
             ></div>
 
@@ -267,7 +307,12 @@ const ReviewsContent: React.FC = () => {
                             <div className="mb-1 mt-16">
                                 <button 
                                     onClick={handleBack}
-                                    className="flex items-center text-white hover:text-gray-300 transition-colors"
+                                    className="flex items-center text-white hover:text-gray-300 transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none"
+                                    style={{
+                                        outline: 'none',
+                                        border: 'none',
+                                        boxShadow: 'none'
+                                    }}
                                 >
                                     <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -282,9 +327,101 @@ const ReviewsContent: React.FC = () => {
                                 <p className="text-gray-400 text-lg">Real stories from people just like you.</p>
                             </div>
 
-                            {/* Reviews Grid - 3x3 */}
+                            {/* Reviews Grid - 3x3 on desktop, 1 column on mobile */}
                             <div className="space-y-6">
-                                {[0, 1, 2].map((rowIndex) => (
+                                {isMobile ? (
+                                    // Mobile: Single column layout with alternating gradients
+                                    currentReviews.map((review, index) => {
+                                        const isEvenIndex = index % 2 === 0;
+                                        const gradientImage = isEvenIndex 
+                                            ? 'url("/gradient/Ellipse 4.svg")'  // 2nd column gradient
+                                            : 'url("/gradient/Ellipse 2.png")'; // 1st column gradient
+                                        
+                                        return (
+                                            <div
+                                                key={index}
+                                                className="relative overflow-hidden w-full"
+                                                style={{
+                                                    boxSizing: 'border-box',
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    alignItems: 'flex-start',
+                                                    padding: '16px',
+                                                    gap: '16px',
+                                                    isolation: 'isolate',
+                                                    minWidth: '0',
+                                                    height: '162px',
+                                                    background: '#1F1F1F',
+                                                    borderRadius: '16px'
+                                                }}
+                                            >
+                                                {/* Curved Gradient Border */}
+                                                <div
+                                                    className="absolute inset-0 pointer-events-none"
+                                                    style={{
+                                                        borderRadius: '16px',
+                                                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                                                        padding: '1px'
+                                                    }}
+                                                >
+                                                    <div
+                                                        className="w-full h-full rounded-[15px]"
+                                                        style={{
+                                                            background: '#1F1F1F'
+                                                        }}
+                                                    ></div>
+                                                </div>
+
+                                                {/* Gradient Overlay - Alternating between 1st and 2nd column styles */}
+                                                <div 
+                                                    className="absolute inset-0 rounded-2xl pointer-events-none"
+                                                    style={{
+                                                        backgroundImage: gradientImage,
+                                                        backgroundSize: 'cover',
+                                                        backgroundPosition: 'center',
+                                                        backgroundRepeat: 'no-repeat',
+                                                        opacity: 0.8,
+                                                        mixBlendMode: 'normal'
+                                                    }}
+                                                />
+
+                                            {/* Content */}
+                                            <div className="relative z-20 flex flex-col h-full w-full">
+                                                {/* Review Comment */}
+                                                <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 flex-1 mb-2">
+                                                    {review?.comment}
+                                                </p>
+                                                
+                                                {/* Bottom Row - Avatar, Name and Stars */}
+                                                <div className="flex items-center justify-between w-full">
+                                                    {/* Avatar and Name - Bottom Left */}
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden">
+                                                            <Image 
+                                                                src="/logo/review.svg" 
+                                                                alt="Review avatar" 
+                                                                width={24}
+                                                                height={24}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        </div>
+                                                        <p className="text-white font-semibold text-sm truncate">
+                                                            {review?.userName}
+                                                        </p>
+                                                    </div>
+                                                    
+                                                    {/* Stars - Bottom Right */}
+                                                    <div className="flex items-center gap-0.5 flex-shrink-0">
+                                                        {renderStars(review?.rating || 5)}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        );
+                                    })
+                                ) : (
+                                    // Desktop: 3x3 grid layout
+                                    [0, 1, 2].map((rowIndex) => (
                                     <div key={rowIndex} className="flex gap-6">
                                         {[0, 1, 2].map((colIndex) => {
                                             const reviewIndex = rowIndex * 3 + colIndex;
@@ -376,18 +513,19 @@ const ReviewsContent: React.FC = () => {
                                             );
                                         })}
                                     </div>
-                                ))}
+                                ))
+                                )}
                             </div>
 
-                            {/* Page Counter - Bottom Right */}
+                            {/* Page Counter - Bottom Right on desktop, slightly left on mobile */}
                             {totalPages > 1 && (
-                                <div className="flex justify-end mt-8">
+                                <div className={`flex ${isMobile ? 'mt-12 mb-8' : 'mt-8'} ${isMobile ? 'justify-end' : 'justify-end'}`}>
                                     <div 
                                         className="flex flex-row items-start"
                                         style={{
                                             padding: '0px',
-                                            gap: '8px',
-                                            width: '152px',
+                                            gap: isMobile ? '8px' : '8px',
+                                            width: isMobile ? 'auto' : '152px',
                                             height: '32px',
                                             flex: 'none',
                                             order: 1,
@@ -395,11 +533,11 @@ const ReviewsContent: React.FC = () => {
                                         }}
                                     >
                                         {/* Previous Button - Always reserve space */}
-                                        <div className="w-8 h-8">
+                                        <div className={isMobile ? 'w-8 h-8' : 'w-8 h-8'}>
                                             {currentPage > 1 && (
                                                 <button
                                                     onClick={() => handlePageChange(currentPage - 1)}
-                                                    className="w-8 h-8 rounded flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800"
+                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800`}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -413,7 +551,7 @@ const ReviewsContent: React.FC = () => {
                                             <button
                                                 key={page}
                                                 onClick={() => handlePageChange(page)}
-                                                className={`w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border ${
+                                                className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center text-sm font-medium transition-colors border ${
                                                     currentPage === page
                                                         ? 'bg-white text-black border-white'
                                                         : 'bg-black text-white border-white hover:bg-gray-800'
@@ -424,11 +562,11 @@ const ReviewsContent: React.FC = () => {
                                         ))}
 
                                         {/* Next Button - Always reserve space */}
-                                        <div className="w-8 h-8">
+                                        <div className={isMobile ? 'w-8 h-8' : 'w-8 h-8'}>
                                             {currentPage < totalPages && (
                                                 <button
                                                     onClick={() => handlePageChange(currentPage + 1)}
-                                                    className="w-8 h-8 rounded flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800"
+                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800`}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

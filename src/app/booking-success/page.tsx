@@ -87,11 +87,11 @@ const BookingSuccessContent: React.FC = () => {
                     <div className="relative">
                         {/* Circle Background */}
                         <div 
-                            className="w-12 h-12 rounded-full bg-transparent border-2 border-green-500 flex items-center justify-center"
+                            className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-green-500 flex items-center justify-center"
                         >
                             {/* Checkmark */}
                             <div 
-                                className={`w-6 h-6 transition-all duration-500 ${showSuccess ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+                                className={`w-4 h-4 sm:w-6 sm:h-6 transition-all duration-500 ${showSuccess ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
                                 style={{
                                     backgroundImage: 'url("/logo/Tick.svg")',
                                     backgroundSize: 'contain',
@@ -117,43 +117,46 @@ const BookingSuccessContent: React.FC = () => {
                         {/* Meeting Type */}
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-gray-400 text-sm">Meeting Type</p>
-                                <p className="text-white font-bold text-lg">{selectedMeeting?.title || 'Unknown'}</p>
+                                <p className="text-gray-400 text-base mb-2">Meeting Type</p>
+                                <p className="text-white font-bold text-xl">{selectedMeeting?.title || 'Unknown'}</p>
                             </div>
                             <span className="bg-teal-400/20 text-teal-300 text-xs px-3 py-1 rounded-full">
                                 {selectedMeeting?.duration || 'Unknown'}
                             </span>
                         </div>
+                        
+                        {/* Blank Space */}
+                        <div className="h-0"></div>
 
-                        {/* Analyst Name */}
+                        {/* Your Analyst */}
                         <div>
-                            <p className="text-gray-400 text-sm mb-1">Analyst Name</p>
-                            <p className="text-white font-bold text-lg">{selectedAnalyst?.name || 'Unknown'}</p>
+                            <p className="text-gray-400 text-base mb-1">Your Analyst</p>
+                            <p className="text-white font-bold text-xl">{selectedAnalyst?.name || 'Unknown'}</p>
                         </div>
 
                         {/* Date & Time */}
                         <div>
-                            <p className="text-gray-400 text-sm mb-1">Date & Time</p>
-                            <div className="flex items-center justify-between">
-                                <p className="text-white font-bold">{formatDate(selectedDate)}</p>
-                                <p className="text-white text-sm">{selectedTime} {selectedTimezone && `(${selectedTimezone})`}</p>
+                            <p className="text-gray-400 text-base mb-1">Date & Time</p>
+                            <div className="flex flex-col">
+                                <p className="text-white font-bold text-xl">{formatDate(selectedDate)}</p>
+                                <p className="text-white text-sm mt-1">{selectedTime} {selectedTimezone && `(${selectedTimezone})`}</p>
                             </div>
                         </div>
 
                         {/* Your Notes */}
                         {notes && (
                             <div>
-                                <p className="text-gray-400 text-sm mb-1">Your Notes</p>
-                                <p className="text-white font-bold">{notes}</p>
+                                <p className="text-gray-400 text-base mb-1">Your Notes</p>
+                                <p className="text-white font-bold text-xl">{notes}</p>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-4 mb-8">
+                <div className="flex flex-col sm:flex-row gap-4 mb-8 w-full sm:justify-center relative z-20">
                     {/* Google Calendar */}
-                    <button className="bg-white text-black px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors">
+                    <button className="bg-white text-black px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors w-full sm:w-auto">
                         <Image 
                             src="/logo/calendar.svg" 
                             alt="Google Calendar" 
@@ -165,7 +168,7 @@ const BookingSuccessContent: React.FC = () => {
                     </button>
 
                     {/* Outlook Calendar */}
-                    <button className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
+                    <button className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors w-full sm:w-auto">
                         <Image 
                             src="/logo/outlook.png" 
                             alt="Outlook Calendar" 
@@ -179,7 +182,7 @@ const BookingSuccessContent: React.FC = () => {
                     {/* Back Home Button */}
                     <button 
                         onClick={handleBackHome}
-                        className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
+                        className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors w-full sm:w-auto"
                     >
                         Back Home
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

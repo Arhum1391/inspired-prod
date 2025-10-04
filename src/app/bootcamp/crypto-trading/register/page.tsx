@@ -582,7 +582,7 @@ export default function CryptoTradingRegisterPage() {
               className="text-sm text-[#909090] text-center mb-8"
               style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '140%'}}
             >
-              Thank you for registering for the Crypto Trading Bootcamp. We've received your information and will contact you shortly with further details.
+              Thank you for registering for the Crypto Trading Bootcamp. We&apos;ve received your information and will contact you shortly with further details.
             </p>
 
             {/* Close Button */}

@@ -428,9 +428,9 @@ const MeetingsPage: React.FC = () => {
             
             if (response.ok) {
                 const data = await response.json();
-                let aboutText = data.about || 'No additional information available.';
-                
-                
+                const aboutText = data.about || 'No additional information available.';
+
+
                 setAnalystAbout(aboutText);
             } else {
                 setAnalystAbout('No additional information available.');

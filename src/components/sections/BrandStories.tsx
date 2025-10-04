@@ -153,6 +153,43 @@ const BrandStories: React.FC = () => {
     setIsAnimationPaused(false);
   };
 
+  // Touch handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!containerRef.current) return;
+    setIsDragging(true);
+    setIsAnimationPaused(true);
+    setDragStart(e.touches[0].pageX - containerRef.current.offsetLeft);
+    setScrollLeft(containerRef.current.scrollLeft);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || !containerRef.current) return;
+    e.preventDefault();
+    const x = e.touches[0].pageX - containerRef.current.offsetLeft;
+    const walk = (x - dragStart) * 2;
+    const newScrollLeft = scrollLeft - walk;
+
+    const container = containerRef.current;
+    const maxScroll = container.scrollWidth / 2;
+
+    if (newScrollLeft < 0) {
+      container.scrollLeft = maxScroll + newScrollLeft;
+      setScrollLeft(maxScroll);
+      setDragStart(x);
+    } else if (newScrollLeft >= maxScroll) {
+      container.scrollLeft = newScrollLeft - maxScroll;
+      setScrollLeft(0);
+      setDragStart(x);
+    } else {
+      container.scrollLeft = newScrollLeft;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    setIsAnimationPaused(false);
+  };
+
   return (
     <section
       className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20"
@@ -178,10 +215,10 @@ const BrandStories: React.FC = () => {
         {/* Carousel Wrapper with edge vignette effect */}
         <div className="relative rounded-3xl overflow-hidden">
           {/* Left edge vignette overlay */}
-          <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-32 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10 pointer-events-none"></div>
 
           {/* Right edge vignette overlay */}
-          <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10 pointer-events-none"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10 pointer-events-none"></div>
 
           {/* Carousel Content */}
           <div className="relative bg-[#0A0A0A] rounded-3xl p-8">
@@ -190,12 +227,17 @@ const BrandStories: React.FC = () => {
               className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 cursor-grab"
               style={{
                 cursor: isDragging ? 'grabbing' : 'grab',
-                scrollBehavior: isDragging ? 'auto' : 'smooth'
+                scrollBehavior: isDragging ? 'auto' : 'smooth',
+                WebkitOverflowScrolling: 'touch',
+                touchAction: 'none'
               }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               <div
                 ref={carouselRef}
@@ -209,7 +251,7 @@ const BrandStories: React.FC = () => {
                     href={story.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-[#1C1C1E] rounded-2xl overflow-hidden group transform hover:-translate-y-2 transition-transform duration-300 flex-shrink-0 w-80 block cursor-pointer"
+                    className="bg-[#1C1C1E] rounded-2xl overflow-hidden group flex-shrink-0 w-80 block cursor-pointer"
                     onClick={(e) => {
                       if (isDragging) {
                         e.preventDefault();
@@ -218,6 +260,7 @@ const BrandStories: React.FC = () => {
                       }
                     }}
                     onMouseDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
                   >
                     <div className="bg-[#1C1C1E] p-2">
                       <div className="relative bg-gray-700" style={{ aspectRatio: '16/10' }}>
@@ -246,12 +289,12 @@ const BrandStories: React.FC = () => {
                         {story.title}
                       </h3>
                       <div className="flex items-center justify-between">
-                        <div className="text-gray-200 group-hover:text-white transition-colors duration-300 flex items-center text-sm"
+                        <div className="text-gray-200 flex items-center text-sm"
                           style={{ fontFamily: 'Gilroy', fontWeight: 600 }}
                         >
                           Watch Video
                           <svg
-                            className="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform"
+                            className="w-4 h-4 ml-2"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"

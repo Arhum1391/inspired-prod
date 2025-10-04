@@ -24,10 +24,10 @@ const HeroSection = () => {
               Expert analysis on stocks, crypto, and data science - delivered with clarity and humor
             </p>
             <div className="flex flex-col md:flex-row gap-5 md:gap-4 w-full">
-              <a href="/meetings" className="bg-white text-[#0A0A0A] text-sm font-semibold rounded-full py-[18px] px-3 hover:brightness-90 transition-all text-center flex items-center justify-center h-[50px]" style={{fontFamily: 'Gilroy'}}>
+              <a href="/meetings" className="bg-white text-[#0A0A0A] text-sm font-semibold rounded-full py-[18px] px-8 hover:brightness-90 transition-all text-center flex items-center justify-center h-[50px]" style={{fontFamily: 'Gilroy'}}>
                 Book Mentorship
               </a>
-              <button className="border border-white text-white text-sm font-semibold rounded-full py-[18px] px-3 hover:bg-white/10 transition-all text-center flex items-center justify-center h-[48px]" style={{fontFamily: 'Gilroy'}}>
+              <button className="border border-white text-white text-sm font-semibold rounded-full py-[18px] px-12 hover:bg-white/10 transition-all text-center flex items-center justify-center h-[48px]" style={{fontFamily: 'Gilroy'}}>
                 Learn More
               </button>
             </div>

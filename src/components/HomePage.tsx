@@ -71,7 +71,7 @@ export default function Home() {
 
       {/* Main Content Section - Minimal horizontal padding for more text space */}
       <section className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 md:py-16 mt-8 sm:mt-12 md:mt-16">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-5xl mx-auto">
           {/* Section Header with Inline Images - Minimal padding for 2-line display */}
           <div className="mb-12 sm:mb-16 lg:mb-20">
             <h2 className="gilroy-heading text-white flex flex-wrap items-center justify-center px-1 sm:px-2">
@@ -105,50 +105,137 @@ export default function Home() {
             </h2>
           </div>
 
-          {/* About Text & CTA - Smaller text and increased spacing */}
-          <div className="space-y-3 sm:space-y-4 lg:space-y-5 mb-8 sm:mb-10 lg:mb-12">
-            <p className="text-gray-300 leading-relaxed text-sm sm:text-base lg:text-lg" style={{fontFamily: 'Gilroy'}}>
-              I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations. <br></br> Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
-            </p>
+          {/* Frame 77 - Main Content Container */}
+          <div className="flex flex-col lg:flex-row items-start gap-6 sm:gap-8 lg:gap-10">
+            {/* Mobile: Text & CTA First, Desktop: Cards First */}
+            <div className="flex flex-col gap-6 w-full lg:hidden">
+              <p className="text-white text-sm sm:text-base leading-[130%]" style={{fontFamily: 'Gilroy'}}>
+                I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations.
+                <br /><br />
+                Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
+              </p>
 
-            <a
-              href="/meetings"
-              className="bg-white text-[#0A0A0A] px-4 sm:px-5 lg:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-block" style={{fontFamily: 'Gilroy', fontWeight: 600}}
-            >
-              Book Mentorship
-            </a>
-          </div>
+              <a
+                href="/meetings"
+                className="bg-white text-[#0A0A0A] px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-flex items-center justify-center w-fit"
+                style={{fontFamily: 'Gilroy', fontWeight: 600}}
+              >
+                Book Mentorship
+              </a>
+            </div>
 
-          {/* Feature Cards Grid - Increased spacing */}
-          <div className="space-y-6 sm:space-y-8">
-            {/* Top Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              {/* Data-Driven Approach Card - Increased padding */}
-              <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
-                <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Data-Driven Approach</h3>
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
+            {/* Frame 85 - Left Column with Cards */}
+            <div className="flex flex-col gap-4 sm:gap-5 w-full lg:flex-1">
+              {/* Frame 84 - Top Row Cards */}
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
+                {/* Data-Driven Approach Card */}
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-4 gap-4 rounded-2xl flex-1 relative">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Data-Driven Approach</h3>
+                  <p className="text-white text-sm sm:text-base leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
+                </div>
+
+                {/* Educational Focus Card */}
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-4 gap-4 rounded-2xl flex-1 relative">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Educational Focus</h3>
+                  <p className="text-white text-sm sm:text-base leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
+                </div>
               </div>
 
-              {/* Educational Focus Card */}
-              <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
-                <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Educational Focus</h3>
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
+              {/* Frame 83 - Bottom Row Cards */}
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
+                {/* Real-Time Coverage Card */}
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-4 gap-4 rounded-2xl flex-1 relative">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Real-Time Coverage</h3>
+                  <p className="text-white text-sm sm:text-base leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
+                </div>
+
+                {/* Community-First Card */}
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-4 gap-4 rounded-2xl flex-1 relative">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Community-First</h3>
+                  <p className="text-white text-sm sm:text-base leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
+                </div>
               </div>
             </div>
 
-            {/* Bottom Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-              {/* Real-Time Coverage Card */}
-              <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
-                <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Real-Time Coverage</h3>
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
-              </div>
+            {/* Frame 74 - Right Column with Text & CTA - Desktop Only */}
+            <div className="hidden lg:flex flex-col gap-9.5 w-full lg:flex-1">
+              <p className="text-white text-sm sm:text-base leading-[130%]" style={{fontFamily: 'Gilroy'}}>
+                I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations.
+                <br /><br />
+                Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
+              </p>
 
-              {/* Community-First Card */}
-              <div className="bg-[#1F1F1F] p-5 sm:p-6 lg:p-7 rounded-2xl space-y-5">
-                <h3 className="text-xl sm:text-2xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Community-First</h3>
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
-              </div>
+              <a
+                href="/meetings"
+                className="bg-white text-[#0A0A0A] px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-flex items-center justify-center w-fit mx-auto lg:mx-0"
+                style={{fontFamily: 'Gilroy', fontWeight: 600}}
+              >
+                Book Mentorship
+              </a>
             </div>
           </div>
         </div>

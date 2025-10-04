@@ -186,7 +186,7 @@ export default function NewsletterSubscription() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter email"
+                    placeholder="Enter your email address"
                     className="flex-1 bg-transparent px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 text-xs sm:text-sm md:text-base text-white placeholder-gray-300 focus:outline-none focus:ring-0 focus:border-transparent outline-none min-w-0"
                     disabled={status === 'loading'}
                     required
@@ -195,7 +195,7 @@ export default function NewsletterSubscription() {
                   <button
                     type="submit"
                     disabled={status === 'loading'}
-                    className="bg-white text-[#0A0A0A] px-3 sm:px-4 md:px-6 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0"
+                    className="bg-white text-[#0A0A0A] px-6 sm:px-7 md:px-9 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-xs md:text-sm font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap flex-shrink-0"
                   >
                     {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
                   </button>

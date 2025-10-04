@@ -4,8 +4,11 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 export default function CryptoTradingBootcampPage() {
+  const router = useRouter();
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
       {/* Background Ellipse */}
@@ -59,7 +62,11 @@ export default function CryptoTradingBootcampPage() {
 
                 {/* CTA Button */}
                 <div className="flex">
-                  <button className="bg-white rounded-full px-6 py-4 text-sm text-[#0A0A0A] hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                  <button
+                    onClick={() => router.push('/bootcamp/crypto-trading/register')}
+                    className="bg-white rounded-full px-6 py-4 text-sm text-[#0A0A0A] hover:bg-gray-100 transition-colors"
+                    style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}
+                  >
                     Register Now - 30 BNB
                   </button>
                 </div>

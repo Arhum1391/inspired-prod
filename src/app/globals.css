@@ -307,8 +307,8 @@ body {
   background-color: rgba(255, 255, 255, 1);
 }
 
-/* Smooth transitions for all interactive elements - except animated scroll elements */
-*:not(.animate-scrollUp):not(.animate-scrollDown):not(.animate-zoom-wave) {
+/* Smooth transitions for all interactive elements - except animated scroll elements and scrollable containers */
+*:not(.animate-scrollUp):not(.animate-scrollDown):not(.animate-zoom-wave):not(.scrollbar-hide) {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;

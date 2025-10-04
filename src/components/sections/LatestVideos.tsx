@@ -143,7 +143,6 @@ const LatestVideos = () => {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !containerRef.current) return;
-    e.preventDefault();
     const x = e.touches[0].pageX - containerRef.current.offsetLeft;
     const walk = (x - dragStart) * 2;
     const newScrollLeft = scrollLeft - walk;
@@ -197,7 +196,8 @@ const LatestVideos = () => {
                 cursor: isDragging ? 'grabbing' : 'grab',
                 scrollBehavior: isDragging ? 'auto' : 'smooth',
                 WebkitOverflowScrolling: 'touch',
-                touchAction: 'none'
+                touchAction: 'pan-y pinch-zoom',
+                overscrollBehaviorX: 'contain'
               }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
@@ -210,8 +210,6 @@ const LatestVideos = () => {
               <div
                 ref={carouselRef}
                 className="flex gap-6"
-                onMouseEnter={() => !isDragging && setIsAnimationPaused(true)}
-                onMouseLeave={() => !isDragging && setIsAnimationPaused(false)}
               >
                 {duplicatedVideos.map((video, index) => {
                 return (
@@ -224,12 +222,9 @@ const LatestVideos = () => {
                     onClick={(e) => {
                       if (isDragging) {
                         e.preventDefault();
-                        e.stopPropagation();
                         return false;
                       }
                     }}
-                    onMouseDown={(e) => e.stopPropagation()}
-                    onTouchStart={(e) => e.stopPropagation()}
                   >
                     <div className="bg-[#1C1C1E] p-2">
                       <div className="relative bg-gray-700" style={{ aspectRatio: '16/8' }}>

@@ -2,6 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+
 ## Project Overview
 
 This is "Inspired Analyst" - a Next.js 15 consulting business website with a Calendly-integrated booking system. The site offers consulting services with different meeting types and pricing tiers.

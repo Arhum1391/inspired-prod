@@ -132,7 +132,7 @@ const LatestVideos = () => {
     setIsAnimationPaused(false);
   };
 
-  // Touch handlers for mobile
+  // Touch handlers for mobile - iOS/Safari compatible
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!containerRef.current) return;
     setIsDragging(true);
@@ -143,6 +143,7 @@ const LatestVideos = () => {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !containerRef.current) return;
+    // Don't prevent default on iOS - let native scrolling work
     const x = e.touches[0].pageX - containerRef.current.offsetLeft;
     const walk = (x - dragStart) * 2;
     const newScrollLeft = scrollLeft - walk;
@@ -150,22 +151,27 @@ const LatestVideos = () => {
     const container = containerRef.current;
     const maxScroll = container.scrollWidth / 2;
 
-    if (newScrollLeft < 0) {
-      container.scrollLeft = maxScroll + newScrollLeft;
-      setScrollLeft(maxScroll);
-      setDragStart(x);
-    } else if (newScrollLeft >= maxScroll) {
-      container.scrollLeft = newScrollLeft - maxScroll;
-      setScrollLeft(0);
-      setDragStart(x);
-    } else {
-      container.scrollLeft = newScrollLeft;
-    }
+    // Use requestAnimationFrame for smoother updates on iOS
+    requestAnimationFrame(() => {
+      if (!container) return;
+      if (newScrollLeft < 0) {
+        container.scrollLeft = maxScroll + newScrollLeft;
+        setScrollLeft(maxScroll);
+        setDragStart(x);
+      } else if (newScrollLeft >= maxScroll) {
+        container.scrollLeft = newScrollLeft - maxScroll;
+        setScrollLeft(0);
+        setDragStart(x);
+      } else {
+        container.scrollLeft = newScrollLeft;
+      }
+    });
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false);
-    setIsAnimationPaused(false);
+    // Delay animation resume for smoother transition on iOS
+    setTimeout(() => setIsAnimationPaused(false), 100);
   };
 
   return (
@@ -195,8 +201,10 @@ const LatestVideos = () => {
                 cursor: isDragging ? 'grabbing' : 'grab',
                 scrollBehavior: isDragging ? 'auto' : 'smooth',
                 WebkitOverflowScrolling: 'touch',
-                touchAction: 'pan-y pinch-zoom',
-                overscrollBehaviorX: 'contain'
+                touchAction: 'pan-x',
+                overscrollBehaviorX: 'contain',
+                userSelect: 'none',
+                WebkitUserSelect: 'none'
               }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}

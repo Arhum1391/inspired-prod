@@ -58,15 +58,16 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
     : "py-3 sm:py-4";
 
   return (
-    <div className={`relative z-20 w-full px-3 sm:px-4 lg:px-6 mt-4 ${paddingClass}`}>
+    <div className={`relative z-[9999] w-full px-3 sm:px-4 lg:px-6 mt-4 ${paddingClass}`}>
       {/* Mobile Layout - Toggle and Logo left, Button right */}
       <div className="lg:hidden max-w-7xl mx-auto flex items-center justify-between">
         {/* Mobile Hamburger Menu & Logo - Left */}
         <div className="flex items-center gap-0">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300 transition-colors"
+            className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300 transition-colors active:outline-none"
             aria-label="Toggle mobile menu"
+            style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {isMobileMenuOpen ? (
@@ -113,7 +114,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                 <nav className="flex-1 px-4 py-6">
                   <div className="flex flex-col gap-2">
                     <button
-                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                      style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleSectionClick('about');
@@ -122,7 +124,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                       About
                     </button>
                     <button
-                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                      style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleSectionClick('latest-videos');
@@ -131,7 +134,18 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                       Latest Video
                     </button>
                     <button
-                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                      style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        handleSectionClick('social-stats');
+                      }}
+                    >
+                      Community
+                    </button>
+                    <button
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                      style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleSectionClick('partners');
@@ -140,7 +154,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                       Our Partner
                     </button>
                     <button
-                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
+                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                      style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleSectionClick('collaboration');
@@ -150,9 +165,10 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                     </button>
                     <Link
                       href="/bootcamp"
-                      className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors ${
+                      className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
                         isActive('/bootcamp') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
                       }`}
+                      style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                       onClick={() => {
                         setIsMobileMenuOpen(false);
                       }}
@@ -217,34 +233,46 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
         <nav className="flex items-center relative">
           <div className="flex items-center space-x-4 xl:space-x-6">
             <button
-              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer"
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+              style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
               onClick={() => handleSectionClick('about')}
             >
               About
             </button>
             <button
-              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer"
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+              style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
               onClick={() => handleSectionClick('latest-videos')}
             >
               Latest Video
             </button>
             <button
-              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer"
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+              style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+              onClick={() => handleSectionClick('social-stats')}
+            >
+              Community
+            </button>
+            <button
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+              style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
               onClick={() => handleSectionClick('partners')}
             >
               Our Partner
             </button>
             <button
-              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer"
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+              style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
               onClick={() => handleSectionClick('collaboration')}
             >
               Contact Us
             </button>
             <Link
               href="/bootcamp"
-              className={`text-xs sm:text-sm font-medium transition-colors ${
+              className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
                 isActive('/bootcamp') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
               }`}
+              style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
             >
               Bootcamp
             </Link>

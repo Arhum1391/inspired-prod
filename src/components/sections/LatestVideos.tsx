@@ -172,10 +172,10 @@ const LatestVideos = () => {
     <div className="text-white py-20 font-gilroy">
       <div className="container mx-auto px-4">
         <h2
-          className="text-4xl font-bold text-center mb-12"
+          className="text-2xl sm:text-3xl md:text-4xl font-semibold text-center mb-12"
           style={{ fontFamily: 'Gilroy', fontWeight: 600 }}
         >
-          Check Out the Weekly Crypto & Forex Podcasts with <br></br>Team Inspired Analyst
+          Check Out the Weekly Crypto & Forex Podcasts with <br className="hidden sm:block"></br>Team Inspired Analyst
         </h2>
 
         {/* Carousel Wrapper with edge vignette effect */}
@@ -186,7 +186,6 @@ const LatestVideos = () => {
 
           {/* Right edge vignette overlay */}
           <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A]/80 to-transparent z-10 pointer-events-none"></div>
-
           {/* Carousel Content */}
           <div className="relative bg-[#0A0A0A] rounded-3xl p-8">
             <div

@@ -93,15 +93,15 @@ const BrandStories: React.FC = () => {
       const container = containerRef.current;
       const maxScroll = container.scrollWidth / 2; // Half way point for seamless loop
 
-      // Smooth auto-scroll with Safari-compatible scrollTo
+      // Direct scrollLeft assignment works better in Safari
       const currentScroll = container.scrollLeft;
       const newScroll = currentScroll + 0.5;
 
       // Reset to beginning when we reach halfway (end of first set)
       if (newScroll >= maxScroll) {
-        container.scrollTo({ left: 0, behavior: 'auto' });
+        container.scrollLeft = 0;
       } else {
-        container.scrollTo({ left: newScroll, behavior: 'auto' });
+        container.scrollLeft = newScroll;
       }
 
       animationRef.current = requestAnimationFrame(autoScroll);
@@ -136,17 +136,17 @@ const BrandStories: React.FC = () => {
     const container = containerRef.current;
     const maxScroll = container.scrollWidth / 2;
 
-    // Handle infinite loop during drag - use scrollTo for Safari
+    // Handle infinite loop during drag
     if (newScrollLeft < 0) {
-      container.scrollTo({ left: maxScroll + newScrollLeft, behavior: 'auto' });
+      container.scrollLeft = maxScroll + newScrollLeft;
       setScrollLeft(maxScroll);
       setDragStart(x);
     } else if (newScrollLeft >= maxScroll) {
-      container.scrollTo({ left: newScrollLeft - maxScroll, behavior: 'auto' });
+      container.scrollLeft = newScrollLeft - maxScroll;
       setScrollLeft(0);
       setDragStart(x);
     } else {
-      container.scrollTo({ left: newScrollLeft, behavior: 'auto' });
+      container.scrollLeft = newScrollLeft;
     }
   };
 
@@ -174,17 +174,17 @@ const BrandStories: React.FC = () => {
     const container = containerRef.current;
     const maxScroll = container.scrollWidth / 2;
 
-    // Safari-compatible scrollTo method
+    // Direct scrollLeft for Safari compatibility
     if (newScrollLeft < 0) {
-      container.scrollTo({ left: maxScroll + newScrollLeft, behavior: 'auto' });
+      container.scrollLeft = maxScroll + newScrollLeft;
       setScrollLeft(maxScroll);
       setDragStart(x);
     } else if (newScrollLeft >= maxScroll) {
-      container.scrollTo({ left: newScrollLeft - maxScroll, behavior: 'auto' });
+      container.scrollLeft = newScrollLeft - maxScroll;
       setScrollLeft(0);
       setDragStart(x);
     } else {
-      container.scrollTo({ left: newScrollLeft, behavior: 'auto' });
+      container.scrollLeft = newScrollLeft;
     }
   };
 
@@ -231,7 +231,7 @@ const BrandStories: React.FC = () => {
               className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 cursor-grab"
               style={{
                 cursor: isDragging ? 'grabbing' : 'grab',
-                scrollBehavior: isDragging ? 'auto' : 'smooth',
+                scrollBehavior: 'auto',
                 WebkitOverflowScrolling: 'touch',
                 touchAction: 'pan-x',
                 overscrollBehaviorX: 'contain',

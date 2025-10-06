@@ -56,27 +56,26 @@ const LatestVideos = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
-  const [isAnimationPaused, setIsAnimationPaused] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
+  const isUserInteracting = useRef(false);
 
-  
   // Auto-scroll functionality - Safari compatible
   useEffect(() => {
-    if (isAnimationPaused || isDragging) return;
+    const container = containerRef.current;
+    if (!container) return;
 
     const autoScroll = () => {
-      if (!containerRef.current) return;
+      if (isUserInteracting.current) {
+        animationRef.current = requestAnimationFrame(autoScroll);
+        return;
+      }
 
-      const container = containerRef.current;
-      const maxScroll = container.scrollWidth / 2; // Half way point for seamless loop
-
-      // Direct scrollLeft assignment works better in Safari
+      const maxScroll = container.scrollWidth / 2;
       const currentScroll = container.scrollLeft;
       const newScroll = currentScroll + 0.5;
 
-      // Reset to beginning when we reach halfway (end of first set)
       if (newScroll >= maxScroll) {
         container.scrollLeft = 0;
       } else {
@@ -93,13 +92,13 @@ const LatestVideos = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isAnimationPaused, isDragging]);
+  }, []);
 
   // Handle mouse down
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
+    isUserInteracting.current = true;
     setIsDragging(true);
-    setIsAnimationPaused(true);
     setDragStart(e.pageX - containerRef.current.offsetLeft);
     setScrollLeft(containerRef.current.scrollLeft);
   };
@@ -132,14 +131,16 @@ const LatestVideos = () => {
   // Handle mouse up/leave
   const handleMouseUp = () => {
     setIsDragging(false);
-    setIsAnimationPaused(false);
+    setTimeout(() => {
+      isUserInteracting.current = false;
+    }, 100);
   };
 
   // Touch handlers for mobile - iOS/Safari compatible
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!containerRef.current) return;
+    isUserInteracting.current = true;
     setIsDragging(true);
-    setIsAnimationPaused(true);
     setDragStart(e.touches[0].pageX - containerRef.current.offsetLeft);
     setScrollLeft(containerRef.current.scrollLeft);
   };
@@ -169,8 +170,9 @@ const LatestVideos = () => {
 
   const handleTouchEnd = () => {
     setIsDragging(false);
-    // Delay animation resume for smoother transition on iOS
-    setTimeout(() => setIsAnimationPaused(false), 100);
+    setTimeout(() => {
+      isUserInteracting.current = false;
+    }, 100);
   };
 
   return (

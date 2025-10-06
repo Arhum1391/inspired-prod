@@ -295,10 +295,10 @@ export default function Home() {
                 <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
                   <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://mymemo.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
                   <img src="/brand_images/memotech.svg" alt="Memotech" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://finvolution.group" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
                   <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
@@ -329,10 +329,10 @@ export default function Home() {
                 <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
                   <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://mymemo.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
                   <img src="/brand_images/memotech.svg" alt="Memotech" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://finvolution.group" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
                   <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
@@ -423,14 +423,14 @@ export default function Home() {
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
               </a>
-              <a href="https://mymemo.ai" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+              <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/memotech.svg"
                   alt="Memotech"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
               </a>
-              <a href="https://finvolution.group" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+              <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/finvolution.svg"
                   alt="Finvolution"

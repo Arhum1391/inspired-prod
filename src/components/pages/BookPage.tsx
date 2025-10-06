@@ -90,13 +90,24 @@ export default function BookingPage() {
               {meetingTypes.map((meeting) => (
                 <div
                   key={meeting.id}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                  className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
                     selectedMeetingType.id === meeting.id
-                      ? `border-${meeting.color}-500 bg-${meeting.color}-50 dark:bg-${meeting.color}-900/20`
-                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                      ? 'relative'
+                      : 'border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                   }`}
                   onClick={() => handleMeetingTypeChange(meeting)}
                 >
+                  {selectedMeetingType.id === meeting.id && (
+                    <div
+                      className="absolute inset-0 rounded-lg pointer-events-none"
+                      style={{
+                        border: '1px solid',
+                        borderImageSource: 'linear-gradient(226.35deg, #DE50EC 0%, rgba(222, 80, 236, 0) 50.5%)',
+                        borderImageSlice: 1,
+                        background: `linear-gradient(135deg, ${meeting.color === 'blue' ? 'rgba(59, 130, 246, 0.1)' : meeting.color === 'purple' ? 'rgba(147, 51, 234, 0.1)' : 'rgba(249, 115, 22, 0.1)'}, transparent)`
+                      }}
+                    />
+                  )}
                   <div className="flex justify-between items-start mb-2">
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                       {meeting.name}

@@ -342,7 +342,9 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
             <div 
                 className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
                 style={{
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
+                    background: isSelected 
+                        ? 'linear-gradient(226.35deg, #DE50EC 0%, rgba(222, 80, 236, 0) 50.5%)'
+                        : 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
                 }}
             >
                 <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
@@ -384,9 +386,9 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
                 </div>
                 </div>
                 <div className="mb-2">
-                    <span className={`inline-block px-3 py-1 text-xs rounded-full bg-[#1F1F1F] border ${
-                        meeting.id === 2 ? 'text-purple-300 border-purple-300/50' :
-                        'text-yellow-300 border-yellow-300/50'
+                    <span className={`inline-block px-3 py-1 text-xs rounded-full ${
+                        meeting.id === 2 ? 'bg-purple-400/12 border border-purple-400 text-purple-400' :
+                        'bg-yellow-400/12 border border-yellow-400 text-yellow-400'
                     }`}>
                         {meeting.duration}
                     </span>
@@ -1406,7 +1408,8 @@ const MeetingsPage: React.FC = () => {
                                     {/* View All Reviews Button */}
                                     <button 
                                         onClick={() => router.push(`/reviews?analyst=${selectedAnalyst}&step=${currentStep}&selectedAnalyst=${selectedAnalyst}`)}
-                                        className="flex flex-row justify-center items-center relative z-20 w-full max-w-[180px] h-7 bg-white rounded-full px-3 py-2 mt-auto"
+                                        className="flex flex-row justify-center items-center relative z-20 w-full max-w-[180px] h-7 bg-white rounded-full px-3 py-2 mt-auto focus:outline-none focus:ring-0"
+                                        style={{ outline: 'none', boxShadow: 'none' }}
                                     >
                                         <span className="text-xs text-[#1F1F1F] whitespace-nowrap">
                                             View All Reviews
@@ -1536,7 +1539,8 @@ const MeetingsPage: React.FC = () => {
                                 />
                                 <button
                                     onClick={() => setIsTimezoneOpen(!isTimezoneOpen)}
-                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 z-10"
+                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors duration-200 z-10 focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:border-none"
+                                    style={{ outline: 'none', boxShadow: 'none' }}
                                 >
                                 <ChevronDown 
                                     size={20} 
@@ -1590,13 +1594,14 @@ const MeetingsPage: React.FC = () => {
                                                     onClick={() => handleTimezoneSelect(tz.value)}
                                                     onMouseEnter={() => setHoveredTimezone(tz.value)}
                                                     onMouseLeave={() => setHoveredTimezone('')}
-                                                    className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
+                                                    className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center focus:outline-none focus:ring-0 ${
                                                         selectedTimezone === tz.value
                                                             ? 'bg-purple-600 text-white'
                                                             : hoveredTimezone === tz.value
                                                             ? 'bg-purple-500 text-white'
                                                                     : 'bg-black text-white hover:bg-gray-800'
                                                     }`}
+                                                    style={{ outline: 'none', boxShadow: 'none' }}
                                                 >
                                                     <span>{tz.label}</span>
                                                     <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
@@ -1623,13 +1628,14 @@ const MeetingsPage: React.FC = () => {
                                                         onClick={() => handleTimezoneSelect(tz.value)}
                                                         onMouseEnter={() => setHoveredTimezone(tz.value)}
                                                         onMouseLeave={() => setHoveredTimezone('')}
-                                                        className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center ${
+                                                        className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center focus:outline-none focus:ring-0 ${
                                                             selectedTimezone === tz.value
                                                                 ? 'bg-purple-600 text-white'
                                                                 : hoveredTimezone === tz.value
                                                                 ? 'bg-purple-500 text-white'
                                                                         : 'bg-black text-white hover:bg-gray-800'
                                                         }`}
+                                                        style={{ outline: 'none', boxShadow: 'none' }}
                                                     >
                                                         <span>{tz.label}</span>
                                                         <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
@@ -1686,7 +1692,8 @@ const MeetingsPage: React.FC = () => {
                                                     <div className="flex gap-2">
                                             <button
                                                 onClick={() => navigateMonth('prev')}
-                                                            className="text-white hover:text-gray-300 transition-colors w-4 h-4"
+                                                            className="text-white hover:text-gray-300 transition-colors w-4 h-4 focus:outline-none focus:ring-0"
+                                                            style={{ outline: 'none', boxShadow: 'none' }}
                                             >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -1694,7 +1701,8 @@ const MeetingsPage: React.FC = () => {
                                             </button>
                                             <button
                                                 onClick={() => navigateMonth('next')}
-                                                            className="text-white hover:text-gray-300 transition-colors w-4 h-4"
+                                                            className="text-white hover:text-gray-300 transition-colors w-4 h-4 focus:outline-none focus:ring-0"
+                                                            style={{ outline: 'none', boxShadow: 'none' }}
                                             >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -1723,7 +1731,7 @@ const MeetingsPage: React.FC = () => {
                                                                         onClick={() => day && handleDateSelect(day)}
                                                                         disabled={!day || !isDateAvailable(day)}
                                                             className={`
-                                                                            flex items-center justify-center transition-all duration-200 w-8 h-8 rounded-lg text-sm
+                                                                            flex items-center justify-center transition-all duration-200 w-8 h-8 rounded-lg text-sm focus:outline-none focus:ring-0
                                                                             ${day && isDateSelected(day)
                                                                                 ? 'bg-white text-black'
                                                                                 : day && isDateAvailable(day)
@@ -1731,6 +1739,7 @@ const MeetingsPage: React.FC = () => {
                                                                                 : 'text-[#909090] cursor-not-allowed'
                                                                             }
                                                                         `}
+                                                                        style={{ outline: 'none', boxShadow: 'none' }}
                                                                     >
                                                                         {day?.getDate()}
                                                         </button>
@@ -1759,15 +1768,16 @@ const MeetingsPage: React.FC = () => {
                                                 key={time}
                                                 onClick={() => handleTimeSelect(time)}
                                                 className={`
-                                                        font-medium transition-all duration-200 relative z-20
+                                                        font-medium transition-all duration-200 relative z-20 focus:outline-none focus:ring-0
                                                         lg:text-xs lg:w-full lg:py-2 lg:px-3 lg:rounded-lg lg:h-auto
                                                         sm:w-full text-sm
                                                     ${selectedTime === time
                                                         ? 'bg-white text-black border border-white'
-                                                            : 'bg-[#0D0D0D] text-white hover:bg-gray-800 border border-white'
+                                                            : 'bg-[#0D0D0D] text-white border border-white'
                                                     }
                                                 `}
                                                 style={{
+                                                    backgroundColor: selectedTime === time ? 'white' : '#0D0D0D',
                                                     width: window.innerWidth < 640 ? '95px' : '100%',
                                                     height: window.innerWidth < 640 ? '51px' : 'auto',
                                                     paddingTop: window.innerWidth < 640 ? '12px' : undefined,
@@ -1777,7 +1787,19 @@ const MeetingsPage: React.FC = () => {
                                                     borderRadius: window.innerWidth < 640 ? '8px' : undefined,
                                                     borderWidth: window.innerWidth < 640 ? '1px' : undefined,
                                                     marginRight: window.innerWidth < 640 ? '2px' : '0px',
-                                                    marginBottom: window.innerWidth < 640 ? '0px' : '0px'
+                                                    marginBottom: window.innerWidth < 640 ? '0px' : '0px',
+                                                    outline: 'none',
+                                                    boxShadow: 'none'
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (selectedTime !== time) {
+                                                        (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (selectedTime !== time) {
+                                                        (e.target as HTMLButtonElement).style.backgroundColor = '#0D0D0D';
+                                                    }
                                                 }}
                                             >
                                                 {time}
@@ -1814,7 +1836,8 @@ const MeetingsPage: React.FC = () => {
                                                     value={fullName}
                                                     onChange={(e) => setFullName(e.target.value)}
                                                     placeholder="Enter Name"
-                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-0 focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                    style={{ outline: 'none', boxShadow: 'none' }}
                                                 />
                                             </div>
                                             
@@ -1825,7 +1848,8 @@ const MeetingsPage: React.FC = () => {
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder="abc@example.com"
-                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-0 focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                    style={{ outline: 'none', boxShadow: 'none' }}
                                                 />
                                             </div>
                                         </div>
@@ -1838,6 +1862,7 @@ const MeetingsPage: React.FC = () => {
                                                 placeholder="Let us know if you want to discuss specific topics..."
                                                 rows={window.innerWidth < 640 ? 3 : 4}
                                                 className="w-full bg-black border-2 border-gray-500 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors resize-none"
+                                                style={{ outline: 'none', boxShadow: 'none' }}
                                             />
                                         </div>
                                     </div>
@@ -1845,15 +1870,25 @@ const MeetingsPage: React.FC = () => {
                                     {/* Payment Details */}
                                     <div className="mt-6">
                                         <h3 className="text-base font-semibold text-white" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Payment Details</h3>
-                                        <Image src="/logo/Binance.svg" alt="Binance" width={128} height={128} className="w-32 h-32 -mt-8" />
-                                        <p className="text-xs text-gray-400 leading-relaxed -mt-8">
+                                        <div className="w-fit mt-4">
+                                            <div className="flex items-center justify-center px-4 py-3 border border-white/30 rounded-lg">
+                                                <Image
+                                                    src="/logo/Binance.svg"
+                                                    alt="Binance"
+                                                    width={138}
+                                                    height={20}
+                                                    className="h-5 w-auto"
+                                                />
+                                            </div>
+                                        </div>
+                                        <p className="text-xs text-gray-400 leading-relaxed mt-4">
                                             By completing this booking, you agree to our Terms of Service and Privacy Policy. All services are provided for informational purposes only. Results may vary.
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Right side - Booking Summary */}
-                                <div className="w-full lg:w-80">
+                                <div className="w-full lg:w-80 relative z-50">
                                     <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-lg p-6">
                                         <h3 className="text-lg font-semibold text-white mb-4" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Booking Summary</h3>
                                         
@@ -1863,10 +1898,10 @@ const MeetingsPage: React.FC = () => {
                                         {/* Meeting Type - Moved to top */}
                                         <div className="flex items-center justify-between mb-4">
                                             <h4 className="text-xl font-bold text-white" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>{getSelectedMeetingData()?.title}</h4>
-                                                <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                                                    selectedMeeting === 1 ? 'bg-teal-400/20 text-teal-300' :
-                                                    selectedMeeting === 2 ? 'bg-purple-400/20 text-purple-300' :
-                                                    'bg-yellow-400/20 text-yellow-300'
+                                                <span className={`inline-block px-3 py-1 text-xs rounded-full ${
+                                                    selectedMeeting === 1 ? 'bg-teal-400/12 border border-teal-400 text-teal-400' :
+                                                    selectedMeeting === 2 ? 'bg-purple-400/12 border border-purple-400 text-purple-400' :
+                                                    'bg-yellow-400/12 border border-yellow-400 text-yellow-400'
                                                 }`}>
                                                     {getSelectedMeetingData()?.duration}
                                                 </span>
@@ -1915,8 +1950,14 @@ const MeetingsPage: React.FC = () => {
                             {(currentStep === 2 || currentStep === 3) && (
                             <button
                                 onClick={handleBack}
-                                className="w-44 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white hover:bg-gray-800 border border-white hover:border-gray-300 focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20"
-                                style={{ outline: 'none', boxShadow: 'none' }}
+                                className="w-44 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white border border-white hover:border-gray-300 focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20"
+                                style={{ 
+                                    outline: 'none', 
+                                    boxShadow: 'none',
+                                    backgroundColor: 'black'
+                                }}
+                                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+                                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'black'}
                                 onFocus={(e) => e.target.blur()}
                             >
                                 Back
@@ -1926,10 +1967,12 @@ const MeetingsPage: React.FC = () => {
                             onClick={handleContinue}
                             disabled={isContinueDisabled}
                             className={`w-44 py-3 rounded-3xl font-semibold transition-all duration-300 relative z-20
-                            ${isContinueDisabled ? 'bg-gray-700 text-gray-500 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
+                            ${isContinueDisabled ? 'text-gray-500 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
                             style={{ 
                                 opacity: isContinueDisabled ? 0.5 : 1,
-                                backgroundColor: isContinueDisabled ? '#374151' : 'rgba(255, 255, 255, 0.95)'
+                                backgroundColor: isContinueDisabled ? 'rgba(210, 210, 210, 1)' : 'rgba(255, 255, 255, 0.95)',
+                                outline: 'none',
+                                boxShadow: 'none'
                             }}
                         >
                                 {currentStep === 3 ? 'Continue' : 'Proceed to Pay'}

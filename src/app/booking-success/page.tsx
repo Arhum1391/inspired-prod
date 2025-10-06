@@ -115,12 +115,16 @@ const BookingSuccessContent: React.FC = () => {
                 <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-xl p-6 max-w-lg w-full mb-6 mt-4">
                     <div className="space-y-4">
                         {/* Meeting Type */}
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-start justify-between">
                             <div>
                                 <p className="text-gray-400 text-base mb-2">Meeting Type</p>
                                 <p className="text-white font-bold text-xl">{selectedMeeting?.title || 'Unknown'}</p>
                             </div>
-                            <span className="bg-teal-400/20 text-teal-300 text-xs px-3 py-1 rounded-full">
+                            <span className={`inline-block px-3 py-1 text-xs rounded-full mt-8 ${
+                                selectedMeetingId === 2 ? 'bg-purple-400/12 border border-purple-400 text-purple-400' :
+                                selectedMeetingId === 3 ? 'bg-yellow-400/12 border border-yellow-400 text-yellow-400' :
+                                'bg-teal-400/12 border border-teal-400 text-teal-400'
+                            }`}>
                                 {selectedMeeting?.duration || 'Unknown'}
                             </span>
                         </div>
@@ -156,7 +160,10 @@ const BookingSuccessContent: React.FC = () => {
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-8 w-full sm:justify-center relative z-20">
                     {/* Google Calendar */}
-                    <button className="bg-white text-black px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors w-full sm:w-auto">
+                    <button 
+                        className="bg-white text-black px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
+                        style={{ outline: 'none', boxShadow: 'none' }}
+                    >
                         <Image 
                             src="/logo/calendar.svg" 
                             alt="Google Calendar" 
@@ -168,7 +175,12 @@ const BookingSuccessContent: React.FC = () => {
                     </button>
 
                     {/* Outlook Calendar */}
-                    <button className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors w-full sm:w-auto">
+                    <button 
+                        className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
+                        style={{ backgroundColor: 'black', outline: 'none', boxShadow: 'none' }}
+                        onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+                        onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'black'}
+                    >
                         <Image 
                             src="/logo/outlook.png" 
                             alt="Outlook Calendar" 
@@ -182,7 +194,10 @@ const BookingSuccessContent: React.FC = () => {
                     {/* Back Home Button */}
                     <button 
                         onClick={handleBackHome}
-                        className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors w-full sm:w-auto"
+                        className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
+                        style={{ backgroundColor: 'black', outline: 'none', boxShadow: 'none' }}
+                        onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+                        onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'black'}
                     >
                         Back Home
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

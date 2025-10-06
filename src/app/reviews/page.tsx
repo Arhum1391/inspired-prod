@@ -537,7 +537,8 @@ const ReviewsContent: React.FC = () => {
                                             {currentPage > 1 && (
                                                 <button
                                                     onClick={() => handlePageChange(currentPage - 1)}
-                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800`}
+                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800 focus:outline-none focus:ring-0`}
+                                                    style={{ outline: 'none', boxShadow: 'none' }}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -551,11 +552,12 @@ const ReviewsContent: React.FC = () => {
                                             <button
                                                 key={page}
                                                 onClick={() => handlePageChange(page)}
-                                                className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center text-sm font-medium transition-colors border ${
+                                                className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center text-sm font-medium transition-colors border focus:outline-none focus:ring-0 ${
                                                     currentPage === page
                                                         ? 'bg-white text-black border-white'
                                                         : 'bg-black text-white border-white hover:bg-gray-800'
                                                 }`}
+                                                style={{ outline: 'none', boxShadow: 'none' }}
                                             >
                                                 {page}
                                             </button>
@@ -566,7 +568,8 @@ const ReviewsContent: React.FC = () => {
                                             {currentPage < totalPages && (
                                                 <button
                                                     onClick={() => handlePageChange(currentPage + 1)}
-                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800`}
+                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800 focus:outline-none focus:ring-0`}
+                                                    style={{ outline: 'none', boxShadow: 'none' }}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

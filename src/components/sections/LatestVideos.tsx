@@ -66,32 +66,33 @@ const LatestVideos = () => {
     const container = containerRef.current;
     if (!container) return;
 
+    let animationFrame: number;
+
     const autoScroll = () => {
       if (isUserInteracting.current) {
-        animationRef.current = requestAnimationFrame(autoScroll);
+        animationFrame = requestAnimationFrame(autoScroll);
         return;
       }
 
-      const maxScroll = container.scrollWidth / 2;
-      const currentScroll = container.scrollLeft;
-      const newScroll = currentScroll + 0.5;
+      // Force Safari to refresh layout
+      container.style.transform = 'translateZ(0)';
 
-      if (newScroll >= maxScroll) {
+      const halfWidth = container.scrollWidth / 2;
+      const next = container.scrollLeft + 0.5;
+
+      if (next >= halfWidth) {
+        // Snap exactly to 0 to avoid fractional bug
         container.scrollLeft = 0;
       } else {
-        container.scrollLeft = newScroll;
+        container.scrollLeft = next;
       }
 
-      animationRef.current = requestAnimationFrame(autoScroll);
+      animationFrame = requestAnimationFrame(autoScroll);
     };
 
-    animationRef.current = requestAnimationFrame(autoScroll);
+    animationFrame = requestAnimationFrame(autoScroll);
 
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
+    return () => cancelAnimationFrame(animationFrame);
   }, []);
 
   // Handle mouse down
@@ -117,14 +118,17 @@ const LatestVideos = () => {
     // Handle infinite loop during drag
     if (newScrollLeft < 0) {
       container.scrollLeft = maxScroll + newScrollLeft;
+      container.style.transform = 'translateZ(0)'; // Force Safari repaint
       setScrollLeft(maxScroll);
       setDragStart(x);
     } else if (newScrollLeft >= maxScroll) {
       container.scrollLeft = newScrollLeft - maxScroll;
+      container.style.transform = 'translateZ(0)'; // Force Safari repaint
       setScrollLeft(0);
       setDragStart(x);
     } else {
       container.scrollLeft = newScrollLeft;
+      container.style.transform = 'translateZ(0)'; // Force Safari repaint
     }
   };
 
@@ -157,14 +161,17 @@ const LatestVideos = () => {
     // Direct scrollLeft for Safari compatibility
     if (newScrollLeft < 0) {
       container.scrollLeft = maxScroll + newScrollLeft;
+      container.style.transform = 'translateZ(0)'; // Force Safari repaint
       setScrollLeft(maxScroll);
       setDragStart(x);
     } else if (newScrollLeft >= maxScroll) {
       container.scrollLeft = newScrollLeft - maxScroll;
+      container.style.transform = 'translateZ(0)'; // Force Safari repaint
       setScrollLeft(0);
       setDragStart(x);
     } else {
       container.scrollLeft = newScrollLeft;
+      container.style.transform = 'translateZ(0)'; // Force Safari repaint
     }
   };
 
@@ -197,15 +204,17 @@ const LatestVideos = () => {
           <div className="relative bg-[#0A0A0A] rounded-3xl p-8">
             <div
               ref={containerRef}
-              className="flex gap-6 overflow-x-auto scrollbar-hide pb-4 cursor-grab"
+              className="flex gap-6 overflow-x-scroll scrollbar-hide pb-4 cursor-grab"
               style={{
+                minWidth: '100%',
                 cursor: isDragging ? 'grabbing' : 'grab',
                 scrollBehavior: 'auto',
-                WebkitOverflowScrolling: 'touch',
                 touchAction: 'pan-x',
                 overscrollBehaviorX: 'contain',
                 userSelect: 'none',
-                WebkitUserSelect: 'none'
+                WebkitUserSelect: 'none',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)'
               }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}

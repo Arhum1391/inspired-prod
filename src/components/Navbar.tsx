@@ -112,50 +112,42 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                 {/* Navigation Links */}
                 <nav className="flex-1 px-4 py-6">
                   <div className="flex flex-col gap-2">
-                    <a
-                      href="/#about"
+                    <button
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
-                      onClick={(e) => {
-                        e.preventDefault();
+                      onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleSectionClick('about');
                       }}
                     >
                       About
-                    </a>
-                    <a
-                      href="/#latest-videos"
+                    </button>
+                    <button
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
-                      onClick={(e) => {
-                        e.preventDefault();
+                      onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleSectionClick('latest-videos');
                       }}
                     >
                       Latest Video
-                    </a>
-                    <a
-                      href="/#partners"
+                    </button>
+                    <button
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
-                      onClick={(e) => {
-                        e.preventDefault();
+                      onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleSectionClick('partners');
                       }}
                     >
                       Our Partner
-                    </a>
-                    <a
-                      href="/#collaboration"
+                    </button>
+                    <button
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
-                      onClick={(e) => {
-                        e.preventDefault();
+                      onClick={() => {
                         setIsMobileMenuOpen(false);
                         handleSectionClick('collaboration');
                       }}
                     >
                       Contact Us
-                    </a>
+                    </button>
                     <Link
                       href="/bootcamp"
                       className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors ${
@@ -224,46 +216,30 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
         {/* Navigation - Desktop */}
         <nav className="flex items-center relative">
           <div className="flex items-center space-x-4 xl:space-x-6">
-            <a
-              href="/#about"
-              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
-              onClick={(e) => {
-                e.preventDefault();
-                handleSectionClick('about');
-              }}
+            <button
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer"
+              onClick={() => handleSectionClick('about')}
             >
               About
-            </a>
-            <a
-              href="/#latest-videos"
-              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
-              onClick={(e) => {
-                e.preventDefault();
-                handleSectionClick('latest-videos');
-              }}
+            </button>
+            <button
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer"
+              onClick={() => handleSectionClick('latest-videos')}
             >
               Latest Video
-            </a>
-            <a
-              href="/#partners"
-              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
-              onClick={(e) => {
-                e.preventDefault();
-                handleSectionClick('partners');
-              }}
+            </button>
+            <button
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer"
+              onClick={() => handleSectionClick('partners')}
             >
               Our Partner
-            </a>
-            <a
-              href="/#collaboration"
-              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
-              onClick={(e) => {
-                e.preventDefault();
-                handleSectionClick('collaboration');
-              }}
+            </button>
+            <button
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer"
+              onClick={() => handleSectionClick('collaboration')}
             >
               Contact Us
-            </a>
+            </button>
             <Link
               href="/bootcamp"
               className={`text-xs sm:text-sm font-medium transition-colors ${

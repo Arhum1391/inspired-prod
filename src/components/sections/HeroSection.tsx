@@ -10,241 +10,264 @@ const HeroSection = () => {
       <Navbar variant="hero" />
 
       {/* Main Content Container - Mobile optimized */}
-      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-6 pt-12 sm:pt-8 lg:-mt-16">
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-6 pt-12 sm:pt-16 md:pt-8 lg:-mt-16">
         <div className="mx-auto max-w-7xl">
-          <div className="grid lg:grid-cols-2 items-center gap-6 sm:gap-16 lg:gap-24">
+          <div className="flex flex-col lg:grid lg:grid-cols-2 items-center gap-8 sm:gap-12 md:gap-16 lg:gap-24">
 
-          {/* Left Column: Text and Buttons - Responsive widths for all screen sizes */}
-          {/* Mobile (<400px): 343px, Tablets (400-768px): progressive, Desktop (768px+): max 700px */}
-          <div className="flex flex-col items-start gap-6 md:gap-4 lg:gap-5 mt-8 md:mt-0 lg:-mt-20 w-[343px] min-[400px]:w-[380px] min-[500px]:w-[460px] min-[600px]:w-[560px] min-[700px]:w-[660px] md:w-full md:max-w-[700px]">
-            <h1 className="text-[32px] leading-[120%] min-[400px]:text-[36px] md:text-3xl lg:text-4xl xl:text-5xl font-semibold text-white w-full" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+          {/* Left Column: Text and Buttons - Mobile width fixed */}
+          <div className="flex flex-col items-start gap-6 md:gap-4 lg:gap-5 mt-8 md:mt-0 lg:-mt-20 w-full lg:max-w-[700px]">
+            <h1 className="text-[28px] leading-[120%] sm:text-[32px] md:text-3xl lg:text-4xl xl:text-5xl font-semibold text-white w-full" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
               Making AI, Finance & Tech Accessible Through Data-Driven Content
             </h1>
-            <p className="text-base leading-[100%] min-[400px]:text-[17px] md:text-base lg:text-lg text-white w-full" style={{fontFamily: 'Gilroy'}}>
+            <p className="text-[14px] leading-[120%] sm:text-[16px] md:text-base lg:text-lg text-white w-full" style={{fontFamily: 'Gilroy'}}>
               Expert analysis on stocks, crypto, and data science - delivered with clarity and humor
             </p>
             <div className="flex flex-col md:flex-row gap-5 md:gap-4 w-full">
-              <a href="/meetings" className="bg-white text-[#0A0A0A] text-sm font-semibold rounded-full py-[18px] px-8 hover:brightness-90 transition-all text-center flex items-center justify-center h-[50px]" style={{fontFamily: 'Gilroy'}}>
+              <a href="/meetings" className="w-full md:w-auto bg-white text-[#0A0A0A] text-[14px] font-semibold rounded-full py-[18px] px-8 hover:brightness-90 transition-all text-center flex items-center justify-center h-[50px]" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
                 Book Mentorship
               </a>
-              <button className="border border-white text-white text-sm font-semibold rounded-full py-[18px] px-12 hover:bg-white/10 transition-all text-center flex items-center justify-center h-[48px]" style={{fontFamily: 'Gilroy'}}>
+              <button className="w-full md:w-auto border border-white text-white text-[14px] font-semibold rounded-full py-[18px] px-12 hover:bg-white/10 transition-all text-center flex items-center justify-center h-[48px]" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
                 Learn More
               </button>
             </div>
           </div>
 
           {/* Right Column: Responsive Images - Now visible on mobile */}
-          <div className="block mt-8 lg:mt-0 pt-4 sm:pt-6 lg:pt-24">
+          <div className="w-full lg:w-auto block mt-8 lg:mt-0 pt-4 sm:pt-6 lg:pt-24">
             {/* Mobile: Horizontal scrolling layout */}
             <div className="lg:hidden relative w-full overflow-hidden">
               <div className="fade-mask">
-                <div className="flex flex-col gap-3 sm:gap-4 pb-2">
+                <div className="flex flex-col gap-2">
                   {/* Row 1 */}
-                  <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4" >
+                  <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
                     {/* First set of images */}
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/6.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/5.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/6.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/5.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
                     {/* Duplicate set for seamless loop */}
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/6.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/5.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/6.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/5.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
                   </div>
                   {/* Row 2 */}
-                  <div className="animate-scrollDown flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4" >
+                  <div className="animate-scrollDown flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
                     {/* First set of images */}
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/1.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/2 improved.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 20%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/1.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/2 improved.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
                     {/* Duplicate set for seamless loop */}
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/1.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/2 improved.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 20%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/1.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/2 improved.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
                   </div>
                   {/* Row 3 */}
                   <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
                     {/* First set of images */}
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/3.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 10%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/4 - colored.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 10%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/7.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/3.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/4 - colored.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/7.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
                     {/* Duplicate set for seamless loop */}
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/3.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 10%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/4 - colored.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 10%' }}
-                      />
-                    </div>
-                    <div className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0">
-                      <img
-                        src="inspired analysts team/7.png"
-                        alt="Team member"
-                        className="w-full h-full object-cover"
-                        style={{ objectPosition: 'center 30%' }}
-                      />
-                    </div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/3.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/4 - colored.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
+                    <div
+                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                      style={{
+                        backgroundImage: 'url("team-mob/7.png")',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat'
+                      }}
+                    ></div>
                   </div>
                 </div>
               </div>
@@ -260,7 +283,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/6.jpg")',
+                        backgroundImage: 'url("team-mob/6.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -278,7 +301,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/5.png")',
+                        backgroundImage: 'url("team-mob/5.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -297,7 +320,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/6.jpg")',
+                        backgroundImage: 'url("team-mob/6.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -315,7 +338,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/5.png")',
+                        backgroundImage: 'url("team-mob/5.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -337,7 +360,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/1.png")',
+                        backgroundImage: 'url("team-mob/1.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -355,7 +378,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
+                        backgroundImage: 'url("team-mob/2 improved.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -374,7 +397,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/1.png")',
+                        backgroundImage: 'url("team-mob/1.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -392,7 +415,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
+                        backgroundImage: 'url("team-mob/2 improved.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -414,7 +437,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/3.jpg")',
+                        backgroundImage: 'url("team-mob/3.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -432,7 +455,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/4 - colored.png")',
+                        backgroundImage: 'url("team-mob/4 - colored.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -441,7 +464,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/7.png")',
+                        backgroundImage: 'url("team-mob/7.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -451,7 +474,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/3.jpg")',
+                        backgroundImage: 'url("team-mob/3.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -469,7 +492,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/4 - colored.png")',
+                        backgroundImage: 'url("team-mob/4 - colored.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -478,7 +501,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("inspired analysts team/7.png")',
+                        backgroundImage: 'url("team-mob/7.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'

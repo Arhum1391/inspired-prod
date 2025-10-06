@@ -56,7 +56,7 @@ const TailoredGuidanceSection = () => {
               left: isHovering ? `${cursorPosition.x}px` : 'auto',
               top: isHovering ? `${cursorPosition.y}px` : 'auto',
               right: isHovering ? 'auto' : '1rem',
-              transform: isHovering ? 'translate(-50%, -50%)' : 'translateY(-1.25rem) rotate(-4deg)',
+              transform: isHovering ? 'translate(-50%, -50%)' : 'translateY(-2rem) rotate(-4deg)',
               transition: isHovering ? 'none' : 'all 0.3s ease',
               opacity: isHovering ? 1 : 1,
               whiteSpace: 'nowrap'
@@ -67,14 +67,14 @@ const TailoredGuidanceSection = () => {
 
           {/* Header Section */}
           <div className="mb-8 sm:mb-10">
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold flex items-center justify-center flex-wrap gap-2 sm:gap-4 text-center" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-semibold flex items-center justify-center flex-wrap gap-1 sm:gap-4 text-center" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
               <span>Prefer</span>
               {/* Tilted Image - Responsive based on 94x58 dimensions */}
-              <div className="mx-2 sm:mx-4">
+              <div className="mx-1 sm:mx-4">
                 <img
                   src="/Rectangle 50 (1).png" // You'll provide the source later
                   alt="Tilted decoration"
-                  className="w-16 sm:w-20 md:w-24 h-10 sm:h-12 md:h-14 rounded-lg transform -rotate-6 transition-transform duration-300 hover:-rotate-3 object-cover"
+                  className="w-12 sm:w-20 md:w-24 h-8 sm:h-12 md:h-14 rounded-lg transform -rotate-6 transition-transform duration-300 hover:-rotate-3 object-cover"
                   style={{
                     aspectRatio: '94/58' // Maintains the exact ratio from your CSS
                   }}

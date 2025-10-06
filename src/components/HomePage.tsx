@@ -71,12 +71,12 @@ export default function Home() {
       
 
 
-      {/* Main Content Section - Minimal horizontal padding for more text space */}
-      <section id="about" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 md:py-16 mt-8 sm:mt-12 md:mt-16">
+      {/* Main Content Section - Improved padding for better readability */}
+      <section id="about" className="relative z-10 bg-[#0A0A0A] px-4 sm:px-6 md:px-8 lg:px-6 py-12 sm:py-16 md:py-20 mt-8 sm:mt-12 md:mt-16">
         <div className="max-w-5xl mx-auto">
-          {/* Section Header with Inline Images - Minimal padding for 2-line display */}
+          {/* Section Header with Inline Images */}
           <div className="mb-12 sm:mb-16 lg:mb-20">
-            <h2 className="gilroy-heading text-white flex flex-wrap items-center justify-center px-1 sm:px-2">
+            <h2 className="gilroy-heading text-white flex flex-wrap items-center justify-center px-2 sm:px-4">
               <span>Breaking Down Markets,</span>
               <img
                 src="\team images\group 1.svg"
@@ -110,8 +110,8 @@ export default function Home() {
           {/* Frame 77 - Main Content Container */}
           <div className="flex flex-col lg:flex-row items-start gap-6 sm:gap-8 lg:gap-10">
             {/* Mobile: Text & CTA First, Desktop: Cards First */}
-            <div className="flex flex-col gap-6 w-full lg:hidden">
-              <p className="text-white text-sm sm:text-base leading-[130%]" style={{fontFamily: 'Gilroy'}}>
+            <div className="flex flex-col gap-6 sm:gap-8 w-full lg:hidden">
+              <p className="text-white text-sm sm:text-base leading-[150%] sm:leading-[160%]" style={{fontFamily: 'Gilroy'}}>
                 I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations.
                 <br /><br />
                 Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
@@ -131,7 +131,7 @@ export default function Home() {
               {/* Frame 84 - Top Row Cards */}
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
                 {/* Data-Driven Approach Card */}
-                <div className="bg-[#1F1F1F] flex flex-col justify-between p-4 gap-4 rounded-2xl flex-1 relative">
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-5 sm:p-6 gap-4 sm:gap-5 rounded-2xl flex-1 relative min-h-[120px]">
                   {/* Curved Gradient Border */}
                   <div
                     className="absolute inset-0 pointer-events-none"
@@ -149,11 +149,11 @@ export default function Home() {
                     ></div>
                   </div>
                   <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Data-Driven Approach</h3>
-                  <p className="text-white text-sm sm:text-base leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
+                  <p className="text-white text-sm sm:text-base leading-[140%] sm:leading-[150%] relative z-10" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
                 </div>
 
                 {/* Educational Focus Card */}
-                <div className="bg-[#1F1F1F] flex flex-col justify-between p-4 gap-4 rounded-2xl flex-1 relative">
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-5 sm:p-6 gap-4 sm:gap-5 rounded-2xl flex-1 relative min-h-[120px]">
                   {/* Curved Gradient Border */}
                   <div
                     className="absolute inset-0 pointer-events-none"
@@ -171,14 +171,14 @@ export default function Home() {
                     ></div>
                   </div>
                   <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Educational Focus</h3>
-                  <p className="text-white text-sm sm:text-base leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
+                  <p className="text-white text-sm sm:text-base leading-[140%] sm:leading-[150%] relative z-10" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
                 </div>
               </div>
 
               {/* Frame 83 - Bottom Row Cards */}
               <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
                 {/* Real-Time Coverage Card */}
-                <div className="bg-[#1F1F1F] flex flex-col justify-between p-4 gap-4 rounded-2xl flex-1 relative">
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-5 sm:p-6 gap-4 sm:gap-5 rounded-2xl flex-1 relative min-h-[120px]">
                   {/* Curved Gradient Border */}
                   <div
                     className="absolute inset-0 pointer-events-none"
@@ -196,11 +196,11 @@ export default function Home() {
                     ></div>
                   </div>
                   <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Real-Time Coverage</h3>
-                  <p className="text-white text-sm sm:text-base leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
+                  <p className="text-white text-sm sm:text-base leading-[140%] sm:leading-[150%] relative z-10" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
                 </div>
 
                 {/* Community-First Card */}
-                <div className="bg-[#1F1F1F] flex flex-col justify-between p-4 gap-4 rounded-2xl flex-1 relative">
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-5 sm:p-6 gap-4 sm:gap-5 rounded-2xl flex-1 relative min-h-[120px]">
                   {/* Curved Gradient Border */}
                   <div
                     className="absolute inset-0 pointer-events-none"
@@ -218,14 +218,14 @@ export default function Home() {
                     ></div>
                   </div>
                   <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Community-First</h3>
-                  <p className="text-white text-sm sm:text-base leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
+                  <p className="text-white text-sm sm:text-base leading-[140%] sm:leading-[150%] relative z-10" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
                 </div>
               </div>
             </div>
 
             {/* Frame 74 - Right Column with Text & CTA - Desktop Only */}
             <div className="hidden lg:flex flex-col gap-9.5 w-full lg:flex-1">
-              <p className="text-white text-sm sm:text-base leading-[130%]" style={{fontFamily: 'Gilroy'}}>
+              <p className="text-white text-sm sm:text-base leading-[160%]" style={{fontFamily: 'Gilroy'}}>
                 I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations.
                 <br /><br />
                 Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
@@ -263,7 +263,7 @@ export default function Home() {
           {/* Our Valued Partners Header - Centered and smaller */}
           <div className="text-center mb-4 sm:mb-6 md:mb-12">
             <h2
-              className="text-xl sm:text-2xl md:text-3xl font-semibold text-white"
+              className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white"
               style={{fontFamily: 'Gilroy', fontWeight: 600}}
             >
               Our Valued Partners

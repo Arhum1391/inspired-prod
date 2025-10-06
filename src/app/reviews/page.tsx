@@ -132,6 +132,315 @@ const ReviewsContent: React.FC = () => {
             {/* Navigation Header */}
             <Navbar variant="hero" />
 
+            {/* Mobile Image Belts - Only visible on mobile */}
+            <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-4">
+                <div className="flex flex-col w-full h-full gap-2">
+                    {/* Belt 1 - Rectangle 1 Images */}
+                    <div className="flex-1 fade-mask overflow-hidden">
+                        <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
+                            {/* First set of images */}
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/1.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/2 improved.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/3.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/4 - colored.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/5.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/6.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/7.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            {/* Duplicate for seamless loop */}
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/1.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/2 improved.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/3.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/4 - colored.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/5.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/6.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/7.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                        </div>
+                    </div>
+
+                    {/* Belt 2 - Rectangle 2 Images */}
+                    <div className="flex-1 fade-mask overflow-hidden">
+                        <div className="animate-scrollDown flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
+                            {/* First set of images */}
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/5.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/6.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/7.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/1.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/2 improved.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/3.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/4 - colored.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            {/* Duplicate for seamless loop */}
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/5.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/6.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/7.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/1.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/2 improved.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/3.jpg")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                            <div
+                                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                                style={{
+                                    backgroundImage: 'url("team-mob/4 - colored.png")',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundRepeat: 'no-repeat'
+                                }}
+                            ></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Main Content Container - Same structure as booking page */}
             <div className="flex items-center justify-center p-4 sm:p-6 lg:p-8 -mt-8 lg:-mt-12">
                 <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
@@ -519,7 +828,7 @@ const ReviewsContent: React.FC = () => {
 
                             {/* Page Counter - Bottom Right on desktop, slightly left on mobile */}
                             {totalPages > 1 && (
-                                <div className={`flex ${isMobile ? 'mt-12 mb-8' : 'mt-8'} ${isMobile ? 'justify-end' : 'justify-end'}`}>
+                                <div className={`flex ${isMobile ? 'mt-12 mb-8' : 'mt-8'} ${isMobile ? 'justify-end' : 'justify-end'} relative z-50`}>
                                     <div 
                                         className="flex flex-row items-start"
                                         style={{

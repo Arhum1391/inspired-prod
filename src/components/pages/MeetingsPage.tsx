@@ -101,7 +101,7 @@ const meetings: Meeting[] = [
     title: '30-Min Strategy',
     duration: '30 minutes',
     price: '3 BNB',
-    description: 'Focused session to address specific challenges and develop targeted strategies for success.',
+    description: 'A focused session to address specific challenges and develop targeted strategies.',
     color: 'text-purple-400',
   },
   {
@@ -109,7 +109,7 @@ const meetings: Meeting[] = [
     title: '60-Min Deep',
     duration: '60 minutes',
     price: '5 BNB',
-    description: 'Comprehensive consultation to analyze complex issues and create detailed action plans.',
+    description: 'A comprehensive consultation to analyze complex issues and create detailed action plans.',
     color: 'text-yellow-400',
   },
 ];
@@ -676,10 +676,12 @@ const MeetingsPage: React.FC = () => {
     };
 
     const isDateAvailable = (date: Date) => {
-        // For now, make all future dates available for testing
+        // Allow today and future dates, but not past dates
         const today = new Date();
         today.setHours(0, 0, 0, 0);
-        return date >= today;
+        const compareDate = new Date(date);
+        compareDate.setHours(0, 0, 0, 0);
+        return compareDate >= today;
     };
 
     const isDateSelected = (date: Date) => {
@@ -1793,7 +1795,7 @@ const MeetingsPage: React.FC = () => {
                                             className="flex flex-wrap sm:grid sm:grid-cols-3 md:grid-cols-4 sm:gap-2 mb-4"
                                             style={{
                                                 width: window.innerWidth < 640 ? '343px' : '100%',
-                                                gap: window.innerWidth < 640 ? '12px' : undefined
+                                                gap: window.innerWidth < 640 ? '10px' : undefined
                                             }}
                                         >
                                         {timeSlots.map((time, index) => (
@@ -1803,7 +1805,7 @@ const MeetingsPage: React.FC = () => {
                                                 className={`
                                                         font-medium transition-all duration-200 relative z-20 focus:outline-none focus:ring-0
                                                         lg:text-xs lg:w-full lg:py-2 lg:px-3 lg:rounded-lg lg:h-auto
-                                                        sm:w-full text-sm
+                                                        sm:w-full text-xs
                                                     ${selectedTime === time
                                                         ? 'bg-white text-black border border-white'
                                                             : 'bg-[#0D0D0D] text-white border border-white'
@@ -1811,15 +1813,15 @@ const MeetingsPage: React.FC = () => {
                                                 `}
                                                 style={{
                                                     backgroundColor: selectedTime === time ? 'white' : '#0D0D0D',
-                                                    width: window.innerWidth < 640 ? '95px' : '100%',
-                                                    height: window.innerWidth < 640 ? '51px' : 'auto',
+                                                    width: window.innerWidth < 640 ? '85px' : '100%',
+                                                    height: window.innerWidth < 640 ? '41px' : 'auto',
                                                     paddingTop: window.innerWidth < 640 ? '12px' : undefined,
-                                                    paddingRight: window.innerWidth < 640 ? '6px' : undefined,
+                                                    paddingRight: window.innerWidth < 640 ? '16px' : undefined,
                                                     paddingBottom: window.innerWidth < 640 ? '12px' : undefined,
-                                                    paddingLeft: window.innerWidth < 640 ? '6px' : undefined,
+                                                    paddingLeft: window.innerWidth < 640 ? '16px' : undefined,
                                                     borderRadius: window.innerWidth < 640 ? '8px' : undefined,
                                                     borderWidth: window.innerWidth < 640 ? '1px' : undefined,
-                                                    marginRight: window.innerWidth < 640 ? '2px' : '0px',
+                                                    marginRight: window.innerWidth < 640 ? '0px' : '0px',
                                                     marginBottom: window.innerWidth < 640 ? '0px' : '0px',
                                                     outline: 'none',
                                                     boxShadow: 'none'

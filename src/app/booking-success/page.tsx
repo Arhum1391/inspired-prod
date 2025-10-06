@@ -81,22 +81,22 @@ const BookingSuccessContent: React.FC = () => {
             <Navbar variant="hero" />
 
             {/* Main Content */}
-            <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
+            <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 pt-9">
                 {/* Success Icon */}
                 <div className="flex items-center justify-center mb-4 mt-4">
                     <div className="relative">
                         {/* Circle Background */}
                         <div 
-                            className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-green-500 flex items-center justify-center"
+                            className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-transparent border-2 border-green-500 flex items-center justify-center"
                         >
                             {/* Checkmark */}
                             <div 
-                                className={`w-4 h-4 sm:w-6 sm:h-6 transition-all duration-500 ${showSuccess ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+                                className={`w-3 h-3 sm:w-4 sm:h-4 transition-all duration-500 ${showSuccess ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
                                 style={{
                                     backgroundImage: 'url("/logo/Tick.svg")',
                                     backgroundSize: 'contain',
                                     backgroundRepeat: 'no-repeat',
-                                    transform: 'translateY(2px)'
+                                    transform: 'translateY(1px)'
                                 }}
                             />
                         </div>
@@ -105,20 +105,20 @@ const BookingSuccessContent: React.FC = () => {
 
                 {/* Success Message */}
                 <div className="text-center mb-8">
-                    <h1 className="text-4xl font-bold text-white mb-4">You&apos;re Booked!</h1>
-                    <p className="text-white text-lg">
+                    <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-4" style={{ fontSize: '32px' }}>You&apos;re Booked!</h1>
+                    <p className="text-white text-sm sm:text-base lg:text-lg" style={{ fontSize: '16px' }}>
                         Your meeting has been confirmed. We&apos;ve sent a confirmation to your email.
                     </p>
                 </div>
 
                 {/* Meeting Details Card */}
-                <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-xl p-6 max-w-lg w-full mb-6 mt-4">
-                    <div className="space-y-4">
+                <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-xl p-4 sm:p-6 w-full mb-6 mt-0" style={{ maxWidth: '600px' }}>
+                    <div className="space-y-3 sm:space-y-4">
                         {/* Meeting Type */}
                         <div className="flex items-start justify-between">
                             <div>
-                                <p className="text-gray-400 text-base mb-2">Meeting Type</p>
-                                <p className="text-white font-bold text-xl">{selectedMeeting?.title || 'Unknown'}</p>
+                                <p className="text-gray-400 text-sm sm:text-base mb-2" style={{ fontSize: '14px' }}>Meeting Type</p>
+                                <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{selectedMeeting?.title || 'Unknown'}</p>
                             </div>
                             <span className={`inline-block px-3 py-1 text-xs rounded-full mt-8 ${
                                 selectedMeetingId === 2 ? 'bg-purple-400/12 border border-purple-400 text-purple-400' :
@@ -134,24 +134,24 @@ const BookingSuccessContent: React.FC = () => {
 
                         {/* Your Analyst */}
                         <div>
-                            <p className="text-gray-400 text-base mb-1">Your Analyst</p>
-                            <p className="text-white font-bold text-xl">{selectedAnalyst?.name || 'Unknown'}</p>
+                            <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Your Analyst</p>
+                            <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{selectedAnalyst?.name || 'Unknown'}</p>
                         </div>
 
                         {/* Date & Time */}
                         <div>
-                            <p className="text-gray-400 text-base mb-1">Date & Time</p>
+                            <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Date & Time</p>
                             <div className="flex flex-col">
-                                <p className="text-white font-bold text-xl">{formatDate(selectedDate)}</p>
-                                <p className="text-white text-sm mt-1">{selectedTime} {selectedTimezone && `(${selectedTimezone})`}</p>
+                                <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{formatDate(selectedDate)}</p>
+                                <p className="text-white mt-1 text-base sm:text-lg" style={{ fontSize: '16px' }}>{selectedTime} {selectedTimezone && `(${selectedTimezone})`}</p>
                             </div>
                         </div>
 
                         {/* Your Notes */}
                         {notes && (
                             <div>
-                                <p className="text-gray-400 text-base mb-1">Your Notes</p>
-                                <p className="text-white font-bold text-xl">{notes}</p>
+                                <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Your Notes</p>
+                                <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{notes}</p>
                             </div>
                         )}
                     </div>
@@ -176,7 +176,7 @@ const BookingSuccessContent: React.FC = () => {
 
                     {/* Outlook Calendar */}
                     <button 
-                        className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
+                        className="bg-black border border-white text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
                         style={{ backgroundColor: 'black', outline: 'none', boxShadow: 'none' }}
                         onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
                         onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'black'}
@@ -194,15 +194,19 @@ const BookingSuccessContent: React.FC = () => {
                     {/* Back Home Button */}
                     <button 
                         onClick={handleBackHome}
-                        className="bg-black border border-gray-600 text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
+                        className="bg-black border border-white text-white px-4 py-2 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
                         style={{ backgroundColor: 'black', outline: 'none', boxShadow: 'none' }}
                         onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
                         onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'black'}
                     >
                         Back Home
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17L17 7M17 7H7M17 7V17" />
-                        </svg>
+                        <Image 
+                            src="/logo/backhome.png" 
+                            alt="Back Home" 
+                            width={20}
+                            height={20}
+                            className="w-5 h-5"
+                        />
                     </button>
                 </div>
             </div>

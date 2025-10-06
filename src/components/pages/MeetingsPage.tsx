@@ -1794,8 +1794,8 @@ const MeetingsPage: React.FC = () => {
                                         <div 
                                             className="flex flex-wrap sm:grid sm:grid-cols-3 md:grid-cols-4 sm:gap-2 mb-4"
                                             style={{
-                                                width: window.innerWidth < 640 ? '343px' : '100%',
-                                                gap: window.innerWidth < 640 ? '10px' : undefined
+                                                width: window.innerWidth < 480 ? '320px' : window.innerWidth < 640 ? '343px' : '100%',
+                                                gap: window.innerWidth < 480 ? '8px' : window.innerWidth < 640 ? '10px' : undefined
                                             }}
                                         >
                                         {timeSlots.map((time, index) => (
@@ -1805,7 +1805,8 @@ const MeetingsPage: React.FC = () => {
                                                 className={`
                                                         font-medium transition-all duration-200 relative z-20 focus:outline-none focus:ring-0
                                                         lg:text-xs lg:w-full lg:py-2 lg:px-3 lg:rounded-lg lg:h-auto
-                                                        sm:w-full text-xs
+                                                        sm:w-full
+                                                        ${window.innerWidth < 480 ? 'text-[10px]' : window.innerWidth < 640 ? 'text-xs' : 'text-xs'}
                                                     ${selectedTime === time
                                                         ? 'bg-white text-black border border-white'
                                                             : 'bg-[#0D0D0D] text-white border border-white'
@@ -1813,18 +1814,20 @@ const MeetingsPage: React.FC = () => {
                                                 `}
                                                 style={{
                                                     backgroundColor: selectedTime === time ? 'white' : '#0D0D0D',
-                                                    width: window.innerWidth < 640 ? '85px' : '100%',
-                                                    height: window.innerWidth < 640 ? '41px' : 'auto',
-                                                    paddingTop: window.innerWidth < 640 ? '12px' : undefined,
-                                                    paddingRight: window.innerWidth < 640 ? '16px' : undefined,
-                                                    paddingBottom: window.innerWidth < 640 ? '12px' : undefined,
-                                                    paddingLeft: window.innerWidth < 640 ? '16px' : undefined,
+                                                    width: window.innerWidth < 480 ? '75px' : window.innerWidth < 640 ? '85px' : '100%',
+                                                    height: window.innerWidth < 480 ? '36px' : window.innerWidth < 640 ? '41px' : 'auto',
+                                                    paddingTop: window.innerWidth < 480 ? '8px' : window.innerWidth < 640 ? '12px' : undefined,
+                                                    paddingRight: window.innerWidth < 480 ? '8px' : window.innerWidth < 640 ? '16px' : undefined,
+                                                    paddingBottom: window.innerWidth < 480 ? '8px' : window.innerWidth < 640 ? '12px' : undefined,
+                                                    paddingLeft: window.innerWidth < 480 ? '8px' : window.innerWidth < 640 ? '16px' : undefined,
                                                     borderRadius: window.innerWidth < 640 ? '8px' : undefined,
                                                     borderWidth: window.innerWidth < 640 ? '1px' : undefined,
                                                     marginRight: window.innerWidth < 640 ? '0px' : '0px',
                                                     marginBottom: window.innerWidth < 640 ? '0px' : '0px',
                                                     outline: 'none',
-                                                    boxShadow: 'none'
+                                                    boxShadow: 'none',
+                                                    fontSize: window.innerWidth < 480 ? '10px' : window.innerWidth < 640 ? '12px' : undefined,
+                                                    lineHeight: window.innerWidth < 640 ? '1.2' : undefined
                                                 }}
                                                 onMouseEnter={(e) => {
                                                     if (selectedTime !== time) {

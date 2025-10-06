@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 interface NavbarProps {
   variant?: 'default' | 'hero';
@@ -12,11 +12,33 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
 
   const isActive = (path: string) => {
     if (path === '/') return pathname === '/';
     return pathname?.startsWith(path);
   };
+
+  // Handle navigation to section - works from any page
+  const handleSectionClick = (sectionId: string) => {
+    if (pathname === '/') {
+      // Already on homepage, just scroll
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      // On another page, navigate to homepage with hash
+      router.push(`/#${sectionId}`);
+    }
+  };
+
+  // Handle scroll on page load if there's a hash
+  useEffect(() => {
+    const hash = window.location.hash.substring(1);
+    if (hash && pathname === '/') {
+      setTimeout(() => {
+        document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [pathname]);
 
   // Prevent body scroll when sidebar is open
   useEffect(() => {
@@ -91,45 +113,45 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                 <nav className="flex-1 px-4 py-6">
                   <div className="flex flex-col gap-2">
                     <a
-                      href="#about"
+                      href="/#about"
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
                       onClick={(e) => {
                         e.preventDefault();
                         setIsMobileMenuOpen(false);
-                        document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                        handleSectionClick('about');
                       }}
                     >
                       About
                     </a>
                     <a
-                      href="#latest-videos"
+                      href="/#latest-videos"
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
                       onClick={(e) => {
                         e.preventDefault();
                         setIsMobileMenuOpen(false);
-                        document.getElementById('latest-videos')?.scrollIntoView({ behavior: 'smooth' });
+                        handleSectionClick('latest-videos');
                       }}
                     >
                       Latest Video
                     </a>
                     <a
-                      href="#partners"
+                      href="/#partners"
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
                       onClick={(e) => {
                         e.preventDefault();
                         setIsMobileMenuOpen(false);
-                        document.getElementById('partners')?.scrollIntoView({ behavior: 'smooth' });
+                        handleSectionClick('partners');
                       }}
                     >
                       Our Partner
                     </a>
                     <a
-                      href="#collaboration"
+                      href="/#collaboration"
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
                       onClick={(e) => {
                         e.preventDefault();
                         setIsMobileMenuOpen(false);
-                        document.getElementById('collaboration')?.scrollIntoView({ behavior: 'smooth' });
+                        handleSectionClick('collaboration');
                       }}
                     >
                       Contact Us
@@ -203,41 +225,41 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
         <nav className="flex items-center relative">
           <div className="flex items-center space-x-4 xl:space-x-6">
             <a
-              href="#about"
+              href="/#about"
               className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+                handleSectionClick('about');
               }}
             >
               About
             </a>
             <a
-              href="#latest-videos"
+              href="/#latest-videos"
               className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById('latest-videos')?.scrollIntoView({ behavior: 'smooth' });
+                handleSectionClick('latest-videos');
               }}
             >
               Latest Video
             </a>
             <a
-              href="#partners"
+              href="/#partners"
               className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById('partners')?.scrollIntoView({ behavior: 'smooth' });
+                handleSectionClick('partners');
               }}
             >
               Our Partner
             </a>
             <a
-              href="#collaboration"
+              href="/#collaboration"
               className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById('collaboration')?.scrollIntoView({ behavior: 'smooth' });
+                handleSectionClick('collaboration');
               }}
             >
               Contact Us

@@ -119,7 +119,7 @@ export default function Home() {
 
               <a
                 href="/meetings"
-                className="bg-white text-[#0A0A0A] px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-flex items-center justify-center w-fit"
+                className="bg-white text-[#0A0A0A] px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 focus:bg-white/20 focus:border focus:border-white focus:text-white transition-all hover:scale-105 inline-flex items-center justify-center w-fit"
                 style={{fontFamily: 'Gilroy', fontWeight: 600}}
               >
                 Book Mentorship
@@ -233,7 +233,7 @@ export default function Home() {
 
               <a
                 href="/meetings"
-                className="bg-white text-[#0A0A0A] px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 transition-all hover:scale-105 inline-flex items-center justify-center w-fit mx-auto lg:mx-0"
+                className="bg-white text-[#0A0A0A] px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 focus:bg-white/20 focus:border focus:border-white focus:text-white transition-all hover:scale-105 inline-flex items-center justify-center w-fit mx-auto lg:mx-0"
                 style={{fontFamily: 'Gilroy', fontWeight: 600}}
               >
                 Book Mentorship
@@ -292,29 +292,73 @@ export default function Home() {
             <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 w-full overflow-hidden">
               <div className="flex animate-carousel gap-16 items-center">
                 {/* All brand logos in a row that will scroll */}
-                <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/memotech.svg" alt="Memotech" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/creati.svg" alt="Creati" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/binance.svg" alt="Binance" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/exness.svg" alt="Exness" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/capcut.svg" alt="CapCut" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/algorand.svg" alt="Algorand" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/wegic.svg" alt="Wegic" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/ledger.svg" alt="Ledger" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://mymemo.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/memotech.svg" alt="Memotech" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://finvolution.group" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/creati.svg" alt="Creati" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/binance.svg" alt="Binance" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/exness.svg" alt="Exness" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/capcut.svg" alt="CapCut" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/algorand.svg" alt="Algorand" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/wegic.svg" alt="Wegic" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/ledger.svg" alt="Ledger" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
                 {/* Duplicate for seamless loop */}
-                <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/memotech.svg" alt="Memotech" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/creati.svg" alt="Creati" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/binance.svg" alt="Binance" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/exness.svg" alt="Exness" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/capcut.svg" alt="CapCut" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/algorand.svg" alt="Algorand" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/wegic.svg" alt="Wegic" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
-                <img src="/brand_images/ledger.svg" alt="Ledger" className="h-12 w-24 object-contain opacity-80 flex-shrink-0" />
+                <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://mymemo.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/memotech.svg" alt="Memotech" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://finvolution.group" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/creati.svg" alt="Creati" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/binance.svg" alt="Binance" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/exness.svg" alt="Exness" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/capcut.svg" alt="CapCut" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/algorand.svg" alt="Algorand" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/wegic.svg" alt="Wegic" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                  <img src="/brand_images/ledger.svg" alt="Ledger" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
               </div>
             </div>
           </div>
@@ -372,91 +416,91 @@ export default function Home() {
 
             {/* Frame 26 - First Row Logos */}
             <div className="absolute z-30 flex justify-between items-center left-1/2 transform -translate-x-1/2 top-[13%] sm:top-[16%] md:top-[18%] lg:top-[16%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/Gridlock.svg"
-                  alt="Brand Logo"
+                  alt="Gridlock"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              </a>
+              <a href="https://mymemo.ai" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/memotech.svg"
-                  alt="Brand Logo"
+                  alt="Memotech"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              </a>
+              <a href="https://finvolution.group" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/finvolution.svg"
-                  alt="Brand Logo"
+                  alt="Finvolution"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              </a>
+              <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/creati.svg"
-                  alt="Brand Logo"
+                  alt="Creati"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
+              </a>
             </div>
 
             {/* Frame 26 - Second Row Logos */}
             <div className="absolute z-30 flex justify-between items-center left-1/2 transform -translate-x-1/2 top-[41%] sm:top-[44%] md:top-[45%] lg:top-[45%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/binance.svg"
-                  alt="Brand Logo"
+                  alt="Binance"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              </a>
+              <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/exness.svg"
-                  alt="Brand Logo"
+                  alt="Exness"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              </a>
+              <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/capcut.svg"
-                  alt="Brand Logo"
+                  alt="CapCut"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              </a>
+              <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/algorand.svg"
-                  alt="Brand Logo"
+                  alt="Algorand"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
+              </a>
             </div>
 
             {/* Frame 26 - Third Row Logos */}
             <div className="absolute z-30 flex justify-between items-center left-1/2 transform -translate-x-1/2 top-[67%] sm:top-[70%] md:top-[71%] lg:top-[73%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-12 sm:px-16 lg:px-20">
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/wegic.svg"
-                  alt="Brand Logo"
+                  alt="Wegic"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              </a>
+              <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/lemfi.svg"
-                  alt="Brand Logo"
+                  alt="Lemfi"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
-              <div className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0">
+              </a>
+              <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/ledger.svg"
-                  alt="Brand Logo"
+                  alt="Ledger"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </div>
+              </a>
             </div>
 
           </div>

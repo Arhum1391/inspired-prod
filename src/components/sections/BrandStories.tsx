@@ -249,7 +249,12 @@ const BrandStories: React.FC = () => {
                     href={story.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-[#1C1C1E] rounded-2xl overflow-hidden group flex-shrink-0 w-80 block cursor-pointer"
+                    className="flex flex-col items-start bg-[#1F1F1F] rounded-2xl group flex-shrink-0 cursor-pointer w-64 sm:w-72 md:w-80 lg:w-[340px]"
+                    style={{
+                      boxSizing: 'border-box',
+                      padding: '14px 14px 18px 14px',
+                      gap: '18px'
+                    }}
                     onClick={(e) => {
                       if (isDragging) {
                         e.preventDefault();
@@ -257,54 +262,105 @@ const BrandStories: React.FC = () => {
                       }
                     }}
                   >
-                    <div className="bg-[#1C1C1E] p-2">
-                      <div className="relative bg-gray-700" style={{ aspectRatio: '16/10' }}>
-                        <img
-                          src={story.thumbnail}
-                          alt={story.title}
-                          className="w-full h-full object-cover rounded-lg relative z-10"
-                          onError={(e) => {
-                            console.log('Thumbnail failed to load:', story.thumbnail);
-                            const target = e.currentTarget;
-                            // Fallback to a solid color placeholder
-                            target.src = 'https://via.placeholder.com/400x250/1C1C1E/FFFFFF?text=Brand+Story';
-                          }}
-                          onLoad={() => {
-                            console.log(`Brand thumbnail loaded: ${story.thumbnail}`);
-                          }}
-                        />
-
-                      </div>
+                    {/* Thumbnail Image - Square aspect ratio */}
+                    <div
+                      className="w-full rounded-lg overflow-hidden"
+                      style={{
+                        aspectRatio: '1/1',
+                        alignSelf: 'stretch',
+                        flexShrink: 0
+                      }}
+                    >
+                      <img
+                        src={story.thumbnail}
+                        alt={story.title}
+                        className="w-full h-full object-cover"
+                        style={{
+                          borderRadius: '8px'
+                        }}
+                        onError={(e) => {
+                          console.log('Thumbnail failed to load:', story.thumbnail);
+                          const target = e.currentTarget;
+                          target.src = 'https://via.placeholder.com/366x366/1F1F1F/FFFFFF?text=Brand+Story';
+                        }}
+                        onLoad={() => {
+                          console.log(`Brand thumbnail loaded: ${story.thumbnail}`);
+                        }}
+                      />
                     </div>
-                    <div className="py-4 px-4">
+
+                    {/* Content Section */}
+                    <div
+                      className="flex flex-col items-start w-full"
+                      style={{
+                        gap: '16px',
+                        alignSelf: 'stretch'
+                      }}
+                    >
+                      {/* Title */}
                       <h3
-                        className="text-lg font-semibold mb-3 line-clamp-2 text-white"
-                        style={{ fontFamily: 'Gilroy', fontWeight: 600 }}
+                        className="w-full text-white"
+                        style={{
+                          fontFamily: 'Gilroy',
+                          fontWeight: 600,
+                          fontSize: '16px',
+                          lineHeight: '130%',
+                          alignSelf: 'stretch'
+                        }}
                       >
                         {story.title}
                       </h3>
-                      <div className="flex items-center justify-between">
-                        <div className="text-gray-200 flex items-center text-sm"
-                          style={{ fontFamily: 'Gilroy', fontWeight: 600 }}
+
+                      {/* Action Row */}
+                      <div
+                        className="flex flex-row justify-between items-center w-full"
+                        style={{
+                          gap: '24px',
+                          alignSelf: 'stretch'
+                        }}
+                      >
+                        {/* Watch Video Button */}
+                        <div
+                          className="flex flex-row items-center text-white"
+                          style={{
+                            gap: '8px',
+                            fontFamily: 'Gilroy',
+                            fontWeight: 600,
+                            fontSize: '14px',
+                            lineHeight: '100%'
+                          }}
                         >
                           Watch Video
                           <svg
-                            className="w-4 h-4 ml-2"
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
                             fill="none"
                             stroke="currentColor"
-                            viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg"
+                            style={{
+                              flexShrink: 0
+                            }}
                           >
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              strokeWidth="2"
+                              strokeWidth="1.5"
                               d="M7 17l9.2-9.2M17 17V7h-10"
                             ></path>
                           </svg>
                         </div>
-                        <div className="text-gray-300 text-xs font-bold"
-                          style={{ fontFamily: 'Gilroy', fontWeight: 700 }}
+
+                        {/* View Count */}
+                        <div
+                          className="text-white"
+                          style={{
+                            fontFamily: 'Gilroy',
+                            fontWeight: 600,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'center'
+                          }}
                         >
                           {story.id === 1 ? '1.2M+' :
                            story.id === 2 ? '600K+' :

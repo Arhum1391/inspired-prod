@@ -27,8 +27,11 @@ const SocialStats: React.FC = () => {
             }}
           >
             {/* TikTok */}
-            <div
-              className="flex flex-col items-center gap-3 sm:gap-6"
+            <a
+              href="https://www.tiktok.com/@inspiredanalyst"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity cursor-pointer"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -53,7 +56,7 @@ const SocialStats: React.FC = () => {
               >
                 1M+
               </div>
-            </div>
+            </a>
 
             {/* Vertical divider */}
             <div
@@ -64,8 +67,11 @@ const SocialStats: React.FC = () => {
             ></div>
 
             {/* Instagram */}
-            <div
-              className="flex flex-col items-center gap-3 sm:gap-6"
+            <a
+              href="https://instagram.com/inspiredanalyst/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity cursor-pointer"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -90,7 +96,7 @@ const SocialStats: React.FC = () => {
               >
                 536K+
               </div>
-            </div>
+            </a>
 
             {/* Vertical divider */}
             <div
@@ -101,8 +107,11 @@ const SocialStats: React.FC = () => {
             ></div>
 
             {/* Facebook */}
-            <div
-              className="flex flex-col items-center gap-3 sm:gap-6"
+            <a
+              href="https://www.facebook.com/inspiredanalyst/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity cursor-pointer"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -130,7 +139,7 @@ const SocialStats: React.FC = () => {
               >
                 520K+
               </div>
-            </div>
+            </a>
 
             {/* Vertical divider */}
             <div
@@ -141,8 +150,11 @@ const SocialStats: React.FC = () => {
             ></div>
 
             {/* Discord */}
-            <div
-              className="flex flex-col items-center gap-3 sm:gap-6"
+            <a
+              href="https://discord.com/invite/inspiredanalyst"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity cursor-pointer"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -167,7 +179,7 @@ const SocialStats: React.FC = () => {
               >
                 153K+
               </div>
-            </div>
+            </a>
 
             {/* Vertical divider */}
             <div
@@ -178,8 +190,11 @@ const SocialStats: React.FC = () => {
             ></div>
 
             {/* YouTube */}
-            <div
-              className="flex flex-col items-center gap-3 sm:gap-6"
+            <a
+              href="https://www.youtube.com/c/inspiredanalyst"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity cursor-pointer"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -204,7 +219,7 @@ const SocialStats: React.FC = () => {
               >
                 97K+
               </div>
-            </div>
+            </a>
           </div>
 
           {/* Second Row - 4 stats (centered) */}
@@ -218,8 +233,11 @@ const SocialStats: React.FC = () => {
             }}
           >
             {/* Instagram Threads */}
-            <div
-              className="flex flex-col items-center gap-3 sm:gap-6"
+            <a
+              href="https://www.threads.net/@inspiredanalyst"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity cursor-pointer"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -247,7 +265,7 @@ const SocialStats: React.FC = () => {
               >
                 77K+
               </div>
-            </div>
+            </a>
 
             {/* Vertical divider */}
             <div
@@ -258,8 +276,11 @@ const SocialStats: React.FC = () => {
             ></div>
 
             {/* LinkedIn */}
-            <div
-              className="flex flex-col items-center gap-3 sm:gap-6"
+            <a
+              href="https://www.linkedin.com/in/inspiredanalyst"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity cursor-pointer"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -287,7 +308,7 @@ const SocialStats: React.FC = () => {
               >
                 54K+
               </div>
-            </div>
+            </a>
 
             {/* Vertical divider */}
             <div
@@ -298,8 +319,11 @@ const SocialStats: React.FC = () => {
             ></div>
 
             {/* X (Twitter) */}
-            <div
-              className="flex flex-col items-center gap-3 sm:gap-6"
+            <a
+              href="https://x.com/inspirdanalyst"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity cursor-pointer"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -324,7 +348,7 @@ const SocialStats: React.FC = () => {
               >
                 29K+
               </div>
-            </div>
+            </a>
 
             {/* Vertical divider */}
             <div
@@ -335,8 +359,11 @@ const SocialStats: React.FC = () => {
             ></div>
 
             {/* Substack */}
-            <div
-              className="flex flex-col items-center gap-3 sm:gap-6"
+            <a
+              href="https://inspiredanalyst.substack.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-3 sm:gap-6 hover:opacity-80 transition-opacity cursor-pointer"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -361,7 +388,7 @@ const SocialStats: React.FC = () => {
               >
                 15K+
               </div>
-            </div>
+            </a>
           </div>
         </div>
       </div>

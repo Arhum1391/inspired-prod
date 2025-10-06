@@ -141,7 +141,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, ind
 
 const FeaturesSection: React.FC = () => {
   return (
-    <section className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
+    <section className="relative z-[1] bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
       <div className="max-w-6xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {featuresData.map((feature, index) => (

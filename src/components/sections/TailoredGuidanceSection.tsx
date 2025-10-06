@@ -34,7 +34,7 @@ const TailoredGuidanceSection = () => {
   };
 
   return (
-    <section className="relative z-10 px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
+    <section className="relative z-[1] px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
       <div className="max-w-6xl mx-auto">
         {/* Main Component Container - Clickable */}
         <a

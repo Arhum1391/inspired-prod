@@ -368,3 +368,13 @@ html {
 .animate-carousel:hover {
   animation-play-state: paused;
 }
+
+/* Ensure navbar always stays on top */
+nav, header, [class*="Navbar"], [class*="navbar"] {
+  z-index: 9999 !important;
+}
+
+/* Ensure all sections have lower z-index than navbar */
+section, main, div[id^="social-"], div[id^="latest-"], div[id^="partners"], div[id^="brand-"], div[id^="features"], div[id^="newsletter"], div[id^="collaboration"], div[id^="tailored-"] {
+  z-index: 1 !important;
+}

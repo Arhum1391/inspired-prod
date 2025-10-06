@@ -498,6 +498,8 @@ const MeetingsPage: React.FC = () => {
     const [fullName, setFullName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [notes, setNotes] = useState<string>('');
+    const [nameError, setNameError] = useState<string>('');
+    const [emailError, setEmailError] = useState<string>('');
 
     // Fetch team data on component mount
     useEffect(() => {
@@ -536,7 +538,7 @@ const MeetingsPage: React.FC = () => {
     // const router = useRouter(); // Removed to prevent compilation error
 
     const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
-                               currentStep === 3 ? (!fullName || !email) : false;
+                               currentStep === 3 ? (!fullName || !email || !!nameError || !!emailError) : false;
 
     const handleContinue = () => {
         if (!isContinueDisabled) {
@@ -667,7 +669,10 @@ const MeetingsPage: React.FC = () => {
     };
 
     const formatDate = (date: Date) => {
-        return date.toISOString().split('T')[0];
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
     };
 
     const isDateAvailable = (date: Date) => {
@@ -705,6 +710,34 @@ const MeetingsPage: React.FC = () => {
     const getSelectedTimezoneLabel = () => {
         const timezone = allTimezones.find(tz => tz.value === selectedTimezone);
         return timezone ? timezone.label : 'Unknown Timezone';
+    };
+
+    // Validation functions
+    const validateName = (name: string) => {
+        // Only allow letters, spaces, hyphens, and apostrophes
+        const nameRegex = /^[a-zA-Z\s\-']+$/;
+        if (!name.trim()) {
+            return 'Name is required';
+        }
+        if (!nameRegex.test(name)) {
+            return 'Name can only contain letters, spaces, hyphens, and apostrophes';
+        }
+        if (name.length < 2) {
+            return 'Name must be at least 2 characters long';
+        }
+        return '';
+    };
+
+    const validateEmail = (email: string) => {
+        // Standard email regex pattern
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!email.trim()) {
+            return 'Email is required';
+        }
+        if (!emailRegex.test(email)) {
+            return 'Please enter a valid email address';
+        }
+        return '';
     };
 
     const getTimezoneDisplayLabel = () => {
@@ -1806,7 +1839,7 @@ const MeetingsPage: React.FC = () => {
                                             </button>
                                         ))}
                                         </div>
-                                        <p className="text-sm text-gray-400">Times shown in Berlin, Germany</p>
+                                        <p className="text-sm text-gray-400">Times shown in {getSelectedTimezoneLabel() || 'your timezone'}</p>
                                     </div>
                                 </div>
                             </div>
@@ -1834,11 +1867,21 @@ const MeetingsPage: React.FC = () => {
                                                 <input
                                                     type="text"
                                                     value={fullName}
-                                                    onChange={(e) => setFullName(e.target.value)}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        setFullName(value);
+                                                        const error = validateName(value);
+                                                        setNameError(error);
+                                                    }}
                                                     placeholder="Enter Name"
-                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-0 focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                    className={`w-full bg-black border-2 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-0 hover:border-gray-400 transition-colors text-sm ${
+                                                        nameError ? 'border-red-500' : 'border-gray-500 focus:border-gray-400'
+                                                    }`}
                                                     style={{ outline: 'none', boxShadow: 'none' }}
                                                 />
+                                                {nameError && (
+                                                    <p className="text-red-400 text-xs mt-1">{nameError}</p>
+                                                )}
                                             </div>
                                             
                                             <div>
@@ -1846,11 +1889,21 @@ const MeetingsPage: React.FC = () => {
                                                 <input
                                                     type="email"
                                                     value={email}
-                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    onChange={(e) => {
+                                                        const value = e.target.value;
+                                                        setEmail(value);
+                                                        const error = validateEmail(value);
+                                                        setEmailError(error);
+                                                    }}
                                                     placeholder="abc@example.com"
-                                                    className="w-full bg-black border-2 border-gray-500 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-0 focus:border-gray-400 hover:border-gray-400 transition-colors text-sm"
+                                                    className={`w-full bg-black border-2 rounded-lg py-2 px-3 text-white focus:outline-none focus:ring-0 hover:border-gray-400 transition-colors text-sm ${
+                                                        emailError ? 'border-red-500' : 'border-gray-500 focus:border-gray-400'
+                                                    }`}
                                                     style={{ outline: 'none', boxShadow: 'none' }}
                                                 />
+                                                {emailError && (
+                                                    <p className="text-red-400 text-xs mt-1">{emailError}</p>
+                                                )}
                                             </div>
                                         </div>
                                         

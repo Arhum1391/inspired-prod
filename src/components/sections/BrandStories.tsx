@@ -83,7 +83,7 @@ const BrandStories: React.FC = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
 
-  // Auto-scroll functionality
+  // Auto-scroll functionality - Safari compatible
   useEffect(() => {
     if (isAnimationPaused || isDragging) return;
 
@@ -93,12 +93,15 @@ const BrandStories: React.FC = () => {
       const container = containerRef.current;
       const maxScroll = container.scrollWidth / 2; // Half way point for seamless loop
 
-      // Smooth auto-scroll
-      container.scrollLeft += 0.5; // Adjust speed here
+      // Smooth auto-scroll with Safari-compatible scrollTo
+      const currentScroll = container.scrollLeft;
+      const newScroll = currentScroll + 0.5;
 
       // Reset to beginning when we reach halfway (end of first set)
-      if (container.scrollLeft >= maxScroll) {
-        container.scrollLeft = 0;
+      if (newScroll >= maxScroll) {
+        container.scrollTo({ left: 0, behavior: 'auto' });
+      } else {
+        container.scrollTo({ left: newScroll, behavior: 'auto' });
       }
 
       animationRef.current = requestAnimationFrame(autoScroll);
@@ -122,7 +125,7 @@ const BrandStories: React.FC = () => {
     setScrollLeft(containerRef.current.scrollLeft);
   };
 
-  // Handle mouse move
+  // Handle mouse move - Safari compatible
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !containerRef.current) return;
     e.preventDefault();
@@ -133,17 +136,17 @@ const BrandStories: React.FC = () => {
     const container = containerRef.current;
     const maxScroll = container.scrollWidth / 2;
 
-    // Handle infinite loop during drag
+    // Handle infinite loop during drag - use scrollTo for Safari
     if (newScrollLeft < 0) {
-      container.scrollLeft = maxScroll + newScrollLeft;
+      container.scrollTo({ left: maxScroll + newScrollLeft, behavior: 'auto' });
       setScrollLeft(maxScroll);
       setDragStart(x);
     } else if (newScrollLeft >= maxScroll) {
-      container.scrollLeft = newScrollLeft - maxScroll;
+      container.scrollTo({ left: newScrollLeft - maxScroll, behavior: 'auto' });
       setScrollLeft(0);
       setDragStart(x);
     } else {
-      container.scrollLeft = newScrollLeft;
+      container.scrollTo({ left: newScrollLeft, behavior: 'auto' });
     }
   };
 
@@ -164,7 +167,6 @@ const BrandStories: React.FC = () => {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !containerRef.current) return;
-    // Don't prevent default on iOS - let native scrolling work
     const x = e.touches[0].pageX - containerRef.current.offsetLeft;
     const walk = (x - dragStart) * 2;
     const newScrollLeft = scrollLeft - walk;
@@ -172,21 +174,18 @@ const BrandStories: React.FC = () => {
     const container = containerRef.current;
     const maxScroll = container.scrollWidth / 2;
 
-    // Use requestAnimationFrame for smoother updates on iOS
-    requestAnimationFrame(() => {
-      if (!container) return;
-      if (newScrollLeft < 0) {
-        container.scrollLeft = maxScroll + newScrollLeft;
-        setScrollLeft(maxScroll);
-        setDragStart(x);
-      } else if (newScrollLeft >= maxScroll) {
-        container.scrollLeft = newScrollLeft - maxScroll;
-        setScrollLeft(0);
-        setDragStart(x);
-      } else {
-        container.scrollLeft = newScrollLeft;
-      }
-    });
+    // Safari-compatible scrollTo method
+    if (newScrollLeft < 0) {
+      container.scrollTo({ left: maxScroll + newScrollLeft, behavior: 'auto' });
+      setScrollLeft(maxScroll);
+      setDragStart(x);
+    } else if (newScrollLeft >= maxScroll) {
+      container.scrollTo({ left: newScrollLeft - maxScroll, behavior: 'auto' });
+      setScrollLeft(0);
+      setDragStart(x);
+    } else {
+      container.scrollTo({ left: newScrollLeft, behavior: 'auto' });
+    }
   };
 
   const handleTouchEnd = () => {

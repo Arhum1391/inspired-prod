@@ -63,14 +63,16 @@ export default function Home() {
       <main className="relative z-10">
         <HeroSection />
         {/* Social Media Stats Section */}
-        <SocialStats />
+        <div id="social-stats">
+          <SocialStats />
+        </div>
       </main>
       
       
 
 
       {/* Main Content Section - Minimal horizontal padding for more text space */}
-      <section className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 md:py-16 mt-8 sm:mt-12 md:mt-16">
+      <section id="about" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 md:py-16 mt-8 sm:mt-12 md:mt-16">
         <div className="max-w-5xl mx-auto">
           {/* Section Header with Inline Images - Minimal padding for 2-line display */}
           <div className="mb-12 sm:mb-16 lg:mb-20">
@@ -243,16 +245,20 @@ export default function Home() {
 
       
 
-      
+
       {/* Latest Videos Section */}
-      <LatestVideos />
+      <div id="latest-videos">
+        <LatestVideos />
+      </div>
 
       {/* Tailored Guidance Section with Calendar */}
-      <TailoredGuidanceSection />
+      <div id="tailored-guidance">
+        <TailoredGuidanceSection />
+      </div>
 
 
       {/* Brand Logos Section with 3 Connected Vector Grid Rows - Responsive */}
-      <section className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16">
+      <section id="partners" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16">
         <div className="max-w-6xl mx-auto">
           {/* Our Valued Partners Header - Centered and smaller */}
           <div className="text-center mb-4 sm:mb-6 md:mb-12">
@@ -458,18 +464,24 @@ export default function Home() {
       </section>
 
       {/* Brand Stories Section */}
-      <BrandStories />
+      <div id="brand-stories">
+        <BrandStories />
+      </div>
 
       {/* Features Section */}
-      <FeaturesSection />
+      <div id="features">
+        <FeaturesSection />
+      </div>
 
       {/* Newsletter Subscription - More responsive */}
-      <div className="px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
+      <div id="newsletter" className="px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
         <NewsletterSubscription />
       </div>
 
       {/* Collaboration Form */}
-      <CollaborationForm />
+      <div id="collaboration">
+        <CollaborationForm />
+      </div>
 
       {/* Footer */}
       <Footer />

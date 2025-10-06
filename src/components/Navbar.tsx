@@ -91,49 +91,48 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                 <nav className="flex-1 px-4 py-6">
                   <div className="flex flex-col gap-2">
                     <a
-                      href="#"
+                      href="#about"
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         setIsMobileMenuOpen(false);
+                        document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
                       }}
                     >
-                      Research
+                      About
                     </a>
                     <a
-                      href="#"
+                      href="#latest-videos"
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         setIsMobileMenuOpen(false);
+                        document.getElementById('latest-videos')?.scrollIntoView({ behavior: 'smooth' });
                       }}
                     >
-                      Calculator
+                      Latest Video
                     </a>
                     <a
-                      href="#"
+                      href="#partners"
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         setIsMobileMenuOpen(false);
+                        document.getElementById('partners')?.scrollIntoView({ behavior: 'smooth' });
                       }}
                     >
-                      Portfolio
+                      Our Partner
                     </a>
                     <a
-                      href="#"
+                      href="#collaboration"
                       className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         setIsMobileMenuOpen(false);
+                        document.getElementById('collaboration')?.scrollIntoView({ behavior: 'smooth' });
                       }}
                     >
-                      Shariah
-                    </a>
-                    <a
-                      href="#"
-                      className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                      }}
-                    >
-                      Our Team
+                      Contact Us
                     </a>
                     <Link
                       href="/bootcamp"
@@ -203,20 +202,45 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
         {/* Navigation - Desktop */}
         <nav className="flex items-center relative">
           <div className="flex items-center space-x-4 xl:space-x-6">
-            <a href="#" className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors">
-              Research
+            <a
+              href="#about"
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              About
             </a>
-            <a href="#" className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors">
-              Calculator
+            <a
+              href="#latest-videos"
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('latest-videos')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Latest Video
             </a>
-            <a href="#" className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors">
-              Portfolio
+            <a
+              href="#partners"
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('partners')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Our Partner
             </a>
-            <a href="#" className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors">
-              Shariah
-            </a>
-            <a href="#" className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors">
-              Our Team
+            <a
+              href="#collaboration"
+              className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('collaboration')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+            >
+              Contact Us
             </a>
             <Link
               href="/bootcamp"

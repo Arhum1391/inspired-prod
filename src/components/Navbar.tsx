@@ -54,7 +54,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
 
   // Different padding based on variant
   const paddingClass = variant === 'hero'
-    ? "py-1 sm:py-2"
+    ? "py-2 sm:py-2"
     : "py-3 sm:py-4";
 
   return (
@@ -69,7 +69,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             aria-label="Toggle mobile menu"
             style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
           >
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {isMobileMenuOpen ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               ) : (
@@ -182,17 +182,17 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
           )}
 
           {/* Logo - Next to toggle button */}
-          <Link 
-              href="/" 
-              className="w-28 sm:w-32 h-6 sm:h-6 rounded flex items-center justify-center hover:opacity-80 transition-opacity outline-none focus:outline-none" 
+          <Link
+              href="/"
+              className="w-28 sm:w-32 h-7 sm:h-6 rounded flex items-center justify-center hover:opacity-80 transition-opacity outline-none focus:outline-none"
               style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
           >
             <Image
               src="/logo/navlogo-mob.svg"
               alt="Inspired Analyst Logo"
               width={120}
-              height={24}
-              className="w-full h-6 object-contain"
+              height={28}
+              className="w-full h-7 object-contain"
               priority
             />
           </Link>
@@ -202,7 +202,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
         <div className="flex items-center">
           <a
             href="/meetings"
-            className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-6 flex items-center"
+            className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-9 sm:h-6 flex items-center"
           >
             Book Mentorship
           </a>

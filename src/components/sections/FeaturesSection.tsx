@@ -5,22 +5,22 @@ import { ArrowUpRight } from 'lucide-react';
 
 const featuresData = [
   {
-    icon: <img src="/landing cards icons/Sparks--Streamline-Iconoir.svg" alt="Sparks" width={22} height={22} className="text-gray-400" />,
+    icon: <img src="/landing cards icons/Sparks--Streamline-Iconoir.svg" alt="Sparks" width={20} height={20} className="text-gray-400" />,
     title: 'Premium Research',
     description: 'Access exclusive market analysis and data-driven insights that go beyond surface-level trends. Our research combines technical analysis with fundamental metrics to identify high-probability opportunities before they become mainstream.',
   },
   {
-    icon: <img src="/landing cards icons/Calculator--Streamline-Iconoir.svg" alt="Calculator" width={22} height={22} className="text-gray-400" />,
+    icon: <img src="/landing cards icons/Calculator--Streamline-Iconoir.svg" alt="Calculator" width={20} height={20} className="text-gray-400" />,
     title: 'Position Sizing Calculator',
     description: 'Take the guesswork out of risk management with our proprietary calculator that determines optimal trade sizes. Never risk too much on a single position again - protect your capital while maximizing growth potential.',
   },
   {
-    icon: <img src="/landing cards icons/User-Star--Streamline-Iconoir.svg" alt="User Star" width={22} height={22} className="text-gray-400" />,
+    icon: <img src="/landing cards icons/User-Star--Streamline-Iconoir.svg" alt="User Star" width={20} height={20} className="text-gray-400" />,
     title: 'Portfolio',
     description: 'Get transparent access to real portfolio performance and trade rationale behind every decision. Learn from actual positions, wins, losses, and the strategic thinking that drives long-term wealth building.',
   },
   {
-    icon: <img src="/landing cards icons/Bright-Crown--Streamline-Iconoir.svg" alt="Crown" width={22} height={22} className="text-gray-400" />,
+    icon: <img src="/landing cards icons/Bright-Crown--Streamline-Iconoir.svg" alt="Crown" width={20} height={20} className="text-gray-400" />,
     title: 'Shariah Projects',
     description: 'Discover halal investment opportunities that align with Islamic principles without compromising on returns. Comprehensive analysis of Shariah-compliant stocks, crypto projects, and alternative investments for the conscious Muslim investor.',
   },
@@ -196,7 +196,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, ind
     <div className="relative z-10">
       <div className="flex items-start justify-between mb-4 md:mb-0">
         <div className="flex items-center space-x-4">
-          <div className="bg-gray-800 p-2 rounded-lg">
+          <div className="bg-gray-800 p-2 rounded-full w-10 h-10 flex items-center justify-center">
             {icon}
           </div>
           <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>{title}</h3>

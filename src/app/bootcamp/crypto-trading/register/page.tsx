@@ -215,7 +215,7 @@ export default function CryptoTradingRegisterPage() {
       <Navbar variant="hero" />
 
       {/* Main Content */}
-      <div className="w-full px-3 sm:px-4 lg:px-6 py-12 sm:py-12 lg:py-16 relative z-10">
+      <div className="w-full px-3 sm:px-4 lg:px-6 pt-20 sm:pt-24 md:pt-28 lg:pt-32 pb-12 sm:pb-12 lg:pb-16 relative z-10">
         <div className="mx-auto max-w-7xl">
           {/* Back Button and Header */}
           <div className="flex flex-col gap-6 sm:gap-4 lg:gap-6 mb-8 sm:mb-6 lg:mb-8">

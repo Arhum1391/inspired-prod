@@ -38,7 +38,7 @@ export default function BootcampPage() {
 
       {/* Hero Section */}
       <section className="relative z-0 min-h-[70vh] sm:min-h-[75vh] lg:min-h-[80vh]">
-        <div className="relative z-0 w-full px-4 sm:px-6 lg:px-6 pt-40 sm:pt-44 md:pt-48 lg:pt-56">
+        <div className="relative z-0 w-full px-4 sm:px-6 lg:px-6 pt-44 sm:pt-44 md:pt-48 lg:pt-56">
           <div className="mx-auto max-w-7xl">
             {/* Text Content - Frame 25 - Aligned with logo using same spacing, mobile adjusted for sidebar */}
             <div className="flex flex-col items-start gap-6 w-full max-w-[280px] min-[400px]:max-w-[343px] min-[500px]:max-w-[460px] min-[600px]:max-w-[560px] min-[700px]:max-w-[630px] md:w-full md:max-w-[630px] lg:ml-0">
@@ -57,7 +57,7 @@ export default function BootcampPage() {
       </section>
 
       {/* Bootcamp Cards Section */}
-      <section className="relative z-0 pt-28 sm:pt-32 lg:pt-36 pb-12 sm:pb-16 lg:pb-20">
+      <section className="relative z-0 pt-32 sm:pt-32 lg:pt-36 pb-12 sm:pb-16 lg:pb-20">
         <div className="w-full px-4 sm:px-6 lg:px-6">
           <div className="mx-auto max-w-7xl">
             {/* Cards Grid - 3 columns on desktop, 1 on mobile */}

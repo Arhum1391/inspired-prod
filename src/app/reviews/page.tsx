@@ -133,7 +133,7 @@ const ReviewsContent: React.FC = () => {
             <Navbar variant="hero" />
 
             {/* Mobile Image Belts - Only visible on mobile */}
-            <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-4">
+            <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-24">
                 <div className="flex flex-col w-full h-full gap-2">
                     {/* Belt 1 - Rectangle 1 Images */}
                     <div className="flex-1 fade-mask overflow-hidden">
@@ -442,7 +442,7 @@ const ReviewsContent: React.FC = () => {
             </div>
 
             {/* Main Content Container - Same structure as booking page */}
-            <div className="flex items-center justify-center p-4 sm:p-6 lg:p-8 -mt-8 lg:-mt-12">
+            <div className="flex items-center justify-center p-4 sm:p-6 lg:p-8 -mt-2 lg:-mt-8">
                 <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-16 items-center">
                 
                 {/* Left Side: Image Belts */}
@@ -613,7 +613,7 @@ const ReviewsContent: React.FC = () => {
                         {/* Right Side - Content Area (Reviews) */}
                         <div className="w-full lg:col-span-2">
                             {/* Back Button */}
-                            <div className="mb-1 mt-16">
+                            <div className="mb-1 mt-24">
                                 <button 
                                     onClick={handleBack}
                                     className="flex items-center text-white hover:text-gray-300 transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none"

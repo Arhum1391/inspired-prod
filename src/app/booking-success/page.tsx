@@ -81,7 +81,7 @@ const BookingSuccessContent: React.FC = () => {
             <Navbar variant="hero" />
 
             {/* Main Content */}
-            <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 pt-9">
+            <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 pt-20 sm:pt-24 md:pt-28 lg:pt-32">
                 {/* Success Icon */}
                 <div className="flex items-center justify-center mb-4 mt-4">
                     <div className="relative">

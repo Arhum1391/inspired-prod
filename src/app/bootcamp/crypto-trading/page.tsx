@@ -31,7 +31,7 @@ export default function CryptoTradingBootcampPage() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative z-0 py-12 sm:py-16 lg:py-20">
+      <section className="relative z-0 pt-20 sm:pt-24 lg:pt-28 pb-12 sm:pb-16 lg:pb-20">
         <div className="w-full px-4 sm:px-6 lg:px-6">
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-16 xl:gap-20">

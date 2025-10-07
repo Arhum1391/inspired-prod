@@ -63,7 +63,7 @@ export default function Home() {
       <main className="relative">
         <HeroSection />
         {/* Social Media Stats Section */}
-        <div id="social-stats">
+        <div id="social-stats" className="mt-16 sm:mt-12 md:mt-16">
           <SocialStats />
         </div>
       </main>

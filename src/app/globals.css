@@ -287,6 +287,26 @@ body {
   display: none;
 }
 
+/* Safari-specific carousel fixes */
+@supports (-webkit-appearance: none) {
+  .carousel-container {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .carousel-item {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
 /* Additional hover effects and animations */
 .hover-scale {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -367,6 +387,36 @@ html {
 
 .animate-carousel:hover {
   animation-play-state: paused;
+}
+
+/* Video carousel animation - same as brand carousel but slower */
+.animate-video-carousel {
+  animation: carousel 60s linear infinite;
+  width: max-content;
+}
+
+.animate-video-carousel:hover {
+  animation-play-state: paused;
+}
+
+/* Safari-specific hardware acceleration for carousels with drag */
+.carousel-container {
+  -webkit-overflow-scrolling: touch;
+  transform: translateZ(0);
+  will-change: scroll-position;
+}
+
+/* Enhanced Safari compatibility for video carousels */
+@supports (-webkit-appearance: none) {
+  .carousel-container {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    -webkit-overflow-scrolling: touch;
+  }
 }
 
 /* Ensure navbar always stays on top */

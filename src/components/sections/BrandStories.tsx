@@ -74,133 +74,109 @@ const BrandStories: React.FC = () => {
   // Duplicate stories array for seamless infinite scroll
   const duplicatedStories = [...brandStories, ...brandStories];
 
-  // State for drag functionality and infinite scroll
+  // State for drag functionality
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  
+  // Refs for carousel elements
   const carouselRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number | null>(null);
-  const isUserInteracting = useRef(false);
 
-  // Auto-scroll functionality - Safari compatible
+  // Pause/resume CSS animation based on user interaction
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    if (isPaused || isDragging) {
+      carousel.style.animationPlayState = 'paused';
+    } else {
+      carousel.style.animationPlayState = 'running';
+    }
+  }, [isPaused, isDragging]);
+
+  // Delay auto-scroll start for Safari compatibility
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+
+    // Start with animation paused
+    carousel.style.animationPlayState = 'paused';
+    
+    // Resume after Safari finishes layout
+    const timer = setTimeout(() => {
+      carousel.style.animationPlayState = 'running';
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Set up proper touch event listeners with passive: false for Safari
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    let animationFrame: number;
-
-    const autoScroll = () => {
-      if (isUserInteracting.current) {
-        animationFrame = requestAnimationFrame(autoScroll);
-        return;
-      }
-
-      // Force Safari to refresh layout
-      container.style.transform = 'translateZ(0)';
-
-      const halfWidth = container.scrollWidth / 2;
-      const next = container.scrollLeft + 0.5;
-
-      if (next >= halfWidth) {
-        // Snap exactly to 0 to avoid fractional bug
-        container.scrollLeft = 0;
-      } else {
-        container.scrollLeft = next;
-      }
-
-      animationFrame = requestAnimationFrame(autoScroll);
+    const handleTouchStart = (e: TouchEvent) => {
+      setIsPaused(true);
+      setIsDragging(true);
+      setDragStart(e.touches[0].pageX - container.offsetLeft);
+      setScrollLeft(container.scrollLeft);
     };
 
-    animationFrame = requestAnimationFrame(autoScroll);
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return;
+      e.preventDefault(); // Now this works because we set passive: false
+      
+      const x = e.touches[0].pageX - container.offsetLeft;
+      const walk = (x - dragStart) * 2;
+      const newScrollLeft = scrollLeft - walk;
+      container.scrollLeft = newScrollLeft;
+    };
 
-    return () => cancelAnimationFrame(animationFrame);
-  }, []);
+    const handleTouchEnd = () => {
+      setIsDragging(false);
+      // Resume auto-scroll after a short delay
+      setTimeout(() => {
+        setIsPaused(false);
+      }, 100);
+    };
 
-  // Handle mouse down
+    // Add event listeners with passive: false for Safari compatibility
+    container.addEventListener('touchstart', handleTouchStart, { passive: false });
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+    return () => {
+      container.removeEventListener('touchstart', handleTouchStart);
+      container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isDragging, dragStart, scrollLeft]);
+
+  // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!containerRef.current) return;
-    isUserInteracting.current = true;
+    setIsPaused(true);
     setIsDragging(true);
     setDragStart(e.pageX - containerRef.current.offsetLeft);
     setScrollLeft(containerRef.current.scrollLeft);
   };
 
-  // Handle mouse move - Safari compatible
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !containerRef.current) return;
     e.preventDefault();
     const x = e.pageX - containerRef.current.offsetLeft;
     const walk = (x - dragStart) * 2;
     const newScrollLeft = scrollLeft - walk;
-
-    const container = containerRef.current;
-    const maxScroll = container.scrollWidth / 2;
-
-    // Handle infinite loop during drag
-    if (newScrollLeft < 0) {
-      container.scrollLeft = maxScroll + newScrollLeft;
-      container.style.transform = 'translateZ(0)'; // Force Safari repaint
-      setScrollLeft(maxScroll);
-      setDragStart(x);
-    } else if (newScrollLeft >= maxScroll) {
-      container.scrollLeft = newScrollLeft - maxScroll;
-      container.style.transform = 'translateZ(0)'; // Force Safari repaint
-      setScrollLeft(0);
-      setDragStart(x);
-    } else {
-      container.scrollLeft = newScrollLeft;
-      container.style.transform = 'translateZ(0)'; // Force Safari repaint
-    }
+    containerRef.current.scrollLeft = newScrollLeft;
   };
 
-  // Handle mouse up/leave
   const handleMouseUp = () => {
     setIsDragging(false);
+    // Resume auto-scroll after a short delay
     setTimeout(() => {
-      isUserInteracting.current = false;
-    }, 100);
-  };
-
-  // Touch handlers for mobile - iOS/Safari compatible
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (!containerRef.current) return;
-    isUserInteracting.current = true;
-    setIsDragging(true);
-    setDragStart(e.touches[0].pageX - containerRef.current.offsetLeft);
-    setScrollLeft(containerRef.current.scrollLeft);
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || !containerRef.current) return;
-    const x = e.touches[0].pageX - containerRef.current.offsetLeft;
-    const walk = (x - dragStart) * 2;
-    const newScrollLeft = scrollLeft - walk;
-
-    const container = containerRef.current;
-    const maxScroll = container.scrollWidth / 2;
-
-    // Direct scrollLeft for Safari compatibility
-    if (newScrollLeft < 0) {
-      container.scrollLeft = maxScroll + newScrollLeft;
-      container.style.transform = 'translateZ(0)'; // Force Safari repaint
-      setScrollLeft(maxScroll);
-      setDragStart(x);
-    } else if (newScrollLeft >= maxScroll) {
-      container.scrollLeft = newScrollLeft - maxScroll;
-      container.style.transform = 'translateZ(0)'; // Force Safari repaint
-      setScrollLeft(0);
-      setDragStart(x);
-    } else {
-      container.scrollLeft = newScrollLeft;
-      container.style.transform = 'translateZ(0)'; // Force Safari repaint
-    }
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-    setTimeout(() => {
-      isUserInteracting.current = false;
+      setIsPaused(false);
     }, 100);
   };
 
@@ -238,7 +214,7 @@ const BrandStories: React.FC = () => {
           <div className="relative bg-[#0A0A0A] rounded-3xl p-8">
             <div
               ref={containerRef}
-              className="flex gap-6 overflow-x-scroll scrollbar-hide pb-4 cursor-grab"
+              className="overflow-x-auto scrollbar-hide pb-4 cursor-grab"
               style={{
                 minWidth: '100%',
                 cursor: isDragging ? 'grabbing' : 'grab',
@@ -247,20 +223,22 @@ const BrandStories: React.FC = () => {
                 overscrollBehaviorX: 'contain',
                 userSelect: 'none',
                 WebkitUserSelect: 'none',
+                WebkitOverflowScrolling: 'touch',
                 WebkitTransform: 'translateZ(0)',
-                transform: 'translateZ(0)'
+                transform: 'translateZ(0)',
+                willChange: 'scroll-position'
               }}
               onMouseDown={handleMouseDown}
               onMouseMove={handleMouseMove}
               onMouseUp={handleMouseUp}
               onMouseLeave={handleMouseUp}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
             >
               <div
                 ref={carouselRef}
-                className="flex gap-6"
+                className="flex gap-6 animate-video-carousel"
+                style={{
+                  width: 'max-content'
+                }}
               >
                 {duplicatedStories.map((story, index) => (
                   <a

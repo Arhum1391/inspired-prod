@@ -261,9 +261,9 @@ export default function Home() {
       <section id="partners" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16 mt-12 sm:mt-0">
         <div className="max-w-6xl mx-auto">
           {/* Our Valued Partners Header - Centered and smaller */}
-          <div className="text-center mb-4">
+          <div className="text-center mb-8">
             <h2
-              className="text-2xl sm:text-3xl md:text-4xl -mb-30 font-semibold text-white"
+              className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white"
               style={{fontFamily: 'Gilroy', fontWeight: 600}}
             >
               Our Valued Partners
@@ -282,7 +282,7 @@ export default function Home() {
                   linear-gradient(#0A0A0A, #0A0A0A) padding-box,
                   radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
                 `,
-                backgroundSize: 'contain, cover, cover',
+                backgroundSize: '150%, cover, cover',
                 backgroundPosition: 'center, center, center',
                 backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
               }}

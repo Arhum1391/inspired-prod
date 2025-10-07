@@ -81,7 +81,7 @@ a, a:focus, a:active, a:visited {
 
 @media (min-width: 1536px) {
   .gilroy-heading {
-    font-size: 3.5rem; /* 44px on 2xl screens */
+    font-size: 1.75rem; /* 28px on 2xl screens - reduced to fit 3 lines */
   }
 }
 

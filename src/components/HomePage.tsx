@@ -292,7 +292,7 @@ export default function Home() {
             <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 w-full overflow-hidden">
               <div className="flex animate-carousel gap-16 items-center">
                 {/* All brand logos in a row that will scroll */}
-                <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
@@ -326,7 +326,7 @@ export default function Home() {
                   <img src="/brand_images/ledger.svg" alt="Ledger" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 {/* Duplicate for seamless loop */}
-                <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
@@ -416,7 +416,7 @@ export default function Home() {
 
             {/* Frame 26 - First Row Logos */}
             <div className="absolute z-30 flex justify-between items-center left-1/2 transform -translate-x-1/2 top-[13%] sm:top-[16%] md:top-[18%] lg:top-[16%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
-              <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+              <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/Gridlock.svg"
                   alt="Gridlock"

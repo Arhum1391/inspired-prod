@@ -146,7 +146,33 @@ export default function NewsletterSubscription() {
 
   return (
     <div className="max-w-6xl mx-auto">
-      <div className="newsletter-container relative bg-[#1F1F1F] rounded-2xl p-10 overflow-hidden">
+      <div 
+        className="newsletter-container relative bg-[#1F1F1F] rounded-2xl overflow-hidden"
+        style={{
+          padding: '40px',
+          minHeight: '314px',
+          width: '100%',
+          maxWidth: '1064px',
+          margin: '0 auto',
+          isolation: 'isolate'
+        }}
+      >
+        {/* Curved Gradient Border */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            borderRadius: '16px',
+            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+            padding: '1px'
+          }}
+        >
+          <div
+            className="w-full h-full rounded-[15px]"
+            style={{
+              background: '#1F1F1F'
+            }}
+          ></div>
+        </div>
         {/* CSS Ellipse Background */}
         <div
           style={{
@@ -162,13 +188,58 @@ export default function NewsletterSubscription() {
           }}
         />
 
-        {/* Decorative Background Logo */}
-        <div className="absolute -top-4 right-0 w-108 h-full transform rotate-6 opacity-40">
-          <img src="/big logo.svg" alt="" className="w-full h-full object-contain" />
+        {/* Decorative Background Logo - Desktop */}
+        <div
+          className="absolute hidden md:block"
+          style={{
+            width: '600px',
+            height: '540px',
+            right: '-90px',
+            top: '50%',
+            transform: 'translateY(-50%) rotate(20deg)',
+            opacity: 0.15,
+            zIndex: 1,
+          }}
+        >
+          <img
+            src="/insp logo.svg"
+            alt="Logo"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              filter: 'brightness(0.3)'
+            }}
+          />
+        </div>
+
+        {/* Decorative Background Logo - Mobile */}
+        <div
+          className="absolute md:hidden"
+          style={{
+            width: '200px',
+            height: '220px',
+            right: '-50px',
+            bottom: '-70px',
+            transform: 'rotate(10deg)',
+            opacity: 0.1,
+            zIndex: 1,
+          }}
+        >
+          <img
+            src="/insp logo.svg"
+            alt="Logo"
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              filter: 'brightness(0.7)'
+            }}
+          />
         </div>
 
         {/* Content */}
-        <div className="relative z-20 max-w-lg">
+        <div className="relative z-30 max-w-lg">
           <div className="space-y-10">
             {/* Header */}
             <div className="space-y-6">
@@ -213,10 +284,10 @@ export default function NewsletterSubscription() {
                 </div>
               )}
 
-              {/* Disclaimer */}
-              <p className=" text-lg text-white/80 font-large">
-                <span className='font-semibold'>NO SPAM.</span> I never send spam. You can unsubscribe at any time!
-              </p>
+               {/* Disclaimer */}
+               <p className="text-sm sm:text-base md:text-lg text-white/80 font-large">
+                 <span className='font-semibold'>NO SPAM.</span> I never send spam. You can unsubscribe at any time!
+               </p>
             </div>
           </div>
         </div>

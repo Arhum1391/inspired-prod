@@ -35,93 +35,205 @@ interface FeatureCardProps {
 
 const FeatureCard: React.FC<FeatureCardProps> = ({ icon, title, description, index }) => {
   return (
-    <div className="cursor-pointer bg-gray-800/50 p-6 rounded-2xl border-2 border-transparent hover:border-gray-400/30 transition-all duration-300 w-full relative overflow-hidden group">
+    <div className="cursor-pointer bg-[#1F1F1F]/80 p-6 rounded-2xl border-2 border-transparent hover:border-gray-400/30 transition-all duration-300 w-full relative overflow-hidden group backdrop-blur-sm">
     {/* CSS Ellipse Gradient - positioned for first card (top left) */}
     {index === 0 && (
-      <div
-        className="absolute rounded-2xl opacity-60"
-        style={{
-          position: 'absolute',
-          width: '588px',
-          height: '588px',
-          left: '489px',
-          top: '-376px',
-          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-          filter: 'blur(100px)',
-          transform: 'rotate(90deg)',
-          zIndex: 2,
-        }}
-      />
+      <>
+        <div
+          className="absolute rounded-2xl opacity-60 hidden md:block"
+          style={{
+            position: 'absolute',
+            width: '588px',
+            height: '588px',
+            left: '489px',
+            top: '-376px',
+            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(100px)',
+            transform: 'rotate(90deg)',
+            zIndex: 2,
+          }}
+        />
+        <div
+          className="absolute rounded-2xl opacity-60 md:hidden"
+          style={{
+            position: 'absolute',
+            width: '588px',
+            height: '588px',
+            left: '309px',
+            top: '-376px',
+            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(100px)',
+            transform: 'rotate(90deg)',
+            zIndex: 2,
+          }}
+        />
+      </>
     )}
 
     {/* CSS Ellipse Gradient - positioned for second card (top right) */}
     {index === 1 && (
-      <div
-        className="absolute rounded-2xl opacity-60"
-        style={{
-          position: 'absolute',
-          width: '588px',
-          height: '588px',
-          left: '367.22px',
-          top: '-497.78px',
-          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-          filter: 'blur(100px)',
-          transform: 'rotate(135deg)',
-          zIndex: 2,
-        }}
-      />
-    )}
-
-    {/* CSS Ellipse Gradient - positioned for fourth card (bottom right) */}
-    {index === 3 && (
-      <div
-        className="absolute rounded-2xl opacity-60"
-        style={{
-          position: 'absolute',
-          width: '588px',
-          height: '588px',
-          left: '381.39px',
-          top: '-483.61px',
-          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-          filter: 'blur(100px)',
-          transform: 'rotate(-30deg)',
-          zIndex: 2,
-        }}
-      />
+      <>
+        <div
+          className="absolute rounded-2xl opacity-60 hidden md:block"
+          style={{
+            position: 'absolute',
+            width: '588px',
+            height: '588px',
+            left: '367.22px',
+            top: '-497.78px',
+            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(100px)',
+            transform: 'rotate(135deg)',
+            zIndex: 2,
+          }}
+        />
+        <div
+          className="absolute rounded-2xl opacity-60 md:hidden"
+          style={{
+            position: 'absolute',
+            width: '588px',
+            height: '588px',
+            left: '187.22px',
+            top: '-497.78px',
+            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(100px)',
+            transform: 'rotate(135deg)',
+            zIndex: 2,
+          }}
+        />
+      </>
     )}
 
     {/* CSS Ellipse Gradient - positioned for third card (bottom left) */}
     {index === 2 && (
-      <div
-        className="absolute rounded-2xl opacity-60"
-        style={{
-          position: 'absolute',
-          width: '588px',
-          height: '588px',
-          left: '422.92px',
-          top: '-442.07px',
-          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-          filter: 'blur(100px)',
-          transform: 'rotate(15deg)',
-          zIndex: 2,
-        }}
-      />
+      <>
+        <div
+          className="absolute rounded-2xl opacity-60 hidden md:block"
+          style={{
+            position: 'absolute',
+            width: '588px',
+            height: '588px',
+            left: '422.92px',
+            top: '-442.07px',
+            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(100px)',
+            transform: 'rotate(15deg)',
+            zIndex: 2,
+          }}
+        />
+        <div
+          className="absolute rounded-2xl opacity-60 md:hidden"
+          style={{
+            position: 'absolute',
+            width: '588px',
+            height: '588px',
+            left: '242.92px',
+            top: '-442.07px',
+            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(100px)',
+            transform: 'rotate(15deg)',
+            zIndex: 2,
+          }}
+        />
+      </>
     )}
+
+    {/* CSS Ellipse Gradient - positioned for fourth card (bottom right) */}
+    {index === 3 && (
+      <>
+        <div
+          className="absolute rounded-2xl opacity-60 hidden md:block"
+          style={{
+            position: 'absolute',
+            width: '588px',
+            height: '588px',
+            left: '381.39px',
+            top: '-483.61px',
+            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(100px)',
+            transform: 'rotate(-30deg)',
+            zIndex: 2,
+          }}
+        />
+        <div
+          className="absolute rounded-2xl opacity-60 md:hidden"
+          style={{
+            position: 'absolute',
+            width: '588px',
+            height: '588px',
+            left: '381.39px',
+            top: '-483.61px',
+            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(100px)',
+            transform: 'rotate(-30deg)',
+            zIndex: 2,
+          }}
+        />
+      </>
+    )}
+
+    {/* Curved Gradient Border */}
+    <div
+      className="absolute inset-0 pointer-events-none"
+      style={{
+        borderRadius: '16px',
+        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+        padding: '1px'
+      }}
+    >
+      <div
+        className="w-full h-full rounded-[15px]"
+        style={{
+          background: 'rgba(31, 31, 31, 0.8)'
+        }}
+      ></div>
+    </div>
 
     {/* Glint Effect */}
     <div className="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
 
     {/* Content with relative positioning to appear above gradient */}
     <div className="relative z-10">
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between mb-4 md:mb-0">
         <div className="flex items-center space-x-4">
           <div className="bg-gray-800 p-2 rounded-lg">
             {icon}
           </div>
           <h3 className="text-lg sm:text-xl font-semibold text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>{title}</h3>
         </div>
-        <span className="bg-gray-800 text-gray-400 text-xs font-medium px-3 py-1 rounded-full" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
-          Coming Soon
+        <span
+          className="flex flex-row justify-center items-center rounded-full"
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '8px 10px',
+            gap: '10px',
+            width: '95px',
+            height: '32px',
+            background: 'rgba(42, 42, 50, 0.6)',
+            borderRadius: '80px',
+            flex: 'none',
+            order: 2,
+            flexGrow: 0
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'Gilroy-Medium',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '12px',
+              lineHeight: '100%',
+              color: '#FFFFFF',
+              flex: 'none',
+              order: 0,
+              flexGrow: 0
+            }}
+          >
+            Coming Soon
+          </span>
         </span>
       </div>
       <p className="text-gray-300 mt-4 text-sm sm:text-base flex-grow" style={{fontFamily: 'Gilroy', fontWeight: 400, fontSize: '18px', lineHeight: '130%', letterSpacing: '0%'}}>

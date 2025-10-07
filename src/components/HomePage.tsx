@@ -60,19 +60,19 @@ export default function Home() {
       </div>
 
       {/* HeroSection Component with background */}
-      <main className="relative z-10">
+      <main className="relative">
         <HeroSection />
         {/* Social Media Stats Section */}
         <div id="social-stats">
           <SocialStats />
         </div>
       </main>
-      
-      
+
+
 
 
       {/* Main Content Section - Improved padding for better readability */}
-      <section id="about" className="relative z-10 bg-[#0A0A0A] px-4 sm:px-6 md:px-8 lg:px-6 py-12 sm:py-16 md:py-20 mt-8 sm:mt-12 md:mt-16">
+      <section id="about" className="relative bg-[#0A0A0A] px-4 sm:px-6 md:px-8 lg:px-6 py-12 sm:py-16 md:py-20 mt-16 sm:mt-12 md:mt-16">
         <div className="max-w-5xl mx-auto">
           {/* Section Header with Inline Images */}
           <div className="mb-12 sm:mb-16 lg:mb-20">
@@ -247,23 +247,23 @@ export default function Home() {
 
 
       {/* Latest Videos Section */}
-      <div id="latest-videos">
+      <div id="latest-videos" className="mt-12 sm:mt-0">
         <LatestVideos />
       </div>
 
       {/* Tailored Guidance Section with Calendar */}
-      <div id="tailored-guidance">
+      <div id="tailored-guidance" className="mt-12 sm:mt-0">
         <TailoredGuidanceSection />
       </div>
 
 
       {/* Brand Logos Section with 3 Connected Vector Grid Rows - Responsive */}
-      <section id="partners" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16">
+      <section id="partners" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16 mt-12 sm:mt-0">
         <div className="max-w-6xl mx-auto">
           {/* Our Valued Partners Header - Centered and smaller */}
-          <div className="text-center mb-4 sm:mb-6 md:mb-12">
+          <div className="text-center mb-4">
             <h2
-              className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white"
+              className="text-2xl sm:text-3xl md:text-4xl -mb-30 font-semibold text-white"
               style={{fontFamily: 'Gilroy', fontWeight: 600}}
             >
               Our Valued Partners
@@ -271,10 +271,10 @@ export default function Home() {
           </div>
 
           {/* Mobile Carousel View */}
-          <div className="block md:hidden relative w-full mx-auto h-[180px]">
+          <div className="block md:hidden relative w-full mx-auto h-[340px]">
             {/* Single Vector Background for Mobile */}
             <div
-              className="absolute w-full top-1/2 transform -translate-y-1/2 max-w-md mx-auto left-0 right-0"
+              className="absolute w-full top-1/2 transform -translate-y-1/2 max-w-2xl mx-auto left-0 right-0"
               style={{
                 aspectRatio: '1064/310',
                 background: `
@@ -292,71 +292,71 @@ export default function Home() {
             <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 w-full overflow-hidden">
               <div className="flex animate-carousel gap-16 items-center">
                 {/* All brand logos in a row that will scroll */}
-                <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/memotech.svg" alt="Memotech" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/creati.svg" alt="Creati" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/binance.svg" alt="Binance" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/exness.svg" alt="Exness" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/capcut.svg" alt="CapCut" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/algorand.svg" alt="Algorand" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/wegic.svg" alt="Wegic" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/ledger.svg" alt="Ledger" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 {/* Duplicate for seamless loop */}
-                <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://gridlock.gg" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/memotech.svg" alt="Memotech" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/creati.svg" alt="Creati" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/binance.svg" alt="Binance" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/exness.svg" alt="Exness" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/capcut.svg" alt="CapCut" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/algorand.svg" alt="Algorand" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/wegic.svg" alt="Wegic" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-12 w-24 flex-shrink-0">
+                <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <img src="/brand_images/ledger.svg" alt="Ledger" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
               </div>
@@ -508,22 +508,22 @@ export default function Home() {
       </section>
 
       {/* Brand Stories Section */}
-      <div id="brand-stories">
+      <div id="brand-stories" className="mt-12 sm:mt-0">
         <BrandStories />
       </div>
 
       {/* Features Section */}
-      <div id="features">
+      <div id="features" className="mt-12 sm:mt-0">
         <FeaturesSection />
       </div>
 
       {/* Newsletter Subscription - More responsive */}
-      <div id="newsletter" className="px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
+      <div id="newsletter" className="px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16 mt-12 sm:mt-0">
         <NewsletterSubscription />
       </div>
 
       {/* Collaboration Form */}
-      <div id="collaboration">
+      <div id="collaboration" className="mt-12 sm:mt-0">
         <CollaborationForm />
       </div>
 

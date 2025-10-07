@@ -10,7 +10,7 @@ const HeroSection = () => {
       <Navbar variant="hero" />
 
       {/* Main Content Container - Mobile optimized */}
-      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-6 pt-12 sm:pt-16 md:pt-8 lg:-mt-16">
+      <div className="relative z-10 w-full px-4 sm:px-6 lg:px-6 pt-20 sm:pt-24 md:pt-20 lg:pt-4">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col lg:grid lg:grid-cols-2 items-center gap-8 sm:gap-12 md:gap-16 lg:gap-24">
 

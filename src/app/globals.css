@@ -419,12 +419,12 @@ html {
   }
 }
 
-/* Ensure navbar always stays on top */
+/* Ensure navbar always stays on top with backdrop blur */
 nav, header, [class*="Navbar"], [class*="navbar"] {
   z-index: 9999 !important;
 }
 
-/* Ensure all sections have lower z-index than navbar */
+/* Remove forced z-index from sections to allow natural stacking with fixed navbar */
 section, main, div[id^="social-"], div[id^="latest-"], div[id^="partners"], div[id^="brand-"], div[id^="features"], div[id^="newsletter"], div[id^="collaboration"], div[id^="tailored-"] {
-  z-index: 1 !important;
+  position: relative;
 }

@@ -7,6 +7,22 @@ const Footer = () => {
     <div className="px-2 sm:px-4 md:px-6 lg:px-10 py-12 sm:py-14 lg:py-16 pb-6 sm:pb-8 lg:pb-10">
       <div className="max-w-7xl mx-auto">
         <footer className="footer-container relative bg-[#141414] rounded-2xl p-10 overflow-hidden">
+          {/* Curved Gradient Border */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              borderRadius: '16px',
+              background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 70%, rgba(255, 255, 255, 0) 100%)',
+              padding: '2px'
+            }}
+          >
+            <div
+              className="w-full h-full rounded-[14px]"
+              style={{
+                background: '#141414'
+              }}
+            ></div>
+          </div>
           {/* Footer SVG Background with Enhanced Colors */}
           <div
             className="absolute inset-0 w-full h-full opacity-100 z-0 p-12"
@@ -20,7 +36,7 @@ const Footer = () => {
           ></div>
 
           {/* Content */}
-          <div className="relative z-20 grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="relative z-30 grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Left Section: Inspired Analyst */}
         <div className="flex flex-col">
           <div className="flex items-center mb-4">
@@ -127,7 +143,7 @@ const Footer = () => {
           </div>
 
           {/* Bottom Section: Copyright */}
-          <div className="relative z-20 mt-12 pt-8 border-t border-gray-600">
+          <div className="relative z-30 mt-12 pt-8 border-t border-gray-600">
             <div className="flex flex-col sm:flex-row justify-between items-center">
               <p className="text-gray-400 text-sm">
                 © 2025 Inspired Analyst. All rights reserved.

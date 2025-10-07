@@ -246,7 +246,7 @@ const BrandStories: React.FC = () => {
                     href={story.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex flex-col items-start bg-[#1F1F1F] rounded-2xl group flex-shrink-0 cursor-pointer w-64 sm:w-72 md:w-80 lg:w-[340px]"
+                    className="flex flex-col items-start bg-[#1F1F1F] rounded-2xl group flex-shrink-0 cursor-pointer w-64 sm:w-72 md:w-80 lg:w-[340px] relative"
                     style={{
                       boxSizing: 'border-box',
                       padding: '14px 14px 18px 14px',
@@ -259,9 +259,27 @@ const BrandStories: React.FC = () => {
                       }
                     }}
                   >
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px',
+                        zIndex: 1
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F'
+                        }}
+                      ></div>
+                    </div>
+
                     {/* Thumbnail Image - Square aspect ratio */}
                     <div
-                      className="w-full rounded-lg overflow-hidden"
+                      className="w-full rounded-lg overflow-hidden relative z-10"
                       style={{
                         aspectRatio: '1/1',
                         alignSelf: 'stretch',
@@ -288,7 +306,7 @@ const BrandStories: React.FC = () => {
 
                     {/* Content Section */}
                     <div
-                      className="flex flex-col items-start w-full"
+                      className="flex flex-col items-start w-full relative z-10"
                       style={{
                         gap: '16px',
                         alignSelf: 'stretch'

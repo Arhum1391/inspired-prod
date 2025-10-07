@@ -55,6 +55,22 @@ export default function CollaborationForm() {
             isolation: 'isolate'
           }}
         >
+          {/* Curved Gradient Border */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              borderRadius: '16px',
+              background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+              padding: '1px'
+            }}
+          >
+            <div
+              className="w-full h-full rounded-[15px]"
+              style={{
+                background: '#1F1F1F'
+              }}
+            ></div>
+          </div>
           {/* Ellipse 2 - Left gradient */}
           <div
             style={{
@@ -103,7 +119,7 @@ export default function CollaborationForm() {
           />
 
           {/* Main Content Frame */}
-          <div className="relative z-20 w-full max-w-[630px] mx-auto">
+          <div className="relative z-30 w-full max-w-[630px] mx-auto">
             {/* Header Frame */}
             <div className="mb-6 sm:mb-8 md:mb-10">
               <h2 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-[32px] font-semibold mb-3 sm:mb-4" style={{ fontFamily: 'Gilroy, sans-serif' }}>

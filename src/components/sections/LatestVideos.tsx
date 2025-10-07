@@ -213,7 +213,7 @@ const LatestVideos = () => {
                     href={video.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-[#1C1C1E] rounded-2xl overflow-hidden group flex-shrink-0 w-80 block cursor-pointer"
+                    className="bg-[#1C1C1E] rounded-2xl overflow-hidden group flex-shrink-0 w-80 block cursor-pointer relative"
                     onClick={(e) => {
                       if (isDragging) {
                         e.preventDefault();
@@ -221,7 +221,23 @@ const LatestVideos = () => {
                       }
                     }}
                   >
-                    <div className="bg-[#1C1C1E] p-2">
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px'
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1C1C1E'
+                        }}
+                      ></div>
+                    </div>
+                    <div className="p-2 relative z-10">
                       <div className="relative bg-gray-700" style={{ aspectRatio: '16/8' }}>
                         <img
                           src={video.thumbnail}
@@ -255,7 +271,7 @@ const LatestVideos = () => {
                         />
                       </div>
                     </div>
-                    <div className="py-3 px-3">
+                    <div className="py-3 px-3 relative z-10">
                       <h3
                         className="text-lg font-semibold mb-4 line-clamp-2 sm:line-clamp-3"
                         style={{ fontFamily: 'Gilroy', fontWeight: 400 }}

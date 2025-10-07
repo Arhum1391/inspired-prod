@@ -4,7 +4,7 @@ import React from 'react';
 
 const SocialStats: React.FC = () => {
   return (
-    <section className="relative z-[1] px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
+    <section className="relative px-2 sm:px-3 md:px-4 lg:px-6 py-12 sm:py-16 md:py-20">
       <div className="max-w-6xl mx-auto">
         {/* Main container with responsive spacing */}
         <div

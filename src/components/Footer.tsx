@@ -128,15 +128,15 @@ const Footer = () => {
           <div className="block md:hidden mt-4 border-t border-gray-600"></div>
         </div>
 
-        {/* Right Section: General Links */}
+        {/* Right Section: Navigation Links */}
         <div className="mt-2 md:mt-0">
-          <h3 className="text-xl font-semibold ">General</h3>
+          <h3 className="text-xl font-semibold ">Navigation</h3>
           <ul className="space-y-1">
-            <li><Link href="/research"><span className="text-gray-300 hover:text-white transition-colors duration-200">Research</span></Link></li>
-            <li><Link href="/calculator"><span className="text-gray-300 hover:text-white transition-colors duration-200">Calculator</span></Link></li>
-            <li><Link href="/portfolio"><span className="text-gray-300 hover:text-white transition-colors duration-200">Portfolio</span></Link></li>
-            <li><Link href="/shariah"><span className="text-gray-300 hover:text-white transition-colors duration-200">Shariah</span></Link></li>
-            <li><Link href="/our-team"><span className="text-gray-300 hover:text-white transition-colors duration-200">Our Team</span></Link></li>
+            <li><Link href="/#about"><span className="text-gray-300 hover:text-white transition-colors duration-200">About</span></Link></li>
+            <li><Link href="/#social-stats"><span className="text-gray-300 hover:text-white transition-colors duration-200">Community</span></Link></li>
+            <li><Link href="/#latest-videos"><span className="text-gray-300 hover:text-white transition-colors duration-200">Latest Video</span></Link></li>
+            <li><Link href="/#partners"><span className="text-gray-300 hover:text-white transition-colors duration-200">Our Partners</span></Link></li>
+            <li><Link href="/#collaboration"><span className="text-gray-300 hover:text-white transition-colors duration-200">Contact Us</span></Link></li>
             <li><Link href="/bootcamp"><span className="text-gray-300 hover:text-white transition-colors duration-200">Bootcamp</span></Link></li>
           </ul>
         </div>

@@ -72,7 +72,7 @@ export default function Home() {
 
 
       {/* Main Content Section - Improved padding for better readability */}
-      <section id="about" className="relative bg-[#0A0A0A] px-4 sm:px-6 md:px-8 lg:px-6 py-12 sm:py-16 md:py-20 mt-16 sm:mt-12 md:mt-16">
+      <section id="about" className="relative bg-[#0A0A0A] px-4 sm:px-6 md:px-8 lg:px-6 py-12 sm:py-16 md:py-20 mt-20 sm:mt-16 md:mt-20">
         <div className="max-w-5xl mx-auto">
           {/* Section Header with Inline Images */}
           <div className="mb-12 sm:mb-16 lg:mb-20">
@@ -108,7 +108,7 @@ export default function Home() {
           </div>
 
           {/* Frame 77 - Main Content Container */}
-          <div className="flex flex-col lg:flex-row items-start gap-6 sm:gap-8 lg:gap-10">
+            <div className="flex flex-col lg:flex-row items-start gap-6 sm:gap-8 lg:gap-10">
             {/* Mobile: Text & CTA First, Desktop: Cards First */}
             <div className="flex flex-col gap-6 sm:gap-8 w-full lg:hidden">
               <p className="text-white text-sm sm:text-base leading-[150%] sm:leading-[160%]" style={{fontFamily: 'Gilroy'}}>
@@ -247,7 +247,7 @@ export default function Home() {
 
 
       {/* Latest Videos Section */}
-      <div id="latest-videos" className="mt-12 sm:mt-0">
+      <div id="latest-videos" className="mt-16 sm:mt-12 md:mt-16">
         <LatestVideos />
       </div>
 

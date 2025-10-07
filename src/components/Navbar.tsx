@@ -161,13 +161,6 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
               <button
                 className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('latest-videos')}
-              >
-                Latest Video
-              </button>
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => handleSectionClick('social-stats')}
               >
                 Community
@@ -175,9 +168,16 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
               <button
                 className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                onClick={() => handleSectionClick('latest-videos')}
+              >
+                Latest Video
+              </button>
+              <button
+                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                 onClick={() => handleSectionClick('partners')}
               >
-                Our Partner
+                Our Partners
               </button>
               <button
                 className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
@@ -265,16 +265,6 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    handleSectionClick('latest-videos');
-                  }}
-                >
-                  Latest Video
-                </button>
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
                     handleSectionClick('social-stats');
                   }}
                 >
@@ -285,10 +275,20 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
+                    handleSectionClick('latest-videos');
+                  }}
+                >
+                  Latest Video
+                </button>
+                <button
+                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
                     handleSectionClick('partners');
                   }}
                 >
-                  Our Partner
+                  Our Partners
                 </button>
                 <button
                   className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"

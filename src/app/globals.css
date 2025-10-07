@@ -47,6 +47,14 @@ a, a:focus, a:active, a:visited {
   font-size: 1.5rem; /* 20px on mobile */
 }
 
+/* Line clamp utility for text truncation */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 @media (min-width: 640px) {
   .gilroy-heading {
     font-size: 1.5rem; /* 24px on small screens */
@@ -77,9 +85,15 @@ a, a:focus, a:active, a:visited {
   }
 }
 
+@media (min-width: 1540px) {
+  .gilroy-heading {
+    font-size: 1.875rem; /* 30px on very large screens - reduced to fit 3 lines */
+  }
+}
+
 @media (min-width: 1920px) {
   .gilroy-heading {
-    font-size: 4rem; /* 48px on very large screens */
+    font-size: 2rem; /* 32px on very large screens - further reduced */
   }
 }
 

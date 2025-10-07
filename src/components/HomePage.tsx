@@ -261,7 +261,7 @@ export default function Home() {
       <section id="partners" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16 mt-12 sm:mt-0">
         <div className="max-w-6xl mx-auto">
           {/* Our Valued Partners Header - Centered and smaller */}
-          <div className="text-center mb-8">
+          <div className="text-center -mb-22 md:mb-8">
             <h2
               className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white"
               style={{fontFamily: 'Gilroy', fontWeight: 600}}

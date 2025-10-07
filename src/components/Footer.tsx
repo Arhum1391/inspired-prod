@@ -36,7 +36,7 @@ const Footer = () => {
           ></div>
 
           {/* Content */}
-          <div className="relative z-30 grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="relative z-30 grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Left Section: Inspired Analyst */}
         <div className="flex flex-col">
           <div className="flex items-center mb-4">
@@ -54,7 +54,7 @@ const Footer = () => {
             </div>
             <span className="text-2xl font-bold">Inspired Analyst</span>
           </div>
-          <p className="text-gray-300 leading-relaxed max-w-sm mb-8">
+          <p className="text-gray-300  max-w-sm mb-6 font-[400]">
             I simplify stocks, crypto, and data science with humor and clarity. My content turns complex ideas into practical tips-helping you stand out, level up, and crush your goals, without the boring jargon.
           </p>
           <div className="flex space-x-3 relative z-30 pr-5">
@@ -125,13 +125,13 @@ const Footer = () => {
           </div>
 
           {/* Divider line for mobile - below social icons */}
-          <div className="block md:hidden mt-8 border-t border-gray-600"></div>
+          <div className="block md:hidden mt-4 border-t border-gray-600"></div>
         </div>
 
         {/* Right Section: General Links */}
-        <div>
-          <h3 className="text-xl font-semibold mb-4">General</h3>
-          <ul className="space-y-3">
+        <div className="mt-2 md:mt-0">
+          <h3 className="text-xl font-semibold ">General</h3>
+          <ul className="space-y-1">
             <li><Link href="/research"><span className="text-gray-300 hover:text-white transition-colors duration-200">Research</span></Link></li>
             <li><Link href="/calculator"><span className="text-gray-300 hover:text-white transition-colors duration-200">Calculator</span></Link></li>
             <li><Link href="/portfolio"><span className="text-gray-300 hover:text-white transition-colors duration-200">Portfolio</span></Link></li>
@@ -143,7 +143,7 @@ const Footer = () => {
           </div>
 
           {/* Bottom Section: Copyright */}
-          <div className="relative z-30 mt-12 pt-8 border-t border-gray-600">
+          <div className="relative z-30 mt-6 pt-4 border-t border-gray-600">
             <div className="flex flex-col sm:flex-row justify-between items-center">
               <p className="text-gray-400 text-sm">
                 © 2025 Inspired Analyst. All rights reserved.

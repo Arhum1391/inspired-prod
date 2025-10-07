@@ -182,7 +182,9 @@ export default function NewsletterSubscription() {
             left: '-203px',
             top: '-456px',
             background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            WebkitFilter: 'blur(200px)',
             filter: 'blur(200px)',
+            WebkitTransform: 'rotate(90deg)',
             transform: 'rotate(90deg)',
             zIndex: 0,
           }}

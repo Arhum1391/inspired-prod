@@ -187,6 +187,12 @@ export default function NewsletterSubscription() {
             WebkitTransform: 'rotate(90deg)',
             transform: 'rotate(90deg)',
             zIndex: 0,
+            WebkitBackfaceVisibility: 'hidden',
+            backfaceVisibility: 'hidden',
+            WebkitPerspective: '1000px',
+            perspective: '1000px',
+            WebkitTransformStyle: 'preserve-3d',
+            transformStyle: 'preserve-3d',
           }}
         />
 

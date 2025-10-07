@@ -89,7 +89,7 @@ const TailoredGuidanceSection = () => {
 
           {/* New Calendar Section */}
           <div
-            className="rounded-3xl sm:p-1 lg:p-2 mx-4 sm:mx-12 md:mx-16 lg:mx-24 relative"
+            className="rounded-3xl p-1 sm:p-1 lg:p-2 mx-2 sm:mx-8 md:mx-12 lg:mx-16 xl:mx-24 relative"
             style={{
               border: '2px solid transparent',
               background: `
@@ -102,20 +102,20 @@ const TailoredGuidanceSection = () => {
 
             {/* Calendar Card Container */}
             <div
-              className="rounded-2xl p-4 sm:p-6 text-white relative overflow-hidden"
+              className="rounded-2xl p-3 sm:p-4 md:p-6 text-white relative overflow-hidden"
               style={{
                 background: 'linear-gradient(180deg, #3A3A3A 0%, #2A2A2A 20%, #1A1A1A 40%, #151515 60%, #101010 80%, #0A0A0A 100%)'
               }}
             >
 
               {/* Calendar Header */}
-              <div className="flex items-center space-x-4 mb-4 sm:mb-6 z-10 relative">
-                <h2 className="font-semibold text-base sm:text-lg text-gray-100" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+              <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6 z-10 relative">
+                <h2 className="font-semibold text-xs sm:text-sm md:text-base text-gray-100 flex-shrink-0" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
                   {monthName}, {year}
                 </h2>
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
-                  <span className="text-gray-400 text-xs sm:text-sm font-medium" style={{fontFamily: 'Gilroy'}}>Schedule a call</span>
+                <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
+                  <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full"></span>
+                  <span className="text-gray-400 text-xs sm:text-sm font-medium whitespace-nowrap" style={{fontFamily: 'Gilroy'}}>Schedule a call</span>
                 </div>
               </div>
 
@@ -123,27 +123,27 @@ const TailoredGuidanceSection = () => {
               <div className="relative">
                 <div className="space-y-3 sm:space-y-4">
                   {/* Days of the week */}
-                  <div className="grid grid-cols-7 text-center text-xs text-gray-500 font-semibold">
+                  <div className="grid grid-cols-7 text-center text-[10px] sm:text-xs text-gray-500 font-semibold gap-4 sm:gap-6 md:gap-8">
                     {daysOfWeek.map(day => (
-                      <span key={day} style={{fontFamily: 'Gilroy', fontWeight: 600}}>{day}</span>
+                      <span key={day} className="whitespace-nowrap" style={{fontFamily: 'Gilroy', fontWeight: 600}}>{day}</span>
                     ))}
                   </div>
 
                   {/* Dates Grid */}
-                  <div className="grid grid-cols-7 text-center text-sm gap-y-2 sm:gap-y-3">
+                  <div className="grid grid-cols-7 text-center text-xs sm:text-sm gap-3 sm:gap-4 gap-y-4 sm:gap-y-5">
                     <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>1</span>
-                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>2</span>
-                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>3</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors text-xs sm:text-sm" style={{fontFamily: 'Gilroy'}}>2</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors text-xs sm:text-sm" style={{fontFamily: 'Gilroy'}}>3</span>
                     <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>4</span>
                     <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>5</span>
-                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>6</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors text-xs sm:text-sm" style={{fontFamily: 'Gilroy'}}>6</span>
                     <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>7</span>
                     <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>8</span>
                     <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>9</span>
                     <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>10</span>
-                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>11</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors text-xs sm:text-sm" style={{fontFamily: 'Gilroy'}}>11</span>
                     <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>12</span>
-                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors" style={{fontFamily: 'Gilroy'}}>13</span>
+                    <span className="bg-[#1A1A1A] rounded-lg flex items-center justify-center w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 mx-auto cursor-pointer font-semibold hover:bg-[#2A2A2A] transition-colors text-xs sm:text-sm" style={{fontFamily: 'Gilroy'}}>13</span>
                     <span className="text-gray-600 font-medium" style={{fontFamily: 'Gilroy'}}>14</span>
                   </div>
                 </div>

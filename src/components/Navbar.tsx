@@ -11,6 +11,7 @@ interface NavbarProps {
 
 const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -40,6 +41,17 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
     }
   }, [pathname]);
 
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      setIsScrolled(scrollTop > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Prevent body scroll when sidebar is open
   useEffect(() => {
     if (isMobileMenuOpen) {
@@ -52,19 +64,21 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
     };
   }, [isMobileMenuOpen]);
 
-  // Different padding based on variant
+  // Different padding based on variant - consistent mobile padding
   const paddingClass = variant === 'hero'
-    ? "py-2 sm:py-2"
-    : "py-3 sm:py-4";
+    ? "py-4 sm:py-4"
+    : "py-4 sm:py-5";
 
   return (
     <>
       <div
-        className={`fixed top-0 left-0 right-0 z-[9999] w-full px-3 sm:px-4 lg:px-6 ${paddingClass}`}
+        className={`fixed top-0 left-0 right-0 z-[9999] w-full px-3 sm:px-4 lg:px-6 ${paddingClass} transition-all duration-300`}
         style={{
-          background: 'linear-gradient(180deg, #0A0A0A 0%, rgba(10, 10, 10, 0.2) 80%, rgba(10, 10, 10, 0) 100%)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)'
+          background: isScrolled 
+            ? 'linear-gradient(180deg, #0A0A0A 0%, rgba(10, 10, 10, 0.2) 80%, rgba(10, 10, 10, 0) 100%)'
+            : 'transparent',
+          backdropFilter: isScrolled ? 'blur(20px)' : 'none',
+          WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'none'
         }}
       >
         {/* Mobile Layout - Toggle and Logo left, Button right */}
@@ -107,7 +121,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
           <div className="flex items-center">
             <a
               href="/meetings"
-              className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-9 sm:h-6 flex items-center"
+              className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center"
             >
               Book Mentorship
             </a>

@@ -447,7 +447,7 @@ const ReviewsContent: React.FC = () => {
                 
                 {/* Left Side: Image Belts */}
                 <div className="hidden lg:flex justify-center items-start h-full relative w-full max-w-sm">
-                    <div className="flex w-full h-screen">
+                    <div className="flex w-64 xl:w-80 h-screen pt-20 fixed left-24 xl:left-32 top-0">
                         {/* Belt 1 - Rectangle 1 Images */}
                         <div className="flex-1 fade-mask overflow-hidden">
                             <div className="animate-scrollUp flex flex-col gap-6">

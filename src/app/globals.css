@@ -1,8 +1,8 @@
 @import "tailwindcss";
-
-/* Import Gilroy font from CDN */
 @import url('https://fonts.cdnfonts.com/css/gilroy-bold');
 @import url('https://db.onlinewebfonts.com/c/1dc8ecd8056a5ea7aa7de1db42b5b639?family=Gilroy-Regular');
+
+/* Import Gilroy font from CDN */
 
 :root {
   --background: #0A0A0A;
@@ -125,8 +125,8 @@ body {
 
 @media (min-width: 1024px) {
   .fade-mask {
-    mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 25%, black 75%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, black 42%, black 75%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 42%, black 75%, transparent 100%);
   }
 }
 

@@ -948,10 +948,16 @@ const MeetingsPage: React.FC = () => {
         if (!isTimezoneOpen) {
             setIsTimezoneOpen(true);
         }
+        // Clear selected timezone when user starts typing
+        if (searchValue !== '' && selectedTimezone) {
+            setSelectedTimezone('');
+        }
     };
 
     const handleTimezoneInputFocus = () => {
         setIsTimezoneOpen(true);
+        // Clear the search field when focusing to allow fresh input
+        setTimezoneSearch('');
     };
 
     // Calendar helper functions
@@ -1983,7 +1989,7 @@ const MeetingsPage: React.FC = () => {
 
                                 <input
                                     type="text"
-                                            value={timezoneSearch || (selectedTimezone ? getTimezoneDisplayLabel() : '')}
+                                            value={isTimezoneOpen ? timezoneSearch : (selectedTimezone ? getTimezoneDisplayLabel() : '')}
                                     onChange={(e) => handleTimezoneSearch(e.target.value)}
                                     onFocus={handleTimezoneInputFocus}
                                                 placeholder="Select Timezone"

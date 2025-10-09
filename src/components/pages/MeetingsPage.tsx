@@ -413,6 +413,18 @@ const MeetingsPage: React.FC = () => {
     const [teamData, setTeamData] = useState<{name: string, role: string}[]>([]);
     const [analysts, setAnalysts] = useState<Analyst[]>(baseAnalysts);
     const [isTeamDataLoaded, setIsTeamDataLoaded] = useState<boolean>(false);
+    
+    // Calendly Integration States
+    const [calendlyEventTypes, setCalendlyEventTypes] = useState<any[]>([]);
+    const [calendlyMeetings, setCalendlyMeetings] = useState<Meeting[]>(meetings);
+    const [availableDates, setAvailableDates] = useState<string[]>([]);
+    const [availableTimesByDate, setAvailableTimesByDate] = useState<Record<string, string[]>>({});
+    const [slotUrlsByDateTime, setSlotUrlsByDateTime] = useState<Record<string, string>>({});
+    const [rawTimestampsByDateTime, setRawTimestampsByDateTime] = useState<Record<string, string>>({});
+    const [isLoadingEventTypes, setIsLoadingEventTypes] = useState<boolean>(false);
+    const [isLoadingAvailability, setIsLoadingAvailability] = useState<boolean>(false);
+    const [selectedEventTypeUri, setSelectedEventTypeUri] = useState<string>('');
+    const [isCreatingBooking, setIsCreatingBooking] = useState<boolean>(false);
 
     // Function to fetch analyst about data from MongoDB
     const fetchAnalystAbout = async (analystName: string) => {
@@ -490,6 +502,60 @@ const MeetingsPage: React.FC = () => {
         setAnalysts(updatedAnalysts);
     };
 
+    // Function to fetch Calendly event types
+    const fetchCalendlyEventTypes = async () => {
+        setIsLoadingEventTypes(true);
+        try {
+            const response = await fetch('/api/calendly/event-types');
+            if (response.ok) {
+                const data = await response.json();
+                setCalendlyEventTypes(data.eventTypes || []);
+                
+                // Transform Calendly event types to Meeting format
+                const transformedMeetings: Meeting[] = data.eventTypes.map((eventType: any, index: number) => ({
+                    id: index + 2, // Start from 2 to match existing IDs
+                    title: eventType.name,
+                    duration: `${eventType.duration} minutes`,
+                    price: '3 BNB', // Default price, can be customized
+                    description: eventType.description || 'A focused session to address specific challenges.',
+                    color: index % 2 === 0 ? 'text-purple-400' : 'text-yellow-400',
+                }));
+                
+                if (transformedMeetings.length > 0) {
+                    setCalendlyMeetings(transformedMeetings);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching Calendly event types:', error);
+            // Keep using default meetings if Calendly fetch fails
+        } finally {
+            setIsLoadingEventTypes(false);
+        }
+    };
+
+    // Function to fetch Calendly availability
+    const fetchCalendlyAvailability = async (eventTypeUri: string, startDate: string, endDate: string) => {
+        setIsLoadingAvailability(true);
+        console.log('Fetching Calendly availability:', { eventTypeUri, startDate, endDate });
+        try {
+            const response = await fetch(
+                `/api/calendly/availability?eventTypeUri=${encodeURIComponent(eventTypeUri)}&startDate=${startDate}&endDate=${endDate}`
+            );
+            if (response.ok) {
+                const data = await response.json();
+                console.log('Received availability data:', data);
+                setAvailableDates(data.availableDates || []);
+                setAvailableTimesByDate(data.availabilityByDate || {});
+            } else {
+                console.error('Failed to fetch availability:', response.status, await response.text());
+            }
+        } catch (error) {
+            console.error('Error fetching Calendly availability:', error);
+        } finally {
+            setIsLoadingAvailability(false);
+        }
+    };
+
     const [hoveredTimezone, setHoveredTimezone] = useState<string>('');
     const [timezoneSearch, setTimezoneSearch] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>('');
@@ -501,10 +567,156 @@ const MeetingsPage: React.FC = () => {
     const [nameError, setNameError] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
 
+    // Load Calendly widget script for popup functionality
+    useEffect(() => {
+        // Load Calendly CSS
+        const link = document.createElement('link');
+        link.href = 'https://assets.calendly.com/assets/external/widget.css';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+        
+        // Load Calendly JS
+        const script = document.createElement('script');
+        script.src = 'https://assets.calendly.com/assets/external/widget.js';
+        script.async = true;
+        document.body.appendChild(script);
+        
+        return () => {
+            document.head.removeChild(link);
+            document.body.removeChild(script);
+        };
+    }, []);
+
     // Fetch team data on component mount
     useEffect(() => {
         fetchTeamData();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Fetch Calendly event types when Assassin is selected
+    useEffect(() => {
+        if (selectedAnalyst === 1) { // Assassin's ID is 1
+            fetchCalendlyEventTypes();
+        } else {
+            // Use default meetings for other analysts
+            setCalendlyMeetings(meetings);
+        }
+    }, [selectedAnalyst]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Fetch Calendly availability when meeting type and month change
+    useEffect(() => {
+        if (selectedAnalyst === 1 && selectedMeeting !== null && calendlyEventTypes.length > 0) {
+            console.log('Attempting to fetch availability:', {
+                selectedMeeting,
+                calendlyEventTypesLength: calendlyEventTypes.length,
+                calculatedIndex: selectedMeeting - 2
+            });
+            
+            const selectedEventType = calendlyEventTypes[selectedMeeting - 2]; // Adjust index
+            console.log('Selected event type:', selectedEventType);
+            
+            if (selectedEventType && selectedEventType.id) {
+                setSelectedEventTypeUri(selectedEventType.id);
+                
+                // Calendly API limitations:
+                // 1. Date range can't be greater than 7 days
+                // 2. Start time must be in the future (at least 24 hours from now)
+                
+                // Start from at least 24 hours in the future to be safe with Calendly's API
+                const minStartDate = new Date();
+                minStartDate.setDate(minStartDate.getDate() + 1); // Tomorrow
+                minStartDate.setHours(12, 0, 0, 0); // Noon tomorrow to be safe
+                
+                const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+                startOfMonth.setHours(0, 0, 0, 0);
+                
+                // Use whichever is later: minimum safe date or start of month
+                const startDate = startOfMonth > minStartDate ? startOfMonth : minStartDate;
+                const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+                endOfMonth.setHours(23, 59, 59, 999);
+                
+                // Fetch availability in 7-day chunks
+                const fetchAllAvailability = async () => {
+                    const allDates: string[] = [];
+                    const allTimesByDate: Record<string, string[]> = {};
+                    const allSlotUrls: Record<string, string> = {};
+                    const allRawTimestamps: Record<string, string> = {};
+                    
+                    let currentStart = new Date(startDate);
+                    
+                    while (currentStart <= endOfMonth) {
+                        // Calculate end date (7 days from start or end of month, whichever is earlier)
+                        const currentEnd = new Date(currentStart);
+                        currentEnd.setDate(currentEnd.getDate() + 6); // 7 days total (inclusive)
+                        
+                        if (currentEnd > endOfMonth) {
+                            currentEnd.setTime(endOfMonth.getTime());
+                        }
+                        
+                        const startDateStr = currentStart.toISOString().split('T')[0];
+                        const endDateStr = currentEnd.toISOString().split('T')[0];
+                        
+                        console.log('Fetching availability chunk:', { startDateStr, endDateStr });
+                        
+                        try {
+                            const response = await fetch(
+                                `/api/calendly/availability?eventTypeUri=${encodeURIComponent(selectedEventType.id)}&startDate=${startDateStr}&endDate=${endDateStr}`
+                            );
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                console.log('Received chunk data:', data);
+                                
+                                // Merge the results
+                                if (data.availableDates) {
+                                    allDates.push(...data.availableDates);
+                                }
+                                if (data.availabilityByDate) {
+                                    Object.assign(allTimesByDate, data.availabilityByDate);
+                                }
+                                if (data.slotUrls) {
+                                    Object.assign(allSlotUrls, data.slotUrls);
+                                }
+                                if (data.rawTimestamps) {
+                                    Object.assign(allRawTimestamps, data.rawTimestamps);
+                                }
+                            } else {
+                                console.error('Failed to fetch chunk:', response.status, await response.text());
+                            }
+                        } catch (error) {
+                            console.error('Error fetching chunk:', error);
+                        }
+                        
+                        // Move to next week
+                        currentStart.setDate(currentStart.getDate() + 7);
+                    }
+                    
+                    // Remove duplicates and sort
+                    const uniqueDates = [...new Set(allDates)].sort();
+                    
+                    console.log('Total availability fetched:', {
+                        totalDates: uniqueDates.length,
+                        dates: uniqueDates,
+                        totalSlotUrls: Object.keys(allSlotUrls).length
+                    });
+                    
+                    setAvailableDates(uniqueDates);
+                    setAvailableTimesByDate(allTimesByDate);
+                    setSlotUrlsByDateTime(allSlotUrls);
+                    setRawTimestampsByDateTime(allRawTimestamps);
+                };
+                
+                fetchAllAvailability();
+            } else {
+                console.error('No valid event type found at index', selectedMeeting - 2);
+            }
+        } else {
+            console.log('Skipping Calendly fetch:', {
+                selectedAnalyst,
+                selectedMeeting,
+                calendlyEventTypesLength: calendlyEventTypes.length
+            });
+        }
+    }, [selectedMeeting, currentMonth, selectedAnalyst, calendlyEventTypes]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Handle step and selectedAnalyst parameters from URL (for navigation back from reviews page)
     useEffect(() => {
@@ -535,14 +747,29 @@ const MeetingsPage: React.FC = () => {
             }
         }
     }, [selectedAnalyst, analysts]); // eslint-disable-line react-hooks/exhaustive-deps
+    
+    // Reset selected time when timezone changes (times will be converted)
+    useEffect(() => {
+        if (selectedAnalyst === 1 && selectedTimezone && selectedDate) {
+            setSelectedTime(''); // Reset so user re-selects with new timezone
+        }
+    }, [selectedTimezone]); // eslint-disable-line react-hooks/exhaustive-deps
     // const router = useRouter(); // Removed to prevent compilation error
 
     const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
                                currentStep === 3 ? (!fullName || !email || !!nameError || !!emailError) : false;
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
+        console.log('handleContinue clicked!', { 
+            currentStep, 
+            isContinueDisabled, 
+            selectedAnalyst,
+            selectedEventTypeUri 
+        });
+        
         if (!isContinueDisabled) {
             if (currentStep === 2) {
+                console.log('Advancing to step 3');
                 setCurrentStep(3);
                 // Scroll to top on mobile when advancing to next step
                 if (window.innerWidth < 768) {
@@ -551,9 +778,102 @@ const MeetingsPage: React.FC = () => {
                     }, 100);
                 }
             } else {
-                // Complete booking - redirect to success page with data
+                console.log('Processing final step, currentStep:', currentStep);
                 const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
                 
+                // For Assassin (ID: 1), open Calendly popup widget
+                if (selectedAnalyst === 1 && selectedDate && selectedTime) {
+                    // Find the UTC time that corresponds to the selected (possibly converted) time
+                    let utcTimeForSlot = selectedTime;
+                    let schedulingUrl = slotUrlsByDateTime[`${selectedDate}|${selectedTime}`];
+                    
+                    // If timezone is selected and URL not found, the time might be converted
+                    // We need to find the original UTC time
+                    if (!schedulingUrl && selectedTimezone && availableTimesByDate[selectedDate]) {
+                        const utcTimes = availableTimesByDate[selectedDate];
+                        for (const utcTime of utcTimes) {
+                            const convertedTime = convertTimeToTimezone(utcTime, selectedTimezone);
+                            if (convertedTime === selectedTime) {
+                                utcTimeForSlot = utcTime;
+                                schedulingUrl = slotUrlsByDateTime[`${selectedDate}|${utcTime}`];
+                                break;
+                            }
+                        }
+                    }
+                    
+                    const dateTimeKey = `${selectedDate}|${utcTimeForSlot}`;
+                    
+                    console.log('Looking for scheduling URL:', { 
+                        selectedTime, 
+                        utcTimeForSlot,
+                        dateTimeKey, 
+                        schedulingUrl 
+                    });
+                    console.log('Available slots:', Object.keys(slotUrlsByDateTime).slice(0, 5));
+                    
+                    if (schedulingUrl) {
+                        // Build URL with pre-filled information
+                        const bookingUrl = new URL(schedulingUrl);
+                        bookingUrl.searchParams.append('name', fullName);
+                        bookingUrl.searchParams.append('email', email);
+                        if (notes) {
+                            bookingUrl.searchParams.append('a1', notes);
+                        }
+                        
+                        console.log('Opening Calendly popup with pre-filled info:', bookingUrl.toString());
+                        
+                        // Open Calendly popup widget
+                        if (typeof window !== 'undefined' && (window as any).Calendly) {
+                            (window as any).Calendly.initPopupWidget({
+                                url: bookingUrl.toString(),
+                                prefill: {
+                                    name: fullName,
+                                    email: email,
+                                    customAnswers: {
+                                        a1: notes || ''
+                                    }
+                                },
+                                utm: {
+                                    utmSource: 'inspired-analyst',
+                                    utmMedium: 'website',
+                                    utmCampaign: 'meeting-booking'
+                                }
+                            });
+                            
+                            // Listen for Calendly events
+                            const handleCalendlyEvent = (e: MessageEvent) => {
+                                if (e.data.event && e.data.event === 'calendly.event_scheduled') {
+                                    console.log('Calendly booking completed:', e.data);
+                                    
+                                    // Redirect to success page after booking is confirmed
+                                    const params = new URLSearchParams({
+                                        analyst: selectedAnalyst?.toString() || '0',
+                                        meeting: selectedMeeting?.toString() || '1',
+                                        date: selectedDate || '',
+                                        time: selectedTime || '',
+                                        timezone: selectedTimezoneData?.label || '',
+                                        notes: notes || '',
+                                        calendlyEventUri: e.data.payload?.event?.uri || ''
+                                    });
+                                    
+                                    window.location.href = `/booking-success?${params.toString()}`;
+                                }
+                            };
+                            
+                            window.addEventListener('message', handleCalendlyEvent);
+                        } else {
+                            console.error('Calendly widget not loaded, falling back to redirect');
+                            window.location.href = bookingUrl.toString();
+                        }
+                        return;
+                    } else {
+                        console.error('No scheduling URL found for selected date/time:', dateTimeKey);
+                        alert('Unable to find the selected time slot. Please try selecting a different time.');
+                        return;
+                    }
+                }
+                
+                // For other analysts, redirect to success page
                 const params = new URLSearchParams({
                     analyst: selectedAnalyst?.toString() || '0',
                     meeting: selectedMeeting?.toString() || '1',
@@ -676,7 +996,34 @@ const MeetingsPage: React.FC = () => {
     };
 
     const isDateAvailable = (date: Date) => {
-        // Allow today and future dates, but not past dates
+        // For Assassin with Calendly integration
+        if (selectedAnalyst === 1) {
+            // Must have a meeting type selected first
+            if (selectedMeeting === null) {
+                return false; // Disable all dates until meeting type is selected
+            }
+            
+            // Check if date is in the available dates from Calendly
+            if (availableDates.length > 0) {
+                const dateStr = formatDate(date);
+                const isAvailable = availableDates.includes(dateStr);
+                // Only log first few checks to avoid spam
+                if (date.getDate() <= 5) {
+                    console.log('Checking date availability:', { dateStr, isAvailable, availableDates });
+                }
+                return isAvailable;
+            }
+            
+            // If no available dates yet (still loading), disable all
+            return false;
+        }
+        
+        // For other analysts, must select meeting type first
+        if (selectedMeeting === null) {
+            return false;
+        }
+        
+        // Then allow today and future dates
         const today = new Date();
         today.setHours(0, 0, 0, 0);
         const compareDate = new Date(date);
@@ -691,14 +1038,78 @@ const MeetingsPage: React.FC = () => {
     const handleDateSelect = (date: Date) => {
         if (isDateAvailable(date)) {
             setSelectedDate(formatDate(date));
+            setSelectedTime(''); // Reset time selection when date changes
         }
     };
 
+    // Convert UTC time to selected timezone
+    const convertTimeToTimezone = (utcTimeStr: string, timezoneValue: string): string => {
+        if (!timezoneValue) return utcTimeStr; // Return UTC if no timezone selected
+        
+        // Parse the UTC time (format: "H:MM AM/PM")
+        const utcDate = new Date(rawTimestampsByDateTime[`${selectedDate}|${utcTimeStr}`]);
+        if (!utcDate || isNaN(utcDate.getTime())) {
+            return utcTimeStr; // Return original if can't parse
+        }
+        
+        // Get timezone offset in hours
+        const timezoneOffsets: { [key: string]: number } = {
+            'pst': -8, 'mst': -7, 'cst': -6, 'est': -5, 'akst': -9, 'hst': -10, 'ast_ca': -4,
+            'brt': -3, 'art': -3, 'clt': -4, 'cot': -5, 'pet': -5, 'vet': -4, 'gyt': -4, 'srt': -3, 'fkt': -3,
+            'gmt': 0, 'cet': 1, 'eet': 2, 'wet': 0, 'msk': 3, 'trt': 3, 'eest': 3, 'cest': 2, 'west': 1,
+            'cat': 2, 'eat': 3, 'wat': 1, 'sast': 2, 'cairo': 2, 'lagos': 1, 'casablanca': 0, 'johannesburg': 2, 'nairobi': 3,
+            'ist': 5.5, 'bdt': 6, 'pkt': 5, 'cst_cn': 8, 'jst': 9, 'kst': 9, 'pht': 8, 'ict': 7, 'myt': 8, 'sgt': 8, 'hkt': 8, 'tst': 8,
+            'jordan': 2, 'baghdad': 3, 'baku': 4, 'lebanon': 2,
+            'gst': 4, 'ast_me': 3, 'irt': 3.5, 'israel': 2, 'kuwait': 3, 'qatar': 3, 'bahrain': 3, 'oman': 4,
+            'aest': 10, 'acst': 9.5, 'awst': 8, 'nzst': 12, 'fjt': 12, 'pgt': 10, 'sbt': 11, 'vut': 11,
+            'hst_pacific': -10, 'akst_pacific': -9, 'pst_pacific': -8, 'mst_pacific': -7, 'cst_pacific': -6, 'est_pacific': -5
+        };
+        
+        const offset = timezoneOffsets[timezoneValue] || 0;
+        
+        // Apply timezone offset
+        const localDate = new Date(utcDate.getTime() + (offset * 3600000));
+        
+        // Format the converted time
+        const hours = localDate.getUTCHours();
+        const minutes = localDate.getUTCMinutes();
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const displayHours = hours % 12 || 12;
+        const displayMinutes = String(minutes).padStart(2, '0');
+        
+        return `${displayHours}:${displayMinutes} ${ampm}`;
+    };
+
+    // Get time slots based on selected date and convert to selected timezone
+    const getTimeSlots = () => {
+        // For Assassin with Calendly integration
+        if (selectedAnalyst === 1 && selectedDate && availableTimesByDate[selectedDate]) {
+            const utcTimes = availableTimesByDate[selectedDate];
+            
+            // If timezone is selected, convert times
+            if (selectedTimezone) {
+                const convertedTimes = utcTimes.map(utcTime => 
+                    convertTimeToTimezone(utcTime, selectedTimezone)
+                );
+                console.log('Returning converted Calendly time slots for', selectedDate, ':', convertedTimes);
+                return convertedTimes;
+            }
+            
+            console.log('Returning UTC Calendly time slots for', selectedDate, ':', utcTimes);
+            return utcTimes;
+        }
+        
+        console.log('Using default time slots. Assassin?', selectedAnalyst === 1, 'Selected date:', selectedDate, 'Has times?', !!availableTimesByDate[selectedDate]);
+        
+        // Default time slots for other analysts
+        return [
+            '9:00 AM', '10:00 AM', '11:30 AM', '12:30 PM', 
+            '1:30 PM', '2:00 PM', '2:30 PM', '5:30 PM'
+        ];
+    };
+
     // Available time slots
-    const timeSlots = [
-        '9:00 AM', '10:00 AM', '11:30 AM', '12:30 PM', 
-        '1:30 PM', '2:00 PM', '2:30 PM', '5:30 PM'
-    ];
+    const timeSlots = getTimeSlots();
 
     const handleTimeSelect = (time: string) => {
         setSelectedTime(time);
@@ -706,7 +1117,7 @@ const MeetingsPage: React.FC = () => {
 
     // Helper functions for booking summary
     const getSelectedMeetingData = () => {
-        return meetings.find(meeting => meeting.id === selectedMeeting);
+        return calendlyMeetings.find(meeting => meeting.id === selectedMeeting);
     };
 
     const getSelectedTimezoneLabel = () => {
@@ -1534,14 +1945,20 @@ const MeetingsPage: React.FC = () => {
                             <p className="text-sm sm:text-base text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Choose the session that best fits your needs</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {meetings.map((meeting) => (
-                                <MeetingCard
-                                    key={meeting.id}
-                                    meeting={meeting}
-                                    isSelected={selectedMeeting === meeting.id}
-                                    onSelect={setSelectedMeeting}
-                                />
-                            ))}
+                            {isLoadingEventTypes && selectedAnalyst === 1 ? (
+                                <div className="col-span-full flex items-center justify-center py-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                                </div>
+                            ) : (
+                                calendlyMeetings.map((meeting) => (
+                                    <MeetingCard
+                                        key={meeting.id}
+                                        meeting={meeting}
+                                        isSelected={selectedMeeting === meeting.id}
+                                        onSelect={setSelectedMeeting}
+                                    />
+                                ))
+                            )}
                         </div>
                     </div>
 
@@ -1707,6 +2124,17 @@ const MeetingsPage: React.FC = () => {
                                         <div 
                                             className="bg-[#1F1F1F] rounded-xl mt-6 relative overflow-hidden p-4 w-full max-w-[412px] min-h-[284px] flex flex-col items-start gap-2.5"
                                         >
+                                            {/* Loading Overlay */}
+                                            {isLoadingAvailability && selectedAnalyst === 1 && (
+                                                <div className="absolute inset-0 bg-[#1F1F1F]/90 flex items-center justify-center z-30 rounded-xl">
+                                                    <div className="flex flex-col items-center gap-3">
+                                                        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-400"></div>
+                                                        <p className="text-sm text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                                                            Loading availability...
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            )}
                                             {/* Curved Gradient Border */}
                                             <div 
                                                 className="absolute inset-0 pointer-events-none rounded-xl p-[1px]"
@@ -1763,13 +2191,13 @@ const MeetingsPage: React.FC = () => {
                                                                 {getDaysInMonth(currentMonth).filter((_, index) => index % 7 === dayIndex).map((day, weekIndex) => (
                                                         <button
                                                                         key={weekIndex}
-                                                                        onClick={() => day && handleDateSelect(day)}
-                                                                        disabled={!day || !isDateAvailable(day)}
+                                                                        onClick={() => day && !isLoadingAvailability && handleDateSelect(day)}
+                                                                        disabled={!day || !isDateAvailable(day) || (isLoadingAvailability && selectedAnalyst === 1)}
                                                             className={`
                                                                             flex items-center justify-center transition-all duration-200 w-8 h-8 rounded-lg text-sm focus:outline-none focus:ring-0
                                                                             ${day && isDateSelected(day)
                                                                                 ? 'bg-white text-black'
-                                                                                : day && isDateAvailable(day)
+                                                                                : day && isDateAvailable(day) && !(isLoadingAvailability && selectedAnalyst === 1)
                                                                                 ? 'bg-[#404040] text-white hover:bg-gray-500 cursor-pointer'
                                                                                 : 'text-[#909090] cursor-not-allowed'
                                                                             }
@@ -1791,6 +2219,17 @@ const MeetingsPage: React.FC = () => {
                                 <div className="w-full lg:flex-1">
                                     <h3 className="text-lg font-semibold text-white mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Available Time Slots</h3>
                                     
+                                    {/* Loading state for time slots */}
+                                    {isLoadingAvailability && selectedAnalyst === 1 ? (
+                                        <div className="flex items-center justify-center py-12">
+                                            <div className="flex flex-col items-center gap-3">
+                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
+                                                <p className="text-sm text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                                                    Loading time slots...
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
                                         <div 
                                             className="flex flex-wrap sm:grid sm:grid-cols-3 md:grid-cols-4 sm:gap-2 mb-4"
                                             style={{
@@ -1844,10 +2283,11 @@ const MeetingsPage: React.FC = () => {
                                             </button>
                                         ))}
                                         </div>
-                                        <p className="text-sm text-gray-400">Times shown in {getSelectedTimezoneLabel() || 'your timezone'}</p>
-                                    </div>
+                                    )}
+                                    <p className="text-sm text-gray-400">Times shown in {getSelectedTimezoneLabel() || 'UTC'}</p>
                                 </div>
                             </div>
+                        </div>
                         </div>
                     )}
 

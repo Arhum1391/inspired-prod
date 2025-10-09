@@ -442,3 +442,51 @@ nav, header, [class*="Navbar"], [class*="navbar"] {
 section, main, div[id^="social-"], div[id^="latest-"], div[id^="partners"], div[id^="brand-"], div[id^="features"], div[id^="newsletter"], div[id^="collaboration"], div[id^="tailored-"] {
   position: relative;
 }
+
+/* Calendly Widget Custom Styling */
+.calendly-inline-widget {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Style the Calendly iframe to match the dark theme */
+.calendly-inline-widget iframe {
+  border-radius: 1rem;
+  background: #1F1F1F;
+}
+
+/* Additional styling to blend Calendly with our design */
+.calendly-inline-widget::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Calendly Popup Overlay Styling */
+.calendly-overlay {
+  background: rgba(0, 0, 0, 0.85) !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Calendly Popup Container */
+.calendly-popup {
+  border-radius: 1rem !important;
+  overflow: hidden !important;
+}
+
+/* Calendly Popup Close Button */
+.calendly-popup .calendly-close-overlay {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 50% !important;
+  transition: all 0.3s ease !important;
+}
+
+.calendly-popup .calendly-close-overlay:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.1);
+}

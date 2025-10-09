@@ -47,7 +47,14 @@ export default function BookingPage() {
   useEffect(() => {
     const baseUrl = 'https://calendly.com/maxpace94';
     const eventType = selectedMeetingType.id;
-    setCalendlyUrl(`${baseUrl}/${eventType}`);
+    // Add Calendly customization parameters for dark theme
+    const params = new URLSearchParams({
+      background_color: '1F1F1F',
+      text_color: 'ffffff',
+      primary_color: 'DE50EC',
+      hide_gdpr_banner: '1'
+    });
+    setCalendlyUrl(`${baseUrl}/${eventType}?${params.toString()}`);
   }, [selectedMeetingType]);
 
   // Load Calendly widget script
@@ -67,14 +74,14 @@ export default function BookingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-[#0D0D0D] text-white py-8" style={{ fontFamily: 'Gilroy-Medium, sans-serif' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className="text-4xl font-bold text-white mb-4" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
             Book Your Meeting
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">
+          <p className="text-lg text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
             Select your preferred meeting type and schedule a time that works for you
           </p>
         </div>
@@ -82,7 +89,7 @@ export default function BookingPage() {
         <div className="max-w-6xl mx-auto">
           {/* Compact Meeting Type Selection */}
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            <h2 className="text-lg font-semibold text-white mb-4" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
               Choose Meeting Type
             </h2>
             
@@ -90,44 +97,58 @@ export default function BookingPage() {
               {meetingTypes.map((meeting) => (
                 <div
                   key={meeting.id}
-                  className={`p-4 rounded-lg cursor-pointer transition-all duration-200 ${
+                  className={`relative p-4 rounded-2xl cursor-pointer transition-all duration-300 bg-[#1F1F1F] ${
                     selectedMeetingType.id === meeting.id
-                      ? 'relative'
-                      : 'border-2 border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                      ? 'group overflow-hidden'
+                      : 'hover:border-gray-600'
                   }`}
                   onClick={() => handleMeetingTypeChange(meeting)}
                 >
                   {selectedMeetingType.id === meeting.id && (
-                    <div
-                      className="absolute inset-0 rounded-lg pointer-events-none"
-                      style={{
-                        border: '1px solid',
-                        borderImageSource: 'linear-gradient(226.35deg, #DE50EC 0%, rgba(222, 80, 236, 0) 50.5%)',
-                        borderImageSlice: 1,
-                        background: `linear-gradient(135deg, ${meeting.color === 'blue' ? 'rgba(59, 130, 246, 0.1)' : meeting.color === 'purple' ? 'rgba(147, 51, 234, 0.1)' : 'rgba(249, 115, 22, 0.1)'}, transparent)`
-                      }}
-                    />
+                    <>
+                      <div
+                        className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
+                        style={{
+                          background: 'linear-gradient(226.35deg, #DE50EC 0%, rgba(222, 80, 236, 0) 50.5%)',
+                          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                          WebkitMaskComposite: 'xor',
+                          maskComposite: 'exclude'
+                        }}
+                      >
+                        <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
+                      </div>
+                      <div
+                        className="absolute inset-0 opacity-80 rounded-2xl"
+                        style={{
+                          background: 'radial-gradient(circle at top left, rgba(222, 80, 236, 0.15), transparent 60%)'
+                        }}
+                      />
+                    </>
                   )}
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                      {meeting.name}
-                    </h3>
-                    <span className={`px-2 py-1 rounded text-xs font-medium bg-${meeting.color}-100 text-${meeting.color}-800 dark:bg-${meeting.color}-900/50 dark:text-${meeting.color}-200`}>
-                      {meeting.duration}m
-                    </span>
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
-                    {meeting.description}
-                  </p>
-                  <div className="flex justify-between items-center">
-                    <span className="text-lg font-bold text-gray-900 dark:text-white">
-                      ${meeting.price}
-                    </span>
-                    {selectedMeetingType.id === meeting.id && (
-                      <span className="text-xs text-green-600 dark:text-green-400 font-medium">
-                        ✓
+                  <div className="relative z-10">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-sm font-semibold text-white" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                        {meeting.name}
+                      </h3>
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        meeting.color === 'purple' ? 'bg-purple-400/12 border border-purple-400 text-purple-400' : 'bg-yellow-400/12 border border-yellow-400 text-yellow-400'
+                      }`}>
+                        {meeting.duration}m
                       </span>
-                    )}
+                    </div>
+                    <p className="text-xs text-gray-400 mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                      {meeting.description}
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold text-white" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                        ${meeting.price}
+                      </span>
+                      {selectedMeetingType.id === meeting.id && (
+                        <span className="text-xs text-purple-400 font-medium">
+                          ✓
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -136,16 +157,16 @@ export default function BookingPage() {
 
           {/* Calendly Widget - Takes up most of the space */}
           <div className="space-y-4">
-            <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+              <h2 className="text-xl font-semibold text-white" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
                 Select Your Time
               </h2>
-              <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="text-sm text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
                 {selectedMeetingType.name} • {selectedMeetingType.duration} minutes • ${selectedMeetingType.price}
               </div>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="bg-[#1F1F1F] rounded-2xl border border-gray-700/50 overflow-hidden">
               {/* Calendly Inline Widget - Much larger */}
               <div className="calendly-inline-widget" style={{ minWidth: '320px', height: '800px' }}>
                 {calendlyUrl && (
@@ -161,15 +182,15 @@ export default function BookingPage() {
             </div>
 
             {/* Compact Payment Notice */}
-            <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-3">
+            <div className="bg-[#1F1F1F] border border-gray-700/50 rounded-2xl p-3">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <svg className="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
+                  <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                   </svg>
                 </div>
                 <div className="ml-2">
-                  <p className="text-xs text-gray-600 dark:text-gray-400">
+                  <p className="text-xs text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
                     Payment will be required to confirm your booking after selecting a time slot.
                   </p>
                 </div>

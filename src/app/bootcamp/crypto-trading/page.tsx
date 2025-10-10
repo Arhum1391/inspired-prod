@@ -78,6 +78,23 @@ export default function CryptoTradingBootcampPage() {
                 <div className="grid grid-cols-2 gap-5">
                   {/* Duration Card */}
                   <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-6 relative overflow-hidden">
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px'
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F'
+                        }}
+                      ></div>
+                    </div>
+
                     {/* Gradient Ellipse */}
                     <div
                       className="absolute w-[588px] h-[588px] z-0"
@@ -109,6 +126,23 @@ export default function CryptoTradingBootcampPage() {
 
                   {/* Mode Card */}
                   <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-6 relative overflow-hidden">
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px'
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F'
+                        }}
+                      ></div>
+                    </div>
+
                     {/* Gradient Ellipse */}
                     <div
                       className="absolute w-[588px] h-[588px] z-0"
@@ -143,6 +177,23 @@ export default function CryptoTradingBootcampPage() {
                 <div className="grid grid-cols-2 gap-5">
                   {/* Interactive Card */}
                   <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-6 relative overflow-hidden">
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px'
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F'
+                        }}
+                      ></div>
+                    </div>
+
                     {/* Gradient Ellipse */}
                     <div
                       className="absolute w-[588px] h-[588px] z-0"
@@ -174,6 +225,23 @@ export default function CryptoTradingBootcampPage() {
 
                   {/* Certificate Card */}
                   <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-4 relative overflow-hidden">
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px'
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F'
+                        }}
+                      ></div>
+                    </div>
+
                     {/* Gradient Ellipse */}
                     <div
                       className="absolute w-[588px] h-[588px] z-0"
@@ -206,6 +274,23 @@ export default function CryptoTradingBootcampPage() {
 
                 {/* Registration Card */}
                 <div className="bg-[#1F1F1F] rounded-2xl p-7 flex items-center justify-between gap-4 relative overflow-hidden">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+
                   {/* Gradient Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] z-0"
@@ -259,9 +344,26 @@ export default function CryptoTradingBootcampPage() {
               {/* Mentor Cards */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
                 {/* Mentor Card 1 - Adnan */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4">
+                <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4 relative">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+
                   {/* Profile Image */}
-                  <div className="w-16 h-16 rounded-full overflow-hidden relative">
+                  <div className="w-16 h-16 rounded-full overflow-hidden relative z-10">
                     <Image
                       src="/team dark/Adnan.png"
                       alt="Adnan"
@@ -272,7 +374,7 @@ export default function CryptoTradingBootcampPage() {
                   </div>
 
                   {/* Mentor Info */}
-                  <div className="flex flex-col items-start gap-2 w-full">
+                  <div className="flex flex-col items-start gap-2 w-full relative z-10">
                     {/* Name */}
                     <h3 className="text-lg sm:text-xl text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
                       Adnan
@@ -294,9 +396,26 @@ export default function CryptoTradingBootcampPage() {
                 </div>
 
                 {/* Mentor Card 2 - Assassin */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4">
+                <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4 relative">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+
                   {/* Profile Image */}
-                  <div className="w-16 h-16 rounded-full overflow-hidden relative">
+                  <div className="w-16 h-16 rounded-full overflow-hidden relative z-10">
                     <Image
                       src="/team dark/Assassin.png"
                       alt="Assassin"
@@ -307,7 +426,7 @@ export default function CryptoTradingBootcampPage() {
                   </div>
 
                   {/* Mentor Info */}
-                  <div className="flex flex-col items-start gap-2 w-full">
+                  <div className="flex flex-col items-start gap-2 w-full relative z-10">
                     {/* Name */}
                     <h3 className="text-lg sm:text-xl text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
                       Assassin
@@ -355,6 +474,23 @@ export default function CryptoTradingBootcampPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
                 {/* Week 1-2: Crypto Fundamentals */}
                 <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+
                   {/* Background Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] z-0"
@@ -417,6 +553,23 @@ export default function CryptoTradingBootcampPage() {
 
                 {/* Week 3-4: Technical Analysis */}
                 <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+
                   {/* Background Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] z-0"
@@ -479,6 +632,23 @@ export default function CryptoTradingBootcampPage() {
 
                 {/* Week 5-6: Advanced Strategies */}
                 <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+
                   {/* Background Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] z-0"
@@ -549,6 +719,23 @@ export default function CryptoTradingBootcampPage() {
         <div className="w-full px-4 sm:px-6 lg:px-6">
           <div className="mx-auto max-w-[1064px]">
             <div className="bg-[#1F1F1F] rounded-2xl p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+              {/* Curved Gradient Border */}
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  borderRadius: '16px',
+                  background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                  padding: '1px'
+                }}
+              >
+                <div
+                  className="w-full h-full rounded-[15px]"
+                  style={{
+                    background: '#1F1F1F'
+                  }}
+                ></div>
+              </div>
+
               {/* Background Ellipse */}
               <div
                 className="absolute w-[588px] h-[588px] z-0"

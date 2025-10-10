@@ -72,10 +72,10 @@ export async function GET(request: NextRequest) {
         // Parse the UTC time from Calendly
         const utcDate = new Date(slot.start_time);
         
-        // Get date in YYYY-MM-DD format (in UTC to match calendar)
-        const year = utcDate.getUTCFullYear();
-        const month = String(utcDate.getUTCMonth() + 1).padStart(2, '0');
-        const day = String(utcDate.getUTCDate()).padStart(2, '0');
+        // Get date in YYYY-MM-DD format (use local date to match frontend calendar)
+        const year = utcDate.getFullYear();
+        const month = String(utcDate.getMonth() + 1).padStart(2, '0');
+        const day = String(utcDate.getDate()).padStart(2, '0');
         const date = `${year}-${month}-${day}`;
         
         // Format time consistently (keep as UTC for reference)
@@ -95,6 +95,20 @@ export async function GET(request: NextRequest) {
         const dateTimeKey = `${date}|${time}`;
         slotUrlsByDateTime[dateTimeKey] = slot.scheduling_url;
         rawSlotsByDateTime[dateTimeKey] = slot.start_time; // Store ISO timestamp
+        
+        // Debug logging for first few slots
+        if (Object.keys(slotUrlsByDateTime).length <= 5) {
+          console.log('API slot processing:', {
+            rawTimestamp: slot.start_time,
+            localDate: date,
+            utcHours: hours,
+            utcMinutes: minutes,
+            formattedTime: time,
+            dateTimeKey: dateTimeKey,
+            schedulingUrl: slot.scheduling_url,
+            urlContainsTime: slot.scheduling_url.includes(slot.start_time.split('T')[0])
+          });
+        }
       });
     }
 
@@ -105,7 +119,9 @@ export async function GET(request: NextRequest) {
       availableDatesCount: availableDates.length,
       availableDates,
       sampleDate: availableDates[0],
-      sampleTimes: availableDates[0] ? availabilityByDate[availableDates[0]] : []
+      sampleTimes: availableDates[0] ? availabilityByDate[availableDates[0]] : [],
+      sampleSlotUrls: availableDates[0] ? Object.keys(slotUrlsByDateTime).filter(key => key.startsWith(availableDates[0])).slice(0, 3) : [],
+      sampleRawTimestamps: availableDates[0] ? Object.keys(rawSlotsByDateTime).filter(key => key.startsWith(availableDates[0])).slice(0, 3) : []
     });
 
     return NextResponse.json({

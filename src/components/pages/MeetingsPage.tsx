@@ -546,6 +546,8 @@ const MeetingsPage: React.FC = () => {
                 console.log('Received availability data:', data);
                 setAvailableDates(data.availableDates || []);
                 setAvailableTimesByDate(data.availabilityByDate || {});
+                setSlotUrlsByDateTime(data.slotUrls || {});
+                setRawTimestampsByDateTime(data.rawTimestamps || {});
             } else {
                 console.error('Failed to fetch availability:', response.status, await response.text());
             }
@@ -783,33 +785,19 @@ const MeetingsPage: React.FC = () => {
                 
                 // For Assassin (ID: 1), open Calendly popup widget
                 if (selectedAnalyst === 1 && selectedDate && selectedTime) {
-                    // Find the UTC time that corresponds to the selected (possibly converted) time
-                    let utcTimeForSlot = selectedTime;
-                    let schedulingUrl = slotUrlsByDateTime[`${selectedDate}|${selectedTime}`];
+                    // Find the scheduling URL directly from the time slot objects
+                    const selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
+                    const schedulingUrl = selectedSlot?.schedulingUrl;
                     
-                    // If timezone is selected and URL not found, the time might be converted
-                    // We need to find the original UTC time
-                    if (!schedulingUrl && selectedTimezone && availableTimesByDate[selectedDate]) {
-                        const utcTimes = availableTimesByDate[selectedDate];
-                        for (const utcTime of utcTimes) {
-                            const convertedTime = convertTimeToTimezone(utcTime, selectedTimezone);
-                            if (convertedTime === selectedTime) {
-                                utcTimeForSlot = utcTime;
-                                schedulingUrl = slotUrlsByDateTime[`${selectedDate}|${utcTime}`];
-                                break;
-                            }
-                        }
-                    }
-                    
-                    const dateTimeKey = `${selectedDate}|${utcTimeForSlot}`;
-                    
-                    console.log('Looking for scheduling URL:', { 
-                        selectedTime, 
-                        utcTimeForSlot,
-                        dateTimeKey, 
-                        schedulingUrl 
+                    console.log('=== BOOKING FLOW DEBUG ===');
+                    console.log('1. User Selection:', {
+                        selectedDate,
+                        selectedTime,
+                        selectedTimezone
                     });
-                    console.log('Available slots:', Object.keys(slotUrlsByDateTime).slice(0, 5));
+                    console.log('2. Selected Slot:', selectedSlot);
+                    console.log('3. Scheduling URL:', schedulingUrl);
+                    console.log('=== END DEBUG ===');
                     
                     if (schedulingUrl) {
                         // Build URL with pre-filled information
@@ -820,7 +808,13 @@ const MeetingsPage: React.FC = () => {
                             bookingUrl.searchParams.append('a1', notes);
                         }
                         
-                        console.log('Opening Calendly popup with pre-filled info:', bookingUrl.toString());
+                        console.log('Calendly booking details:', {
+                            originalSchedulingUrl: schedulingUrl,
+                            finalBookingUrl: bookingUrl.toString(),
+                            selectedTime: selectedTime,
+                            timezone: selectedTimezone,
+                            selectedSlot: selectedSlot
+                        });
                         
                         // Open Calendly popup widget
                         if (typeof window !== 'undefined' && (window as any).Calendly) {
@@ -867,7 +861,7 @@ const MeetingsPage: React.FC = () => {
                         }
                         return;
                     } else {
-                        console.error('No scheduling URL found for selected date/time:', dateTimeKey);
+                        console.error('No scheduling URL found for selected time:', selectedTime, 'Slot:', selectedSlot);
                         alert('Unable to find the selected time slot. Please try selecting a different time.');
                         return;
                     }
@@ -995,6 +989,7 @@ const MeetingsPage: React.FC = () => {
     };
 
     const formatDate = (date: Date) => {
+        // Use local date to match user's calendar selection
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
@@ -1055,6 +1050,7 @@ const MeetingsPage: React.FC = () => {
         // Parse the UTC time (format: "H:MM AM/PM")
         const utcDate = new Date(rawTimestampsByDateTime[`${selectedDate}|${utcTimeStr}`]);
         if (!utcDate || isNaN(utcDate.getTime())) {
+            console.warn('Could not parse UTC date for time conversion:', { utcTimeStr, selectedDate, rawTimestamp: rawTimestampsByDateTime[`${selectedDate}|${utcTimeStr}`] });
             return utcTimeStr; // Return original if can't parse
         }
         
@@ -1073,49 +1069,103 @@ const MeetingsPage: React.FC = () => {
         
         const offset = timezoneOffsets[timezoneValue] || 0;
         
-        // Apply timezone offset
-        const localDate = new Date(utcDate.getTime() + (offset * 3600000));
+        // Apply timezone offset to get local time
+        // Note: Positive offset means ahead of UTC, so we ADD the offset to get local time
+        const localTime = new Date(utcDate.getTime() + (offset * 3600000));
         
-        // Format the converted time
-        const hours = localDate.getUTCHours();
-        const minutes = localDate.getUTCMinutes();
+        console.log('Timezone offset calculation:', {
+            timezone: timezoneValue,
+            offset,
+            utcTime: utcDate.toISOString(),
+            calculation: `UTC + ${offset} hours`,
+            result: localTime.toISOString()
+        });
+        
+        // Format the converted time using UTC methods (since we manually applied offset)
+        const hours = localTime.getUTCHours();
+        const minutes = localTime.getUTCMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
         const displayHours = hours % 12 || 12;
         const displayMinutes = String(minutes).padStart(2, '0');
         
-        return `${displayHours}:${displayMinutes} ${ampm}`;
+        const convertedTime = `${displayHours}:${displayMinutes} ${ampm}`;
+        
+        // Check if the date changed after timezone conversion
+        const utcYear = utcDate.getUTCFullYear();
+        const utcMonth = String(utcDate.getUTCMonth() + 1).padStart(2, '0');
+        const utcDay = String(utcDate.getUTCDate()).padStart(2, '0');
+        const utcDateStr = `${utcYear}-${utcMonth}-${utcDay}`;
+        
+        const localYear = localTime.getUTCFullYear();
+        const localMonth = String(localTime.getUTCMonth() + 1).padStart(2, '0');
+        const localDay = String(localTime.getUTCDate()).padStart(2, '0');
+        const localDateStr = `${localYear}-${localMonth}-${localDay}`;
+        
+        // Debug logging
+        console.log('Time conversion:', {
+            originalUTC: utcTimeStr,
+            timezone: timezoneValue,
+            offset,
+            utcTimestamp: utcDate.toISOString(),
+            localTimestamp: localTime.toISOString(),
+            convertedTime,
+            utcDateStr,
+            localDateStr,
+            dateCrossed: utcDateStr !== localDateStr,
+            rawTimestamp: rawTimestampsByDateTime[`${selectedDate}|${utcTimeStr}`],
+            dateTimeKey: `${selectedDate}|${utcTimeStr}`,
+            utcHours: utcDate.getUTCHours(),
+            utcMinutes: utcDate.getUTCMinutes(),
+            localHours: localTime.getUTCHours(),
+            localMinutes: localTime.getUTCMinutes()
+        });
+        
+        return convertedTime;
     };
 
-    // Get time slots based on selected date and convert to selected timezone
-    const getTimeSlots = () => {
+    // Get time slot objects with display time and scheduling URL
+    const getTimeSlotObjects = (): Array<{ displayTime: string; schedulingUrl: string; utcTime: string }> => {
         // For Assassin with Calendly integration
         if (selectedAnalyst === 1 && selectedDate && availableTimesByDate[selectedDate]) {
             const utcTimes = availableTimesByDate[selectedDate];
             
-            // If timezone is selected, convert times
-            if (selectedTimezone) {
-                const convertedTimes = utcTimes.map(utcTime => 
-                    convertTimeToTimezone(utcTime, selectedTimezone)
-                );
-                console.log('Returning converted Calendly time slots for', selectedDate, ':', convertedTimes);
-                return convertedTimes;
-            }
+            // Map each UTC time to an object with display time and URL
+            const slots = utcTimes.map(utcTime => {
+                const dateTimeKey = `${selectedDate}|${utcTime}`;
+                const schedulingUrl = slotUrlsByDateTime[dateTimeKey] || '';
+                
+                // If timezone is selected, convert the display time
+                const displayTime = selectedTimezone 
+                    ? convertTimeToTimezone(utcTime, selectedTimezone)
+                    : utcTime;
+                
+                return {
+                    displayTime,
+                    schedulingUrl,
+                    utcTime
+                };
+            });
             
-            console.log('Returning UTC Calendly time slots for', selectedDate, ':', utcTimes);
-            return utcTimes;
+            console.log('Time slot objects:', slots.slice(0, 3));
+            return slots;
         }
         
-        console.log('Using default time slots. Assassin?', selectedAnalyst === 1, 'Selected date:', selectedDate, 'Has times?', !!availableTimesByDate[selectedDate]);
-        
-        // Default time slots for other analysts
-        return [
+        // Default time slots for other analysts (no Calendly URLs)
+        const defaultTimes = [
             '9:00 AM', '10:00 AM', '11:30 AM', '12:30 PM', 
             '1:30 PM', '2:00 PM', '2:30 PM', '5:30 PM'
         ];
+        return defaultTimes.map(time => ({ displayTime: time, schedulingUrl: '', utcTime: time }));
+    };
+
+    // Get time slots based on selected date and convert to selected timezone
+    const getTimeSlots = () => {
+        return getTimeSlotObjects().map(slot => slot.displayTime);
     };
 
     // Available time slots
     const timeSlots = getTimeSlots();
+    const timeSlotObjects = getTimeSlotObjects();
 
     const handleTimeSelect = (time: string) => {
         setSelectedTime(time);
@@ -2243,22 +2293,22 @@ const MeetingsPage: React.FC = () => {
                                                 gap: window.innerWidth < 480 ? '8px' : window.innerWidth < 640 ? '10px' : undefined
                                             }}
                                         >
-                                        {timeSlots.map((time, index) => (
+                                        {timeSlotObjects.map((slot, index) => (
                                             <button
-                                                key={time}
-                                                onClick={() => handleTimeSelect(time)}
+                                                key={slot.displayTime}
+                                                onClick={() => handleTimeSelect(slot.displayTime)}
                                                 className={`
                                                         font-medium transition-all duration-200 relative z-20 focus:outline-none focus:ring-0
                                                         lg:text-xs lg:w-full lg:py-2 lg:px-3 lg:rounded-lg lg:h-auto
                                                         sm:w-full
                                                         ${window.innerWidth < 480 ? 'text-[10px]' : window.innerWidth < 640 ? 'text-xs' : 'text-xs'}
-                                                    ${selectedTime === time
+                                                    ${selectedTime === slot.displayTime
                                                         ? 'bg-white text-black border border-white'
                                                             : 'bg-[#0D0D0D] text-white border border-white'
                                                     }
                                                 `}
                                                 style={{
-                                                    backgroundColor: selectedTime === time ? 'white' : '#0D0D0D',
+                                                    backgroundColor: selectedTime === slot.displayTime ? 'white' : '#0D0D0D',
                                                     width: window.innerWidth < 480 ? '75px' : window.innerWidth < 640 ? '85px' : '100%',
                                                     height: window.innerWidth < 480 ? '36px' : window.innerWidth < 640 ? '41px' : 'auto',
                                                     paddingTop: window.innerWidth < 480 ? '8px' : window.innerWidth < 640 ? '12px' : undefined,
@@ -2275,17 +2325,17 @@ const MeetingsPage: React.FC = () => {
                                                     lineHeight: window.innerWidth < 640 ? '1.2' : undefined
                                                 }}
                                                 onMouseEnter={(e) => {
-                                                    if (selectedTime !== time) {
+                                                    if (selectedTime !== slot.displayTime) {
                                                         (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
                                                     }
                                                 }}
                                                 onMouseLeave={(e) => {
-                                                    if (selectedTime !== time) {
+                                                    if (selectedTime !== slot.displayTime) {
                                                         (e.target as HTMLButtonElement).style.backgroundColor = '#0D0D0D';
                                                     }
                                                 }}
                                             >
-                                                {time}
+                                                {slot.displayTime}
                                             </button>
                                         ))}
                                         </div>

@@ -13,7 +13,6 @@ export default function CryptoTradingRegisterPage() {
   const [notes, setNotes] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   // Comprehensive email validation (same as NewsletterSubscription)
   const validateEmail = (email: string): boolean => {
@@ -127,14 +126,15 @@ export default function CryptoTradingRegisterPage() {
       const data = await response.json();
 
       if (response.ok) {
-        // Show success modal instead of redirecting
-        setShowSuccessModal(true);
-        setIsSubmitting(false);
-
-        // Clear form
-        setFullName('');
-        setEmail('');
-        setNotes('');
+        // Redirect to bootcamp-success page with bootcamp data
+        const params = new URLSearchParams({
+          bootcamp: 'crypto-trading',
+          name: fullName.trim(),
+          email: email.trim().toLowerCase(),
+          notes: notes.trim() || ''
+        });
+        
+        router.push(`/bootcamp-success?${params.toString()}`);
       } else {
         setEmailError(data.error || 'Failed to process registration. Please try again.');
         setIsSubmitting(false);
@@ -222,7 +222,7 @@ export default function CryptoTradingRegisterPage() {
             {/* Back Button */}
             <button
               onClick={handleBack}
-              className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors w-fit"
+              className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors w-fit cursor-pointer focus:outline-none"
             >
               <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
                 <path d="M10 13L5 8L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -283,8 +283,8 @@ export default function CryptoTradingRegisterPage() {
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Enter Name"
-                      className="w-full bg-transparent text-white placeholder:text-white/30 border border-white/30 rounded-lg px-4 py-3 focus:outline-none focus:border-white/50 transition-colors"
-                      style={{fontFamily: 'Gilroy-Medium', fontSize: '14px', lineHeight: '100%'}}
+                      className="w-full bg-transparent text-white placeholder:text-white/30 border border-white/30 rounded-lg px-4 py-3 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 outline-none transition-colors"
+                      style={{fontFamily: 'Gilroy-Medium', fontSize: '14px', lineHeight: '100%', outline: 'none', boxShadow: 'none'}}
                     />
                   </div>
 
@@ -301,8 +301,8 @@ export default function CryptoTradingRegisterPage() {
                       value={email}
                       onChange={handleEmailChange}
                       placeholder="abc@example.com"
-                      className="w-full bg-transparent text-white placeholder:text-white/30 border border-white/30 rounded-lg px-4 py-3 focus:outline-none focus:border-white/50 transition-colors"
-                      style={{fontFamily: 'Gilroy-Medium', fontSize: '14px', lineHeight: '100%'}}
+                      className="w-full bg-transparent text-white placeholder:text-white/30 border border-white/30 rounded-lg px-4 py-3 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 outline-none transition-colors"
+                      style={{fontFamily: 'Gilroy-Medium', fontSize: '14px', lineHeight: '100%', outline: 'none', boxShadow: 'none'}}
                       disabled={isSubmitting}
                     />
                   </div>
@@ -328,7 +328,7 @@ export default function CryptoTradingRegisterPage() {
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Let us know if you want to discuss specific topics..."
                     rows={3}
-                    className="w-full bg-transparent text-white placeholder:text-white/30 border border-white/30 rounded-lg px-4 py-3 focus:outline-none focus:border-white/50 transition-colors resize-none"
+                    className="w-full bg-transparent text-white placeholder:text-white/30 border border-white/30 rounded-lg px-4 py-3 focus:outline-none focus:ring-0 outline-none transition-colors resize-none"
                     style={{fontFamily: 'Gilroy-Medium', fontSize: '14px', lineHeight: '100%'}}
                     disabled={isSubmitting}
                   />
@@ -512,7 +512,7 @@ export default function CryptoTradingRegisterPage() {
           <div className="hidden lg:flex justify-end gap-2 mt-8 lg:min-w-[380px] lg:max-w-[420px] lg:ml-auto">
             <button
               onClick={handleBack}
-              className="flex items-center justify-center px-4 py-3 border border-white rounded-full text-white hover:bg-white/10 transition-colors"
+              className="flex items-center justify-center px-4 py-3 border border-white rounded-full text-white hover:bg-white/10 transition-colors cursor-pointer focus:outline-none"
               style={{fontFamily: 'Gilroy-SemiBold', minWidth: '187px'}}
               disabled={isSubmitting}
             >
@@ -524,9 +524,14 @@ export default function CryptoTradingRegisterPage() {
               className={`flex items-center justify-center px-4 py-3 rounded-full font-semibold transition-all duration-300 ${
                 isFormValid && !isSubmitting
                   ? 'bg-white text-black hover:bg-gray-200'
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed border border-gray-600'
+                  : 'cursor-not-allowed'
               }`}
-              style={{fontFamily: 'Gilroy-SemiBold', minWidth: '187px'}}
+              style={{
+                fontFamily: 'Gilroy-SemiBold', 
+                minWidth: '187px',
+                backgroundColor: isFormValid && !isSubmitting ? undefined : '#909090',
+                color: isFormValid && !isSubmitting ? undefined : '#404040'
+              }}
             >
               {isSubmitting ? 'Processing...' : 'Continue'}
             </button>
@@ -536,7 +541,7 @@ export default function CryptoTradingRegisterPage() {
           <div className="flex lg:hidden w-full gap-2 mt-8">
             <button
               onClick={handleBack}
-              className="flex-1 flex items-center justify-center py-3 border border-white rounded-full text-white hover:bg-white/10 transition-colors"
+              className="flex-1 flex items-center justify-center py-3 border border-white rounded-full text-white hover:bg-white/10 transition-colors cursor-pointer focus:outline-none"
               style={{fontFamily: 'Gilroy-SemiBold'}}
               disabled={isSubmitting}
             >
@@ -548,54 +553,19 @@ export default function CryptoTradingRegisterPage() {
               className={`flex-1 flex items-center justify-center px-4 py-3 rounded-full font-semibold transition-all duration-300 ${
                 isFormValid && !isSubmitting
                   ? 'bg-white text-black hover:bg-gray-200'
-                  : 'bg-gray-700 text-gray-500 cursor-not-allowed border border-gray-600'
+                  : 'cursor-not-allowed'
               }`}
-              style={{fontFamily: 'Gilroy-SemiBold'}}
+              style={{
+                fontFamily: 'Gilroy-SemiBold',
+                backgroundColor: isFormValid && !isSubmitting ? undefined : '#909090',
+                color: isFormValid && !isSubmitting ? undefined : '#404040'
+              }}
             >
               {isSubmitting ? 'Processing...' : 'Continue'}
             </button>
           </div>
         </div>
       </div>
-
-      {/* Success Modal */}
-      {showSuccessModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-[#1F1F1F] rounded-2xl p-8 max-w-md w-full mx-4 border border-white/10 shadow-2xl">
-            {/* Success Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
-                <svg className="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-
-            {/* Success Message */}
-            <h3
-              className="text-2xl text-white text-center mb-3"
-              style={{fontFamily: 'Gilroy-SemiBold', fontWeight: 400, lineHeight: '120%'}}
-            >
-              Registration Successful!
-            </h3>
-            <p
-              className="text-sm text-[#909090] text-center mb-8"
-              style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '140%'}}
-            >
-              Thank you for registering for the Crypto Trading Bootcamp. We&apos;ve received your information and will contact you shortly with further details.
-            </p>
-
-            {/* Close Button */}
-            <button
-              onClick={() => setShowSuccessModal(false)}
-              className="w-full bg-white text-black py-3 rounded-full hover:bg-gray-200 transition-colors"
-              style={{fontFamily: 'Gilroy-SemiBold'}}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

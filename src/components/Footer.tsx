@@ -130,7 +130,7 @@ const Footer = () => {
 
         {/* Right Section: Navigation Links */}
         <div className="mt-2 md:mt-0">
-          <h3 className="text-xl font-semibold ">Navigation</h3>
+          <h3 className="text-xl font-semibold ">General</h3>
           <ul className="space-y-1">
             <li><Link href="/#about"><span className="text-gray-300 hover:text-white transition-colors duration-200">About</span></Link></li>
             <li><Link href="/#social-stats"><span className="text-gray-300 hover:text-white transition-colors duration-200">Community</span></Link></li>

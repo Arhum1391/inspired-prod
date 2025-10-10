@@ -1201,12 +1201,12 @@ const MeetingsPage: React.FC = () => {
             <div 
                 className="md:hidden absolute bottom-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-100"
                 style={{
-                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                    background: 'linear-gradient(107.68deg, rgba(23, 64, 136, 1) 9.35%, rgba(23, 64, 136, 1) 34.7%, rgba(23, 64, 136, 1) 60.06%, rgba(23, 64, 136, 0.9) 72.73%, rgba(23, 64, 136, 0.8) 88.58%)',
                     transform: 'rotate(-45deg) translate(250px, 250px)',
                     transformOrigin: 'bottom right',
                     borderRadius: '50%',
-                    maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+                    maskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
                     filter: 'blur(150px)',
                     WebkitFilter: 'blur(150px)'
                 }}
@@ -1250,9 +1250,9 @@ const MeetingsPage: React.FC = () => {
                 <div 
                     className="md:hidden absolute top-0 left-0 w-[588px] h-[588px] pointer-events-none opacity-100"
                     style={{
-                        transform: 'rotate(0deg) translate(-300px, -350px)',
+                        transform: 'rotate(0deg) translate(-280px, -330px)',
                         transformOrigin: 'top left',
-                        background: 'linear-gradient(107.68deg, rgba(75, 37, 253, 0.8) 9.35%, rgba(222, 80, 236, 0.7) 34.7%, rgba(138, 43, 226, 0.6) 60.06%, rgba(147, 112, 219, 0.5) 72.73%, rgba(186, 85, 211, 0.4) 88.58%)',
+                        background: 'linear-gradient(107.68deg, rgba(110, 77, 136, 1) 9.35%, rgba(110, 77, 136, 0.9) 34.7%, rgba(110, 77, 136, 0.8) 60.06%, rgba(110, 77, 136, 0.7) 72.73%, rgba(110, 77, 136, 0.6) 88.58%)',
                         filter: 'blur(120px)',
                         maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
                         WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)'
@@ -1265,12 +1265,12 @@ const MeetingsPage: React.FC = () => {
                 <div 
                     className="md:hidden absolute bottom-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-100"
                     style={{
-                        background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                        background: 'linear-gradient(107.68deg, rgba(23, 64, 136, 1) 9.35%, rgba(23, 64, 136, 1) 34.7%, rgba(23, 64, 136, 1) 60.06%, rgba(23, 64, 136, 0.9) 72.73%, rgba(23, 64, 136, 0.8) 88.58%)',
                         transform: 'rotate(-45deg) translate(250px, 250px)',
                         transformOrigin: 'bottom right',
                         borderRadius: '50%',
-                        maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
-                        WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+                        maskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
+                        WebkitMaskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
                         filter: 'blur(150px)',
                         WebkitFilter: 'blur(150px)'
                     }}
@@ -1282,9 +1282,9 @@ const MeetingsPage: React.FC = () => {
                 <div 
                     className="md:hidden absolute top-0 left-0 w-[588px] h-[588px] pointer-events-none opacity-100"
                     style={{
-                        transform: 'rotate(0deg) translate(-300px, -350px)',
+                        transform: 'rotate(0deg) translate(-280px, -330px)',
                         transformOrigin: 'top left',
-                        background: 'linear-gradient(107.68deg, rgba(75, 37, 253, 0.8) 9.35%, rgba(222, 80, 236, 0.7) 34.7%, rgba(138, 43, 226, 0.6) 60.06%, rgba(147, 112, 219, 0.5) 72.73%, rgba(186, 85, 211, 0.4) 88.58%)',
+                        background: 'linear-gradient(107.68deg, rgba(110, 77, 136, 1) 9.35%, rgba(110, 77, 136, 0.9) 34.7%, rgba(110, 77, 136, 0.8) 60.06%, rgba(110, 77, 136, 0.7) 72.73%, rgba(110, 77, 136, 0.6) 88.58%)',
                         filter: 'blur(120px)',
                         maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
                         WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)'
@@ -1297,9 +1297,9 @@ const MeetingsPage: React.FC = () => {
                 <div 
                     className="md:hidden absolute top-0 left-0 w-[588px] h-[588px] pointer-events-none opacity-100"
                     style={{
-                        transform: 'rotate(0deg) translate(-300px, -350px)',
+                        transform: 'rotate(0deg) translate(-280px, -330px)',
                         transformOrigin: 'top left',
-                        background: 'linear-gradient(107.68deg, rgba(75, 37, 253, 0.8) 9.35%, rgba(222, 80, 236, 0.7) 34.7%, rgba(138, 43, 226, 0.6) 60.06%, rgba(147, 112, 219, 0.5) 72.73%, rgba(186, 85, 211, 0.4) 88.58%)',
+                        background: 'linear-gradient(107.68deg, rgba(110, 77, 136, 1) 9.35%, rgba(110, 77, 136, 0.9) 34.7%, rgba(110, 77, 136, 0.8) 60.06%, rgba(110, 77, 136, 0.7) 72.73%, rgba(110, 77, 136, 0.6) 88.58%)',
                         filter: 'blur(120px)',
                         maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
                         WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)'
@@ -2450,18 +2450,18 @@ const MeetingsPage: React.FC = () => {
 
                     {/* Action Buttons */}
                     {currentStep !== 1 && (
-                    <div className="mt-12 flex justify-end gap-4">
+                    <div className="mt-12 flex justify-end gap-4 relative z-[9999]">
                             {(currentStep === 2 || currentStep === 3) && (
                             <button
                                 onClick={handleBack}
-                                className="w-44 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white border border-white hover:border-gray-300 focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20"
+                                className="w-44 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white border border-white hover:border-gray-300 focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-[9999]"
                                 style={{ 
                                     outline: 'none', 
-                                    boxShadow: 'none',
-                                    backgroundColor: 'black'
+                                    boxShadow: window.innerWidth < 768 ? '0 4px 20px rgba(0, 0, 0, 0.8)' : 'none',
+                                    backgroundColor: 'rgb(0, 0, 0)'
                                 }}
                                 onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
-                                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'black'}
+                                onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgb(0, 0, 0)'}
                                 onFocus={(e) => e.target.blur()}
                             >
                                 Back
@@ -2470,13 +2470,12 @@ const MeetingsPage: React.FC = () => {
                         <button
                             onClick={handleContinue}
                             disabled={isContinueDisabled}
-                            className={`w-44 py-3 rounded-3xl font-semibold transition-all duration-300 relative z-20
-                            ${isContinueDisabled ? 'text-gray-500 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
+                            className={`w-44 py-3 rounded-3xl font-semibold transition-all duration-300 relative z-[9999]
+                            ${isContinueDisabled ? 'text-gray-600 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
                             style={{ 
-                                opacity: isContinueDisabled ? 0.5 : 1,
-                                backgroundColor: isContinueDisabled ? 'rgba(210, 210, 210, 1)' : 'rgba(255, 255, 255, 0.95)',
+                                backgroundColor: isContinueDisabled ? 'rgba(255, 255, 255, 0.62)' : 'rgb(255, 255, 255)',
                                 outline: 'none',
-                                boxShadow: 'none'
+                                boxShadow: window.innerWidth < 768 ? '0 4px 20px rgba(0, 0, 0, 0.8)' : 'none'
                             }}
                         >
                                 {currentStep === 3 ? 'Continue' : 'Proceed to Pay'}

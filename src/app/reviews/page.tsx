@@ -105,9 +105,9 @@ const ReviewsContent: React.FC = () => {
             <div 
                 className="md:hidden absolute top-0 left-0 w-[588px] h-[588px] pointer-events-none opacity-100"
                 style={{
-                    transform: 'rotate(0deg) translate(-300px, -350px)',
+                    transform: 'rotate(0deg) translate(-280px, -330px)',
                     transformOrigin: 'top left',
-                    background: 'linear-gradient(107.68deg, rgba(75, 37, 253, 0.8) 9.35%, rgba(222, 80, 236, 0.7) 34.7%, rgba(138, 43, 226, 0.6) 60.06%, rgba(147, 112, 219, 0.5) 72.73%, rgba(186, 85, 211, 0.4) 88.58%)',
+                    background: 'linear-gradient(107.68deg, rgba(110, 77, 136, 1) 9.35%, rgba(110, 77, 136, 0.9) 34.7%, rgba(110, 77, 136, 0.8) 60.06%, rgba(110, 77, 136, 0.7) 72.73%, rgba(110, 77, 136, 0.6) 88.58%)',
                     filter: 'blur(120px)',
                     maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
                     WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)'
@@ -118,12 +118,12 @@ const ReviewsContent: React.FC = () => {
             <div 
                 className="md:hidden absolute bottom-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-100"
                 style={{
-                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                    background: 'linear-gradient(107.68deg, rgba(23, 64, 136, 1) 9.35%, rgba(23, 64, 136, 1) 34.7%, rgba(23, 64, 136, 1) 60.06%, rgba(23, 64, 136, 0.9) 72.73%, rgba(23, 64, 136, 0.8) 88.58%)',
                     transform: 'rotate(-45deg) translate(250px, 250px)',
                     transformOrigin: 'bottom right',
                     borderRadius: '50%',
-                    maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
-                    WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+                    maskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
+                    WebkitMaskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
                     filter: 'blur(150px)',
                     WebkitFilter: 'blur(150px)'
                 }}
@@ -846,8 +846,12 @@ const ReviewsContent: React.FC = () => {
                                             {currentPage > 1 && (
                                                 <button
                                                     onClick={() => handlePageChange(currentPage - 1)}
-                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800 focus:outline-none focus:ring-0`}
-                                                    style={{ outline: 'none', boxShadow: 'none' }}
+                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded bg-black'} flex items-center justify-center transition-colors text-white border border-white hover:bg-gray-800 focus:outline-none focus:ring-0`}
+                                                    style={{ 
+                                                        outline: 'none', 
+                                                        boxShadow: 'none',
+                                                        backgroundColor: isMobile ? 'rgba(0, 0, 0, 0.1)' : undefined
+                                                    }}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -862,11 +866,17 @@ const ReviewsContent: React.FC = () => {
                                                 key={page}
                                                 onClick={() => handlePageChange(page)}
                                                 className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center text-sm font-medium transition-colors border focus:outline-none focus:ring-0 ${
-                                                    currentPage === page
-                                                        ? 'bg-white text-black border-white'
-                                                        : 'bg-black text-white border-white hover:bg-gray-800'
+                                                    isMobile 
+                                                        ? (currentPage === page ? 'text-black border-white' : 'text-white border-white hover:bg-gray-800')
+                                                        : (currentPage === page ? 'bg-white text-black border-white' : 'bg-black text-white border-white hover:bg-gray-800')
                                                 }`}
-                                                style={{ outline: 'none', boxShadow: 'none' }}
+                                                style={{ 
+                                                    outline: 'none', 
+                                                    boxShadow: 'none',
+                                                    backgroundColor: isMobile 
+                                                        ? (currentPage === page ? 'rgb(255, 255, 255)' : 'rgba(0, 0, 0, 0.1)')
+                                                        : undefined
+                                                }}
                                             >
                                                 {page}
                                             </button>
@@ -877,8 +887,12 @@ const ReviewsContent: React.FC = () => {
                                             {currentPage < totalPages && (
                                                 <button
                                                     onClick={() => handlePageChange(currentPage + 1)}
-                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center transition-colors bg-black text-white border border-white hover:bg-gray-800 focus:outline-none focus:ring-0`}
-                                                    style={{ outline: 'none', boxShadow: 'none' }}
+                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded bg-black'} flex items-center justify-center transition-colors text-white border border-white hover:bg-gray-800 focus:outline-none focus:ring-0`}
+                                                    style={{ 
+                                                        outline: 'none', 
+                                                        boxShadow: 'none',
+                                                        backgroundColor: isMobile ? 'rgba(0, 0, 0, 0.1)' : undefined
+                                                    }}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -64,6 +64,23 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
     };
   }, [isMobileMenuOpen]);
 
+  // Handle mobile viewport height for Safari
+  useEffect(() => {
+    const setVH = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+    
+    setVH();
+    window.addEventListener('resize', setVH);
+    window.addEventListener('orientationchange', setVH);
+    
+    return () => {
+      window.removeEventListener('resize', setVH);
+      window.removeEventListener('orientationchange', setVH);
+    };
+  }, []);
+
   // Different padding based on variant - consistent mobile padding
   const paddingClass = variant === 'hero'
     ? "py-4 sm:py-4"
@@ -225,7 +242,11 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
           ></div>
 
           {/* Sidebar */}
-          <div className="fixed top-0 left-0 h-full min-h-screen w-[253px] bg-[#1F1F1F] lg:hidden flex flex-col shadow-2xl" style={{ zIndex: 10001 }}>
+          <div className="fixed top-0 left-0 w-[253px] bg-[#1F1F1F] lg:hidden flex flex-col shadow-2xl" style={{ 
+            zIndex: 10001,
+            height: 'calc(var(--vh, 1vh) * 100)',
+            minHeight: '100vh'
+          }}>
             {/* Logo Section */}
             <div className="px-6 pt-8 pb-6">
               <div className="flex items-center">

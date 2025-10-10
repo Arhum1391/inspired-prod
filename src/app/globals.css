@@ -1,8 +1,6 @@
 @import "tailwindcss";
-@import url('https://fonts.cdnfonts.com/css/gilroy-bold');
-@import url('https://db.onlinewebfonts.com/c/1dc8ecd8056a5ea7aa7de1db42b5b639?family=Gilroy-Regular');
 
-/* Import Gilroy font from CDN */
+/* Gilroy fonts are loaded via <link> tags in layout.tsx */
 
 :root {
   --background: #0A0A0A;

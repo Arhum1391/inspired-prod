@@ -66,7 +66,7 @@ export default function BootcampPage() {
               {/* Row 1 */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {/* Card 1: Crypto Trading Bootcamp */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
                   {/* Gradient Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] left-[399px] top-[-326px] z-0 rotate-90"
@@ -80,7 +80,36 @@ export default function BootcampPage() {
                   {/* Title and Price */}
                   <div className="flex items-start justify-between gap-6 relative z-10">
                     <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Crypto Trading Bootcamp</h3>
-                    <span className="bg-[#0A0A0A] rounded-full px-3 py-2 text-xs text-white" style={{fontFamily: 'Gilroy', fontWeight: 500}}>30 BNB</span>
+                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
+                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                      <div 
+                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
+                        style={{
+                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                          borderRadius: '50% 0 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Top Border Glint */}
+                      <div 
+                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
+                          borderRadius: '50% 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Right Border Glint */}
+                      <div 
+                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                          borderRadius: '0 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
+                    </div>
                   </div>
 
                   {/* Description */}
@@ -105,14 +134,23 @@ export default function BootcampPage() {
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
 
                   {/* Buttons */}
-                  <div className="flex gap-4 relative z-10">
-                    <Link href="/bootcamp/crypto-trading" className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Learn More</Link>
+                  <div className="flex gap-4 relative z-10 mt-auto">
+                    <Link href="/bootcamp/crypto-trading" className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                      Learn More
+                      <Image 
+                        src="/logo/backhome.png" 
+                        alt="Arrow" 
+                        width={20}
+                        height={20}
+                        className="w-5 h-5"
+                      />
+                    </Link>
                     <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
                   </div>
                 </div>
 
                 {/* Card 2: AI & Data for Finance */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
                   {/* Gradient Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] z-0"
@@ -128,10 +166,39 @@ export default function BootcampPage() {
 
                   <div className="flex items-start justify-between gap-6 relative z-10">
                     <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>AI & Data for Finance</h3>
-                    <span className="bg-[#0A0A0A] rounded-full px-3 py-2 text-xs text-white" style={{fontFamily: 'Gilroy', fontWeight: 500}}>30 BNB</span>
+                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
+                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                      <div 
+                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
+                        style={{
+                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                          borderRadius: '50% 0 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Top Border Glint */}
+                      <div 
+                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
+                          borderRadius: '50% 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Right Border Glint */}
+                      <div 
+                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                          borderRadius: '0 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
+                    </div>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Explore the power of AI-driven trading, master data analysis techniques, and learn how to build automated systems.
+                    Explore the power of AI-driven trading, master data analysis techniques, and learn how to build automated systems that uncover market opportunities and enhance decision-making.
                   </p>
                   <div className="flex flex-col gap-2 relative z-10">
                     <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
@@ -144,14 +211,23 @@ export default function BootcampPage() {
                     <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Learn More</button>
+                  <div className="flex gap-4 relative z-10 mt-auto">
+                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                      Learn More
+                      <Image 
+                        src="/logo/backhome.png" 
+                        alt="Arrow" 
+                        width={20}
+                        height={20}
+                        className="w-5 h-5"
+                      />
+                    </button>
                     <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
                   </div>
                 </div>
 
                 {/* Card 3: Forex Mastery Mentorship */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
                   {/* Gradient Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] z-0"
@@ -167,10 +243,39 @@ export default function BootcampPage() {
 
                   <div className="flex items-start justify-between gap-6 relative z-10">
                     <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Forex Mastery Mentorship</h3>
-                    <span className="bg-[#0A0A0A] rounded-full px-3 py-2 text-xs text-white" style={{fontFamily: 'Gilroy', fontWeight: 500}}>30 BNB</span>
+                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
+                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                      <div 
+                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
+                        style={{
+                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                          borderRadius: '50% 0 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Top Border Glint */}
+                      <div 
+                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
+                          borderRadius: '50% 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Right Border Glint */}
+                      <div 
+                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                          borderRadius: '0 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
+                    </div>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Learn the fundamentals of forex trading, develop the skills to read live charts with accuracy, and apply advanced strategies.
+                    Learn the fundamentals of forex trading, develop the skills to read live charts with accuracy, and apply advanced strategies to navigate global currency markets with confidence.
                   </p>
                   <div className="flex flex-col gap-2 relative z-10">
                     <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
@@ -182,8 +287,17 @@ export default function BootcampPage() {
                     <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Learn More</button>
+                  <div className="flex gap-4 relative z-10 mt-auto">
+                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                      Learn More
+                      <Image 
+                        src="/logo/backhome.png" 
+                        alt="Arrow" 
+                        width={20}
+                        height={20}
+                        className="w-5 h-5"
+                      />
+                    </button>
                     <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
                   </div>
                 </div>
@@ -192,7 +306,7 @@ export default function BootcampPage() {
               {/* Row 2 */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {/* Card 4: Stock Market Investing Bootcamp */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
                   {/* Gradient Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] left-[399px] top-[-326px] z-0 rotate-90"
@@ -205,10 +319,39 @@ export default function BootcampPage() {
 
                   <div className="flex items-start justify-between gap-6 relative z-10">
                     <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Stock Market Investing Bootcamp</h3>
-                    <span className="bg-[#0A0A0A] rounded-full px-3 py-2 text-xs text-white" style={{fontFamily: 'Gilroy', fontWeight: 500}}>30 BNB</span>
+                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
+                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                      <div 
+                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
+                        style={{
+                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                          borderRadius: '50% 0 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Top Border Glint */}
+                      <div 
+                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
+                          borderRadius: '50% 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Right Border Glint */}
+                      <div 
+                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                          borderRadius: '0 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
+                    </div>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Learn how to build and manage a strong investment portfolio, accurately value companies, and apply long-term wealth-building strategies.
+                    Learn how to build and manage a strong investment portfolio, accurately value companies, and apply long-term wealth-building strategies that stand the test of time.
                   </p>
                   <div className="flex flex-col gap-2 relative z-10">
                     <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
@@ -220,14 +363,23 @@ export default function BootcampPage() {
                     <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Learn More</button>
+                  <div className="flex gap-4 relative z-10 mt-auto">
+                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                      Learn More
+                      <Image 
+                        src="/logo/backhome.png" 
+                        alt="Arrow" 
+                        width={20}
+                        height={20}
+                        className="w-5 h-5"
+                      />
+                    </button>
                     <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
                   </div>
                 </div>
 
                 {/* Card 5: Web3 & Blockchain Mentorship */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
                   {/* Gradient Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] z-0"
@@ -243,10 +395,39 @@ export default function BootcampPage() {
 
                   <div className="flex items-start justify-between gap-6 relative z-10">
                     <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Web3 & Blockchain Mentorship</h3>
-                    <span className="bg-[#0A0A0A] rounded-full px-3 py-2 text-xs text-white" style={{fontFamily: 'Gilroy', fontWeight: 500}}>30 BNB</span>
+                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
+                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                      <div 
+                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
+                        style={{
+                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                          borderRadius: '50% 0 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Top Border Glint */}
+                      <div 
+                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
+                          borderRadius: '50% 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Right Border Glint */}
+                      <div 
+                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                          borderRadius: '0 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
+                    </div>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Take a deep dive into blockchain technology, understand the mechanics of smart contracts, and explore the world of decentralized finance (DeFi).
+                    Take a deep dive into blockchain technology, understand the mechanics of smart contracts, and explore the world of decentralized finance (DeFi) to unlcok real-world applications of Web3.
                   </p>
                   <div className="flex flex-col gap-2 relative z-10">
                     <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
@@ -258,14 +439,23 @@ export default function BootcampPage() {
                     <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Learn More</button>
+                  <div className="flex gap-4 relative z-10 mt-auto">
+                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                      Learn More
+                      <Image 
+                        src="/logo/backhome.png" 
+                        alt="Arrow" 
+                        width={20}
+                        height={20}
+                        className="w-5 h-5"
+                      />
+                    </button>
                     <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
                   </div>
                 </div>
 
                 {/* Card 6: Career Growth in Finance & Tech */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
                   {/* Gradient Ellipse */}
                   <div
                     className="absolute w-[588px] h-[588px] z-0"
@@ -281,10 +471,39 @@ export default function BootcampPage() {
 
                   <div className="flex items-start justify-between gap-6 relative z-10">
                     <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Career Growth in Finance & Tech</h3>
-                    <span className="bg-[#0A0A0A] rounded-full px-3 py-2 text-xs text-white" style={{fontFamily: 'Gilroy', fontWeight: 500}}>30 BNB</span>
+                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
+                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+                      <div 
+                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
+                        style={{
+                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+                          borderRadius: '50% 0 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Top Border Glint */}
+                      <div 
+                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
+                          borderRadius: '50% 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      {/* Enhanced Right Border Glint */}
+                      <div 
+                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
+                        style={{
+                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+                          borderRadius: '0 50% 0 0'
+                        }}
+                      ></div>
+                      
+                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
+                    </div>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Receive personalized career guidance, professional resume reviews, and interview preparation directly from industry mentors.
+                    Receive personalized career guidance, professional resume reviews, and interview preparation directly from industry mentors to help you stand out and achieve your career goals in finance and technology.
                   </p>
                   <div className="flex flex-col gap-2 relative z-10">
                     <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
@@ -296,8 +515,17 @@ export default function BootcampPage() {
                     <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
                   </div>
                   <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Learn More</button>
+                  <div className="flex gap-4 relative z-10 mt-auto">
+                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                      Learn More
+                      <Image 
+                        src="/logo/backhome.png" 
+                        alt="Arrow" 
+                        width={20}
+                        height={20}
+                        className="w-5 h-5"
+                      />
+                    </button>
                     <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
                   </div>
                 </div>
@@ -322,21 +550,55 @@ export default function BootcampPage() {
                 {/* Row 1 */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                   {/* Personalized Roadmap */}
-                  <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-4">
-                    <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
+                  <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-4 relative">
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px'
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F'
+                        }}
+                      ></div>
+                    </div>
+
+                    <h3 className="text-xl text-white relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
                       Personalized Roadmap
                     </h3>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
+                    <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
                       Every learner has unique goals. Whether you want to become a profitable trader, a confident investor, a Web3 innovator, or grow your career in tech, we create a step-by-step mentorship plan tailored to your journey, skills, and aspirations.
                     </p>
                   </div>
 
                   {/* Hands-on Learning */}
-                  <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-4">
-                    <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                  <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-4 relative">
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px'
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F'
+                        }}
+                      ></div>
+                    </div>
+
+                    <h3 className="text-xl text-white relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
                       Hands-on Learning
                     </h3>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
+                    <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
                       Forget outdated theory. Our mentorship is built around real market case studies, live examples, and practical exercises so you can immediately apply what you learn. You&apos;ll gain not just knowledge, but the confidence to use it in real-world scenarios.
                     </p>
                   </div>
@@ -345,21 +607,55 @@ export default function BootcampPage() {
                 {/* Row 2 */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
                   {/* Accountability & Guidance */}
-                  <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-4">
-                    <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                  <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-4 relative">
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px'
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F'
+                        }}
+                      ></div>
+                    </div>
+
+                    <h3 className="text-xl text-white relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
                       Accountability & Guidance
                     </h3>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
+                    <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
                       Success comes with consistency. Through weekly 1-on-1 check-ins, continuous feedback, and structured assignments, your mentor ensures you stay on track, overcome challenges, and make steady progress toward your goals.
                     </p>
                   </div>
 
                   {/* Proven Expertise */}
-                  <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-4">
-                    <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                  <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-4 relative">
+                    {/* Curved Gradient Border */}
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px'
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F'
+                        }}
+                      ></div>
+                    </div>
+
+                    <h3 className="text-xl text-white relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
                       Proven Expertise
                     </h3>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
+                    <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 400}}>
                       Learn directly from Inspired Analyst experts with years of trading, investing, and data-driven experience. Our mentors have guided hundreds of learners and bring insider knowledge, strategies, and industry insights you won&apos;t find in standard courses.
                     </p>
                   </div>

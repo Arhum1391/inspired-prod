@@ -846,12 +846,14 @@ const ReviewsContent: React.FC = () => {
                                             {currentPage > 1 && (
                                                 <button
                                                     onClick={() => handlePageChange(currentPage - 1)}
-                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded bg-black'} flex items-center justify-center transition-colors text-white border border-white hover:bg-gray-800 focus:outline-none focus:ring-0`}
+                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded-lg bg-black'} flex items-center justify-center transition-all duration-300 text-[rgba(144,144,144,1)] border border-[rgba(144,144,144,1)] focus:outline-none focus:ring-0`}
                                                     style={{ 
                                                         outline: 'none', 
                                                         boxShadow: 'none',
-                                                        backgroundColor: isMobile ? 'rgba(0, 0, 0, 0.1)' : undefined
+                                                        backgroundColor: isMobile ? 'rgba(0, 0, 0, 0.1)' : 'rgb(0, 0, 0)'
                                                     }}
+                                                    onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+                                                    onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = isMobile ? 'rgba(0, 0, 0, 0.1)' : 'rgb(0, 0, 0)'}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -865,17 +867,27 @@ const ReviewsContent: React.FC = () => {
                                             <button
                                                 key={page}
                                                 onClick={() => handlePageChange(page)}
-                                                className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded'} flex items-center justify-center text-sm font-medium transition-colors border focus:outline-none focus:ring-0 ${
+                                                className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded-lg'} flex items-center justify-center text-sm font-medium transition-all duration-300 border focus:outline-none focus:ring-0 ${
                                                     isMobile 
-                                                        ? (currentPage === page ? 'text-black border-white' : 'text-white border-white hover:bg-gray-800')
-                                                        : (currentPage === page ? 'bg-white text-black border-white' : 'bg-black text-white border-white hover:bg-gray-800')
+                                                        ? (currentPage === page ? 'text-black border-white' : 'text-[rgba(144,144,144,1)] border-[rgba(144,144,144,1)]')
+                                                        : (currentPage === page ? 'bg-white text-black border-white' : 'bg-black text-[rgba(144,144,144,1)] border-[rgba(144,144,144,1)]')
                                                 }`}
                                                 style={{ 
                                                     outline: 'none', 
                                                     boxShadow: 'none',
                                                     backgroundColor: isMobile 
                                                         ? (currentPage === page ? 'rgb(255, 255, 255)' : 'rgba(0, 0, 0, 0.1)')
-                                                        : undefined
+                                                        : (currentPage === page ? 'rgb(255, 255, 255)' : 'rgb(0, 0, 0)')
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (currentPage !== page) {
+                                                        (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
+                                                    }
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    if (currentPage !== page) {
+                                                        (e.target as HTMLButtonElement).style.backgroundColor = isMobile ? 'rgba(0, 0, 0, 0.1)' : 'rgb(0, 0, 0)';
+                                                    }
                                                 }}
                                             >
                                                 {page}
@@ -887,12 +899,14 @@ const ReviewsContent: React.FC = () => {
                                             {currentPage < totalPages && (
                                                 <button
                                                     onClick={() => handlePageChange(currentPage + 1)}
-                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded bg-black'} flex items-center justify-center transition-colors text-white border border-white hover:bg-gray-800 focus:outline-none focus:ring-0`}
+                                                    className={`${isMobile ? 'w-8 h-8 rounded-lg' : 'w-8 h-8 rounded-lg bg-black'} flex items-center justify-center transition-all duration-300 text-[rgba(144,144,144,1)] border border-[rgba(144,144,144,1)] focus:outline-none focus:ring-0`}
                                                     style={{ 
                                                         outline: 'none', 
                                                         boxShadow: 'none',
-                                                        backgroundColor: isMobile ? 'rgba(0, 0, 0, 0.1)' : undefined
+                                                        backgroundColor: isMobile ? 'rgba(0, 0, 0, 0.1)' : 'rgb(0, 0, 0)'
                                                     }}
+                                                    onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+                                                    onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = isMobile ? 'rgba(0, 0, 0, 0.1)' : 'rgb(0, 0, 0)'}
                                                 >
                                                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -9,12 +9,10 @@ import { NewsletterSubscription } from '@/components';
 export default function BootcampPage() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
-      {/* Vector Background SVG - Top Right Corner Only */}
+      {/* Vector Background SVG - Enhanced for Mobile Only */}
       <div
-        className="absolute z-0"
+        className="absolute z-0 left-[-400px] top-[-100px] sm:left-auto sm:top-0 sm:right-[-10px]"
         style={{
-          right: '-10px',
-
           opacity: 1,
           pointerEvents: 'none',
         }}
@@ -24,8 +22,28 @@ export default function BootcampPage() {
           alt="Bootcamp gradient background"
           width={900}
           height={700}
-          className="w-full h-full"
+          className="w-[1200px] h-[900px] sm:w-full sm:h-full lg:w-full lg:h-full"
           priority
+        />
+      </div>
+
+      {/* Mobile Screen Border Masks */}
+      <div className="absolute inset-0 sm:hidden z-0 pointer-events-none">
+        {/* Left border mask - fades overflowing SVG to black */}
+        <div
+          className="absolute left-0 top-0 w-40 h-full"
+          style={{
+            background: 'linear-gradient(to right, rgba(10, 10, 10, 0.8) 0%, rgba(10, 10, 10, 0.6) 15%, rgba(10, 10, 10, 0.4) 35%, rgba(10, 10, 10, 0.2) 60%, rgba(10, 10, 10, 0.05) 85%, transparent 100%)',
+            filter: 'blur(1px)'
+          }}
+        />
+        {/* Right border mask - lighter version */}
+        <div
+          className="absolute right-0 top-0 w-40 h-full"
+          style={{
+            background: 'linear-gradient(to left, rgba(10, 10, 10, 0.4) 0%, rgba(10, 10, 10, 0.3) 15%, rgba(10, 10, 10, 0.2) 35%, rgba(10, 10, 10, 0.1) 60%, rgba(10, 10, 10, 0.025) 85%, transparent 100%)',
+            filter: 'blur(1px)'
+          }}
         />
       </div>
 
@@ -55,6 +73,18 @@ export default function BootcampPage() {
           </div>
         </div>
       </section>
+
+      {/* Mobile Hero Section Fade Mask */}
+      <div className="absolute inset-0 sm:hidden z-10 pointer-events-none">
+        <div
+          className="absolute left-0 w-full h-40"
+          style={{
+            top: '65vh',
+            background: 'linear-gradient(to bottom, rgba(10, 10, 10, 1) 0%, rgba(10, 10, 10, 0.8) 15%, rgba(10, 10, 10, 0.6) 35%, rgba(10, 10, 10, 0.4) 60%, rgba(10, 10, 10, 0.2) 85%, transparent 100%)',
+            filter: 'blur(1px)'
+          }}
+        />
+      </div>
 
       {/* Bootcamp Cards Section */}
       <section className="relative z-0 pt-32 sm:pt-32 lg:pt-36 pb-12 sm:pb-16 lg:pb-20">

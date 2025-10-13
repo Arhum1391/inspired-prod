@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
  *   - eventTypeUri: URI of the event type
  *   - startDate: Start date in YYYY-MM-DD format
  *   - endDate: End date in YYYY-MM-DD format (optional, defaults to startDate)
+ *   - timezone: User's timezone (optional, defaults to UTC)
  */
 export async function GET(request: NextRequest) {
   try {
@@ -14,6 +15,7 @@ export async function GET(request: NextRequest) {
     const eventTypeUri = searchParams.get('eventTypeUri');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate') || startDate;
+    const userTimezone = searchParams.get('timezone') || 'UTC';
 
     if (!process.env.CALENDLY_ACCESS_TOKEN) {
       return NextResponse.json(
@@ -72,15 +74,18 @@ export async function GET(request: NextRequest) {
         // Parse the UTC time from Calendly
         const utcDate = new Date(slot.start_time);
         
-        // Get date in YYYY-MM-DD format (use local date to match frontend calendar)
-        const year = utcDate.getFullYear();
-        const month = String(utcDate.getMonth() + 1).padStart(2, '0');
-        const day = String(utcDate.getDate()).padStart(2, '0');
+        // Convert UTC time to user's timezone
+        const localDate = new Date(utcDate.toLocaleString("en-US", {timeZone: userTimezone}));
+        
+        // Get date in YYYY-MM-DD format (use user's local date)
+        const year = localDate.getFullYear();
+        const month = String(localDate.getMonth() + 1).padStart(2, '0');
+        const day = String(localDate.getDate()).padStart(2, '0');
         const date = `${year}-${month}-${day}`;
         
-        // Format time consistently (keep as UTC for reference)
-        const hours = utcDate.getUTCHours();
-        const minutes = utcDate.getUTCMinutes();
+        // Format time in user's timezone
+        const hours = localDate.getHours();
+        const minutes = localDate.getMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
         const displayHours = hours % 12 || 12;
         const displayMinutes = String(minutes).padStart(2, '0');
@@ -100,13 +105,15 @@ export async function GET(request: NextRequest) {
         if (Object.keys(slotUrlsByDateTime).length <= 5) {
           console.log('API slot processing:', {
             rawTimestamp: slot.start_time,
-            localDate: date,
-            utcHours: hours,
-            utcMinutes: minutes,
+            userTimezone: userTimezone,
+            utcDate: utcDate.toISOString(),
+            localDate: localDate.toISOString(),
+            displayDate: date,
+            utcHours: utcDate.getUTCHours(),
+            localHours: hours,
             formattedTime: time,
             dateTimeKey: dateTimeKey,
-            schedulingUrl: slot.scheduling_url,
-            urlContainsTime: slot.scheduling_url.includes(slot.start_time.split('T')[0])
+            schedulingUrl: slot.scheduling_url
           });
         }
       });

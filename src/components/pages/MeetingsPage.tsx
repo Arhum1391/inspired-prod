@@ -121,104 +121,156 @@ interface TimezoneGroup {
 
 const timezoneGroups: TimezoneGroup[] = [
   {
-    region: "US/CANADA",
+    region: "NORTH AMERICA",
     timezones: [
-      { value: 'pst', label: 'Pacific Time - US & Canada' },
-      { value: 'mst', label: 'Mountain Time - US & Canada' },
-      { value: 'cst', label: 'Central Time - US & Canada' },
-      { value: 'est', label: 'Eastern Time - US & Canada' },
-      { value: 'akst', label: 'Alaska Time' },
-      { value: 'hst', label: 'Hawaii Time' },
-      { value: 'ast_ca', label: 'Atlantic Time - Canada' },
+      { value: 'America/New_York', label: 'Eastern Time (US & Canada)' },
+      { value: 'America/Chicago', label: 'Central Time (US & Canada)' },
+      { value: 'America/Denver', label: 'Mountain Time (US & Canada)' },
+      { value: 'America/Los_Angeles', label: 'Pacific Time (US & Canada)' },
+      { value: 'America/Anchorage', label: 'Alaska' },
+      { value: 'Pacific/Honolulu', label: 'Hawaii' },
+      { value: 'America/Toronto', label: 'Eastern Time - Toronto' },
+      { value: 'America/Vancouver', label: 'Pacific Time - Vancouver' },
+      { value: 'America/Winnipeg', label: 'Central Time - Winnipeg' },
+      { value: 'America/Edmonton', label: 'Mountain Time - Edmonton' },
+      { value: 'America/Halifax', label: 'Atlantic Time - Halifax' },
+      { value: 'America/St_Johns', label: 'Newfoundland' },
+      { value: 'America/Mexico_City', label: 'Central Time - Mexico City' },
+      { value: 'America/Cancun', label: 'Eastern Time - Cancun' },
+      { value: 'America/Tijuana', label: 'Pacific Time - Tijuana' },
     ]
   },
   {
-    region: "AMERICAS",
+    region: "SOUTH AMERICA",
     timezones: [
-      { value: 'brt', label: 'Brasilia Time' },
-      { value: 'art', label: 'Argentina Time' },
-      { value: 'clt', label: 'Chile Time' },
-      { value: 'cot', label: 'Colombia Time' },
-      { value: 'pet', label: 'Peru Time' },
-      { value: 'vet', label: 'Venezuela Time' },
-      { value: 'gyt', label: 'Guyana Time' },
-      { value: 'srt', label: 'Suriname Time' },
-      { value: 'fkt', label: 'Falkland Islands Time' },
+      { value: 'America/Sao_Paulo', label: 'Brasilia' },
+      { value: 'America/Argentina/Buenos_Aires', label: 'Buenos Aires' },
+      { value: 'America/Santiago', label: 'Santiago' },
+      { value: 'America/Bogota', label: 'Bogota' },
+      { value: 'America/Lima', label: 'Lima' },
+      { value: 'America/Caracas', label: 'Caracas' },
+      { value: 'America/Guayaquil', label: 'Guayaquil' },
+      { value: 'America/La_Paz', label: 'La Paz' },
+      { value: 'America/Asuncion', label: 'Asuncion' },
+      { value: 'America/Montevideo', label: 'Montevideo' },
+      { value: 'America/Paramaribo', label: 'Paramaribo' },
+      { value: 'America/Cayenne', label: 'Cayenne' },
     ]
   },
   {
     region: "EUROPE",
     timezones: [
-      { value: 'gmt', label: 'Greenwich Mean Time' },
-      { value: 'cet', label: 'Central European Time' },
-      { value: 'eet', label: 'Eastern European Time' },
-      { value: 'wet', label: 'Western European Time' },
-      { value: 'msk', label: 'Moscow Time' },
-      { value: 'trt', label: 'Turkey Time' },
-      { value: 'eest', label: 'Eastern European Summer Time' },
-      { value: 'cest', label: 'Central European Summer Time' },
-      { value: 'west', label: 'Western European Summer Time' },
+      { value: 'Europe/London', label: 'London' },
+      { value: 'Europe/Dublin', label: 'Dublin' },
+      { value: 'Europe/Paris', label: 'Paris' },
+      { value: 'Europe/Berlin', label: 'Berlin' },
+      { value: 'Europe/Rome', label: 'Rome' },
+      { value: 'Europe/Madrid', label: 'Madrid' },
+      { value: 'Europe/Amsterdam', label: 'Amsterdam' },
+      { value: 'Europe/Brussels', label: 'Brussels' },
+      { value: 'Europe/Vienna', label: 'Vienna' },
+      { value: 'Europe/Zurich', label: 'Zurich' },
+      { value: 'Europe/Stockholm', label: 'Stockholm' },
+      { value: 'Europe/Oslo', label: 'Oslo' },
+      { value: 'Europe/Copenhagen', label: 'Copenhagen' },
+      { value: 'Europe/Helsinki', label: 'Helsinki' },
+      { value: 'Europe/Warsaw', label: 'Warsaw' },
+      { value: 'Europe/Prague', label: 'Prague' },
+      { value: 'Europe/Budapest', label: 'Budapest' },
+      { value: 'Europe/Bucharest', label: 'Bucharest' },
+      { value: 'Europe/Sofia', label: 'Sofia' },
+      { value: 'Europe/Athens', label: 'Athens' },
+      { value: 'Europe/Istanbul', label: 'Istanbul' },
+      { value: 'Europe/Moscow', label: 'Moscow' },
+      { value: 'Europe/Kiev', label: 'Kiev' },
+      { value: 'Europe/Minsk', label: 'Minsk' },
+      { value: 'Europe/Lisbon', label: 'Lisbon' },
+      { value: 'Europe/Reykjavik', label: 'Reykjavik' },
     ]
   },
   {
     region: "AFRICA",
     timezones: [
-      { value: 'cat', label: 'Central Africa Time' },
-      { value: 'eat', label: 'East Africa Time' },
-      { value: 'wat', label: 'West Africa Time' },
-      { value: 'sast', label: 'South Africa Standard Time' },
-      { value: 'cairo', label: 'Africa/Cairo' },
-      { value: 'lagos', label: 'Africa/Lagos' },
-      { value: 'casablanca', label: 'Africa/Casablanca' },
-      { value: 'johannesburg', label: 'Africa/Johannesburg' },
-      { value: 'nairobi', label: 'Africa/Nairobi' },
+      { value: 'Africa/Cairo', label: 'Cairo' },
+      { value: 'Africa/Johannesburg', label: 'Johannesburg' },
+      { value: 'Africa/Lagos', label: 'Lagos' },
+      { value: 'Africa/Casablanca', label: 'Casablanca' },
+      { value: 'Africa/Nairobi', label: 'Nairobi' },
+      { value: 'Africa/Tunis', label: 'Tunis' },
+      { value: 'Africa/Algiers', label: 'Algiers' },
+      { value: 'Africa/Addis_Ababa', label: 'Addis Ababa' },
+      { value: 'Africa/Khartoum', label: 'Khartoum' },
+      { value: 'Africa/Dakar', label: 'Dakar' },
+      { value: 'Africa/Abidjan', label: 'Abidjan' },
+      { value: 'Africa/Accra', label: 'Accra' },
+      { value: 'Africa/Douala', label: 'Douala' },
+      { value: 'Africa/Luanda', label: 'Luanda' },
+      { value: 'Africa/Maputo', label: 'Maputo' },
+      { value: 'Africa/Windhoek', label: 'Windhoek' },
     ]
   },
   {
     region: "ASIA",
     timezones: [
-      { value: 'ist', label: 'India Standard Time' },
-      { value: 'bdt', label: 'Bangladesh Time' },
-      { value: 'pkt', label: 'Pakistan Time' },
-      { value: 'cst_cn', label: 'China Standard Time' },
-      { value: 'jst', label: 'Japan Standard Time' },
-      { value: 'kst', label: 'Korea Standard Time' },
-      { value: 'pht', label: 'Philippines Time' },
-      { value: 'ict', label: 'Indochina Time' },
-      { value: 'myt', label: 'Malaysia Time' },
-      { value: 'sgt', label: 'Singapore Time' },
-      { value: 'hkt', label: 'Hong Kong Time' },
-      { value: 'tst', label: 'Taiwan Time' },
-      { value: 'jordan', label: 'Jordan Time' },
-      { value: 'baghdad', label: 'Baghdad, East Africa Time' },
-      { value: 'baku', label: 'Asia/Baku' },
-      { value: 'lebanon', label: 'Lebanon Time' },
-    ]
-  },
-  {
-    region: "MIDDLE EAST",
-    timezones: [
-      { value: 'gst', label: 'Gulf Standard Time' },
-      { value: 'ast_me', label: 'Arabia Standard Time' },
-      { value: 'irt', label: 'Iran Time' },
-      { value: 'israel', label: 'Israel Time' },
-      { value: 'kuwait', label: 'Kuwait Time' },
-      { value: 'qatar', label: 'Qatar Time' },
-      { value: 'bahrain', label: 'Bahrain Time' },
-      { value: 'oman', label: 'Oman Time' },
+      { value: 'Asia/Tokyo', label: 'Tokyo' },
+      { value: 'Asia/Shanghai', label: 'Shanghai' },
+      { value: 'Asia/Hong_Kong', label: 'Hong Kong' },
+      { value: 'Asia/Singapore', label: 'Singapore' },
+      { value: 'Asia/Seoul', label: 'Seoul' },
+      { value: 'Asia/Manila', label: 'Manila' },
+      { value: 'Asia/Jakarta', label: 'Jakarta' },
+      { value: 'Asia/Bangkok', label: 'Bangkok' },
+      { value: 'Asia/Ho_Chi_Minh', label: 'Ho Chi Minh City' },
+      { value: 'Asia/Kuala_Lumpur', label: 'Kuala Lumpur' },
+      { value: 'Asia/Taipei', label: 'Taipei' },
+      { value: 'Asia/Kolkata', label: 'New Delhi' },
+      { value: 'Asia/Karachi', label: 'Karachi' },
+      { value: 'Asia/Dhaka', label: 'Dhaka' },
+      { value: 'Asia/Kathmandu', label: 'Kathmandu' },
+      { value: 'Asia/Colombo', label: 'Colombo' },
+      { value: 'Asia/Dubai', label: 'Dubai' },
+      { value: 'Asia/Riyadh', label: 'Riyadh' },
+      { value: 'Asia/Kuwait', label: 'Kuwait' },
+      { value: 'Asia/Qatar', label: 'Qatar' },
+      { value: 'Asia/Bahrain', label: 'Bahrain' },
+      { value: 'Asia/Muscat', label: 'Muscat' },
+      { value: 'Asia/Tehran', label: 'Tehran' },
+      { value: 'Asia/Baghdad', label: 'Baghdad' },
+      { value: 'Asia/Jerusalem', label: 'Jerusalem' },
+      { value: 'Asia/Amman', label: 'Amman' },
+      { value: 'Asia/Beirut', label: 'Beirut' },
+      { value: 'Asia/Baku', label: 'Baku' },
+      { value: 'Asia/Tbilisi', label: 'Tbilisi' },
+      { value: 'Asia/Yerevan', label: 'Yerevan' },
+      { value: 'Asia/Almaty', label: 'Almaty' },
+      { value: 'Asia/Tashkent', label: 'Tashkent' },
+      { value: 'Asia/Kabul', label: 'Kabul' },
     ]
   },
   {
     region: "OCEANIA",
     timezones: [
-      { value: 'aest', label: 'Australian Eastern Time' },
-      { value: 'acst', label: 'Australian Central Time' },
-      { value: 'awst', label: 'Australian Western Time' },
-      { value: 'nzst', label: 'New Zealand Time' },
-      { value: 'fjt', label: 'Fiji Time' },
-      { value: 'pgt', label: 'Papua New Guinea Time' },
-      { value: 'sbt', label: 'Solomon Islands Time' },
-      { value: 'vut', label: 'Vanuatu Time' },
+      { value: 'Australia/Sydney', label: 'Sydney' },
+      { value: 'Australia/Melbourne', label: 'Melbourne' },
+      { value: 'Australia/Brisbane', label: 'Brisbane' },
+      { value: 'Australia/Perth', label: 'Perth' },
+      { value: 'Australia/Adelaide', label: 'Adelaide' },
+      { value: 'Australia/Darwin', label: 'Darwin' },
+      { value: 'Australia/Hobart', label: 'Hobart' },
+      { value: 'Pacific/Auckland', label: 'Auckland' },
+      { value: 'Pacific/Fiji', label: 'Fiji' },
+      { value: 'Pacific/Port_Moresby', label: 'Port Moresby' },
+      { value: 'Pacific/Guam', label: 'Guam' },
+      { value: 'Pacific/Saipan', label: 'Saipan' },
+      { value: 'Pacific/Noumea', label: 'Noumea' },
+      { value: 'Pacific/Norfolk', label: 'Norfolk Island' },
+    ]
+  },
+  {
+    region: "OTHER",
+    timezones: [
+      { value: 'UTC', label: 'UTC' },
+      { value: 'GMT', label: 'Greenwich Mean Time' },
     ]
   },
   {
@@ -534,13 +586,19 @@ const MeetingsPage: React.FC = () => {
     };
 
     // Function to fetch Calendly availability
-    const fetchCalendlyAvailability = async (eventTypeUri: string, startDate: string, endDate: string) => {
+    const fetchCalendlyAvailability = async (eventTypeUri: string, startDate: string, endDate: string, timezone?: string) => {
         setIsLoadingAvailability(true);
-        console.log('Fetching Calendly availability:', { eventTypeUri, startDate, endDate });
+        console.log('Fetching Calendly availability:', { eventTypeUri, startDate, endDate, timezone });
         try {
-            const response = await fetch(
-                `/api/calendly/availability?eventTypeUri=${encodeURIComponent(eventTypeUri)}&startDate=${startDate}&endDate=${endDate}`
-            );
+            const url = new URL('/api/calendly/availability', window.location.origin);
+            url.searchParams.append('eventTypeUri', eventTypeUri);
+            url.searchParams.append('startDate', startDate);
+            url.searchParams.append('endDate', endDate);
+            if (timezone) {
+                url.searchParams.append('timezone', timezone);
+            }
+            
+            const response = await fetch(url.toString());
             if (response.ok) {
                 const data = await response.json();
                 console.log('Received availability data:', data);
@@ -604,13 +662,15 @@ const MeetingsPage: React.FC = () => {
         }
     }, [selectedAnalyst]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Fetch Calendly availability when meeting type and month change
+    // Fetch Calendly availability when meeting type, month, or timezone change
     useEffect(() => {
-        if (selectedAnalyst === 1 && selectedMeeting !== null && calendlyEventTypes.length > 0) {
+        if (selectedAnalyst === 1 && selectedMeeting !== null && calendlyEventTypes.length > 0 && selectedTimezone) {
             console.log('Attempting to fetch availability:', {
                 selectedMeeting,
                 calendlyEventTypesLength: calendlyEventTypes.length,
-                calculatedIndex: selectedMeeting - 2
+                calculatedIndex: selectedMeeting - 2,
+                selectedTimezone,
+                currentMonth: currentMonth.toISOString().split('T')[0]
             });
             
             const selectedEventType = calendlyEventTypes[selectedMeeting - 2]; // Adjust index
@@ -660,9 +720,15 @@ const MeetingsPage: React.FC = () => {
                         console.log('Fetching availability chunk:', { startDateStr, endDateStr });
                         
                         try {
-                            const response = await fetch(
-                                `/api/calendly/availability?eventTypeUri=${encodeURIComponent(selectedEventType.id)}&startDate=${startDateStr}&endDate=${endDateStr}`
-                            );
+                            const url = new URL('/api/calendly/availability', window.location.origin);
+                            url.searchParams.append('eventTypeUri', selectedEventType.id);
+                            url.searchParams.append('startDate', startDateStr);
+                            url.searchParams.append('endDate', endDateStr);
+                            if (selectedTimezone) {
+                                url.searchParams.append('timezone', selectedTimezone);
+                            }
+                            
+                            const response = await fetch(url.toString());
                             
                             if (response.ok) {
                                 const data = await response.json();
@@ -718,7 +784,7 @@ const MeetingsPage: React.FC = () => {
                 calendlyEventTypesLength: calendlyEventTypes.length
             });
         }
-    }, [selectedMeeting, currentMonth, selectedAnalyst, calendlyEventTypes]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [selectedMeeting, currentMonth, selectedAnalyst, calendlyEventTypes, selectedTimezone]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Handle step and selectedAnalyst parameters from URL (for navigation back from reviews page)
     useEffect(() => {
@@ -785,18 +851,50 @@ const MeetingsPage: React.FC = () => {
                 
                 // For Assassin (ID: 1), open Calendly popup widget
                 if (selectedAnalyst === 1 && selectedDate && selectedTime) {
-                    // Find the scheduling URL directly from the time slot objects
-                    const selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
+                    // Find the scheduling URL by matching the display time directly
+                    // This is more reliable since the user selected from the displayed times
+                    let selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
+                    let utcTimeForSlot = '';
+                    
+                    // If no match found, try the UTC conversion approach as fallback
+                    if (!selectedSlot) {
+                        console.warn('No display time match found, trying UTC conversion...');
+                        utcTimeForSlot = selectedTimezone 
+                            ? convertLocalTimeToUTC(selectedTime, selectedTimezone)
+                            : selectedTime;
+                        
+                        selectedSlot = timeSlotObjects.find(slot => slot.utcTime === utcTimeForSlot);
+                        
+                        // If still no match, try fuzzy matching
+                        if (!selectedSlot) {
+                            console.warn('No UTC time match found either, trying fuzzy matching...');
+                            selectedSlot = timeSlotObjects.find(slot => {
+                                const slotTime = slot.displayTime.replace(/[^\d:]/g, '');
+                                const selectedTimeClean = selectedTime.replace(/[^\d:]/g, '');
+                                return slotTime === selectedTimeClean;
+                            });
+                        }
+                    }
+                    
                     const schedulingUrl = selectedSlot?.schedulingUrl;
                     
                     console.log('=== BOOKING FLOW DEBUG ===');
                     console.log('1. User Selection:', {
                         selectedDate,
-                        selectedTime,
+                        selectedTime, // This is the local time the user selected
                         selectedTimezone
                     });
-                    console.log('2. Selected Slot:', selectedSlot);
-                    console.log('3. Scheduling URL:', schedulingUrl);
+                    console.log('2. Converted UTC Time:', utcTimeForSlot || 'Not calculated');
+                    console.log('3. Time Slot Objects Count:', timeSlotObjects.length);
+                    console.log('4. Available Time Slots:', timeSlotObjects.map(slot => ({
+                        displayTime: slot.displayTime,
+                        utcTime: slot.utcTime,
+                        hasUrl: !!slot.schedulingUrl
+                    })));
+                    console.log('5. Selected Slot:', selectedSlot);
+                    console.log('6. Scheduling URL:', schedulingUrl);
+                    console.log('7. All available UTC times:', timeSlotObjects.map(slot => slot.utcTime));
+                    console.log('8. All available display times:', timeSlotObjects.map(slot => slot.displayTime));
                     console.log('=== END DEBUG ===');
                     
                     if (schedulingUrl) {
@@ -1043,110 +1141,108 @@ const MeetingsPage: React.FC = () => {
         }
     };
 
-    // Convert UTC time to selected timezone
+    // Get timezone offset mapping
+const getTimezoneOffsets = (): { [key: string]: number } => ({
+  // North America
+  'America/New_York': -5, 'America/Chicago': -6, 'America/Denver': -7, 'America/Los_Angeles': -8,
+  'America/Anchorage': -9, 'Pacific/Honolulu': -10, 'America/Toronto': -5, 'America/Vancouver': -8,
+  'America/Winnipeg': -6, 'America/Edmonton': -7, 'America/Halifax': -4, 'America/St_Johns': -3.5,
+  'America/Mexico_City': -6, 'America/Cancun': -5, 'America/Tijuana': -8,
+  
+  // South America
+  'America/Sao_Paulo': -3, 'America/Argentina/Buenos_Aires': -3, 'America/Santiago': -4,
+  'America/Bogota': -5, 'America/Lima': -5, 'America/Caracas': -4, 'America/Guayaquil': -5,
+  'America/La_Paz': -4, 'America/Asuncion': -3, 'America/Montevideo': -3, 'America/Paramaribo': -3,
+  'America/Cayenne': -3,
+  
+  // Europe
+  'Europe/London': 0, 'Europe/Dublin': 0, 'Europe/Paris': 1, 'Europe/Berlin': 1, 'Europe/Rome': 1,
+  'Europe/Madrid': 1, 'Europe/Amsterdam': 1, 'Europe/Brussels': 1, 'Europe/Vienna': 1, 'Europe/Zurich': 1,
+  'Europe/Stockholm': 1, 'Europe/Oslo': 1, 'Europe/Copenhagen': 1, 'Europe/Helsinki': 2, 'Europe/Warsaw': 1,
+  'Europe/Prague': 1, 'Europe/Budapest': 1, 'Europe/Bucharest': 2, 'Europe/Sofia': 2, 'Europe/Athens': 2,
+  'Europe/Istanbul': 3, 'Europe/Moscow': 3, 'Europe/Kiev': 2, 'Europe/Minsk': 3, 'Europe/Lisbon': 0,
+  'Europe/Reykjavik': 0,
+  
+  // Africa
+  'Africa/Cairo': 2, 'Africa/Johannesburg': 2, 'Africa/Lagos': 1, 'Africa/Casablanca': 0, 'Africa/Nairobi': 3,
+  'Africa/Tunis': 1, 'Africa/Algiers': 1, 'Africa/Addis_Ababa': 3, 'Africa/Khartoum': 2, 'Africa/Dakar': 0,
+  'Africa/Abidjan': 0, 'Africa/Accra': 0, 'Africa/Douala': 1, 'Africa/Luanda': 1, 'Africa/Maputo': 2,
+  'Africa/Windhoek': 2,
+  
+  // Asia
+  'Asia/Tokyo': 9, 'Asia/Shanghai': 8, 'Asia/Hong_Kong': 8, 'Asia/Singapore': 8, 'Asia/Seoul': 9,
+  'Asia/Manila': 8, 'Asia/Jakarta': 7, 'Asia/Bangkok': 7, 'Asia/Ho_Chi_Minh': 7, 'Asia/Kuala_Lumpur': 8,
+  'Asia/Taipei': 8, 'Asia/Kolkata': 5.5, 'Asia/Karachi': 5, 'Asia/Dhaka': 6, 'Asia/Kathmandu': 5.75,
+  'Asia/Colombo': 5.5, 'Asia/Dubai': 4, 'Asia/Riyadh': 3, 'Asia/Kuwait': 3, 'Asia/Qatar': 3,
+  'Asia/Bahrain': 3, 'Asia/Muscat': 4, 'Asia/Tehran': 3.5, 'Asia/Baghdad': 3, 'Asia/Jerusalem': 2,
+  'Asia/Amman': 2, 'Asia/Beirut': 2, 'Asia/Baku': 4, 'Asia/Tbilisi': 4, 'Asia/Yerevan': 4,
+  'Asia/Almaty': 6, 'Asia/Tashkent': 5, 'Asia/Kabul': 4.5,
+  
+  // Oceania
+  'Australia/Sydney': 10, 'Australia/Melbourne': 10, 'Australia/Brisbane': 10, 'Australia/Perth': 8,
+  'Australia/Adelaide': 9.5, 'Australia/Darwin': 9.5, 'Australia/Hobart': 10, 'Pacific/Auckland': 12,
+  'Pacific/Fiji': 12, 'Pacific/Port_Moresby': 10, 'Pacific/Guam': 10, 'Pacific/Saipan': 10,
+  'Pacific/Noumea': 11, 'Pacific/Norfolk': 11,
+  
+  // Other
+  'UTC': 0, 'GMT': 0
+});
+
+    // Convert UTC time to selected timezone (for display)
+    // NOTE: This function is now mainly for backwards compatibility
+    // The API now handles timezone conversion automatically when fetching availability
     const convertTimeToTimezone = (utcTimeStr: string, timezoneValue: string): string => {
         if (!timezoneValue) return utcTimeStr; // Return UTC if no timezone selected
         
-        // Parse the UTC time (format: "H:MM AM/PM")
-        const utcDate = new Date(rawTimestampsByDateTime[`${selectedDate}|${utcTimeStr}`]);
-        if (!utcDate || isNaN(utcDate.getTime())) {
-            console.warn('Could not parse UTC date for time conversion:', { utcTimeStr, selectedDate, rawTimestamp: rawTimestampsByDateTime[`${selectedDate}|${utcTimeStr}`] });
-            return utcTimeStr; // Return original if can't parse
-        }
-        
-        // Get timezone offset in hours
-        const timezoneOffsets: { [key: string]: number } = {
-            'pst': -8, 'mst': -7, 'cst': -6, 'est': -5, 'akst': -9, 'hst': -10, 'ast_ca': -4,
-            'brt': -3, 'art': -3, 'clt': -4, 'cot': -5, 'pet': -5, 'vet': -4, 'gyt': -4, 'srt': -3, 'fkt': -3,
-            'gmt': 0, 'cet': 1, 'eet': 2, 'wet': 0, 'msk': 3, 'trt': 3, 'eest': 3, 'cest': 2, 'west': 1,
-            'cat': 2, 'eat': 3, 'wat': 1, 'sast': 2, 'cairo': 2, 'lagos': 1, 'casablanca': 0, 'johannesburg': 2, 'nairobi': 3,
-            'ist': 5.5, 'bdt': 6, 'pkt': 5, 'cst_cn': 8, 'jst': 9, 'kst': 9, 'pht': 8, 'ict': 7, 'myt': 8, 'sgt': 8, 'hkt': 8, 'tst': 8,
-            'jordan': 2, 'baghdad': 3, 'baku': 4, 'lebanon': 2,
-            'gst': 4, 'ast_me': 3, 'irt': 3.5, 'israel': 2, 'kuwait': 3, 'qatar': 3, 'bahrain': 3, 'oman': 4,
-            'aest': 10, 'acst': 9.5, 'awst': 8, 'nzst': 12, 'fjt': 12, 'pgt': 10, 'sbt': 11, 'vut': 11,
-            'hst_pacific': -10, 'akst_pacific': -9, 'pst_pacific': -8, 'mst_pacific': -7, 'cst_pacific': -6, 'est_pacific': -5
-        };
-        
-        const offset = timezoneOffsets[timezoneValue] || 0;
-        
-        // Apply timezone offset to get local time
-        // Note: Positive offset means ahead of UTC, so we ADD the offset to get local time
-        const localTime = new Date(utcDate.getTime() + (offset * 3600000));
-        
-        console.log('Timezone offset calculation:', {
+        // Since the API now handles timezone conversion, we can return the time as-is
+        // The API will have already converted it to the user's timezone
+        console.log('Time conversion (API handled):', {
+            originalTime: utcTimeStr,
             timezone: timezoneValue,
-            offset,
-            utcTime: utcDate.toISOString(),
-            calculation: `UTC + ${offset} hours`,
-            result: localTime.toISOString()
+            note: 'API handles timezone conversion automatically'
         });
         
-        // Format the converted time using UTC methods (since we manually applied offset)
-        const hours = localTime.getUTCHours();
-        const minutes = localTime.getUTCMinutes();
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-        const displayHours = hours % 12 || 12;
-        const displayMinutes = String(minutes).padStart(2, '0');
+        return utcTimeStr;
+    };
+
+    // Convert local time back to UTC time string (for finding the correct UTC slot)
+    // NOTE: Since the API now handles timezone conversion, this function is simplified
+    // The user selects times that are already in their timezone, so we just need to match them
+    const convertLocalTimeToUTC = (localTimeStr: string, timezoneValue: string): string => {
+        if (!timezoneValue) return localTimeStr; // Return as-is if no timezone selected
         
-        const convertedTime = `${displayHours}:${displayMinutes} ${ampm}`;
-        
-        // Check if the date changed after timezone conversion
-        const utcYear = utcDate.getUTCFullYear();
-        const utcMonth = String(utcDate.getUTCMonth() + 1).padStart(2, '0');
-        const utcDay = String(utcDate.getUTCDate()).padStart(2, '0');
-        const utcDateStr = `${utcYear}-${utcMonth}-${utcDay}`;
-        
-        const localYear = localTime.getUTCFullYear();
-        const localMonth = String(localTime.getUTCMonth() + 1).padStart(2, '0');
-        const localDay = String(localTime.getUTCDate()).padStart(2, '0');
-        const localDateStr = `${localYear}-${localMonth}-${localDay}`;
-        
-        // Debug logging
-        console.log('Time conversion:', {
-            originalUTC: utcTimeStr,
+        console.log('Time conversion (simplified):', {
+            localTime: localTimeStr,
             timezone: timezoneValue,
-            offset,
-            utcTimestamp: utcDate.toISOString(),
-            localTimestamp: localTime.toISOString(),
-            convertedTime,
-            utcDateStr,
-            localDateStr,
-            dateCrossed: utcDateStr !== localDateStr,
-            rawTimestamp: rawTimestampsByDateTime[`${selectedDate}|${utcTimeStr}`],
-            dateTimeKey: `${selectedDate}|${utcTimeStr}`,
-            utcHours: utcDate.getUTCHours(),
-            utcMinutes: utcDate.getUTCMinutes(),
-            localHours: localTime.getUTCHours(),
-            localMinutes: localTime.getUTCMinutes()
+            note: 'API handles timezone conversion, using direct match'
         });
         
-        return convertedTime;
+        // Since the API now converts times to the user's timezone,
+        // we can return the time as-is for matching purposes
+        return localTimeStr;
     };
 
     // Get time slot objects with display time and scheduling URL
     const getTimeSlotObjects = (): Array<{ displayTime: string; schedulingUrl: string; utcTime: string }> => {
         // For Assassin with Calendly integration
         if (selectedAnalyst === 1 && selectedDate && availableTimesByDate[selectedDate]) {
-            const utcTimes = availableTimesByDate[selectedDate];
+            const localTimes = availableTimesByDate[selectedDate]; // These are now in user's timezone
             
-            // Map each UTC time to an object with display time and URL
-            const slots = utcTimes.map(utcTime => {
-                const dateTimeKey = `${selectedDate}|${utcTime}`;
+            // Map each local time to an object with display time and URL
+            const slots = localTimes.map(localTime => {
+                const dateTimeKey = `${selectedDate}|${localTime}`;
                 const schedulingUrl = slotUrlsByDateTime[dateTimeKey] || '';
                 
-                // If timezone is selected, convert the display time
-                const displayTime = selectedTimezone 
-                    ? convertTimeToTimezone(utcTime, selectedTimezone)
-                    : utcTime;
-                
+                // Since the API now handles timezone conversion, 
+                // the times are already in the user's timezone
                 return {
-                    displayTime,
+                    displayTime: localTime, // Already in user's timezone
                     schedulingUrl,
-                    utcTime
+                    utcTime: localTime // For matching purposes, use the same value
                 };
             });
             
-            console.log('Time slot objects:', slots.slice(0, 3));
+            console.log('Time slot objects (API converted):', slots.slice(0, 3));
             return slots;
         }
         
@@ -2112,7 +2208,6 @@ const MeetingsPage: React.FC = () => {
                                                     style={{ outline: 'none', boxShadow: 'none' }}
                                                 >
                                                     <span>{tz.label}</span>
-                                                    <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
                                                 </button>
                                             ))
                                         ) : (
@@ -2146,7 +2241,6 @@ const MeetingsPage: React.FC = () => {
                                                         style={{ outline: 'none', boxShadow: 'none' }}
                                                     >
                                                         <span>{tz.label}</span>
-                                                        <span className="text-xs text-gray-400 ml-2">{getCurrentTime(tz.value)}</span>
                                                     </button>
                                                 ))}
                                             </div>

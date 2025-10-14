@@ -236,16 +236,16 @@ export default function BootcampPage() {
             <div className="flex flex-col gap-5">
               {loading ? (
                 // Loading skeleton
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                   {Array.from({ length: 6 }).map((_, index) => (
                     <BootcampCardSkeleton key={index} />
                   ))}
-                </div>
+                    </div>
               ) : (
                 // Dynamic bootcamp cards (always has data due to fallback)
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                   {bootcamps.map((bootcamp) => renderBootcampCard(bootcamp))}
-                </div>
+                    </div>
               )}
             </div>
           </div>

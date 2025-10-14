@@ -34,7 +34,7 @@ export default function CryptoTradingBootcampPage() {
       <section className="relative z-0 pt-32 sm:pt-32 lg:pt-36 pb-12 sm:pb-16 lg:pb-20">
         <div className="w-full px-4 sm:px-6 lg:px-6">
           <div className="mx-auto max-w-7xl">
-            <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-16 xl:gap-20">
+            <div className="flex flex-col lg:flex-row items-start gap-12 lg:gap-24 xl:gap-28">
               {/* Left Content */}
               <div className="flex flex-col gap-6 sm:gap-8 lg:gap-10 flex-1 max-w-full lg:max-w-[630px]">
                 {/* Text Content */}
@@ -73,9 +73,9 @@ export default function CryptoTradingBootcampPage() {
               </div>
 
               {/* Right Info Cards */}
-              <div className="flex flex-col gap-5 w-full lg:w-auto lg:flex-1 lg:justify-between">
+              <div className="flex flex-col gap-5 w-full lg:w-126 lg:flex-none lg:justify-between">
                 {/* Row 1 */}
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-8">
                   {/* Duration Card */}
                   <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-6 relative overflow-hidden">
                     {/* Curved Gradient Border */}
@@ -97,12 +97,12 @@ export default function CryptoTradingBootcampPage() {
 
                     {/* Gradient Ellipse */}
                     <div
-                      className="absolute w-[588px] h-[588px] z-0"
+                      className="absolute w-[300px] h-[300px] z-0"
                       style={{
-                        left: '87.52px',
-                        top: '-497.48px',
+                        left: '140px',
+                        top: '-200px',
                         background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                        filter: 'blur(100px)',
+                        filter: 'blur(60px)',
                         transform: 'rotate(137.16deg)',
                         borderRadius: '50%'
                       }}
@@ -145,12 +145,12 @@ export default function CryptoTradingBootcampPage() {
 
                     {/* Gradient Ellipse */}
                     <div
-                      className="absolute w-[588px] h-[588px] z-0"
+                      className="absolute w-[300px] h-[300px] z-0"
                       style={{
-                        left: '87.52px',
-                        top: '-497.48px',
-                        background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                        filter: 'blur(100px)',
+                        left: '140px',
+                        top: '-200px',
+                        background: 'linear-gradient(110.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                        filter: 'blur(60px)',
                         transform: 'rotate(137.16deg)',
                         borderRadius: '50%'
                       }}
@@ -174,7 +174,7 @@ export default function CryptoTradingBootcampPage() {
                 </div>
 
                 {/* Row 2 */}
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid grid-cols-2 gap-8">
                   {/* Interactive Card */}
                   <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col gap-6 relative overflow-hidden">
                     {/* Curved Gradient Border */}
@@ -196,12 +196,12 @@ export default function CryptoTradingBootcampPage() {
 
                     {/* Gradient Ellipse */}
                     <div
-                      className="absolute w-[588px] h-[588px] z-0"
+                      className="absolute w-[300px] h-[300px] z-0"
                       style={{
-                        left: '87.52px',
-                        top: '-497.48px',
-                        background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                        filter: 'blur(100px)',
+                        left: '140px',
+                        top: '-200px',
+                        background: 'linear-gradient(110.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                        filter: 'blur(60px)',
                         transform: 'rotate(137.16deg)',
                         borderRadius: '50%'
                       }}
@@ -244,12 +244,12 @@ export default function CryptoTradingBootcampPage() {
 
                     {/* Gradient Ellipse */}
                     <div
-                      className="absolute w-[588px] h-[588px] z-0"
+                      className="absolute w-[300px] h-[300px] z-0"
                       style={{
-                        left: '87.52px',
-                        top: '-497.48px',
+                        left: '140px',
+                        top: '-200px',
                         background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                        filter: 'blur(100px)',
+                        filter: 'blur(60px)',
                         transform: 'rotate(137.16deg)',
                         borderRadius: '50%'
                       }}
@@ -293,12 +293,12 @@ export default function CryptoTradingBootcampPage() {
 
                   {/* Gradient Ellipse */}
                   <div
-                    className="absolute w-[588px] h-[588px] z-0"
+                    className="absolute w-[300px] h-[300px] z-0"
                     style={{
-                      left: '287.52px',
-                      top: '-497.48px',
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
+                      left: '400px',
+                      top: '-200px',
+                      background: 'linear-gradient(110.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                      filter: 'blur(80px)',
                       transform: 'rotate(137.16deg)',
                       borderRadius: '50%'
                     }}

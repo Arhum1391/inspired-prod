@@ -1,3 +1,4 @@
+
 # Binance USDT Payment Integration Plan
 ## Inspired Analyst - Cryptocurrency Payment System
 

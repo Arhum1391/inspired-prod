@@ -1,8 +1,6 @@
-import { MongoClient } from 'mongodb';
 import { NextRequest, NextResponse } from 'next/server';
+import { getDatabase } from '@/lib/mongodb';
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-const DB_NAME = 'inspired-analyst';
 const COLLECTION_NAME = 'newsletter';
 
 export async function POST(request: NextRequest) {
@@ -18,17 +16,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Connect to MongoDB
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-
-    const db = client.db(DB_NAME);
+    const db = await getDatabase();
     const collection = db.collection(COLLECTION_NAME);
 
     // Check if email already exists
     const existingSubscriber = await collection.findOne({ email: email.toLowerCase() });
-    
+
     if (existingSubscriber) {
-      await client.close();
       return NextResponse.json(
         { error: 'Email is already subscribed to our newsletter' },
         { status: 409 }
@@ -46,8 +40,6 @@ export async function POST(request: NextRequest) {
 
     // Insert into database
     const result = await collection.insertOne(newSubscriber);
-    
-    await client.close();
 
     if (result.insertedId) {
       return NextResponse.json(
@@ -77,16 +69,11 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   try {
     // Connect to MongoDB
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-
-    const db = client.db(DB_NAME);
+    const db = await getDatabase();
     const collection = db.collection(COLLECTION_NAME);
 
     // Get all subscribers
     const subscribers = await collection.find({}).toArray();
-    
-    await client.close();
 
     return NextResponse.json({
       success: true,
@@ -116,24 +103,19 @@ export async function PUT(request: NextRequest) {
     }
 
     // Connect to MongoDB
-    const client = new MongoClient(MONGODB_URI);
-    await client.connect();
-
-    const db = client.db(DB_NAME);
+    const db = await getDatabase();
     const collection = db.collection(COLLECTION_NAME);
 
     // Update subscriber status
     const result = await collection.updateOne(
       { id: id },
-      { 
-        $set: { 
+      {
+        $set: {
           status: status,
           updatedAt: new Date()
         }
       }
     );
-    
-    await client.close();
 
     if (result.modifiedCount > 0) {
       return NextResponse.json({

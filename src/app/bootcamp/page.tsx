@@ -1,12 +1,154 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Image from 'next/image';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import { NewsletterSubscription } from '@/components';
+import BootcampCardSkeleton from '@/components/BootcampCardSkeleton';
+import { Bootcamp } from '@/types/admin';
+import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 
 export default function BootcampPage() {
+  const [bootcamps, setBootcamps] = useState<Bootcamp[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchBootcamps();
+  }, []);
+
+  const fetchBootcamps = async () => {
+    try {
+      const response = await fetch('/api/bootcamp');
+      if (response.ok) {
+        const data = await response.json();
+        // If no bootcamps from API, use fallback data
+        setBootcamps(data.length > 0 ? data : getFallbackBootcamps());
+      } else {
+        // Fall back to hardcoded data if API fails
+        setBootcamps(getFallbackBootcamps());
+      }
+    } catch (error) {
+      console.error('Failed to fetch bootcamps:', error);
+      // Fall back to hardcoded data if API fails
+      setBootcamps(getFallbackBootcamps());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  const renderBootcampCard = (bootcamp: Bootcamp) => (
+    <div key={bootcamp._id} className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
+      {/* Gradient Ellipse */}
+      <div
+        className="absolute w-[588px] h-[588px] z-0"
+        style={{
+          left: bootcamp.gradientPosition.left,
+          top: bootcamp.gradientPosition.top,
+          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+          filter: 'blur(100px)',
+          transform: `rotate(${bootcamp.gradientPosition.rotation})`,
+          borderRadius: '50%'
+        }}
+      />
+
+      {/* Title and Price */}
+      <div className="flex items-start justify-between gap-6 relative z-10">
+        <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>{bootcamp.title}</h3>
+        <div className="relative flex-shrink-0 rounded-full overflow-hidden">
+          {/* Enhanced Shiny Glint Effect - Top Right Corner */}
+          <div 
+            className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
+              borderRadius: '50% 0 0 0'
+            }}
+          ></div>
+          
+          {/* Enhanced Top Border Glint */}
+          <div 
+            className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
+              borderRadius: '50% 50% 0 0'
+            }}
+          ></div>
+          
+          {/* Enhanced Right Border Glint */}
+          <div 
+            className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
+              borderRadius: '0 50% 0 0'
+            }}
+          ></div>
+          
+          <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">{bootcamp.price}</span>
+        </div>
+      </div>
+
+      {/* Description */}
+      <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
+        {bootcamp.description}
+      </p>
+
+      {/* Mentors */}
+      <div className="flex flex-col gap-2 relative z-10">
+        <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
+        {bootcamp.mentors.map((mentor, index) => (
+          <p key={index} className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>{mentor}</p>
+        ))}
+      </div>
+
+      {/* Tags */}
+      <div className="flex gap-2 relative z-10">
+        {bootcamp.tags.map((tag, index) => (
+          <span 
+            key={index}
+            className={`border rounded-full px-2.5 py-1 text-xs ${
+              index === 0 
+                ? 'border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3]' 
+                : 'border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC]'
+            }`}
+            style={{fontFamily: 'Gilroy', fontWeight: 500}}
+          >
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Registration Dates */}
+      <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
+        Registration Dates: {new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', { 
+          day: 'numeric', 
+          month: 'short', 
+          year: 'numeric' 
+        })} - {new Date(bootcamp.registrationEndDate).toLocaleDateString('en-US', { 
+          day: 'numeric', 
+          month: 'short', 
+          year: 'numeric' 
+        })}
+      </p>
+
+      {/* Buttons */}
+      <div className="flex gap-4 relative z-10 mt-auto">
+        <Link href={`/bootcamp/${bootcamp.id}`} className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+          Learn More
+          <Image 
+            src="/logo/backhome.png" 
+            alt="Arrow" 
+            width={20}
+            height={20}
+            className="w-5 h-5"
+          />
+        </Link>
+        <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
       {/* Vector Background SVG - Enhanced for Mobile Only */}
@@ -92,474 +234,19 @@ export default function BootcampPage() {
           <div className="mx-auto max-w-7xl">
             {/* Cards Grid - 3 columns on desktop, 1 on mobile */}
             <div className="flex flex-col gap-5">
-
-              {/* Row 1 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {/* Card 1: Crypto Trading Bootcamp */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
-                  {/* Gradient Ellipse */}
-                  <div
-                    className="absolute w-[588px] h-[588px] left-[399px] top-[-326px] z-0 rotate-90"
-                    style={{
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
-                      borderRadius: '50%'
-                    }}
-                  />
-
-                  {/* Title and Price */}
-                  <div className="flex items-start justify-between gap-6 relative z-10">
-                    <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Crypto Trading Bootcamp</h3>
-                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
-                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
-                      <div 
-                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
-                        style={{
-                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                          borderRadius: '50% 0 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Top Border Glint */}
-                      <div 
-                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
-                          borderRadius: '50% 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Right Border Glint */}
-                      <div 
-                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                          borderRadius: '0 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Gain the skills to analyze crypto markets with confidence, manage risks like a pro, and apply proven trading strategies.
-                  </p>
-
-                  {/* Mentors */}
-                  <div className="flex flex-col gap-2 relative z-10">
-                    <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Adnan - Senior Marketing Analyst</p>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Assassin - Co-Founder, Inspired Analyst</p>
-                  </div>
-
-                  {/* Tags */}
-                  <div className="flex gap-2 relative z-10">
-                    <span className="border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] rounded-full px-2.5 py-1 text-xs text-[#05B0B3]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>6 Weeks</span>
-                    <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
-                  </div>
-
-                  {/* Registration Dates */}
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-
-                  {/* Buttons */}
-                  <div className="flex gap-4 relative z-10 mt-auto">
-                    <Link href="/bootcamp/crypto-trading" className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                      Learn More
-                      <Image 
-                        src="/logo/backhome.png" 
-                        alt="Arrow" 
-                        width={20}
-                        height={20}
-                        className="w-5 h-5"
-                      />
-                    </Link>
-                    <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
-                  </div>
+              {loading ? (
+                // Loading skeleton
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {Array.from({ length: 6 }).map((_, index) => (
+                    <BootcampCardSkeleton key={index} />
+                  ))}
                 </div>
-
-                {/* Card 2: AI & Data for Finance */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
-                  {/* Gradient Ellipse */}
-                  <div
-                    className="absolute w-[588px] h-[588px] z-0"
-                    style={{
-                      left: '365.45px',
-                      top: '-359.87px',
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
-                      transform: 'rotate(-172.95deg)',
-                      borderRadius: '50%'
-                    }}
-                  />
-
-                  <div className="flex items-start justify-between gap-6 relative z-10">
-                    <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>AI & Data for Finance</h3>
-                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
-                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
-                      <div 
-                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
-                        style={{
-                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                          borderRadius: '50% 0 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Top Border Glint */}
-                      <div 
-                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
-                          borderRadius: '50% 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Right Border Glint */}
-                      <div 
-                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                          borderRadius: '0 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
-                    </div>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Explore the power of AI-driven trading, master data analysis techniques, and learn how to build automated systems that uncover market opportunities and enhance decision-making.
-                  </p>
-                  <div className="flex flex-col gap-2 relative z-10">
-                    <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Hassan Tariq - Senior Crypto Analyst</p>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Hamza Ali - Risk Management Specialist</p>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Meower - Breakout Trading Specialist</p>
-                  </div>
-                  <div className="flex gap-2 relative z-10">
-                    <span className="border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] rounded-full px-2.5 py-1 text-xs text-[#05B0B3]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>4 Weeks</span>
-                    <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10 mt-auto">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                      Learn More
-                      <Image 
-                        src="/logo/backhome.png" 
-                        alt="Arrow" 
-                        width={20}
-                        height={20}
-                        className="w-5 h-5"
-                      />
-                    </button>
-                    <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
-                  </div>
+              ) : (
+                // Dynamic bootcamp cards (always has data due to fallback)
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {bootcamps.map((bootcamp) => renderBootcampCard(bootcamp))}
                 </div>
-
-                {/* Card 3: Forex Mastery Mentorship */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
-                  {/* Gradient Ellipse */}
-                  <div
-                    className="absolute w-[588px] h-[588px] z-0"
-                    style={{
-                      left: '367px',
-                      top: '-359px',
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
-                      transform: 'rotate(-96.58deg)',
-                      borderRadius: '50%'
-                    }}
-                  />
-
-                  <div className="flex items-start justify-between gap-6 relative z-10">
-                    <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Forex Mastery Mentorship</h3>
-                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
-                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
-                      <div 
-                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
-                        style={{
-                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                          borderRadius: '50% 0 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Top Border Glint */}
-                      <div 
-                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
-                          borderRadius: '50% 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Right Border Glint */}
-                      <div 
-                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                          borderRadius: '0 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
-                    </div>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Learn the fundamentals of forex trading, develop the skills to read live charts with accuracy, and apply advanced strategies to navigate global currency markets with confidence.
-                  </p>
-                  <div className="flex flex-col gap-2 relative z-10">
-                    <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Adnan - Senior Marketing Analyst</p>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Hassan Khan - Gold Trading Expert & Co-Founder</p>
-                  </div>
-                  <div className="flex gap-2 relative z-10">
-                    <span className="border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] rounded-full px-2.5 py-1 text-xs text-[#05B0B3]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>8 Weeks</span>
-                    <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10 mt-auto">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                      Learn More
-                      <Image 
-                        src="/logo/backhome.png" 
-                        alt="Arrow" 
-                        width={20}
-                        height={20}
-                        className="w-5 h-5"
-                      />
-                    </button>
-                    <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Row 2 */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                {/* Card 4: Stock Market Investing Bootcamp */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
-                  {/* Gradient Ellipse */}
-                  <div
-                    className="absolute w-[588px] h-[588px] left-[399px] top-[-326px] z-0 rotate-90"
-                    style={{
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
-                      borderRadius: '50%'
-                    }}
-                  />
-
-                  <div className="flex items-start justify-between gap-6 relative z-10">
-                    <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Stock Market Investing Bootcamp</h3>
-                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
-                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
-                      <div 
-                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
-                        style={{
-                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                          borderRadius: '50% 0 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Top Border Glint */}
-                      <div 
-                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
-                          borderRadius: '50% 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Right Border Glint */}
-                      <div 
-                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                          borderRadius: '0 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
-                    </div>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Learn how to build and manage a strong investment portfolio, accurately value companies, and apply long-term wealth-building strategies that stand the test of time.
-                  </p>
-                  <div className="flex flex-col gap-2 relative z-10">
-                    <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Mohid - Advanced ICT Mentor</p>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Assassin - Co-Founder, Inspired Analyst</p>
-                  </div>
-                  <div className="flex gap-2 relative z-10">
-                    <span className="border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] rounded-full px-2.5 py-1 text-xs text-[#05B0B3]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>6 Weeks</span>
-                    <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10 mt-auto">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                      Learn More
-                      <Image 
-                        src="/logo/backhome.png" 
-                        alt="Arrow" 
-                        width={20}
-                        height={20}
-                        className="w-5 h-5"
-                      />
-                    </button>
-                    <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
-                  </div>
-                </div>
-
-                {/* Card 5: Web3 & Blockchain Mentorship */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
-                  {/* Gradient Ellipse */}
-                  <div
-                    className="absolute w-[588px] h-[588px] z-0"
-                    style={{
-                      left: '365.45px',
-                      top: '-326px',
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
-                      transform: 'rotate(-172.95deg)',
-                      borderRadius: '50%'
-                    }}
-                  />
-
-                  <div className="flex items-start justify-between gap-6 relative z-10">
-                    <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Web3 & Blockchain Mentorship</h3>
-                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
-                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
-                      <div 
-                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
-                        style={{
-                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                          borderRadius: '50% 0 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Top Border Glint */}
-                      <div 
-                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
-                          borderRadius: '50% 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Right Border Glint */}
-                      <div 
-                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                          borderRadius: '0 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
-                    </div>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Take a deep dive into blockchain technology, understand the mechanics of smart contracts, and explore the world of decentralized finance (DeFi) to unlcok real-world applications of Web3.
-                  </p>
-                  <div className="flex flex-col gap-2 relative z-10">
-                    <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>M. Usama - Multi-Asset Trader</p>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Meower - Breakout Trading Specialist</p>
-                  </div>
-                  <div className="flex gap-2 relative z-10">
-                    <span className="border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] rounded-full px-2.5 py-1 text-xs text-[#05B0B3]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>5 Weeks</span>
-                    <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10 mt-auto">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                      Learn More
-                      <Image 
-                        src="/logo/backhome.png" 
-                        alt="Arrow" 
-                        width={20}
-                        height={20}
-                        className="w-5 h-5"
-                      />
-                    </button>
-                    <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
-                  </div>
-                </div>
-
-                {/* Card 6: Career Growth in Finance & Tech */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
-                  {/* Gradient Ellipse */}
-                  <div
-                    className="absolute w-[588px] h-[588px] z-0"
-                    style={{
-                      left: '367.25px',
-                      top: '-357.75px',
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
-                      transform: 'rotate(-96.58deg)',
-                      borderRadius: '50%'
-                    }}
-                  />
-
-                  <div className="flex items-start justify-between gap-6 relative z-10">
-                    <h3 className="text-2xl text-white flex-1" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Career Growth in Finance & Tech</h3>
-                    <div className="relative flex-shrink-0 rounded-full overflow-hidden">
-                      {/* Enhanced Shiny Glint Effect - Top Right Corner */}
-                      <div 
-                        className="absolute top-0 right-0 w-3 h-3 opacity-60 pointer-events-none"
-                        style={{
-                          background: 'radial-gradient(circle at top right, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0.1) 30%, transparent 70%)',
-                          borderRadius: '50% 0 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Top Border Glint */}
-                      <div 
-                        className="absolute top-0 left-0 right-0 h-0.5 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to right, transparent 0%, rgba(255,255,255,0.1) 10%, rgba(255,255,255,0.4) 30%, rgba(255,255,255,0.6) 50%, rgba(255,255,255,0.3) 70%, rgba(255,255,255,0.1) 85%, transparent 100%)',
-                          borderRadius: '50% 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      {/* Enhanced Right Border Glint */}
-                      <div 
-                        className="absolute top-0 right-0 w-0.5 h-4 opacity-70 pointer-events-none"
-                        style={{
-                          background: 'linear-gradient(to bottom, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0.4) 20%, rgba(255,255,255,0.3) 40%, rgba(255,255,255,0.2) 60%, rgba(255,255,255,0.1) 80%, transparent 100%)',
-                          borderRadius: '0 50% 0 0'
-                        }}
-                      ></div>
-                      
-                      <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">30 BNB</span>
-                    </div>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>
-                    Receive personalized career guidance, professional resume reviews, and interview preparation directly from industry mentors to help you stand out and achieve your career goals in finance and technology.
-                  </p>
-                  <div className="flex flex-col gap-2 relative z-10">
-                    <h4 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Mentors:</h4>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Hamza Ali - Risk Management Specialist</p>
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy'}}>Mohid - Advanced ICT Mentor</p>
-                  </div>
-                  <div className="flex gap-2 relative z-10">
-                    <span className="border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] rounded-full px-2.5 py-1 text-xs text-[#05B0B3]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>4 Weeks</span>
-                    <span className="border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] rounded-full px-2.5 py-1 text-xs text-[#DE50EC]" style={{fontFamily: 'Gilroy', fontWeight: 500}}>Online</span>
-                  </div>
-                  <p className="text-base text-white leading-[130%] relative z-10" style={{fontFamily: 'Gilroy'}}>Registration Dates: 1st Oct, 2025 - 30th Oct, 2025</p>
-                  <div className="flex gap-4 relative z-10 mt-auto">
-                    <button className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                      Learn More
-                      <Image 
-                        src="/logo/backhome.png" 
-                        alt="Arrow" 
-                        width={20}
-                        height={20}
-                        className="w-5 h-5"
-                      />
-                    </button>
-                    <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
-                  </div>
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

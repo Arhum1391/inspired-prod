@@ -9,8 +9,8 @@ async function handler(req: NextRequest, userId: string) {
     // Get team members count
     const teamMembersCount = await db.collection('team').countDocuments();
 
-    // Get subscribers count from the newsletter collection
-    const subscribersCount = await db.collection('newsletter').countDocuments();
+    // Get subscribers count from the subscribers collection
+    const subscribersCount = await db.collection('subscribers').countDocuments();
 
     // Get bookings for today
     const today = new Date();

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
 
-const COLLECTION_NAME = 'newsletter';
+const COLLECTION_NAME = 'subscribers';
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
       id: new Date().getTime().toString() + Math.random().toString(36).substr(2, 9),
       email: email.toLowerCase(),
       status: 'unsent',
+      subscriptions: ['newsletter'], // Default subscription
       createdAt: new Date(),
       updatedAt: new Date()
     };

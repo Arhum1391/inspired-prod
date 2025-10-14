@@ -512,17 +512,7 @@ const MeetingsPage: React.FC = () => {
     // Function to fetch team data from MongoDB
     const fetchTeamData = async () => {
         try {
-            // First try to get from sessionStorage (pre-fetched from landing page)
-            const cachedData = sessionStorage.getItem('teamData');
-            if (cachedData) {
-                const team = JSON.parse(cachedData);
-                setTeamData(team);
-                updateAnalystsWithTeamData(team);
-                setIsTeamDataLoaded(true);
-                return;
-            }
-
-            // If not in cache, fetch from API
+            // Always fetch fresh data from API to ensure we get the latest roles
             const response = await fetch('/api/team');
             if (response.ok) {
                 const data = await response.json();
@@ -531,10 +521,27 @@ const MeetingsPage: React.FC = () => {
                 // Cache for future use
                 sessionStorage.setItem('teamData', JSON.stringify(data.team));
                 setIsTeamDataLoaded(true);
+            } else {
+                // Fallback to cached data if API fails
+                const cachedData = sessionStorage.getItem('teamData');
+                if (cachedData) {
+                    const team = JSON.parse(cachedData);
+                    setTeamData(team);
+                    updateAnalystsWithTeamData(team);
+                    setIsTeamDataLoaded(true);
+                } else {
+                    setIsTeamDataLoaded(true);
+                }
             }
         } catch (error) {
             console.error('Error fetching team data:', error);
-            // Keep existing analysts with default descriptions
+            // Fallback to cached data if API fails
+            const cachedData = sessionStorage.getItem('teamData');
+            if (cachedData) {
+                const team = JSON.parse(cachedData);
+                setTeamData(team);
+                updateAnalystsWithTeamData(team);
+            }
             setIsTeamDataLoaded(true);
         }
     };

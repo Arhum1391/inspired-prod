@@ -30,7 +30,7 @@ const brandStories: BrandStory[] = [
     id: 3,
     title: 'Ledger Security Excellence',
     description: 'Hardware wallet education campaign achieving 250K+ views with compelling security narratives.',
-    thumbnail: 'insta reels/544612103_814732628383048_2408225710129440532_n.jpg',
+    thumbnail: 'insta reels/502990203_18055757522256795_8497396308849456425_n.jpg',
     link: 'https://www.instagram.com/reel/DKZ0w3wgkpv/',
   },
   {

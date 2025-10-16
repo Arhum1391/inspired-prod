@@ -1071,136 +1071,85 @@ const MeetingsPage: React.FC = () => {
                     }, 100);
                 }
             } else {
-                console.log('Processing final step, currentStep:', currentStep);
+                console.log('Processing final step with Stripe payment, currentStep:', currentStep);
                 const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
                 
+
                 // For analysts with Calendly integration, open Calendly popup widget
                 if (hasCalendlyIntegration(selectedAnalyst) && selectedDate && selectedTime) {
                     // Find the scheduling URL by matching the display time directly
                     // This is more reliable since the user selected from the displayed times
                     let selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
                     let utcTimeForSlot = '';
+
+                // Create Stripe checkout session for payment
+                try {
+                    // Map meeting ID to meeting type ID for Stripe API
+                    const meetingTypeMap: Record<number, string> = {
+                        2: 'initial-consultation',      // 30-Min Strategy
+                        3: 'initial-consultation-1'     // 60-Min Deep
+                    };
+
                     
-                    // If no match found, try the UTC conversion approach as fallback
-                    if (!selectedSlot) {
-                        console.warn('No display time match found, trying UTC conversion...');
-                        utcTimeForSlot = selectedTimezone 
-                            ? convertLocalTimeToUTC(selectedTime, selectedTimezone)
-                            : selectedTime;
-                        
-                        selectedSlot = timeSlotObjects.find(slot => slot.utcTime === utcTimeForSlot);
-                        
-                        // If still no match, try fuzzy matching
-                        if (!selectedSlot) {
-                            console.warn('No UTC time match found either, trying fuzzy matching...');
-                            selectedSlot = timeSlotObjects.find(slot => {
-                                const slotTime = slot.displayTime.replace(/[^\d:]/g, '');
-                                const selectedTimeClean = selectedTime.replace(/[^\d:]/g, '');
-                                return slotTime === selectedTimeClean;
-                            });
-                        }
+                    const meetingTypeId = meetingTypeMap[selectedMeeting || 2];
+                    const selectedMeetingData = meetings.find(m => m.id === selectedMeeting);
+                    
+                    if (!meetingTypeId || !selectedMeetingData) {
+                        console.error('Invalid meeting selection:', selectedMeeting);
+                        alert('Invalid meeting selection. Please try again.');
+                        return;
                     }
                     
-                    const schedulingUrl = selectedSlot?.schedulingUrl;
-                    
-                    console.log('=== BOOKING FLOW DEBUG ===');
-                    console.log('1. User Selection:', {
-                        selectedDate,
-                        selectedTime, // This is the local time the user selected
-                        selectedTimezone
+                    console.log('Creating Stripe checkout session for:', {
+                        meetingTypeId,
+                        customerEmail: email,
+                        customerName: fullName,
+                        meetingData: selectedMeetingData
                     });
-                    console.log('2. Converted UTC Time:', utcTimeForSlot || 'Not calculated');
-                    console.log('3. Time Slot Objects Count:', timeSlotObjects.length);
-                    console.log('4. Available Time Slots:', timeSlotObjects.map(slot => ({
-                        displayTime: slot.displayTime,
-                        utcTime: slot.utcTime,
-                        hasUrl: !!slot.schedulingUrl
-                    })));
-                    console.log('5. Selected Slot:', selectedSlot);
-                    console.log('6. Scheduling URL:', schedulingUrl);
-                    console.log('7. All available UTC times:', timeSlotObjects.map(slot => slot.utcTime));
-                    console.log('8. All available display times:', timeSlotObjects.map(slot => slot.displayTime));
-                    console.log('=== END DEBUG ===');
                     
-                    if (schedulingUrl) {
-                        // Build URL with pre-filled information
-                        const bookingUrl = new URL(schedulingUrl);
-                        bookingUrl.searchParams.append('name', fullName);
-                        bookingUrl.searchParams.append('email', email);
-                        if (notes) {
-                            bookingUrl.searchParams.append('a1', notes);
-                        }
+                    const response = await fetch('/api/stripe/create-checkout-session', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            type: 'booking',
+                            meetingTypeId: meetingTypeId,
+                            customerEmail: email,
+                            customerName: fullName
+                        }),
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        console.log('Stripe checkout session created:', data);
                         
-                        console.log('Calendly booking details:', {
-                            originalSchedulingUrl: schedulingUrl,
-                            finalBookingUrl: bookingUrl.toString(),
-                            selectedTime: selectedTime,
-                            timezone: selectedTimezone,
-                            selectedSlot: selectedSlot
-                        });
+                        // Store booking details in sessionStorage for success page
+                        const bookingDetails = {
+                            analyst: selectedAnalyst?.toString() || '0',
+                            meeting: selectedMeeting?.toString() || '1',
+                            date: selectedDate || '',
+                            time: selectedTime || '',
+                            timezone: selectedTimezoneData?.label || '',
+                            notes: notes || '',
+                            sessionId: data.sessionId,
+                            productName: data.productName,
+                            amount: data.amount
+                        };
                         
-                        // Open Calendly popup widget
-                        if (typeof window !== 'undefined' && (window as any).Calendly) {
-                            (window as any).Calendly.initPopupWidget({
-                                url: bookingUrl.toString(),
-                                prefill: {
-                                    name: fullName,
-                                    email: email,
-                                    customAnswers: {
-                                        a1: notes || ''
-                                    }
-                                },
-                                utm: {
-                                    utmSource: 'inspired-analyst',
-                                    utmMedium: 'website',
-                                    utmCampaign: 'meeting-booking'
-                                }
-                            });
-                            
-                            // Listen for Calendly events
-                            const handleCalendlyEvent = (e: MessageEvent) => {
-                                if (e.data.event && e.data.event === 'calendly.event_scheduled') {
-                                    console.log('Calendly booking completed:', e.data);
-                                    
-                                    // Redirect to success page after booking is confirmed
-                                    const params = new URLSearchParams({
-                                        analyst: selectedAnalyst?.toString() || '0',
-                                        meeting: selectedMeeting?.toString() || '1',
-                                        date: selectedDate || '',
-                                        time: selectedTime || '',
-                                        timezone: selectedTimezoneData?.label || '',
-                                        notes: notes || '',
-                                        calendlyEventUri: e.data.payload?.event?.uri || ''
-                                    });
-                                    
-                                    window.location.href = `/booking-success?${params.toString()}`;
-                                }
-                            };
-                            
-                            window.addEventListener('message', handleCalendlyEvent);
-                        } else {
-                            console.error('Calendly widget not loaded, falling back to redirect');
-                            window.location.href = bookingUrl.toString();
-                        }
-                        return;
+                        sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+                        
+                        // Redirect to Stripe Checkout
+                        window.location.href = data.url;
                     } else {
-                        console.error('No scheduling URL found for selected time:', selectedTime, 'Slot:', selectedSlot);
-                        alert('Unable to find the selected time slot. Please try selecting a different time.');
-                        return;
+                        console.error('Failed to create Stripe checkout session:', data);
+                        alert('Failed to create payment session. Please try again.');
                     }
+                } catch (error) {
+                    console.error('Error creating Stripe checkout session:', error);
+                    alert('An error occurred while processing your payment. Please try again.');
                 }
-                
-                // For other analysts, redirect to success page
-                const params = new URLSearchParams({
-                    analyst: selectedAnalyst?.toString() || '0',
-                    meeting: selectedMeeting?.toString() || '1',
-                    date: selectedDate || '',
-                    time: selectedTime || '',
-                    timezone: selectedTimezoneData?.label || '',
-                    notes: notes || ''
-                });
-                
-                window.location.href = `/booking-success?${params.toString()}`;
             }
         }
     };

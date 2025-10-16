@@ -110,36 +110,48 @@ export default function CryptoTradingRegisterPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/bootcamp', {
+      // Create Stripe checkout session for bootcamp payment
+      const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          bootcamp: 'crypto-trading',
-          name: fullName.trim(),
-          email: email.trim().toLowerCase(),
-          notes: notes.trim() || '',
+          type: 'bootcamp',
+          bootcampId: 'crypto-trading',
+          customerEmail: email.trim().toLowerCase(),
+          customerName: fullName.trim(),
+          notes: notes.trim() || ''
         }),
       });
 
       const data = await response.json();
 
-      if (response.ok) {
-        // Redirect to bootcamp-success page with bootcamp data
-        const params = new URLSearchParams({
+      if (response.ok && data.success) {
+        console.log('Stripe checkout session created for bootcamp:', data);
+        
+        // Store bootcamp details in sessionStorage for success page
+        const bootcampDetails = {
           bootcamp: 'crypto-trading',
           name: fullName.trim(),
           email: email.trim().toLowerCase(),
-          notes: notes.trim() || ''
-        });
+          notes: notes.trim() || '',
+          sessionId: data.sessionId,
+          productName: data.productName,
+          amount: data.amount
+        };
         
-        router.push(`/bootcamp-success?${params.toString()}`);
+        sessionStorage.setItem('bootcampDetails', JSON.stringify(bootcampDetails));
+        
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
       } else {
-        setEmailError(data.error || 'Failed to process registration. Please try again.');
+        console.error('Failed to create Stripe checkout session:', data);
+        setEmailError(data.error || 'Failed to create payment session. Please try again.');
         setIsSubmitting(false);
       }
     } catch (error) {
+      console.error('Error creating Stripe checkout session:', error);
       setEmailError('Network error. Please check your connection and try again.');
       setIsSubmitting(false);
     }

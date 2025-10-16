@@ -128,6 +128,19 @@ body {
   }
 }
 
+/* Reduced fade effect for bootcamp belts */
+.fade-mask-reduced {
+  mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+}
+
+@media (min-width: 1024px) {
+  .fade-mask-reduced {
+    mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  }
+}
+
 /* Custom keyframes for horizontal scrolling (mobile) */
 /* Exact same logic as vertical: both move same distance, start at different positions */
 @keyframes scrollLeftMobile {

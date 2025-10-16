@@ -42,6 +42,8 @@ const meetingTypes = [
 export default function BookingPage() {
   const [selectedMeetingType, setSelectedMeetingType] = useState(meetingTypes[0]);
   const [calendlyUrl, setCalendlyUrl] = useState('');
+  const [showPaymentButton, setShowPaymentButton] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Generate Calendly URL based on selected meeting type
   useEffect(() => {
@@ -64,13 +66,77 @@ export default function BookingPage() {
     script.async = true;
     document.body.appendChild(script);
 
+    // Listen for Calendly events
+    const handleCalendlyEvent = (e: MessageEvent) => {
+      if (e.data.event && e.data.event === 'calendly.event_scheduled') {
+        console.log('Calendly booking completed:', e.data);
+        setShowPaymentButton(true);
+      }
+    };
+
+    window.addEventListener('message', handleCalendlyEvent);
+
     return () => {
       document.body.removeChild(script);
+      window.removeEventListener('message', handleCalendlyEvent);
     };
   }, []);
 
   const handleMeetingTypeChange = (meetingType: typeof meetingTypes[0]) => {
     setSelectedMeetingType(meetingType);
+    setShowPaymentButton(false); // Reset payment button when meeting type changes
+  };
+
+  const handlePayment = async () => {
+    setIsProcessingPayment(true);
+    
+    try {
+      console.log('Creating Stripe checkout session for:', {
+        meetingTypeId: selectedMeetingType.id,
+        meetingData: selectedMeetingType
+      });
+      
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'booking',
+          meetingTypeId: selectedMeetingType.id,
+          customerEmail: '', // Will be collected in Stripe checkout
+          customerName: ''   // Will be collected in Stripe checkout
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        console.log('Stripe checkout session created:', data);
+        
+        // Store booking details in sessionStorage for success page
+        const bookingDetails = {
+          meetingType: selectedMeetingType.id,
+          meetingName: selectedMeetingType.name,
+          sessionId: data.sessionId,
+          productName: data.productName,
+          amount: data.amount
+        };
+        
+        sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+        
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        console.error('Failed to create Stripe checkout session:', data);
+        alert('Failed to create payment session. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error creating Stripe checkout session:', error);
+      alert('An error occurred while processing your payment. Please try again.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
   };
 
   return (
@@ -181,21 +247,57 @@ export default function BookingPage() {
               </div>
             </div>
 
-            {/* Compact Payment Notice */}
-            <div className="bg-[#1F1F1F] border border-gray-700/50 rounded-2xl p-3">
-              <div className="flex items-center">
-                <div className="flex-shrink-0">
-                  <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-2">
-                  <p className="text-xs text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
-                    Payment will be required to confirm your booking after selecting a time slot.
+            {/* Payment Section */}
+            {showPaymentButton ? (
+              <div className="bg-[#1F1F1F] border border-gray-700/50 rounded-2xl p-6">
+                <div className="text-center">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="flex-shrink-0">
+                      <svg className="h-6 w-6 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3">
+                      <h3 className="text-lg font-semibold text-white" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                        Time Slot Selected!
+                      </h3>
+                    </div>
+                  </div>
+                  
+                  <p className="text-sm text-gray-400 mb-6" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                    Complete your booking by making a payment of ${selectedMeetingType.price}
                   </p>
+                  
+                  <button
+                    onClick={handlePayment}
+                    disabled={isProcessingPayment}
+                    className={`w-full py-3 px-6 rounded-2xl font-semibold transition-all duration-300 ${
+                      isProcessingPayment 
+                        ? 'bg-gray-600 text-gray-300 cursor-not-allowed' 
+                        : 'bg-white text-black hover:bg-gray-200'
+                    }`}
+                    style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}
+                  >
+                    {isProcessingPayment ? 'Processing...' : `Pay $${selectedMeetingType.price} - Complete Booking`}
+                  </button>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-[#1F1F1F] border border-gray-700/50 rounded-2xl p-3">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <svg className="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-2">
+                    <p className="text-xs text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                      Payment will be required to confirm your booking after selecting a time slot.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Newsletter Subscription */}

@@ -45,17 +45,34 @@ export default function CalendlySetupPage() {
     alert('Copied to clipboard!');
   };
 
+  const clearAndReset = () => {
+    setAccessToken('');
+    setUserInfo(null);
+    setError('');
+  };
+
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white p-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
-            Calendly Setup Helper
-          </h1>
-          <p className="text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
-            Get Calendly User URI for new analysts
-          </p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                Calendly Setup Helper
+              </h1>
+              <p className="text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                Get Calendly User URI for new analysts
+              </p>
+            </div>
+            <button
+              onClick={clearAndReset}
+              className="px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg transition-colors text-sm font-semibold"
+              style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}
+            >
+              🔄 Clear & Reset
+            </button>
+          </div>
         </div>
 
         {/* Instructions */}

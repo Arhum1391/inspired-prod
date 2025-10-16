@@ -44,7 +44,7 @@ CALENDLY_API_BASE_URL=https://api.calendly.com
 
 # Calendly User URIs for each analyst
 # Replace with the actual User URI you got from Step 2
-CALENDLY_ASSASSIN_USER_URI=https://api.calendly.com/users/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+CALENDLY_ANALYST_1_URI=https://api.calendly.com/users/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
 ```
 
 **⚠️ Important Security Notes:**
@@ -221,7 +221,7 @@ const [selectedEventTypeUri, setSelectedEventTypeUri] = useState<string>('');
 **Solution**: Verify that `CALENDLY_ACCESS_TOKEN` is set in `.env.local`
 
 ### Issue: "User URI is required"
-**Solution**: Verify that `CALENDLY_ASSASSIN_USER_URI` is set in `.env.local`
+**Solution**: Verify that `CALENDLY_ANALYST_1_URI` is set in `.env.local`
 
 ### Issue: No event types showing
 **Solutions:**

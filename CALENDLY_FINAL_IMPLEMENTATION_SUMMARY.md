@@ -125,7 +125,7 @@ CLIENT_GUIDE_ADD_ANALYST_CALENDLY.md    - Non-tech user guide
 ### **Current Setup (Assassin Only):**
 ```bash
 CALENDLY_ACCESS_TOKEN=your_admin_token
-CALENDLY_ASSASSIN_USER_URI=https://api.calendly.com/users/XXXXX
+CALENDLY_ANALYST_1_URI=https://api.calendly.com/users/XXXXX
 ```
 
 ### **For All Analysts (Future):**

@@ -26,7 +26,7 @@ Meeting types are displaying correctly, but calendar dates and time slots are no
 Make sure your `.env.local` file has:
 ```bash
 CALENDLY_ACCESS_TOKEN=your_token_here
-CALENDLY_ASSASSIN_USER_URI=https://api.calendly.com/users/XXXXXXXX
+CALENDLY_ANALYST_1_URI=https://api.calendly.com/users/XXXXXXXX
 ```
 
 **Verify the token works:**

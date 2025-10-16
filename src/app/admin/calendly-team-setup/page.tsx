@@ -45,17 +45,34 @@ export default function CalendlyTeamSetupPage() {
     alert('All environment variables copied! Paste them into your .env.local file.');
   };
 
+  const refreshData = () => {
+    setUsers([]);
+    setError('');
+    fetchAllUsers();
+  };
+
   return (
     <div className="min-h-screen bg-[#0D0D0D] text-white p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
-            Calendly Team Setup
-          </h1>
-          <p className="text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
-            Automatically discover all team members in your Calendly organization
-          </p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-4xl font-bold mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                Calendly Team Setup
+              </h1>
+              <p className="text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                Automatically discover all team members in your Calendly organization
+              </p>
+            </div>
+            <button
+              onClick={refreshData}
+              className="px-4 py-2 bg-purple-500 hover:bg-purple-600 rounded-lg transition-colors text-sm font-semibold"
+              style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}
+            >
+              🔄 Refresh Data
+            </button>
+          </div>
         </div>
 
         {/* Instructions */}

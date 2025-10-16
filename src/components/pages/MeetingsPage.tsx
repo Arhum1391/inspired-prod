@@ -462,19 +462,20 @@ const MeetingsPage: React.FC = () => {
     const [analystAbout, setAnalystAbout] = useState<string>('');
     const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
     const [isTimezoneOpen, setIsTimezoneOpen] = useState<boolean>(false);
-    const [teamData, setTeamData] = useState<{name: string, role: string}[]>([]);
     const [analysts, setAnalysts] = useState<Analyst[]>(baseAnalysts);
     const [isTeamDataLoaded, setIsTeamDataLoaded] = useState<boolean>(false);
     
     // Calendly Integration States
     const [calendlyEventTypes, setCalendlyEventTypes] = useState<any[]>([]);
-    const [calendlyMeetings, setCalendlyMeetings] = useState<Meeting[]>(meetings);
+    const [calendlyMeetings, setCalendlyMeetings] = useState<Meeting[]>([]);
     const [availableDates, setAvailableDates] = useState<string[]>([]);
     const [availableTimesByDate, setAvailableTimesByDate] = useState<Record<string, string[]>>({});
     const [slotUrlsByDateTime, setSlotUrlsByDateTime] = useState<Record<string, string>>({});
     const [rawTimestampsByDateTime, setRawTimestampsByDateTime] = useState<Record<string, string>>({});
     const [isLoadingEventTypes, setIsLoadingEventTypes] = useState<boolean>(false);
     const [isLoadingAvailability, setIsLoadingAvailability] = useState<boolean>(false);
+    const [isTimezoneChanging, setIsTimezoneChanging] = useState<boolean>(false);
+    const [analystsWithCalendly, setAnalystsWithCalendly] = useState<Set<number>>(new Set());
     const [selectedEventTypeUri, setSelectedEventTypeUri] = useState<string>('');
     const [isCreatingBooking, setIsCreatingBooking] = useState<boolean>(false);
 
@@ -516,7 +517,6 @@ const MeetingsPage: React.FC = () => {
             const response = await fetch('/api/team');
             if (response.ok) {
                 const data = await response.json();
-                setTeamData(data.team);
                 updateAnalystsWithTeamData(data.team);
                 // Cache for future use
                 sessionStorage.setItem('teamData', JSON.stringify(data.team));
@@ -526,11 +526,10 @@ const MeetingsPage: React.FC = () => {
                 const cachedData = sessionStorage.getItem('teamData');
                 if (cachedData) {
                     const team = JSON.parse(cachedData);
-                    setTeamData(team);
                     updateAnalystsWithTeamData(team);
                     setIsTeamDataLoaded(true);
                 } else {
-                    setIsTeamDataLoaded(true);
+                    setIsTeamDataLoaded(true); // Still mark as loaded even if no data
                 }
             }
         } catch (error) {
@@ -539,7 +538,6 @@ const MeetingsPage: React.FC = () => {
             const cachedData = sessionStorage.getItem('teamData');
             if (cachedData) {
                 const team = JSON.parse(cachedData);
-                setTeamData(team);
                 updateAnalystsWithTeamData(team);
             }
             setIsTeamDataLoaded(true);
@@ -561,17 +559,110 @@ const MeetingsPage: React.FC = () => {
         setAnalysts(updatedAnalysts);
     };
 
-    // Function to fetch Calendly event types
-    const fetchCalendlyEventTypes = async () => {
-        setIsLoadingEventTypes(true);
+    // Helper function to check if an analyst has Calendly integration
+    const hasCalendlyIntegration = (analystId: number) => {
+        return analystsWithCalendly.has(analystId);
+    };
+
+    // Function to check if a specific analyst has Calendly integration (async version)
+    const checkAnalystCalendlyIntegration = async (analystId: number) => {
         try {
-            const response = await fetch('/api/calendly/event-types');
+            console.log(`🔍 Checking Calendly integration for analyst ${analystId} only`);
+            const response = await fetch(`/api/analysts/calendly-credentials?analystId=${analystId}`);
             if (response.ok) {
                 const data = await response.json();
+                return data.analyst.calendly.enabled;
+            }
+            return false;
+        } catch (error) {
+            console.error(`Error checking Calendly integration for analyst ${analystId}:`, error);
+            return false;
+        }
+    };
+
+    // Function to check Calendly integration for all analysts (only called once on mount)
+    const checkAllAnalystsCalendlyIntegration = async () => {
+        const calendlyAnalysts = new Set<number>();
+        
+        // Check each analyst for Calendly integration (only on initial load)
+        for (let i = 0; i <= 7; i++) {
+            try {
+                const response = await fetch(`/api/analysts/calendly-credentials?analystId=${i}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.analyst.calendly.enabled) {
+                        calendlyAnalysts.add(i);
+                        console.log(`✅ Analyst ${i} (${data.analyst.name}) has Calendly integration`);
+                    } else {
+                        console.log(`❌ Analyst ${i} (${data.analyst.name}) has Calendly disabled`);
+                    }
+                } else {
+                    console.log(`❌ Analyst ${i} not found or no credentials`);
+                }
+            } catch (error) {
+                console.error(`Error checking Calendly integration for analyst ${i}:`, error);
+            }
+        }
+        
+        setAnalystsWithCalendly(calendlyAnalysts);
+        console.log('🎯 Final list - Analysts with Calendly integration:', Array.from(calendlyAnalysts));
+    };
+
+    // Function to check Calendly integration for a specific analyst only
+    const checkSpecificAnalystCalendlyIntegration = async (analystId: number) => {
+        try {
+            console.log(`🎯 Checking Calendly integration for SELECTED analyst ${analystId} only`);
+            const response = await fetch(`/api/analysts/calendly-credentials?analystId=${analystId}`);
+            if (response.ok) {
+                const data = await response.json();
+                const hasCalendly = data.analyst.calendly.enabled;
+                
+                // Update the set for this specific analyst
+                setAnalystsWithCalendly(prev => {
+                    const newSet = new Set(prev);
+                    if (hasCalendly) {
+                        newSet.add(analystId);
+                        console.log(`✅ Analyst ${analystId} (${data.analyst.name}) has Calendly integration`);
+                    } else {
+                        newSet.delete(analystId);
+                        console.log(`❌ Analyst ${analystId} (${data.analyst.name}) has Calendly disabled`);
+                    }
+                    return newSet;
+                });
+                
+                return hasCalendly;
+            } else {
+                console.log(`❌ Analyst ${analystId} not found or no credentials`);
+                return false;
+            }
+        } catch (error) {
+            console.error(`Error checking Calendly integration for analyst ${analystId}:`, error);
+            return false;
+        }
+    };
+
+    // Function to fetch Calendly event types
+    const fetchCalendlyEventTypes = async () => {
+        if (selectedAnalyst === null) return;
+        console.log(`🔄 Starting to fetch Calendly event types for Analyst ${selectedAnalyst}...`);
+        try {
+            const response = await fetch(`/api/calendly/event-types?analystId=${selectedAnalyst}`);
+            console.log('📡 API Response status:', response.status);
+            
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ API Response data:', data);
                 setCalendlyEventTypes(data.eventTypes || []);
                 
-                // Transform Calendly event types to Meeting format
-                const transformedMeetings: Meeting[] = data.eventTypes.map((eventType: any, index: number) => ({
+                // Transform Calendly event types to Meeting format with deduplication
+                const uniqueEventTypes = data.eventTypes.filter((eventType: any, index: number, self: any[]) => 
+                    // Remove duplicates based on name and duration
+                    index === self.findIndex(e => e.name === eventType.name && e.duration === eventType.duration)
+                );
+                
+                console.log(`🔄 Filtered ${data.eventTypes.length} event types to ${uniqueEventTypes.length} unique types`);
+                
+                const transformedMeetings: Meeting[] = uniqueEventTypes.map((eventType: any, index: number) => ({
                     id: index + 2, // Start from 2 to match existing IDs
                     title: eventType.name,
                     duration: `${eventType.duration} minutes`,
@@ -580,27 +671,39 @@ const MeetingsPage: React.FC = () => {
                     color: index % 2 === 0 ? 'text-purple-400' : 'text-yellow-400',
                 }));
                 
+                console.log('🔄 Transformed meetings:', transformedMeetings);
+                
                 if (transformedMeetings.length > 0) {
                     setCalendlyMeetings(transformedMeetings);
+                    console.log('✅ Set Calendly meetings successfully');
+                } else {
+                    console.log('⚠️ No transformed meetings found - setting empty array');
+                    setCalendlyMeetings([]);
                 }
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                console.error('❌ API Error:', response.status, errorData);
             }
         } catch (error) {
-            console.error('Error fetching Calendly event types:', error);
-            // Keep using default meetings if Calendly fetch fails
+            console.error('❌ Error fetching Calendly event types:', error);
+            // Keep empty array if Calendly fetch fails
+            setCalendlyMeetings([]);
         } finally {
-            setIsLoadingEventTypes(false);
+            console.log('🏁 Finished fetching Calendly event types');
         }
     };
 
     // Function to fetch Calendly availability
     const fetchCalendlyAvailability = async (eventTypeUri: string, startDate: string, endDate: string, timezone?: string) => {
+        if (selectedAnalyst === null) return;
         setIsLoadingAvailability(true);
-        console.log('Fetching Calendly availability:', { eventTypeUri, startDate, endDate, timezone });
+        console.log('Fetching Calendly availability:', { eventTypeUri, startDate, endDate, timezone, analystId: selectedAnalyst });
         try {
             const url = new URL('/api/calendly/availability', window.location.origin);
             url.searchParams.append('eventTypeUri', eventTypeUri);
             url.searchParams.append('startDate', startDate);
             url.searchParams.append('endDate', endDate);
+            url.searchParams.append('analystId', selectedAnalyst.toString());
             if (timezone) {
                 url.searchParams.append('timezone', timezone);
             }
@@ -654,31 +757,75 @@ const MeetingsPage: React.FC = () => {
         };
     }, []);
 
-    // Fetch team data on component mount
+    // Fetch team data and check Calendly integration on component mount
     useEffect(() => {
         fetchTeamData();
+        checkAllAnalystsCalendlyIntegration();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Fetch Calendly event types when Assassin is selected
+    // Fetch Calendly event types when an analyst with Calendly integration is selected
     useEffect(() => {
-        if (selectedAnalyst === 1) { // Assassin's ID is 1
-            fetchCalendlyEventTypes();
-        } else {
-            // Use default meetings for other analysts
-            setCalendlyMeetings(meetings);
-        }
+        const handleAnalystSelection = async () => {
+            if (selectedAnalyst !== null) {
+                // Reset ALL selections when analyst changes
+                console.log(`🔄 Resetting all selections for new analyst ${selectedAnalyst}`);
+                setCalendlyMeetings([]);
+                setSelectedMeeting(null);
+                setSelectedDate('');
+                setSelectedTime('');
+                setSelectedTimezone('');
+                setAvailableDates([]);
+                setAvailableTimesByDate({});
+                setSlotUrlsByDateTime({});
+                setRawTimestampsByDateTime({});
+                setCurrentStep(1); // Reset to analyst selection step
+                setIsLoadingEventTypes(true);
+                
+                try {
+                    // Check if this specific analyst has Calendly integration
+                    const hasCalendly = await checkSpecificAnalystCalendlyIntegration(selectedAnalyst);
+                    
+                    if (hasCalendly) {
+                        console.log(`🎯 Analyst ${selectedAnalyst} has Calendly integration - fetching event types`);
+                        await fetchCalendlyEventTypes();
+                    } else {
+                        console.log(`📋 Analyst ${selectedAnalyst} does not have Calendly integration - no meetings available`);
+                        // Keep empty array - will show "no bookings available" message
+                        setCalendlyMeetings([]);
+                    }
+                } catch (error) {
+                    console.error('Error handling analyst selection:', error);
+                    setCalendlyMeetings([]);
+                } finally {
+                    setIsLoadingEventTypes(false);
+                }
+            }
+        };
+        
+        handleAnalystSelection();
     }, [selectedAnalyst]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Fetch Calendly availability when meeting type, month, or timezone change
     useEffect(() => {
-        if (selectedAnalyst === 1 && selectedMeeting !== null && calendlyEventTypes.length > 0 && selectedTimezone) {
-            console.log('Attempting to fetch availability:', {
-                selectedMeeting,
-                calendlyEventTypesLength: calendlyEventTypes.length,
-                calculatedIndex: selectedMeeting - 2,
-                selectedTimezone,
-                currentMonth: currentMonth.toISOString().split('T')[0]
-            });
+        const handleAvailabilityFetch = async () => {
+            if (selectedAnalyst !== null && selectedMeeting !== null && calendlyEventTypes.length > 0) {
+                // Use the cached Calendly integration status instead of making another API call
+                const hasCalendly = hasCalendlyIntegration(selectedAnalyst);
+                
+                if (hasCalendly) {
+                    // For timezone changes, only re-fetch if we already have availability data
+                    // This prevents unnecessary re-fetching on initial timezone selection
+                    if (selectedTimezone && Object.keys(availableTimesByDate).length === 0) {
+                        console.log('⏭️ Skipping availability fetch - no existing data and timezone selected');
+                        return;
+                    }
+                    console.log('Attempting to fetch availability:', {
+                        selectedMeeting,
+                        calendlyEventTypesLength: calendlyEventTypes.length,
+                        calculatedIndex: selectedMeeting - 2,
+                        selectedTimezone,
+                        currentMonth: currentMonth.toISOString().split('T')[0]
+                    });
             
             const selectedEventType = calendlyEventTypes[selectedMeeting - 2]; // Adjust index
             console.log('Selected event type:', selectedEventType);
@@ -698,10 +845,36 @@ const MeetingsPage: React.FC = () => {
                 const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
                 startOfMonth.setHours(0, 0, 0, 0);
                 
-                // Use whichever is later: minimum safe date or start of month
-                const startDate = startOfMonth > minStartDate ? startOfMonth : minStartDate;
+                // Always use the future date - never fetch past dates for scheduling
+                // If the month being viewed is in the past, start from tomorrow instead
+                let startDate = startOfMonth > minStartDate ? startOfMonth : minStartDate;
+                
+                // Double-check: ensure we never start from a past date
+                const now = new Date();
+                if (startDate <= now) {
+                    console.warn('⚠️ Start date was in the past, adjusting to tomorrow');
+                    startDate = new Date(now);
+                    startDate.setDate(startDate.getDate() + 1);
+                    startDate.setHours(12, 0, 0, 0);
+                }
+                
+                console.log('Date range calculation:', {
+                    currentMonth: currentMonth.toISOString().split('T')[0],
+                    startOfMonth: startOfMonth.toISOString().split('T')[0],
+                    minStartDate: minStartDate.toISOString().split('T')[0],
+                    finalStartDate: startDate.toISOString().split('T')[0],
+                    isStartOfMonthInPast: startOfMonth < minStartDate
+                });
+                
+                // Limit the end date to avoid requesting too far in the future (Calendly typically allows 3-6 months)
+                const maxEndDate = new Date();
+                maxEndDate.setMonth(maxEndDate.getMonth() + 3); // 3 months from now
+                
                 const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
                 endOfMonth.setHours(23, 59, 59, 999);
+                
+                // Use the earlier of end of month or max allowed date
+                const endDate = endOfMonth < maxEndDate ? endOfMonth : maxEndDate;
                 
                 // Fetch availability in 7-day chunks
                 const fetchAllAvailability = async () => {
@@ -711,14 +884,16 @@ const MeetingsPage: React.FC = () => {
                     const allRawTimestamps: Record<string, string> = {};
                     
                     let currentStart = new Date(startDate);
+                    let chunkCount = 0;
+                    const maxChunks = 12; // Limit to 12 chunks (12 weeks = 3 months)
                     
-                    while (currentStart <= endOfMonth) {
-                        // Calculate end date (7 days from start or end of month, whichever is earlier)
+                    while (currentStart <= endDate && chunkCount < maxChunks) {
+                        // Calculate end date (7 days from start or end date, whichever is earlier)
                         const currentEnd = new Date(currentStart);
                         currentEnd.setDate(currentEnd.getDate() + 6); // 7 days total (inclusive)
                         
-                        if (currentEnd > endOfMonth) {
-                            currentEnd.setTime(endOfMonth.getTime());
+                        if (currentEnd > endDate) {
+                            currentEnd.setTime(endDate.getTime());
                         }
                         
                         const startDateStr = currentStart.toISOString().split('T')[0];
@@ -731,6 +906,7 @@ const MeetingsPage: React.FC = () => {
                             url.searchParams.append('eventTypeUri', selectedEventType.id);
                             url.searchParams.append('startDate', startDateStr);
                             url.searchParams.append('endDate', endDateStr);
+                            url.searchParams.append('analystId', selectedAnalyst.toString());
                             if (selectedTimezone) {
                                 url.searchParams.append('timezone', selectedTimezone);
                             }
@@ -755,7 +931,19 @@ const MeetingsPage: React.FC = () => {
                                     Object.assign(allRawTimestamps, data.rawTimestamps);
                                 }
                             } else {
-                                console.error('Failed to fetch chunk:', response.status, await response.text());
+                                const errorText = await response.text();
+                                
+                                // Handle different error types appropriately
+                                if (response.status === 403) {
+                                    // Permission denied - this is expected for some date ranges
+                                    console.log(`ℹ️ Skipping date range ${startDateStr} to ${endDateStr} - no permission (this is normal)`);
+                                } else if (response.status === 400) {
+                                    // Bad request - likely invalid date range
+                                    console.log(`ℹ️ Skipping date range ${startDateStr} to ${endDateStr} - invalid range`);
+                                } else {
+                                    // Other errors - log as warning but don't treat as critical
+                                    console.warn(`⚠️ Failed to fetch chunk for ${startDateStr} to ${endDateStr}:`, response.status, errorText);
+                                }
                             }
                         } catch (error) {
                             console.error('Error fetching chunk:', error);
@@ -763,6 +951,7 @@ const MeetingsPage: React.FC = () => {
                         
                         // Move to next week
                         currentStart.setDate(currentStart.getDate() + 7);
+                        chunkCount++;
                     }
                     
                     // Remove duplicates and sort
@@ -771,26 +960,42 @@ const MeetingsPage: React.FC = () => {
                     console.log('Total availability fetched:', {
                         totalDates: uniqueDates.length,
                         dates: uniqueDates,
-                        totalSlotUrls: Object.keys(allSlotUrls).length
+                        totalSlotUrls: Object.keys(allSlotUrls).length,
+                        chunksProcessed: chunkCount,
+                        maxChunks: maxChunks
                     });
                     
-                    setAvailableDates(uniqueDates);
-                    setAvailableTimesByDate(allTimesByDate);
-                    setSlotUrlsByDateTime(allSlotUrls);
-                    setRawTimestampsByDateTime(allRawTimestamps);
+                    // Only set availability if we got some data, otherwise keep empty arrays
+                    if (uniqueDates.length > 0) {
+                        setAvailableDates(uniqueDates);
+                        setAvailableTimesByDate(allTimesByDate);
+                        setSlotUrlsByDateTime(allSlotUrls);
+                        setRawTimestampsByDateTime(allRawTimestamps);
+                    } else {
+                        console.warn('No availability data received - user can still book directly through Calendly popup');
+                        // Keep empty arrays - this will show "no available times" but booking will still work
+                        setAvailableDates([]);
+                        setAvailableTimesByDate({});
+                        setSlotUrlsByDateTime({});
+                        setRawTimestampsByDateTime({});
+                    }
                 };
                 
                 fetchAllAvailability();
             } else {
                 console.error('No valid event type found at index', selectedMeeting - 2);
             }
-        } else {
-            console.log('Skipping Calendly fetch:', {
-                selectedAnalyst,
-                selectedMeeting,
-                calendlyEventTypesLength: calendlyEventTypes.length
-            });
-        }
+                } else {
+                    console.log('Skipping Calendly fetch:', {
+                        selectedAnalyst,
+                        selectedMeeting,
+                        calendlyEventTypesLength: calendlyEventTypes.length
+                    });
+                }
+            }
+        };
+        
+        handleAvailabilityFetch();
     }, [selectedMeeting, currentMonth, selectedAnalyst, calendlyEventTypes, selectedTimezone]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Handle step and selectedAnalyst parameters from URL (for navigation back from reviews page)
@@ -825,10 +1030,23 @@ const MeetingsPage: React.FC = () => {
     
     // Reset selected time when timezone changes (times will be converted)
     useEffect(() => {
-        if (selectedAnalyst === 1 && selectedTimezone && selectedDate) {
+        if (hasCalendlyIntegration(selectedAnalyst) && selectedTimezone && selectedDate) {
             setSelectedTime(''); // Reset so user re-selects with new timezone
         }
     }, [selectedTimezone]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Handle timezone change loading state
+    useEffect(() => {
+        if (selectedTimezone && Object.keys(availableTimesByDate).length > 0) {
+            setIsTimezoneChanging(true);
+            // Clear the loading state after a short delay to allow for re-fetch
+            const timer = setTimeout(() => {
+                setIsTimezoneChanging(false);
+            }, 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [selectedTimezone]); // eslint-disable-line react-hooks/exhaustive-deps
+
     // const router = useRouter(); // Removed to prevent compilation error
 
     const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
@@ -856,8 +1074,8 @@ const MeetingsPage: React.FC = () => {
                 console.log('Processing final step, currentStep:', currentStep);
                 const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
                 
-                // For Assassin (ID: 1), open Calendly popup widget
-                if (selectedAnalyst === 1 && selectedDate && selectedTime) {
+                // For analysts with Calendly integration, open Calendly popup widget
+                if (hasCalendlyIntegration(selectedAnalyst) && selectedDate && selectedTime) {
                     // Find the scheduling URL by matching the display time directly
                     // This is more reliable since the user selected from the displayed times
                     let selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
@@ -1067,6 +1285,17 @@ const MeetingsPage: React.FC = () => {
         } else {
             newMonth.setMonth(newMonth.getMonth() + 1);
         }
+        
+        // Prevent navigation to past months for scheduling
+        const now = new Date();
+        const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+        const newMonthStart = new Date(newMonth.getFullYear(), newMonth.getMonth(), 1);
+        
+        if (newMonthStart < currentMonthStart) {
+            console.log('🚫 Cannot navigate to past months for scheduling');
+            return; // Don't navigate to past months
+        }
+        
         setCurrentMonth(newMonth);
     };
 
@@ -1102,8 +1331,8 @@ const MeetingsPage: React.FC = () => {
     };
 
     const isDateAvailable = (date: Date) => {
-        // For Assassin with Calendly integration
-        if (selectedAnalyst === 1) {
+        // For analysts with Calendly integration
+        if (hasCalendlyIntegration(selectedAnalyst)) {
             // Must have a meeting type selected first
             if (selectedMeeting === null) {
                 return false; // Disable all dates until meeting type is selected
@@ -1231,8 +1460,18 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
 
     // Get time slot objects with display time and scheduling URL
     const getTimeSlotObjects = (): Array<{ displayTime: string; schedulingUrl: string; utcTime: string }> => {
-        // For Assassin with Calendly integration
-        if (selectedAnalyst === 1 && selectedDate && availableTimesByDate[selectedDate]) {
+        // For analysts with Calendly integration
+        if (hasCalendlyIntegration(selectedAnalyst) && selectedDate && availableTimesByDate[selectedDate]) {
+            // If no timezone is selected, return empty array (no slots available)
+            if (!selectedTimezone) {
+                return [];
+            }
+            
+            // If timezone is changing, return empty array to prevent showing old data
+            if (isTimezoneChanging) {
+                return [];
+            }
+            
             const localTimes = availableTimesByDate[selectedDate]; // These are now in user's timezone
             
             // Map each local time to an object with display time and URL
@@ -1254,11 +1493,17 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
         }
         
         // Default time slots for other analysts (no Calendly URLs)
-        const defaultTimes = [
-            '9:00 AM', '10:00 AM', '11:30 AM', '12:30 PM', 
-            '1:30 PM', '2:00 PM', '2:30 PM', '5:30 PM'
-        ];
-        return defaultTimes.map(time => ({ displayTime: time, schedulingUrl: '', utcTime: time }));
+        // Only show default times if no timezone is selected and not changing timezone
+        if (!selectedTimezone && !isTimezoneChanging) {
+            const defaultTimes = [
+                '9:00 AM', '10:00 AM', '11:30 AM', '12:30 PM', 
+                '1:30 PM', '2:00 PM', '2:30 PM', '5:30 PM'
+            ];
+            return defaultTimes.map(time => ({ displayTime: time, schedulingUrl: '', utcTime: time }));
+        }
+        
+        // Return empty array if timezone is selected but no Calendly integration
+        return [];
     };
 
     // Get time slots based on selected date and convert to selected timezone
@@ -2104,9 +2349,20 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                             <p className="text-sm sm:text-base text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Choose the session that best fits your needs</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {isLoadingEventTypes && selectedAnalyst === 1 ? (
-                                <div className="col-span-full flex items-center justify-center py-8">
-                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                            {isLoadingEventTypes ? (
+                                <div className="col-span-full flex flex-col items-center justify-center py-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mb-3"></div>
+                                    <p className="text-gray-400 text-sm">Loading meeting types...</p>
+                                </div>
+                            ) : calendlyMeetings.length === 0 ? (
+                                <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
+                                    <div className="text-gray-400 text-lg mb-2">📅</div>
+                                    <h3 className="text-white text-lg font-semibold mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                                        No Bookings Available
+                                    </h3>
+                                    <p className="text-gray-400 text-sm max-w-md">
+                                        This analyst doesn't have any active meeting types set up in their Calendly account yet.
+                                    </p>
                                 </div>
                             ) : (
                                 calendlyMeetings.map((meeting) => (
@@ -2282,7 +2538,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                             className="bg-[#1F1F1F] rounded-xl mt-6 relative overflow-hidden p-4 w-full max-w-[412px] min-h-[284px] flex flex-col items-start gap-2.5"
                                         >
                                             {/* Loading Overlay */}
-                                            {isLoadingAvailability && selectedAnalyst === 1 && (
+                                            {isLoadingAvailability && hasCalendlyIntegration(selectedAnalyst) && (
                                                 <div className="absolute inset-0 bg-[#1F1F1F]/90 flex items-center justify-center z-30 rounded-xl">
                                                     <div className="flex flex-col items-center gap-3">
                                                         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-400"></div>
@@ -2312,8 +2568,23 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                                     <div className="flex gap-2">
                                             <button
                                                 onClick={() => navigateMonth('prev')}
-                                                            className="text-white hover:text-gray-300 transition-colors w-4 h-4 focus:outline-none focus:ring-0"
-                                                            style={{ outline: 'none', boxShadow: 'none' }}
+                                                disabled={(() => {
+                                                    const now = new Date();
+                                                    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                                                    const viewingMonthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+                                                    return viewingMonthStart <= currentMonthStart;
+                                                })()}
+                                                className={`transition-colors w-4 h-4 focus:outline-none focus:ring-0 ${
+                                                    (() => {
+                                                        const now = new Date();
+                                                        const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+                                                        const viewingMonthStart = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+                                                        return viewingMonthStart <= currentMonthStart 
+                                                            ? 'text-gray-500 cursor-not-allowed' 
+                                                            : 'text-white hover:text-gray-300';
+                                                    })()
+                                                }`}
+                                                style={{ outline: 'none', boxShadow: 'none' }}
                                             >
                                                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -2349,12 +2620,12 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                                         <button
                                                                         key={weekIndex}
                                                                         onClick={() => day && !isLoadingAvailability && handleDateSelect(day)}
-                                                                        disabled={!day || !isDateAvailable(day) || (isLoadingAvailability && selectedAnalyst === 1)}
+                                                                        disabled={!day || !isDateAvailable(day) || (isLoadingAvailability && hasCalendlyIntegration(selectedAnalyst))}
                                                             className={`
                                                                             flex items-center justify-center transition-all duration-200 w-8 h-8 rounded-lg text-sm focus:outline-none focus:ring-0
                                                                             ${day && isDateSelected(day)
                                                                                 ? 'bg-white text-black'
-                                                                                : day && isDateAvailable(day) && !(isLoadingAvailability && selectedAnalyst === 1)
+                                                                                : day && isDateAvailable(day) && !(isLoadingAvailability && hasCalendlyIntegration(selectedAnalyst))
                                                                                 ? 'bg-[#404040] text-white hover:bg-gray-500 cursor-pointer'
                                                                                 : 'text-[#909090] cursor-not-allowed'
                                                                             }
@@ -2377,7 +2648,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                     <h3 className="text-lg font-semibold text-white mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Available Time Slots</h3>
                                     
                                     {/* Loading state for time slots */}
-                                    {isLoadingAvailability && selectedAnalyst === 1 ? (
+                                    {isLoadingAvailability && hasCalendlyIntegration(selectedAnalyst) ? (
                                         <div className="flex items-center justify-center py-12">
                                             <div className="flex flex-col items-center gap-3">
                                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>
@@ -2386,7 +2657,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                                 </p>
                                             </div>
                                         </div>
-                                    ) : (
+                                    ) : timeSlotObjects.length > 0 ? (
                                         <div 
                                             className="flex flex-wrap sm:grid sm:grid-cols-3 md:grid-cols-4 sm:gap-2 mb-4"
                                             style={{
@@ -2394,22 +2665,29 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                                 gap: window.innerWidth < 480 ? '8px' : window.innerWidth < 640 ? '10px' : undefined
                                             }}
                                         >
-                                        {timeSlotObjects.map((slot, index) => (
+                                        {timeSlotObjects.map((slot, index) => {
+                                            const isDisabled = !selectedTimezone || isTimezoneChanging;
+                                            return (
                                             <button
                                                 key={slot.displayTime}
-                                                onClick={() => handleTimeSelect(slot.displayTime)}
+                                                onClick={() => !isDisabled && handleTimeSelect(slot.displayTime)}
+                                                disabled={isDisabled}
                                                 className={`
                                                         font-medium transition-all duration-200 relative z-20 focus:outline-none focus:ring-0
                                                         lg:text-xs lg:w-full lg:py-2 lg:px-3 lg:rounded-lg lg:h-auto
                                                         sm:w-full
                                                         ${window.innerWidth < 480 ? 'text-[10px]' : window.innerWidth < 640 ? 'text-xs' : 'text-xs'}
-                                                    ${selectedTime === slot.displayTime
-                                                        ? 'bg-white text-black border border-white'
+                                                    ${isDisabled 
+                                                        ? 'bg-black text-gray-400 border border-gray-500 cursor-not-allowed'
+                                                        : selectedTime === slot.displayTime
+                                                            ? 'bg-white text-black border border-white'
                                                             : 'bg-[#0D0D0D] text-white border border-white'
                                                     }
                                                 `}
                                                 style={{
-                                                    backgroundColor: selectedTime === slot.displayTime ? 'white' : '#0D0D0D',
+                                                    backgroundColor: isDisabled 
+                                                        ? '#000000' 
+                                                        : selectedTime === slot.displayTime ? 'white' : '#0D0D0D',
                                                     width: window.innerWidth < 480 ? '75px' : window.innerWidth < 640 ? '85px' : '100%',
                                                     height: window.innerWidth < 480 ? '36px' : window.innerWidth < 640 ? '41px' : 'auto',
                                                     paddingTop: window.innerWidth < 480 ? '8px' : window.innerWidth < 640 ? '12px' : undefined,
@@ -2426,22 +2704,47 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                                     lineHeight: window.innerWidth < 640 ? '1.2' : undefined
                                                 }}
                                                 onMouseEnter={(e) => {
-                                                    if (selectedTime !== slot.displayTime) {
+                                                    if (!isDisabled && selectedTime !== slot.displayTime) {
                                                         (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)';
                                                     }
                                                 }}
                                                 onMouseLeave={(e) => {
-                                                    if (selectedTime !== slot.displayTime) {
+                                                    if (!isDisabled && selectedTime !== slot.displayTime) {
                                                         (e.target as HTMLButtonElement).style.backgroundColor = '#0D0D0D';
                                                     }
                                                 }}
                                             >
                                                 {slot.displayTime}
                                             </button>
-                                        ))}
+                                            );
+                                        })}
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                                            <div className="text-gray-400 text-lg mb-2">
+                                                {!selectedTimezone ? '🌍' : isTimezoneChanging ? '⏳' : '⏰'}
+                                            </div>
+                                            <h3 className="text-white text-lg font-semibold mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                                                {!selectedTimezone 
+                                                    ? 'Select Timezone First' 
+                                                    : isTimezoneChanging 
+                                                        ? 'Loading Time Slots...' 
+                                                        : 'No Available Times'
+                                                }
+                                            </h3>
+                                            <p className="text-gray-400 text-sm max-w-md mb-4">
+                                                {!selectedTimezone 
+                                                    ? 'Please select a timezone to see available time slots.'
+                                                    : isTimezoneChanging 
+                                                        ? 'Converting time slots to your selected timezone...'
+                                                        : 'No available time slots found for the selected date.'
+                                                }
+                                            </p>
                                         </div>
                                     )}
-                                    <p className="text-sm text-gray-400">Times shown in {getSelectedTimezoneLabel() || 'UTC'}</p>
+                                    {timeSlotObjects.length > 0 && (
+                                        <p className="text-sm text-gray-400">Times shown in {getSelectedTimezoneLabel() || 'UTC'}</p>
+                                    )}
                                 </div>
                             </div>
                         </div>

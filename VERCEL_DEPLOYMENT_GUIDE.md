@@ -10,8 +10,8 @@ For the Calendly integration to work on Vercel (or any production deployment), y
 - **Required**: Yes
 - **Used for**: All Calendly API calls (fetching events, availability, etc.)
 
-### 2. `CALENDLY_ASSASSIN_USER_URI`
-- **Description**: Assassin's Calendly User URI
+### 2. `CALENDLY_ANALYST_1_URI`
+- **Description**: Assassin's Calendly User URI (Analyst ID: 1)
 - **Format**: `https://api.calendly.com/users/XXXXXXXXXXXXXXXX`
 - **Required**: Yes (for Assassin's meeting bookings)
 - **Used for**: Fetching Assassin's event types and availability
@@ -86,7 +86,7 @@ curl -X GET "https://api.calendly.com/organization_memberships?organization=YOUR
 4. Redeploy the application
 
 ### Issue: "User URI is required" Error
-**Cause**: `CALENDLY_ASSASSIN_USER_URI` is not set in Vercel environment variables
+**Cause**: `CALENDLY_ANALYST_1_URI` is not set in Vercel environment variables
 
 **Solution**:
 1. Find Assassin's URI using one of the methods above
@@ -118,7 +118,7 @@ For local development, create a `.env.local` file in the project root:
 ```env
 # Calendly Integration
 CALENDLY_ACCESS_TOKEN=your_calendly_access_token_here
-CALENDLY_ASSASSIN_USER_URI=https://api.calendly.com/users/XXXXXXXXXXXXXXXX
+CALENDLY_ANALYST_1_URI=https://api.calendly.com/users/XXXXXXXXXXXXXXXX
 ```
 
 **Note**: Never commit `.env.local` to git - it's already in `.gitignore`
@@ -140,7 +140,7 @@ CALENDLY_ASSASSIN_USER_URI=https://api.calendly.com/users/XXXXXXXXXXXXXXXX
 Before deploying to Vercel, ensure:
 
 - [ ] `CALENDLY_ACCESS_TOKEN` is added to Vercel
-- [ ] `CALENDLY_ASSASSIN_USER_URI` is added to Vercel
+- [ ] `CALENDLY_ANALYST_1_URI` is added to Vercel
 - [ ] Both variables are enabled for **Production** environment
 - [ ] Application has been redeployed after adding variables
 - [ ] Test the Calendly integration on the deployed site

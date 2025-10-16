@@ -16,13 +16,37 @@ export async function GET(request: NextRequest) {
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate') || startDate;
     const userTimezone = searchParams.get('timezone') || 'UTC';
+    const analystId = searchParams.get('analystId');
 
-    if (!process.env.CALENDLY_ACCESS_TOKEN) {
+    if (!analystId) {
       return NextResponse.json(
-        { error: 'Calendly access token not configured' },
-        { status: 500 }
+        { error: 'Analyst ID is required' },
+        { status: 400 }
       );
     }
+
+    // Fetch analyst's Calendly credentials from database
+    const credentialsResponse = await fetch(
+      `${request.nextUrl.origin}/api/analysts/calendly-credentials?analystId=${analystId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!credentialsResponse.ok) {
+      const errorData = await credentialsResponse.json();
+      console.error('❌ Failed to fetch analyst credentials:', errorData);
+      return NextResponse.json(
+        { error: errorData.error || 'Failed to fetch analyst credentials' },
+        { status: credentialsResponse.status }
+      );
+    }
+
+    const credentialsData = await credentialsResponse.json();
+    const { accessToken } = credentialsData.credentials;
 
     if (!eventTypeUri || !startDate) {
       return NextResponse.json(
@@ -43,14 +67,25 @@ export async function GET(request: NextRequest) {
 
     const response = await fetch(url.toString(), {
       headers: {
-        'Authorization': `Bearer ${process.env.CALENDLY_ACCESS_TOKEN}`,
+        'Authorization': `Bearer ${accessToken}`,
         'Content-Type': 'application/json',
       },
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error('Calendly API error:', errorData);
+      console.error('Calendly API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        url: url.toString(),
+        errorData,
+        requestParams: {
+          eventTypeUri,
+          startTime,
+          endTime,
+          analystId
+        }
+      });
       return NextResponse.json(
         { error: 'Failed to fetch availability from Calendly', details: errorData },
         { status: response.status }

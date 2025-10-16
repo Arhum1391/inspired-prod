@@ -15,10 +15,10 @@ export default function CryptoTradingBootcampPage() {
       <div
         className="absolute z-0 w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] lg:w-[588px] lg:h-[588px]"
         style={{
-          right: '-150px',
-          top: '-150px',
+          right: '-230px',
+          top: '-230px',
           background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-          filter: 'blur(150px)',
+          filter: 'blur(180px)',
           transform: 'rotate(96.22deg)',
           borderRadius: '50%',
           pointerEvents: 'none'
@@ -99,9 +99,9 @@ export default function CryptoTradingBootcampPage() {
                     <div
                       className="absolute w-[300px] h-[300px] z-0"
                       style={{
-                        left: '140px',
-                        top: '-200px',
-                        background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                        left: '180px',
+                        top: '-190px',
+                        background: 'linear-gradient(107.68deg,rgb(99, 71, 243) 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
                         filter: 'blur(60px)',
                         transform: 'rotate(137.16deg)',
                         borderRadius: '50%'
@@ -147,8 +147,8 @@ export default function CryptoTradingBootcampPage() {
                     <div
                       className="absolute w-[300px] h-[300px] z-0"
                       style={{
-                        left: '140px',
-                        top: '-200px',
+                        left: '160px',
+                        top: '-190px',
                         background: 'linear-gradient(110.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
                         filter: 'blur(60px)',
                         transform: 'rotate(137.16deg)',
@@ -198,8 +198,8 @@ export default function CryptoTradingBootcampPage() {
                     <div
                       className="absolute w-[300px] h-[300px] z-0"
                       style={{
-                        left: '140px',
-                        top: '-200px',
+                        left: '180px',
+                        top: '-190px',
                         background: 'linear-gradient(110.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
                         filter: 'blur(60px)',
                         transform: 'rotate(137.16deg)',
@@ -246,8 +246,8 @@ export default function CryptoTradingBootcampPage() {
                     <div
                       className="absolute w-[300px] h-[300px] z-0"
                       style={{
-                        left: '140px',
-                        top: '-200px',
+                        left: '170px',
+                        top: '-190px',
                         background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
                         filter: 'blur(60px)',
                         transform: 'rotate(137.16deg)',
@@ -297,7 +297,7 @@ export default function CryptoTradingBootcampPage() {
                     style={{
                       left: '400px',
                       top: '-200px',
-                      background: 'linear-gradient(110.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                      background: 'linear-gradient(110.68deg,rgb(115, 92, 230) 9.35%,rgb(3, 130, 133) 34.7%,rgb(46, 13, 194) 60.06%, #B9B9E9 72.73%,rgb(223, 71, 236) 88.58%)',
                       filter: 'blur(80px)',
                       transform: 'rotate(137.16deg)',
                       borderRadius: '50%'

@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
         : `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: body.type === 'bootcamp'
         ? `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/bootcamp/crypto-trading/register?payment=cancelled`
-        : `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/book?payment=cancelled`,
+        : `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/meetings?payment=cancelled`,
       expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes from now
     });
 

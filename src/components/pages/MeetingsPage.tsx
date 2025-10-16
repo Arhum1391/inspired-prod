@@ -452,7 +452,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
 };
 
 // --- MAIN PAGE COMPONENT ---
-const MeetingsPage: React.FC = () => {
+const MeetingsPage = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [currentStep, setCurrentStep] = useState<number>(1);
@@ -1030,7 +1030,7 @@ const MeetingsPage: React.FC = () => {
     
     // Reset selected time when timezone changes (times will be converted)
     useEffect(() => {
-        if (hasCalendlyIntegration(selectedAnalyst) && selectedTimezone && selectedDate) {
+        if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && selectedTimezone && selectedDate) {
             setSelectedTime(''); // Reset so user re-selects with new timezone
         }
     }, [selectedTimezone]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -1048,6 +1048,73 @@ const MeetingsPage: React.FC = () => {
     }, [selectedTimezone]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // const router = useRouter(); // Removed to prevent compilation error
+
+    // Flatten all timezones for filtering - moved before handleContinue
+    const allTimezones = timezoneGroups.flatMap(group => 
+        group.timezones.map(tz => ({ ...tz, region: group.region }))
+    );
+
+    const filteredTimezones = allTimezones.filter(tz => 
+        tz.label.toLowerCase().includes(timezoneSearch.toLowerCase()) ||
+        tz.region.toLowerCase().includes(timezoneSearch.toLowerCase())
+    );
+
+    // Get time slot objects - moved before handleContinue
+    const getTimeSlotObjects = (): Array<{ displayTime: string; schedulingUrl: string; utcTime: string }> => {
+        // For analysts with Calendly integration
+        if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && selectedDate && availableTimesByDate[selectedDate]) {
+            // If no timezone is selected, return empty array (no slots available)
+            if (!selectedTimezone) {
+                return [];
+            }
+            
+            // If timezone is changing, return empty array to prevent showing old data
+            if (isTimezoneChanging) {
+                return [];
+            }
+            
+            const localTimes = availableTimesByDate[selectedDate]; // These are now in user's timezone
+            
+            // Map each local time to an object with display time and URL
+            const slots = localTimes.map(localTime => {
+                const dateTimeKey = `${selectedDate}|${localTime}`;
+                const schedulingUrl = slotUrlsByDateTime[dateTimeKey] || '';
+                
+                // Since the API now handles timezone conversion, 
+                // the times are already in the user's timezone
+                return {
+                    displayTime: localTime, // Already in user's timezone
+                    schedulingUrl,
+                    utcTime: localTime // For matching purposes, use the same value
+                };
+            });
+            
+            console.log('Time slot objects (API converted):', slots.slice(0, 3));
+            return slots;
+        }
+        
+        // Default time slots for other analysts (no Calendly URLs)
+        // Only show default times if no timezone is selected and not changing timezone
+        if (!selectedTimezone && !isTimezoneChanging) {
+            const defaultTimes = [
+                '9:00 AM', '10:00 AM', '11:30 AM', '12:30 PM', 
+                '1:30 PM', '2:00 PM', '2:30 PM', '5:30 PM'
+            ];
+            return defaultTimes.map(time => ({ displayTime: time, schedulingUrl: '', utcTime: time }));
+        }
+        
+        // Return empty array if timezone is selected but no Calendly integration
+        return [];
+    };
+
+    // Get time slots based on selected date and convert to selected timezone
+    const getTimeSlots = () => {
+        return getTimeSlotObjects().map(slot => slot.displayTime);
+    };
+
+    // Available time slots
+    const timeSlots = getTimeSlots();
+    const timeSlotObjects = getTimeSlotObjects();
 
     const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
                                currentStep === 3 ? (!fullName || !email || !!nameError || !!emailError) : false;
@@ -1074,13 +1141,19 @@ const MeetingsPage: React.FC = () => {
                 console.log('Processing final step with Stripe payment, currentStep:', currentStep);
                 const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
                 
-
-                // For analysts with Calendly integration, open Calendly popup widget
-                if (hasCalendlyIntegration(selectedAnalyst) && selectedDate && selectedTime) {
+                // Get Calendly scheduling URL if analyst has Calendly integration
+                let calendlyUrl = '';
+                if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && selectedDate && selectedTime) {
                     // Find the scheduling URL by matching the display time directly
-                    // This is more reliable since the user selected from the displayed times
-                    let selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
-                    let utcTimeForSlot = '';
+                    const selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
+                    
+                    if (selectedSlot && selectedSlot.schedulingUrl) {
+                        calendlyUrl = selectedSlot.schedulingUrl;
+                        console.log('Found Calendly scheduling URL:', calendlyUrl);
+                    } else {
+                        console.warn('No Calendly URL found for selected time slot');
+                    }
+                }
 
                 // Create Stripe checkout session for payment
                 try {
@@ -1125,17 +1198,25 @@ const MeetingsPage: React.FC = () => {
                     if (response.ok && data.success) {
                         console.log('Stripe checkout session created:', data);
                         
-                        // Store booking details in sessionStorage for success page
+                        // Store booking details in sessionStorage for Calendly confirmation and success page
                         const bookingDetails = {
                             analyst: selectedAnalyst?.toString() || '0',
+                            analystName: analysts.find(a => a.id === selectedAnalyst)?.name || '',
                             meeting: selectedMeeting?.toString() || '1',
+                            meetingTitle: selectedMeetingData.title || '',
+                            meetingDuration: selectedMeetingData.duration || '',
                             date: selectedDate || '',
                             time: selectedTime || '',
                             timezone: selectedTimezoneData?.label || '',
+                            timezoneValue: selectedTimezone || '',
                             notes: notes || '',
+                            fullName: fullName,
+                            email: email,
                             sessionId: data.sessionId,
                             productName: data.productName,
-                            amount: data.amount
+                            amount: data.amount,
+                            calendlyUrl: calendlyUrl, // Store Calendly URL for after payment
+                            hasCalendlyIntegration: calendlyUrl !== ''
                         };
                         
                         sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
@@ -1198,16 +1279,6 @@ const MeetingsPage: React.FC = () => {
             hour12: true 
         });
     };
-
-    // Flatten all timezones for filtering
-    const allTimezones = timezoneGroups.flatMap(group => 
-        group.timezones.map(tz => ({ ...tz, region: group.region }))
-    );
-
-    const filteredTimezones = allTimezones.filter(tz => 
-        tz.label.toLowerCase().includes(timezoneSearch.toLowerCase()) ||
-        tz.region.toLowerCase().includes(timezoneSearch.toLowerCase())
-    );
 
     const handleTimezoneSearch = (searchValue: string) => {
         setTimezoneSearch(searchValue);
@@ -1281,7 +1352,7 @@ const MeetingsPage: React.FC = () => {
 
     const isDateAvailable = (date: Date) => {
         // For analysts with Calendly integration
-        if (hasCalendlyIntegration(selectedAnalyst)) {
+        if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst)) {
             // Must have a meeting type selected first
             if (selectedMeeting === null) {
                 return false; // Disable all dates until meeting type is selected
@@ -1406,63 +1477,6 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
         // we can return the time as-is for matching purposes
         return localTimeStr;
     };
-
-    // Get time slot objects with display time and scheduling URL
-    const getTimeSlotObjects = (): Array<{ displayTime: string; schedulingUrl: string; utcTime: string }> => {
-        // For analysts with Calendly integration
-        if (hasCalendlyIntegration(selectedAnalyst) && selectedDate && availableTimesByDate[selectedDate]) {
-            // If no timezone is selected, return empty array (no slots available)
-            if (!selectedTimezone) {
-                return [];
-            }
-            
-            // If timezone is changing, return empty array to prevent showing old data
-            if (isTimezoneChanging) {
-                return [];
-            }
-            
-            const localTimes = availableTimesByDate[selectedDate]; // These are now in user's timezone
-            
-            // Map each local time to an object with display time and URL
-            const slots = localTimes.map(localTime => {
-                const dateTimeKey = `${selectedDate}|${localTime}`;
-                const schedulingUrl = slotUrlsByDateTime[dateTimeKey] || '';
-                
-                // Since the API now handles timezone conversion, 
-                // the times are already in the user's timezone
-                return {
-                    displayTime: localTime, // Already in user's timezone
-                    schedulingUrl,
-                    utcTime: localTime // For matching purposes, use the same value
-                };
-            });
-            
-            console.log('Time slot objects (API converted):', slots.slice(0, 3));
-            return slots;
-        }
-        
-        // Default time slots for other analysts (no Calendly URLs)
-        // Only show default times if no timezone is selected and not changing timezone
-        if (!selectedTimezone && !isTimezoneChanging) {
-            const defaultTimes = [
-                '9:00 AM', '10:00 AM', '11:30 AM', '12:30 PM', 
-                '1:30 PM', '2:00 PM', '2:30 PM', '5:30 PM'
-            ];
-            return defaultTimes.map(time => ({ displayTime: time, schedulingUrl: '', utcTime: time }));
-        }
-        
-        // Return empty array if timezone is selected but no Calendly integration
-        return [];
-    };
-
-    // Get time slots based on selected date and convert to selected timezone
-    const getTimeSlots = () => {
-        return getTimeSlotObjects().map(slot => slot.displayTime);
-    };
-
-    // Available time slots
-    const timeSlots = getTimeSlots();
-    const timeSlotObjects = getTimeSlotObjects();
 
     const handleTimeSelect = (time: string) => {
         setSelectedTime(time);
@@ -2487,7 +2501,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                             className="bg-[#1F1F1F] rounded-xl mt-6 relative overflow-hidden p-4 w-full max-w-[412px] min-h-[284px] flex flex-col items-start gap-2.5"
                                         >
                                             {/* Loading Overlay */}
-                                            {isLoadingAvailability && hasCalendlyIntegration(selectedAnalyst) && (
+                                            {isLoadingAvailability && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && (
                                                 <div className="absolute inset-0 bg-[#1F1F1F]/90 flex items-center justify-center z-30 rounded-xl">
                                                     <div className="flex flex-col items-center gap-3">
                                                         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-400"></div>
@@ -2569,12 +2583,12 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                                         <button
                                                                         key={weekIndex}
                                                                         onClick={() => day && !isLoadingAvailability && handleDateSelect(day)}
-                                                                        disabled={!day || !isDateAvailable(day) || (isLoadingAvailability && hasCalendlyIntegration(selectedAnalyst))}
+                                                                        disabled={!day || !isDateAvailable(day) || (isLoadingAvailability && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst))}
                                                             className={`
                                                                             flex items-center justify-center transition-all duration-200 w-8 h-8 rounded-lg text-sm focus:outline-none focus:ring-0
                                                                             ${day && isDateSelected(day)
                                                                                 ? 'bg-white text-black'
-                                                                                : day && isDateAvailable(day) && !(isLoadingAvailability && hasCalendlyIntegration(selectedAnalyst))
+                                                                                : day && isDateAvailable(day) && !(isLoadingAvailability && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst))
                                                                                 ? 'bg-[#404040] text-white hover:bg-gray-500 cursor-pointer'
                                                                                 : 'text-[#909090] cursor-not-allowed'
                                                                             }
@@ -2597,7 +2611,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                     <h3 className="text-lg font-semibold text-white mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Available Time Slots</h3>
                                     
                                     {/* Loading state for time slots */}
-                                    {isLoadingAvailability && hasCalendlyIntegration(selectedAnalyst) ? (
+                                    {isLoadingAvailability && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) ? (
                                         <div className="flex items-center justify-center py-12">
                                             <div className="flex flex-col items-center gap-3">
                                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400"></div>

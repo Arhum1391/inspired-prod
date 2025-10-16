@@ -26,18 +26,9 @@ const BookingSuccessContent: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showSuccess, setShowSuccess] = useState(false);
-
-    // Get booking data from URL parameters
-    const selectedAnalystId = parseInt(searchParams.get('analyst') || '0');
-    const selectedMeetingId = parseInt(searchParams.get('meeting') || '1');
-    const selectedDate = searchParams.get('date') || '';
-    const selectedTime = searchParams.get('time') || '';
-    const selectedTimezone = searchParams.get('timezone') || '';
-    const notes = searchParams.get('notes') || '';
-
-    // Get analyst and meeting data
-    const selectedAnalyst = analysts.find(a => a.id === selectedAnalystId);
-    const selectedMeeting = meetings.find(m => m.id === selectedMeetingId);
+    const [bookingDetails, setBookingDetails] = useState<any>(null);
+    const [calendlyLoaded, setCalendlyLoaded] = useState(false);
+    const [calendlyOpened, setCalendlyOpened] = useState(false);
 
     // Format the date
     const formatDate = (dateString: string) => {
@@ -50,11 +41,136 @@ const BookingSuccessContent: React.FC = () => {
         });
     };
 
+    // Load Calendly script
     useEffect(() => {
+        // Get booking details from sessionStorage
+        const storedDetails = sessionStorage.getItem('bookingDetails');
+        
+        if (storedDetails) {
+            const details = JSON.parse(storedDetails);
+            setBookingDetails(details);
+            console.log('Booking details loaded:', details);
+            
+            // If analyst has Calendly integration, load the script
+            if (details.hasCalendlyIntegration && details.calendlyUrl) {
+                loadCalendlyScript();
+            }
+        } else {
+            // Fallback to URL parameters if no sessionStorage
+            const details = {
+                analystName: analysts.find(a => a.id === parseInt(searchParams.get('analyst') || '0'))?.name || 'Unknown',
+                meetingTitle: meetings.find(m => m.id === parseInt(searchParams.get('meeting') || '2'))?.title || 'Unknown',
+                meetingDuration: meetings.find(m => m.id === parseInt(searchParams.get('meeting') || '2'))?.duration || 'Unknown',
+                date: searchParams.get('date') || '',
+                time: searchParams.get('time') || '',
+                timezone: searchParams.get('timezone') || '',
+                notes: searchParams.get('notes') || '',
+                hasCalendlyIntegration: false
+            };
+            setBookingDetails(details);
+        }
+
         // Animate the success checkmark
         const timer = setTimeout(() => setShowSuccess(true), 300);
         return () => clearTimeout(timer);
-    }, []);
+    }, [searchParams]);
+
+    const loadCalendlyScript = () => {
+        // Load Calendly CSS if not already loaded
+        if (!document.querySelector('link[href*="calendly"]')) {
+            const link = document.createElement('link');
+            link.href = 'https://assets.calendly.com/assets/external/widget.css';
+            link.rel = 'stylesheet';
+            document.head.appendChild(link);
+        }
+        
+        // Load Calendly JS if not already loaded
+        if (!document.querySelector('script[src*="calendly"]')) {
+            const script = document.createElement('script');
+            script.src = 'https://assets.calendly.com/assets/external/widget.js';
+            script.async = true;
+            script.onload = () => {
+                console.log('Calendly script loaded successfully');
+                setCalendlyLoaded(true);
+            };
+            document.body.appendChild(script);
+        } else {
+            setCalendlyLoaded(true);
+        }
+    };
+
+    // Auto-open Calendly popup when script is loaded
+    useEffect(() => {
+        if (calendlyLoaded && bookingDetails?.hasCalendlyIntegration && bookingDetails?.calendlyUrl && !calendlyOpened) {
+            // Small delay to ensure page is fully loaded
+            const timer = setTimeout(() => {
+                openCalendlyPopup();
+                setCalendlyOpened(true);
+            }, 800);
+            return () => clearTimeout(timer);
+        }
+    }, [calendlyLoaded, bookingDetails, calendlyOpened]);
+
+    const openCalendlyPopup = () => {
+        if (!bookingDetails || !bookingDetails.calendlyUrl) {
+            console.error('No Calendly URL available');
+            return;
+        }
+
+        // @ts-ignore - Calendly global object
+        if (window.Calendly) {
+            console.log('Opening Calendly popup with URL:', bookingDetails.calendlyUrl);
+            
+            // Open Calendly popup with pre-filled information
+            // @ts-ignore
+            window.Calendly.initPopupWidget({
+                url: bookingDetails.calendlyUrl,
+                prefill: {
+                    name: bookingDetails.fullName || '',
+                    email: bookingDetails.email || '',
+                    customAnswers: {
+                        a1: bookingDetails.notes || ''
+                    }
+                },
+                utm: {
+                    utmSource: 'inspired-analyst',
+                    utmMedium: 'booking',
+                    utmCampaign: 'mentorship'
+                }
+            });
+
+            // Listen for Calendly events
+            // @ts-ignore
+            const handleCalendlyEvent = (e: MessageEvent) => {
+                if (e.data.event && e.data.event.indexOf('calendly') === 0) {
+                    console.log('Calendly event:', e.data.event);
+                    
+                    // When booking is scheduled
+                    if (e.data.event === 'calendly.event_scheduled') {
+                        console.log('Calendly booking confirmed!', e.data.payload);
+                        
+                        // Store Calendly event details
+                        const updatedDetails = {
+                            ...bookingDetails,
+                            calendlyEventUri: e.data.payload?.event?.uri || '',
+                            calendlyInviteeUri: e.data.payload?.invitee?.uri || '',
+                            bookingConfirmed: true
+                        };
+                        
+                        sessionStorage.setItem('bookingDetails', JSON.stringify(updatedDetails));
+                        setBookingDetails(updatedDetails);
+                        
+                        // Popup will close automatically, success page is already visible behind it
+                        console.log('Calendly popup closed, showing success page');
+                    }
+                }
+            };
+
+            window.addEventListener('message', handleCalendlyEvent);
+        } else {
+            console.error('Calendly script not loaded');
+        }
+    };
 
     const handleBackHome = () => {
         router.push('/');
@@ -112,50 +228,52 @@ const BookingSuccessContent: React.FC = () => {
                 </div>
 
                 {/* Meeting Details Card */}
-                <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-xl p-4 sm:p-6 w-full mb-6 mt-0" style={{ maxWidth: '600px' }}>
-                    <div className="space-y-3 sm:space-y-4">
-                        {/* Meeting Type */}
-                        <div className="flex items-start justify-between">
+                {bookingDetails && (
+                    <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-xl p-4 sm:p-6 w-full mb-6 mt-0" style={{ maxWidth: '600px' }}>
+                        <div className="space-y-3 sm:space-y-4">
+                            {/* Meeting Type */}
+                            <div className="flex items-start justify-between">
+                                <div>
+                                    <p className="text-gray-400 text-sm sm:text-base mb-2" style={{ fontSize: '14px' }}>Meeting Type</p>
+                                    <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{bookingDetails.meetingTitle || 'Unknown'}</p>
+                                </div>
+                                <span className={`inline-block px-3 py-1 text-xs rounded-full mt-8 ${
+                                    bookingDetails.meeting === '2' ? 'bg-purple-400/12 border border-purple-400 text-purple-400' :
+                                    bookingDetails.meeting === '3' ? 'bg-yellow-400/12 border border-yellow-400 text-yellow-400' :
+                                    'bg-teal-400/12 border border-teal-400 text-teal-400'
+                                }`}>
+                                    {bookingDetails.meetingDuration || 'Unknown'}
+                                </span>
+                            </div>
+                            
+                            {/* Blank Space */}
+                            <div className="h-0"></div>
+
+                            {/* Your Analyst */}
                             <div>
-                                <p className="text-gray-400 text-sm sm:text-base mb-2" style={{ fontSize: '14px' }}>Meeting Type</p>
-                                <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{selectedMeeting?.title || 'Unknown'}</p>
+                                <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Your Analyst</p>
+                                <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{bookingDetails.analystName || 'Unknown'}</p>
                             </div>
-                            <span className={`inline-block px-3 py-1 text-xs rounded-full mt-8 ${
-                                selectedMeetingId === 2 ? 'bg-purple-400/12 border border-purple-400 text-purple-400' :
-                                selectedMeetingId === 3 ? 'bg-yellow-400/12 border border-yellow-400 text-yellow-400' :
-                                'bg-teal-400/12 border border-teal-400 text-teal-400'
-                            }`}>
-                                {selectedMeeting?.duration || 'Unknown'}
-                            </span>
-                        </div>
-                        
-                        {/* Blank Space */}
-                        <div className="h-0"></div>
 
-                        {/* Your Analyst */}
-                        <div>
-                            <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Your Analyst</p>
-                            <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{selectedAnalyst?.name || 'Unknown'}</p>
-                        </div>
-
-                        {/* Date & Time */}
-                        <div>
-                            <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Date & Time</p>
-                            <div className="flex flex-col">
-                                <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{formatDate(selectedDate)}</p>
-                                <p className="text-white mt-1 text-base sm:text-lg" style={{ fontSize: '16px' }}>{selectedTime} {selectedTimezone && `(${selectedTimezone})`}</p>
-                            </div>
-                        </div>
-
-                        {/* Your Notes */}
-                        {notes && (
+                            {/* Date & Time */}
                             <div>
-                                <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Your Notes</p>
-                                <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{notes}</p>
+                                <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Date & Time</p>
+                                <div className="flex flex-col">
+                                    <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{formatDate(bookingDetails.date)}</p>
+                                    <p className="text-white mt-1 text-base sm:text-lg" style={{ fontSize: '16px' }}>{bookingDetails.time} {bookingDetails.timezone && `(${bookingDetails.timezone})`}</p>
+                                </div>
                             </div>
-                        )}
+
+                            {/* Your Notes */}
+                            {bookingDetails.notes && (
+                                <div>
+                                    <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Your Notes</p>
+                                    <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{bookingDetails.notes}</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-8 w-full sm:justify-center relative z-20">

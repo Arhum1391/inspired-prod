@@ -169,6 +169,184 @@ export default function BootcampPage() {
         />
       </div>
 
+      {/* Desktop Image Belts - Right Side */}
+      <div className="hidden lg:block absolute z-0 right-24 xl:right-32 top-0 w-56 xl:w-72" style={{ height: 'calc(70vh + 160px)' }}>
+        <div className="flex w-full h-full pt-20">
+          {/* Belt 1 - Rectangle 1 Images */}
+          <div className="flex-1 fade-mask-reduced overflow-hidden">
+            <div className="animate-scrollUp flex flex-col gap-5">
+              {/* First set of images */}
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/1.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/2 improved.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/3.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/4.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              {/* Duplicate for seamless loop */}
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/1.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/2 improved.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/3.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/4.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Belt 2 - Rectangle 2 Images */}
+          <div className="flex-1 fade-mask-reduced overflow-hidden">
+            <div className="animate-scrollDown flex flex-col gap-5">
+              {/* First set of images */}
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/5.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/6.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/7.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              {/* Duplicate for seamless loop */}
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/5.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/6.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/7.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                style={{
+                  backgroundImage: 'url("inspired analysts team/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      {/* Mobile Bottom Fade Mask - positioned just under navbar */}
+      <div className="absolute inset-0 sm:hidden z-1 pointer-events-none">
+        <div
+          className="absolute left-0 w-full h-32"
+          style={{
+            top: '450px',
+            background: 'linear-gradient(to top, rgba(10, 10, 10, 1) 0%, rgba(10, 10, 10, 1) 15%, rgba(10, 10, 10, 0.9) 30%, rgba(10, 10, 10, 0.6) 50%, rgba(10, 10, 10, 0.4) 70%, rgba(10, 10, 10, 0.3) 85%, rgba(10, 10, 10, 0.2) 95%, transparent 100%)',
+            filter: 'blur(4px)'
+          }}
+        />
+      </div>
+
       {/* Mobile Screen Border Masks */}
       <div className="absolute inset-0 sm:hidden z-0 pointer-events-none">
         {/* Left border mask - fades overflowing SVG to black */}
@@ -216,6 +394,315 @@ export default function BootcampPage() {
         </div>
       </section>
 
+      {/* Mobile Image Belts - Only visible on mobile */}
+      <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-8 mb-8">
+        <div className="flex flex-col w-full h-full gap-2">
+          {/* Belt 1 - Rectangle 1 Images */}
+          <div className="flex-1 fade-mask-reduced overflow-hidden">
+            <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
+              {/* First set of images */}
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/1.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/2 improved.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/3.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/4 - colored.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/5.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/6.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/7.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              {/* Duplicate for seamless loop */}
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/1.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/2 improved.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/3.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/4 - colored.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/5.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/6.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/7.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+            </div>
+          </div>
+
+          {/* Belt 2 - Rectangle 2 Images */}
+          <div className="flex-1 fade-mask-reduced overflow-hidden">
+            <div className="animate-scrollDown flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
+              {/* First set of images */}
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/5.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/6.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/7.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/1.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/2 improved.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/3.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/4 - colored.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              {/* Duplicate for seamless loop */}
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/5.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/6.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/7.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/1.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/2 improved.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/3.jpg")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+              <div
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                style={{
+                  backgroundImage: 'url("team-mob/4 - colored.png")',
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Mobile Hero Section Fade Mask */}
       <div className="absolute inset-0 sm:hidden z-10 pointer-events-none">
         <div
@@ -229,7 +716,7 @@ export default function BootcampPage() {
       </div>
 
       {/* Bootcamp Cards Section */}
-      <section className="relative z-0 pt-32 sm:pt-32 lg:pt-36 pb-12 sm:pb-16 lg:pb-20">
+      <section className="relative z-0 pt-32 sm:pt-40 lg:pt-44 pb-12 sm:pb-16 lg:pb-20">
         <div className="w-full px-4 sm:px-6 lg:px-6">
           <div className="mx-auto max-w-7xl">
             {/* Cards Grid - 3 columns on desktop, 1 on mobile */}

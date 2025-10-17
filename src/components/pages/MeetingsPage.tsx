@@ -796,6 +796,10 @@ const MeetingsPage = () => {
                         timezone: formData.selectedTimezone
                     });
                     
+                    // CRITICAL: Set loading state IMMEDIATELY to disable Continue button
+                    setIsLoadingAvailability(true);
+                    console.log('🔒 Set isLoadingAvailability=true to disable Continue button during data fetch');
+                    
                     // Use setTimeout to batch all state updates together
                     setTimeout(() => {
                         // Restore all form fields in one batch
@@ -851,6 +855,10 @@ const MeetingsPage = () => {
                 try {
                     const formData = JSON.parse(savedFormData);
                     console.log('📝 Restoring form data after cancellation');
+                    
+                    // Set loading state to ensure consistency
+                    setIsLoadingAvailability(true);
+                    console.log('🔒 Set isLoadingAvailability=true after cancellation');
                     
                     setTimeout(() => {
                         setFullName(formData.fullName || '');
@@ -1003,16 +1011,19 @@ const MeetingsPage = () => {
                     const paymentStatus = urlParams.get('payment');
                     const isReturningFromPayment = paymentStatus === 'success' || paymentStatus === 'cancelled';
                     
-                    // For timezone changes, only re-fetch if we already have availability data
-                    // This prevents unnecessary re-fetching on initial timezone selection
-                    // EXCEPT when returning from payment - then we MUST fetch
-                    if (selectedTimezone && Object.keys(availableTimesByDate).length === 0 && !isReturningFromPayment) {
-                        console.log('⏭️ Skipping availability fetch - no existing data and timezone selected (normal flow)');
+                    // CRITICAL: Always fetch when timezone is selected, don't skip initial fetch
+                    // Only skip if NO timezone is selected (to avoid fetching without timezone context)
+                    if (!selectedTimezone) {
+                        console.log('⏭️ Skipping availability fetch - no timezone selected yet');
                         return;
                     }
                     
-                    if (isReturningFromPayment && Object.keys(availableTimesByDate).length === 0) {
-                        console.log('🔄 Returning from payment - forcing availability fetch for selected date');
+                    if (isReturningFromPayment) {
+                        console.log('🔄 Returning from payment - fetching availability for selected date and timezone');
+                    } else if (Object.keys(availableTimesByDate).length === 0) {
+                        console.log('🆕 First timezone selection - fetching availability');
+                    } else {
+                        console.log('🔄 Timezone changed - refetching availability with new timezone');
                     }
                     console.log('Attempting to fetch availability:', {
                         selectedMeeting,
@@ -1237,8 +1248,17 @@ const MeetingsPage = () => {
     // Handle timezone change loading state
     useEffect(() => {
         if (selectedTimezone && Object.keys(availableTimesByDate).length > 0) {
+            console.log('🌍 Timezone changed, clearing old availability data and setting loading state');
             setIsTimezoneChanging(true);
-            // Clear the loading state after a short delay to allow for re-fetch
+            setIsLoadingAvailability(true); // CRITICAL: Set loading to prevent showing old data
+            
+            // Clear old availability data immediately to prevent showing incorrect times
+            setAvailableDates([]);
+            setAvailableTimesByDate({});
+            setSlotUrlsByDateTime({});
+            setRawTimestampsByDateTime({});
+            
+            // Clear the timezone changing flag after a short delay
             const timer = setTimeout(() => {
                 setIsTimezoneChanging(false);
             }, 1000);
@@ -1260,6 +1280,12 @@ const MeetingsPage = () => {
 
     // Get time slot objects - moved before handleContinue
     const getTimeSlotObjects = (): Array<{ displayTime: string; schedulingUrl: string; utcTime: string }> => {
+        // CRITICAL: If availability is loading, return empty array to prevent showing stale data
+        if (isLoadingAvailability) {
+            console.log('⏳ Availability is loading, returning empty slots');
+            return [];
+        }
+        
         // For analysts with Calendly integration
         if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && selectedDate && availableTimesByDate[selectedDate]) {
             // If no timezone is selected, return empty array (no slots available)

@@ -39,8 +39,14 @@
 **Files Modified:**
 - `src/app/api/stripe/create-checkout-session/route.ts`
 
-**Environment Variable Required for Production:**
-Set in your Vercel project settings:
+**How It Works:**
+The function now checks in this order:
+1. `NEXT_PUBLIC_BASE_URL` environment variable (if set, always uses this)
+2. `VERCEL_ENV === 'production'` → Returns `https://inspired-analyst.vercel.app`
+3. `VERCEL_URL` (for preview deployments)
+4. Falls back to `http://localhost:3000` for local development
+
+**No Environment Variable Required!** The production URL is now hardcoded for production deployments. However, you can still set `NEXT_PUBLIC_BASE_URL` if you want to override it:
 ```
 NEXT_PUBLIC_BASE_URL=https://inspired-analyst.vercel.app
 ```
@@ -75,16 +81,17 @@ If each event created a database record, you'd see 4 entries for 1 payment.
 
 ## Deployment Instructions
 
-### 1. Set Environment Variables in Vercel
+### 1. Verify Environment Variables in Vercel
 
-Go to your Vercel project settings → Environment Variables and add:
+Go to your Vercel project settings → Environment Variables and ensure these are set:
 
 ```env
-NEXT_PUBLIC_BASE_URL=https://inspired-analyst.vercel.app
 MONGODB_URI=your_mongodb_connection_string
 STRIPE_SECRET_KEY=your_stripe_secret_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 ```
+
+**Note:** `NEXT_PUBLIC_BASE_URL` is optional now. The code automatically detects production deployments and uses `https://inspired-analyst.vercel.app`. You only need to set it if you want to override the default behavior.
 
 ### 2. Configure Stripe Webhook
 
@@ -104,11 +111,13 @@ If you haven't already, set up a webhook endpoint in your Stripe Dashboard:
 ```bash
 # Commit your changes
 git add .
-git commit -m "Fix bootcamp registration issues: success page data, production URLs, duplicate payments"
+git commit -m "Fix bootcamp registration: success page data, auto-detect production URLs, prevent duplicate payments"
 
 # Push to main branch (triggers automatic Vercel deployment)
 git push origin main
 ```
+
+**Important:** After pushing, Vercel will automatically detect it's a production deployment (when deploying to your main branch) and use `https://inspired-analyst.vercel.app` for all redirect URLs.
 
 ### 4. Test the Flow
 
@@ -186,6 +195,23 @@ The webhook now has two layers of protection:
 ---
 
 ## Troubleshooting
+
+### Issue: Still being redirected to preview URL (inspired-analyst-xxx.vercel.app)
+**Cause:** This happens when:
+1. You're testing on a preview deployment (not the production deployment)
+2. The code hasn't been deployed to the main production branch yet
+
+**Solution:**
+1. Make sure you've pushed to your **main/production branch** (not a preview branch)
+2. In Vercel, check which branch is set as "Production Branch" (usually `main`)
+3. Deploy to that branch specifically
+4. Verify `VERCEL_ENV` is set to `production` in your Vercel logs
+
+**How to verify:**
+- Production URL: `https://inspired-analyst.vercel.app`
+- Preview URLs look like: `https://inspired-analyst-xxx-username.vercel.app`
+
+If you're still seeing preview URLs after deploying to main, check your Vercel project settings → Domains to ensure `inspired-analyst.vercel.app` is set as the production domain.
 
 ### Issue: Success page still shows "Unknown Bootcamp"
 **Solution:** Clear your browser's sessionStorage:

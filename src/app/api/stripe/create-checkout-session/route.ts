@@ -9,17 +9,23 @@ const DB_NAME = 'inspired-analyst';
 // Get base URL for the application
 // In production on Vercel, this should be set to: https://inspired-analyst.vercel.app
 const getBaseUrl = () => {
-  // Check if NEXT_PUBLIC_BASE_URL is set (preferred method)
+  // Check if NEXT_PUBLIC_BASE_URL is set (preferred method - always use this if set)
   if (process.env.NEXT_PUBLIC_BASE_URL) {
     return process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, ''); // Remove trailing slash
   }
   
-  // For production on Vercel (if env var not set)
+  // For production on Vercel, check VERCEL_ENV to distinguish production from preview
+  if (process.env.VERCEL_ENV === 'production') {
+    // Use the production domain directly
+    return 'https://inspired-analyst.vercel.app';
+  }
+  
+  // For preview/development on Vercel (if env var not set)
   if (process.env.VERCEL_URL) {
     return `https://${process.env.VERCEL_URL}`;
   }
   
-  // Fallback for development
+  // Fallback for local development
   return 'http://localhost:3000';
 };
 

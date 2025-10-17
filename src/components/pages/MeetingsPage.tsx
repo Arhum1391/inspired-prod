@@ -519,11 +519,13 @@ const MeetingsPage = () => {
                 const data = await response.json();
                 updateAnalystsWithTeamData(data.team);
                 // Cache for future use
-                sessionStorage.setItem('teamData', JSON.stringify(data.team));
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.setItem('teamData', JSON.stringify(data.team));
+                }
                 setIsTeamDataLoaded(true);
             } else {
                 // Fallback to cached data if API fails
-                const cachedData = sessionStorage.getItem('teamData');
+                const cachedData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('teamData') : null;
                 if (cachedData) {
                     const team = JSON.parse(cachedData);
                     updateAnalystsWithTeamData(team);
@@ -535,7 +537,7 @@ const MeetingsPage = () => {
         } catch (error) {
             console.error('Error fetching team data:', error);
             // Fallback to cached data if API fails
-            const cachedData = sessionStorage.getItem('teamData');
+            const cachedData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('teamData') : null;
             if (cachedData) {
                 const team = JSON.parse(cachedData);
                 updateAnalystsWithTeamData(team);
@@ -762,6 +764,9 @@ const MeetingsPage = () => {
 
     // Check payment status and restore form data on mount (run only once)
     useEffect(() => {
+        // Ensure we're on the client side
+        if (typeof window === 'undefined') return;
+        
         const urlParams = new URLSearchParams(window.location.search);
         const paymentStatus = urlParams.get('payment');
         const sessionId = urlParams.get('session_id');
@@ -774,8 +779,8 @@ const MeetingsPage = () => {
             // Payment was successful
             console.log('✅ Payment successful detected!');
             
-            // Restore form data from sessionStorage
-            const savedFormData = sessionStorage.getItem(formDataKey);
+            // Restore form data from sessionStorage (with safety check)
+            const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
             console.log('📦 Checking for saved form data:', savedFormData ? 'FOUND' : 'NOT FOUND');
             
             if (savedFormData) {
@@ -805,7 +810,14 @@ const MeetingsPage = () => {
                         
                         // CRITICAL: Set currentMonth to match the saved date so availability fetches correctly
                         if (formData.selectedDate) {
-                            const savedDateObj = new Date(formData.selectedDate + 'T12:00:00');
+                            // Parse date more reliably for production (YYYY-MM-DD format)
+                            const dateParts = formData.selectedDate.split('-');
+                            const savedDateObj = new Date(
+                                parseInt(dateParts[0]), // year
+                                parseInt(dateParts[1]) - 1, // month (0-indexed)
+                                parseInt(dateParts[2]), // day
+                                12, 0, 0, 0 // noon local time
+                            );
                             console.log('📅 Setting currentMonth to match saved date:', formData.selectedDate, '→', savedDateObj);
                             setCurrentMonth(savedDateObj);
                         }
@@ -834,7 +846,7 @@ const MeetingsPage = () => {
             // Payment was cancelled - restore form data but don't activate payment
             console.log('❌ Payment cancelled');
             
-            const savedFormData = sessionStorage.getItem(formDataKey);
+            const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
             if (savedFormData) {
                 try {
                     const formData = JSON.parse(savedFormData);
@@ -852,8 +864,15 @@ const MeetingsPage = () => {
                         
                         // Set currentMonth to match the saved date
                         if (formData.selectedDate) {
-                            const savedDateObj = new Date(formData.selectedDate + 'T12:00:00');
-                            console.log('📅 Setting currentMonth to match saved date after cancellation:', formData.selectedDate);
+                            // Parse date more reliably for production (YYYY-MM-DD format)
+                            const dateParts = formData.selectedDate.split('-');
+                            const savedDateObj = new Date(
+                                parseInt(dateParts[0]), // year
+                                parseInt(dateParts[1]) - 1, // month (0-indexed)
+                                parseInt(dateParts[2]), // day
+                                12, 0, 0, 0 // noon local time
+                            );
+                            console.log('📅 Setting currentMonth to match saved date after cancellation:', formData.selectedDate, '→', savedDateObj);
                             setCurrentMonth(savedDateObj);
                         }
                         
@@ -882,11 +901,13 @@ const MeetingsPage = () => {
     useEffect(() => {
         const handleAnalystSelection = async () => {
             if (selectedAnalyst !== null) {
-                // Check if we're returning from payment
+                // Check if we're returning from payment (with safety checks)
+                if (typeof window === 'undefined') return;
+                
                 const urlParams = new URLSearchParams(window.location.search);
                 const paymentStatus = urlParams.get('payment');
                 const formDataKey = 'meetings-form';
-                const savedFormData = sessionStorage.getItem(formDataKey);
+                const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
                 const isReturningFromPayment = (paymentStatus === 'success' || paymentStatus === 'cancelled') && savedFormData;
                 
                 if (isReturningFromPayment) {
@@ -1307,7 +1328,11 @@ const MeetingsPage = () => {
         setPaymentError('');
 
         try {
-            // Save form data to sessionStorage before redirecting
+            // Save form data to sessionStorage before redirecting (with safety check)
+            if (typeof sessionStorage === 'undefined') {
+                throw new Error('SessionStorage not available');
+            }
+            
             const formDataKey = 'meetings-form';
             const formData = {
                 fullName,
@@ -1460,11 +1485,15 @@ const MeetingsPage = () => {
                             hasCalendlyIntegration: calendlyUrl !== ''
                         };
                         
-                        sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+                        if (typeof sessionStorage !== 'undefined') {
+                            sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+                        }
                         
                 // Clear form data from sessionStorage
                 const formDataKey = 'meetings-form';
-                sessionStorage.removeItem(formDataKey);
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.removeItem(formDataKey);
+                }
                 
                 // If analyst has Calendly integration, open Calendly popup
                 if (calendlyUrl) {
@@ -1502,7 +1531,7 @@ const MeetingsPage = () => {
                                 console.log('Calendly booking completed:', e.data);
                                 
                                 // Save Calendly event details
-                                if (e.data.payload) {
+                                if (e.data.payload && typeof sessionStorage !== 'undefined') {
                                     sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
                                 }
                                 

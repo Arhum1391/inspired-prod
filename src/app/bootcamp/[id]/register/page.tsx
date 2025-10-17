@@ -1,28 +1,38 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
+import { Bootcamp } from '@/types/admin';
+import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 
-
-export default function CryptoTradingRegisterPage() {
+export default function BootcampRegisterPage() {
+  const params = useParams();
   const router = useRouter();
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const [bootcamp, setBootcamp] = useState<Bootcamp | null>(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [notes, setNotes] = useState('');
   const [emailError, setEmailError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [paymentCompleted, setPaymentCompleted] = useState(false);
   const [paymentInitiating, setPaymentInitiating] = useState(false);
   const [paymentError, setPaymentError] = useState('');
+
+  useEffect(() => {
+    if (params.id) {
+      fetchBootcamp(params.id as string);
+    }
+  }, [params.id]);
 
   // Check payment status and restore form data on mount
   useEffect(() => {
     const paymentStatus = searchParams.get('payment');
     const sessionId = searchParams.get('session_id');
-    const formDataKey = 'bootcamp-form-crypto-trading';
+    const formDataKey = `bootcamp-form-${params.id}`;
     
     // Restore form data from sessionStorage
     const savedFormData = sessionStorage.getItem(formDataKey);
@@ -51,7 +61,38 @@ export default function CryptoTradingRegisterPage() {
       // Clear the URL params
       window.history.replaceState({}, '', window.location.pathname);
     }
-  }, [searchParams]);
+  }, [params.id, searchParams]);
+
+  const fetchBootcamp = async (id: string) => {
+    try {
+      const response = await fetch(`/api/bootcamp/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setBootcamp(data);
+      } else if (response.status === 404) {
+        // Try to find in fallback data
+        const fallbackBootcamp = getFallbackBootcamps().find(b => b.id === id);
+        if (fallbackBootcamp) {
+          setBootcamp(fallbackBootcamp);
+        } else {
+          router.push('/bootcamp');
+        }
+      } else {
+        router.push('/bootcamp');
+      }
+    } catch (error) {
+      console.error('Failed to fetch bootcamp:', error);
+      // Try to find in fallback data
+      const fallbackBootcamp = getFallbackBootcamps().find(b => b.id === id);
+      if (fallbackBootcamp) {
+        setBootcamp(fallbackBootcamp);
+      } else {
+        router.push('/bootcamp');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Comprehensive email validation (same as NewsletterSubscription)
   const validateEmail = (email: string): boolean => {
@@ -130,7 +171,7 @@ export default function CryptoTradingRegisterPage() {
   const isFormValid = fullName.trim() !== '' && email.trim() !== '' && validateEmail(email);
 
   const handleBack = () => {
-    router.push('/bootcamp/crypto-trading');
+    router.push(`/bootcamp/${params.id}`);
   };
 
   const handleStripePayment = async () => {
@@ -154,7 +195,7 @@ export default function CryptoTradingRegisterPage() {
 
     try {
       // Save form data to sessionStorage before redirecting
-      const formDataKey = 'bootcamp-form-crypto-trading';
+      const formDataKey = `bootcamp-form-${params.id}`;
       const formData = {
         fullName: fullName.trim(),
         email: email.trim().toLowerCase(),
@@ -170,7 +211,7 @@ export default function CryptoTradingRegisterPage() {
         },
         body: JSON.stringify({
           type: 'bootcamp',
-          bootcampId: 'crypto-trading',
+          bootcampId: params.id,
           customerEmail: email.trim().toLowerCase(),
           customerName: fullName.trim(),
           notes: notes.trim() || ''
@@ -211,7 +252,7 @@ export default function CryptoTradingRegisterPage() {
     try {
       // Store bootcamp details in sessionStorage for success page
       const bootcampDetails = {
-        bootcamp: 'crypto-trading',
+        bootcamp: params.id,
         name: fullName.trim(),
         email: email.trim().toLowerCase(),
         notes: notes.trim() || '',
@@ -221,17 +262,48 @@ export default function CryptoTradingRegisterPage() {
       sessionStorage.setItem('bootcampDetails', JSON.stringify(bootcampDetails));
       
       // Clear form data from sessionStorage
-      const formDataKey = 'bootcamp-form-crypto-trading';
+      const formDataKey = `bootcamp-form-${params.id}`;
       sessionStorage.removeItem(formDataKey);
       
       // Redirect to success page
-      router.push('/bootcamp-success?bootcamp=crypto-trading');
+      router.push(`/bootcamp-success?bootcamp=${params.id}`);
     } catch (error) {
       console.error('Error completing booking:', error);
       setEmailError('Failed to complete booking. Please try again.');
       setIsSubmitting(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+        <Navbar variant="hero" />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-white">Loading bootcamp...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!bootcamp) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+        <Navbar variant="hero" />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold text-white mb-2">Bootcamp not found</h3>
+            <button
+              onClick={() => router.push('/bootcamp')}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-lg transition-colors"
+            >
+              Back to Bootcamps
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
@@ -519,21 +591,22 @@ export default function CryptoTradingRegisterPage() {
                       className="text-lg sm:text-xl text-white"
                       style={{fontFamily: 'Gilroy-SemiBold', fontWeight: 400, lineHeight: '100%'}}
                     >
-                      Crypto Trading Bootcamp
+                      {bootcamp.title}
                     </h4>
                     <div className="flex gap-2">
-                      <span
-                        className="inline-flex items-center justify-center px-2.5 py-2 bg-[#05B0B3]/12 border border-[#05B0B3] rounded-full text-xs text-[#05B0B3]"
-                        style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
-                      >
-                        6 Weeks
-                      </span>
-                      <span
-                        className="inline-flex items-center justify-center px-2.5 py-2 bg-[#DE50EC]/12 border border-[#DE50EC] rounded-full text-xs text-[#DE50EC]"
-                        style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
-                      >
-                        Online
-                      </span>
+                      {bootcamp.tags.map((tag, index) => (
+                        <span
+                          key={index}
+                          className={`inline-flex items-center justify-center px-2.5 py-2 rounded-full text-xs ${
+                            index === 0 
+                              ? 'bg-[#05B0B3]/12 border border-[#05B0B3] text-[#05B0B3]' 
+                              : 'bg-[#DE50EC]/12 border border-[#DE50EC] text-[#DE50EC]'
+                          }`}
+                          style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
+                        >
+                          {tag}
+                        </span>
+                      ))}
                     </div>
                   </div>
 
@@ -551,7 +624,7 @@ export default function CryptoTradingRegisterPage() {
                         className="text-sm text-white"
                         style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
                       >
-                        Adnan, Assassin
+                        {bootcamp.mentors.map(mentor => mentor.split(' - ')[0]).join(', ')}
                       </span>
                     </div>
 
@@ -568,7 +641,11 @@ export default function CryptoTradingRegisterPage() {
                           className="text-xs text-white"
                           style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
                         >
-                          Wednesday, September 18
+                          {new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', { 
+                            weekday: 'long', 
+                            month: 'long', 
+                            day: 'numeric' 
+                          })}
                         </span>
                         <span
                           className="text-xs text-white"
@@ -591,7 +668,7 @@ export default function CryptoTradingRegisterPage() {
                         className="text-sm text-white"
                         style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
                       >
-                        30 BNB
+                        {bootcamp.price}
                       </span>
                     </div>
 
@@ -629,7 +706,7 @@ export default function CryptoTradingRegisterPage() {
                         className="text-sm text-white"
                         style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
                       >
-                        30 BNB
+                        {bootcamp.price}
                       </span>
                     </div>
                   </div>
@@ -701,5 +778,3 @@ export default function CryptoTradingRegisterPage() {
     </div>
   );
 }
-
-

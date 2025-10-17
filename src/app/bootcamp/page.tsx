@@ -144,7 +144,7 @@ export default function BootcampPage() {
             className="w-5 h-5"
           />
         </Link>
-        <button className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</button>
+        <Link href={`/bootcamp/${bootcamp.id}/register`} className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Register Now</Link>
       </div>
     </div>
   );

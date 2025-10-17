@@ -71,6 +71,36 @@ const bootcamps = [
     name: 'Crypto Trading Bootcamp',
     price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
     description: 'Interactive mentorship bootcamp guided by Senior Crypto Analyst'
+  },
+  {
+    id: 'ai-data-finance',
+    name: 'AI & Data for Finance',
+    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
+    description: 'Explore the power of AI-driven trading and master data analysis techniques'
+  },
+  {
+    id: 'forex-mastery',
+    name: 'Forex Mastery Mentorship',
+    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
+    description: 'Learn the fundamentals of forex trading and develop advanced strategies'
+  },
+  {
+    id: 'stock-investing',
+    name: 'Stock Market Investing Bootcamp',
+    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
+    description: 'Learn how to build and manage a strong investment portfolio'
+  },
+  {
+    id: 'web3-blockchain',
+    name: 'Web3 & Blockchain Mentorship',
+    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
+    description: 'Take a deep dive into blockchain technology and DeFi applications'
+  },
+  {
+    id: 'career-growth',
+    name: 'Career Growth in Finance & Tech',
+    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
+    description: 'Receive personalized career guidance and professional development'
   }
 ];
 
@@ -163,10 +193,10 @@ export async function POST(request: NextRequest) {
         })
       },
       success_url: body.type === 'bootcamp' 
-        ? `${getBaseUrl()}/bootcamp-success?session_id={CHECKOUT_SESSION_ID}`
-        : `${getBaseUrl()}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
+        ? `${getBaseUrl()}/bootcamp/${body.bootcampId}/register?payment=success&session_id={CHECKOUT_SESSION_ID}`
+        : `${getBaseUrl()}/meetings?payment=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: body.type === 'bootcamp'
-        ? `${getBaseUrl()}/bootcamp/crypto-trading/register?payment=cancelled`
+        ? `${getBaseUrl()}/bootcamp/${body.bootcampId}/register?payment=cancelled`
         : `${getBaseUrl()}/meetings?payment=cancelled`,
       expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes from now
     });

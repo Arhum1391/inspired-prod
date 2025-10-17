@@ -736,6 +736,9 @@ const MeetingsPage = () => {
     const [notes, setNotes] = useState<string>('');
     const [nameError, setNameError] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
+    const [paymentCompleted, setPaymentCompleted] = useState<boolean>(false);
+    const [paymentInitiating, setPaymentInitiating] = useState<boolean>(false);
+    const [paymentError, setPaymentError] = useState<string>('');
 
     // Load Calendly widget script for popup functionality
     useEffect(() => {
@@ -757,6 +760,118 @@ const MeetingsPage = () => {
         };
     }, []);
 
+    // Check payment status and restore form data on mount (run only once)
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentStatus = urlParams.get('payment');
+        const sessionId = urlParams.get('session_id');
+        const formDataKey = 'meetings-form';
+        
+        console.log('🔄 Component mounted. Payment status:', paymentStatus, 'Session ID:', sessionId ? 'present' : 'none');
+        
+        // Handle payment status first
+        if (paymentStatus === 'success' && sessionId) {
+            // Payment was successful
+            console.log('✅ Payment successful detected!');
+            
+            // Restore form data from sessionStorage
+            const savedFormData = sessionStorage.getItem(formDataKey);
+            console.log('📦 Checking for saved form data:', savedFormData ? 'FOUND' : 'NOT FOUND');
+            
+            if (savedFormData) {
+                try {
+                    const formData = JSON.parse(savedFormData);
+                    console.log('📝 Form data to restore:', {
+                        name: formData.fullName,
+                        email: formData.email,
+                        analyst: formData.selectedAnalyst,
+                        meeting: formData.selectedMeeting,
+                        date: formData.selectedDate,
+                        time: formData.selectedTime,
+                        timezone: formData.selectedTimezone
+                    });
+                    
+                    // Use setTimeout to batch all state updates together
+                    setTimeout(() => {
+                        // Restore all form fields in one batch
+                        setFullName(formData.fullName || '');
+                        setEmail(formData.email || '');
+                        setNotes(formData.notes || '');
+                        setSelectedAnalyst(formData.selectedAnalyst !== undefined ? formData.selectedAnalyst : null);
+                        setSelectedMeeting(formData.selectedMeeting !== undefined ? formData.selectedMeeting : null);
+                        setSelectedDate(formData.selectedDate || '');
+                        setSelectedTime(formData.selectedTime || '');
+                        setSelectedTimezone(formData.selectedTimezone || '');
+                        
+                        // CRITICAL: Set currentMonth to match the saved date so availability fetches correctly
+                        if (formData.selectedDate) {
+                            const savedDateObj = new Date(formData.selectedDate + 'T12:00:00');
+                            console.log('📅 Setting currentMonth to match saved date:', formData.selectedDate, '→', savedDateObj);
+                            setCurrentMonth(savedDateObj);
+                        }
+                        
+                        setPaymentCompleted(true);
+                        setPaymentError('');
+                        
+                        // CRITICAL: Set to step 3
+                        setCurrentStep(3);
+                        
+                        console.log('✅ All state restored, should now be on step 3');
+                        
+                        // DON'T clear URL params - let user stay with params visible
+                        // This prevents any race condition
+                        console.log('ℹ️ Keeping URL params visible for transparency');
+                    }, 0); // Use 0 to defer to next tick but keep it fast
+                    
+                } catch (error) {
+                    console.error('❌ Failed to restore form data:', error);
+                }
+            } else {
+                console.error('⚠️ CRITICAL: No saved form data found after payment! SessionStorage might have been cleared.');
+                alert('There was an issue restoring your booking information. Please try again.');
+            }
+        } else if (paymentStatus === 'cancelled') {
+            // Payment was cancelled - restore form data but don't activate payment
+            console.log('❌ Payment cancelled');
+            
+            const savedFormData = sessionStorage.getItem(formDataKey);
+            if (savedFormData) {
+                try {
+                    const formData = JSON.parse(savedFormData);
+                    console.log('📝 Restoring form data after cancellation');
+                    
+                    setTimeout(() => {
+                        setFullName(formData.fullName || '');
+                        setEmail(formData.email || '');
+                        setNotes(formData.notes || '');
+                        setSelectedAnalyst(formData.selectedAnalyst !== undefined ? formData.selectedAnalyst : null);
+                        setSelectedMeeting(formData.selectedMeeting !== undefined ? formData.selectedMeeting : null);
+                        setSelectedDate(formData.selectedDate || '');
+                        setSelectedTime(formData.selectedTime || '');
+                        setSelectedTimezone(formData.selectedTimezone || '');
+                        
+                        // Set currentMonth to match the saved date
+                        if (formData.selectedDate) {
+                            const savedDateObj = new Date(formData.selectedDate + 'T12:00:00');
+                            console.log('📅 Setting currentMonth to match saved date after cancellation:', formData.selectedDate);
+                            setCurrentMonth(savedDateObj);
+                        }
+                        
+                        setPaymentCompleted(false);
+                        setPaymentError('Payment was cancelled. Please try again.');
+                        setCurrentStep(3);
+                        
+                        console.log('✅ Restored after cancellation');
+                    }, 0);
+                } catch (error) {
+                    console.error('❌ Failed to restore form data:', error);
+                }
+            }
+        } else {
+            console.log('ℹ️ Normal page load, no payment flow');
+        }
+    }, []); // Run only once on mount
+
     // Fetch team data and check Calendly integration on component mount
     useEffect(() => {
         fetchTeamData();
@@ -767,8 +882,57 @@ const MeetingsPage = () => {
     useEffect(() => {
         const handleAnalystSelection = async () => {
             if (selectedAnalyst !== null) {
-                // Reset ALL selections when analyst changes
-                console.log(`🔄 Resetting all selections for new analyst ${selectedAnalyst}`);
+                // Check if we're returning from payment
+                const urlParams = new URLSearchParams(window.location.search);
+                const paymentStatus = urlParams.get('payment');
+                const formDataKey = 'meetings-form';
+                const savedFormData = sessionStorage.getItem(formDataKey);
+                const isReturningFromPayment = (paymentStatus === 'success' || paymentStatus === 'cancelled') && savedFormData;
+                
+                if (isReturningFromPayment) {
+                    console.log(`✋ Returning from payment for analyst ${selectedAnalyst} - loading Calendly data WITHOUT reset`);
+                    
+                    // Parse saved form data to get the selected date/meeting
+                    let savedDate = '';
+                    let savedMeeting = null;
+                    try {
+                        const formData = JSON.parse(savedFormData);
+                        savedDate = formData.selectedDate || '';
+                        savedMeeting = formData.selectedMeeting;
+                    } catch (error) {
+                        console.error('Error parsing saved form data:', error);
+                    }
+                    
+                    // Load Calendly data but don't reset the form
+                    setIsLoadingEventTypes(true);
+                    
+                    try {
+                        const hasCalendly = await checkSpecificAnalystCalendlyIntegration(selectedAnalyst);
+                        
+                        if (hasCalendly) {
+                            console.log(`📅 Analyst ${selectedAnalyst} has Calendly - fetching event types and availability`);
+                            await fetchCalendlyEventTypes();
+                            
+                            // If we have a saved date, fetch availability for that date
+                            if (savedDate && savedMeeting !== null) {
+                                console.log(`📆 Fetching Calendly availability for saved date: ${savedDate}`);
+                                // The availability will be fetched by the selectedDate useEffect
+                            }
+                        } else {
+                            console.log(`ℹ️ Analyst ${selectedAnalyst} has no Calendly integration`);
+                        }
+                    } catch (error) {
+                        console.error('Error loading Calendly data after payment:', error);
+                    } finally {
+                        setIsLoadingEventTypes(false);
+                    }
+                    
+                    // Don't reset form or step - just return after loading Calendly data
+                    return;
+                }
+                
+                // Reset ALL selections when analyst changes (normal flow only)
+                console.log(`🔄 Normal flow: Resetting all selections for new analyst ${selectedAnalyst}`);
                 setCalendlyMeetings([]);
                 setSelectedMeeting(null);
                 setSelectedDate('');
@@ -813,11 +977,21 @@ const MeetingsPage = () => {
                 const hasCalendly = hasCalendlyIntegration(selectedAnalyst);
                 
                 if (hasCalendly) {
+                    // Check if we're returning from payment - if so, always fetch availability
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const paymentStatus = urlParams.get('payment');
+                    const isReturningFromPayment = paymentStatus === 'success' || paymentStatus === 'cancelled';
+                    
                     // For timezone changes, only re-fetch if we already have availability data
                     // This prevents unnecessary re-fetching on initial timezone selection
-                    if (selectedTimezone && Object.keys(availableTimesByDate).length === 0) {
-                        console.log('⏭️ Skipping availability fetch - no existing data and timezone selected');
+                    // EXCEPT when returning from payment - then we MUST fetch
+                    if (selectedTimezone && Object.keys(availableTimesByDate).length === 0 && !isReturningFromPayment) {
+                        console.log('⏭️ Skipping availability fetch - no existing data and timezone selected (normal flow)');
                         return;
+                    }
+                    
+                    if (isReturningFromPayment && Object.keys(availableTimesByDate).length === 0) {
+                        console.log('🔄 Returning from payment - forcing availability fetch for selected date');
                     }
                     console.log('Attempting to fetch availability:', {
                         selectedMeeting,
@@ -981,7 +1155,11 @@ const MeetingsPage = () => {
                     }
                 };
                 
-                fetchAllAvailability();
+                setIsLoadingAvailability(true);
+                fetchAllAvailability().finally(() => {
+                    setIsLoadingAvailability(false);
+                    console.log('✅ Calendly availability fetch completed');
+                });
             } else {
                 console.error('No valid event type found at index', selectedMeeting - 2);
             }
@@ -1117,69 +1295,56 @@ const MeetingsPage = () => {
     const timeSlotObjects = getTimeSlotObjects();
 
     const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
-                               currentStep === 3 ? (!fullName || !email || !!nameError || !!emailError) : false;
+                               currentStep === 3 ? (!fullName || !email || !!nameError || !!emailError || !paymentCompleted || isLoadingAvailability) : false;
 
-    const handleContinue = async () => {
-        console.log('handleContinue clicked!', { 
-            currentStep, 
-            isContinueDisabled, 
-            selectedAnalyst,
-            selectedEventTypeUri 
-        });
-        
-        if (!isContinueDisabled) {
-            if (currentStep === 2) {
-                console.log('Advancing to step 3');
-                setCurrentStep(3);
-                // Scroll to top on mobile when advancing to next step
-                if (window.innerWidth < 768) {
-                    setTimeout(() => {
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }, 100);
-                }
-            } else {
-                console.log('Processing final step with Stripe payment, currentStep:', currentStep);
-                const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
-                
-                // Get Calendly scheduling URL if analyst has Calendly integration
-                let calendlyUrl = '';
-                if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && selectedDate && selectedTime) {
-                    // Find the scheduling URL by matching the display time directly
-                    const selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
-                    
-                    if (selectedSlot && selectedSlot.schedulingUrl) {
-                        calendlyUrl = selectedSlot.schedulingUrl;
-                        console.log('Found Calendly scheduling URL:', calendlyUrl);
-                    } else {
-                        console.warn('No Calendly URL found for selected time slot');
-                    }
-                }
+    const handleStripePayment = async () => {
+        if (!fullName || !email || !!nameError || !!emailError) {
+            setPaymentError('Please fill in all required fields correctly');
+            return;
+        }
 
-                // Create Stripe checkout session for payment
-                try {
+        setPaymentInitiating(true);
+        setPaymentError('');
+
+        try {
+            // Save form data to sessionStorage before redirecting
+            const formDataKey = 'meetings-form';
+            const formData = {
+                fullName,
+                email,
+                notes,
+                selectedAnalyst,
+                selectedMeeting,
+                selectedDate,
+                selectedTime,
+                selectedTimezone,
+                currentStep: 3 // Always save as step 3 so we return to the form
+            };
+            
+            console.log('Saving form data before Stripe redirect:', formData);
+            sessionStorage.setItem(formDataKey, JSON.stringify(formData));
+            
+            // Verify data was saved
+            const savedData = sessionStorage.getItem(formDataKey);
+            console.log('Verified saved data:', savedData ? 'Data saved successfully' : 'ERROR: Data not saved!');
+
                     // Map meeting ID to meeting type ID for Stripe API
                     const meetingTypeMap: Record<number, string> = {
                         2: 'initial-consultation',      // 30-Min Strategy
                         3: 'initial-consultation-1'     // 60-Min Deep
                     };
-
                     
                     const meetingTypeId = meetingTypeMap[selectedMeeting || 2];
-                    const selectedMeetingData = meetings.find(m => m.id === selectedMeeting);
-                    
-                    if (!meetingTypeId || !selectedMeetingData) {
-                        console.error('Invalid meeting selection:', selectedMeeting);
-                        alert('Invalid meeting selection. Please try again.');
+            
+            if (!meetingTypeId) {
+                setPaymentError('Invalid meeting selection. Please try again.');
+                setPaymentInitiating(false);
                         return;
                     }
                     
-                    console.log('Creating Stripe checkout session for:', {
-                        meetingTypeId,
-                        customerEmail: email,
-                        customerName: fullName,
-                        meetingData: selectedMeetingData
-                    });
-                    
+            console.log('Creating Stripe checkout session...');
+            
+            // Create Stripe checkout session
                     const response = await fetch('/api/stripe/create-checkout-session', {
                         method: 'POST',
                         headers: {
@@ -1196,15 +1361,93 @@ const MeetingsPage = () => {
                     const data = await response.json();
                     
                     if (response.ok && data.success) {
-                        console.log('Stripe checkout session created:', data);
-                        
-                        // Store booking details in sessionStorage for Calendly confirmation and success page
+                console.log('Stripe session created successfully. Redirecting to:', data.url);
+                // Small delay to ensure sessionStorage write completes
+                setTimeout(() => {
+                    window.location.href = data.url;
+                }, 100);
+            } else {
+                console.error('Failed to create Stripe checkout session:', data);
+                setPaymentError(data.error || 'Failed to create payment session. Please try again.');
+                setPaymentInitiating(false);
+            }
+        } catch (error) {
+            console.error('Error creating Stripe checkout session:', error);
+            setPaymentError('Network error. Please check your connection and try again.');
+            setPaymentInitiating(false);
+        }
+    };
+
+    const handleContinue = async () => {
+        console.log('handleContinue clicked!', { 
+            currentStep, 
+            isContinueDisabled, 
+            selectedAnalyst,
+            selectedEventTypeUri,
+            paymentCompleted,
+            isLoadingAvailability
+        });
+        
+        if (!isContinueDisabled) {
+            if (currentStep === 2) {
+                console.log('Advancing to step 3');
+                setCurrentStep(3);
+                // Scroll to top on mobile when advancing to next step
+                if (window.innerWidth < 768) {
+                    setTimeout(() => {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
+                }
+            } else if (currentStep === 3 && paymentCompleted) {
+                // Payment completed, process booking submission
+                console.log('🎯 Processing final step after payment completion');
+                console.log('📊 Current state:', {
+                    selectedAnalyst,
+                    hasCalendlyIntegration: selectedAnalyst !== null ? hasCalendlyIntegration(selectedAnalyst) : false,
+                    selectedDate,
+                    selectedTime,
+                    isLoadingAvailability,
+                    timeSlotObjectsCount: timeSlotObjects.length,
+                    timeSlotObjects: timeSlotObjects
+                });
+                
+                const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
+                const selectedMeetingData = meetings.find(m => m.id === selectedMeeting);
+                
+                // Get Calendly scheduling URL if analyst has Calendly integration
+                let calendlyUrl = '';
+                if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && selectedDate && selectedTime) {
+                    console.log('🔍 Looking for time slot:', selectedTime);
+                    console.log('🔍 Selected date:', selectedDate);
+                    console.log('🔍 Available dates in availableTimesByDate:', Object.keys(availableTimesByDate));
+                    console.log('🔍 Times for selected date:', availableTimesByDate[selectedDate]);
+                    console.log('🔍 All time slot objects:', timeSlotObjects.map(s => ({ date: selectedDate, time: s.displayTime, url: s.schedulingUrl })));
+                    
+                    const selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
+                    
+                    if (selectedSlot && selectedSlot.schedulingUrl) {
+                        calendlyUrl = selectedSlot.schedulingUrl;
+                        console.log('✅ Found Calendly scheduling URL:', calendlyUrl);
+                    } else {
+                        console.warn('⚠️ No Calendly URL found for selected time slot');
+                        console.log('Available slots:', timeSlotObjects.map(s => ({ time: s.displayTime, hasUrl: !!s.schedulingUrl })));
+                    }
+                } else {
+                    console.log('❌ Calendly requirements not met:', {
+                        hasAnalyst: selectedAnalyst !== null,
+                        hasIntegration: selectedAnalyst !== null ? hasCalendlyIntegration(selectedAnalyst) : false,
+                        hasDate: !!selectedDate,
+                        hasTime: !!selectedTime
+                    });
+                }
+
+                // Store booking details in sessionStorage for success page
                         const bookingDetails = {
                             analyst: selectedAnalyst?.toString() || '0',
                             analystName: analysts.find(a => a.id === selectedAnalyst)?.name || '',
                             meeting: selectedMeeting?.toString() || '1',
-                            meetingTitle: selectedMeetingData.title || '',
-                            meetingDuration: selectedMeetingData.duration || '',
+                    meetingTitle: selectedMeetingData?.title || '',
+                    meetingDuration: selectedMeetingData?.duration || '',
                             date: selectedDate || '',
                             time: selectedTime || '',
                             timezone: selectedTimezoneData?.label || '',
@@ -1212,24 +1455,82 @@ const MeetingsPage = () => {
                             notes: notes || '',
                             fullName: fullName,
                             email: email,
-                            sessionId: data.sessionId,
-                            productName: data.productName,
-                            amount: data.amount,
-                            calendlyUrl: calendlyUrl, // Store Calendly URL for after payment
+                    paymentCompleted: true,
+                    calendlyUrl: calendlyUrl,
                             hasCalendlyIntegration: calendlyUrl !== ''
                         };
                         
                         sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
                         
-                        // Redirect to Stripe Checkout
-                        window.location.href = data.url;
+                // Clear form data from sessionStorage
+                const formDataKey = 'meetings-form';
+                sessionStorage.removeItem(formDataKey);
+                
+                // If analyst has Calendly integration, open Calendly popup
+                if (calendlyUrl) {
+                    console.log('Opening Calendly popup for analyst booking with URL:', calendlyUrl);
+                    
+                    // Check if Calendly is available
+                    // @ts-ignore
+                    if (typeof window !== 'undefined' && window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
+                        console.log('Calendly is loaded, opening popup...');
+                        
+                        // Open Calendly popup with a slight delay to ensure DOM is ready
+                        setTimeout(() => {
+                            // @ts-ignore
+                            window.Calendly.initPopupWidget({
+                                url: calendlyUrl,
+                                prefill: {
+                                    name: fullName || '',
+                                    email: email || '',
+                                    customAnswers: {
+                                        a1: notes || ''
+                                    }
+                                },
+                                utm: {
+                                    utmSource: 'inspired-analyst',
+                                    utmMedium: 'booking',
+                                    utmCampaign: 'mentorship'
+                                }
+                            });
+                            console.log('Calendly popup initiated');
+                        }, 300);
+
+                        // Listen for Calendly event completion
+                        const handleCalendlyEvent = (e: MessageEvent) => {
+                            if (e.data.event && e.data.event === 'calendly.event_scheduled') {
+                                console.log('Calendly booking completed:', e.data);
+                                
+                                // Save Calendly event details
+                                if (e.data.payload) {
+                                    sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
+                                }
+                                
+                                // Redirect to success page after Calendly booking
+                                console.log('Redirecting to success page...');
+                                setTimeout(() => {
+                                    router.push('/booking-success');
+                                }, 500);
+                                
+                                // Clean up event listener
+                                window.removeEventListener('message', handleCalendlyEvent);
+                            }
+                        };
+
+                        window.addEventListener('message', handleCalendlyEvent);
                     } else {
-                        console.error('Failed to create Stripe checkout session:', data);
-                        alert('Failed to create payment session. Please try again.');
+                        // @ts-ignore
+                        console.error('Calendly script not loaded or not available. Window.Calendly:', typeof window !== 'undefined' ? window.Calendly : 'undefined');
+                        alert('Unable to open booking calendar. Redirecting to confirmation page...');
+                        // Fall back to direct redirect if Calendly fails
+                        setTimeout(() => {
+                            router.push('/booking-success');
+                        }, 1000);
                     }
-                } catch (error) {
-                    console.error('Error creating Stripe checkout session:', error);
-                    alert('An error occurred while processing your payment. Please try again.');
+                } else {
+                    console.log('No Calendly URL found, redirecting directly to success page');
+                    // No Calendly integration, redirect directly to success page
+                    router.push('/booking-success');
                 }
             }
         }
@@ -2791,17 +3092,61 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                     {/* Payment Details */}
                                     <div className="mt-6">
                                         <h3 className="text-base font-semibold text-white" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Payment Details</h3>
-                                        <div className="w-fit mt-4">
-                                            <div className="flex items-center justify-center px-4 py-3 border border-white/30 rounded-lg">
+                                        
+                                        <div className="flex flex-col gap-3 mt-4">
+                                            <button
+                                                onClick={handleStripePayment}
+                                                disabled={!fullName || !email || !!nameError || !!emailError || paymentInitiating || paymentCompleted}
+                                                className={`w-fit flex items-center justify-center px-4 py-3 border rounded-lg transition-all duration-300 ${
+                                                    paymentCompleted
+                                                        ? 'border-green-500/50 bg-green-500/10 cursor-not-allowed'
+                                                        : !fullName || !email || !!nameError || !!emailError || paymentInitiating
+                                                        ? 'border-white/20 bg-white/5 cursor-not-allowed opacity-50'
+                                                        : 'border-white/30 hover:border-white/60 hover:bg-white/5 cursor-pointer hover:scale-105'
+                                                }`}
+                                            >
                                                 <Image
-                                                    src="/logo/Binance.svg"
-                                                    alt="Binance"
-                                                    width={138}
+                                                    src="/stripe.svg"
+                                                    alt="Stripe"
+                                                    width={80}
                                                     height={20}
                                                     className="h-5 w-auto"
                                                 />
+                                            </button>
+                                            
+                                            {paymentCompleted && (
+                                                <div className="flex items-center gap-2 text-green-400">
+                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                                    </svg>
+                                                    <span className="text-sm" style={{fontFamily: 'Gilroy-SemiBold, sans-serif'}}>
+                                                        Payment Verified
+                                                    </span>
                                             </div>
+                                            )}
+                                            
+                                            {paymentInitiating && (
+                                                <div className="flex items-center gap-2 text-white/60">
+                                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                                    <span className="text-sm" style={{fontFamily: 'Gilroy-SemiBold, sans-serif'}}>
+                                                        Redirecting to payment...
+                                                    </span>
                                         </div>
+                                            )}
+                                            
+                                            {!paymentCompleted && !paymentInitiating && (
+                                                <p className="text-xs text-gray-400">
+                                                    {(!fullName || !email || !!nameError || !!emailError) ? 'Fill in your details above to proceed with payment' : 'Click to complete payment via Stripe'}
+                                                </p>
+                                            )}
+                                            
+                                            {paymentError && (
+                                                <div className="p-3 rounded-lg text-sm bg-red-900/20 text-red-400 border border-red-400/20">
+                                                    {paymentError}
+                                                </div>
+                                            )}
+                                        </div>
+                                        
                                         <p className="text-xs text-gray-400 leading-relaxed mt-4">
                                             By completing this booking, you agree to our Terms of Service and Privacy Policy. All services are provided for informational purposes only. Results may vary.
                                         </p>
@@ -2895,7 +3240,15 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                 boxShadow: window.innerWidth < 768 ? '0 4px 20px rgba(0, 0, 0, 0.8)' : 'none'
                             }}
                         >
-                                {currentStep === 3 ? 'Continue' : 'Proceed to Pay'}
+                                {currentStep === 3 && isLoadingAvailability ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Loading...
+                                    </span>
+                                ) : currentStep === 3 ? 'Continue' : 'Proceed to Pay'}
                         </button>
                     </div>
                     )}

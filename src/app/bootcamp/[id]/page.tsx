@@ -281,12 +281,12 @@ export default function BootcampDetailPage() {
 
               {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 relative z-10">
-                <button className="flex-1 bg-white border border-white rounded-full py-3 px-6 text-lg text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                <Link href={`/bootcamp/${bootcamp.id}/register`} className="flex-1 bg-white border border-white rounded-full py-3 px-6 text-lg text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
                   Register Now
-                </button>
-                <button className="flex-1 border border-white rounded-full py-3 px-6 text-lg text-white text-center hover:bg-white/10 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                </Link>
+                <Link href="/contact" className="flex-1 border border-white rounded-full py-3 px-6 text-lg text-white text-center hover:bg-white/10 transition-colors" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
                   Contact Us
-                </button>
+                </Link>
               </div>
             </div>
           </div>

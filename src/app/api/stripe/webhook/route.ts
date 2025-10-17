@@ -57,28 +57,99 @@ async function processWebhookAsync(event: any) {
   console.log(`Processing webhook: ${event.type}`);
   
   try {
-    switch (event.type) {
-      case 'checkout.session.completed':
-        console.log(`✅ Payment completed for session: ${event.data.object.id}`);
-        console.log(`Amount: $${event.data.object.amount_total / 100}`);
-        console.log(`Customer: ${event.data.object.customer_email}`);
-        break;
+    // Only process checkout.session.completed to avoid duplicates
+    // Stripe sends multiple events (payment_intent.succeeded, charge.succeeded, etc.)
+    // but we only need to create one database record per successful checkout
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object;
+      console.log(`✅ Payment completed for session: ${session.id}`);
+      console.log(`Amount: $${session.amount_total / 100}`);
+      console.log(`Customer: ${session.customer_email}`);
       
-      case 'payment_intent.succeeded':
-        console.log(`✅ Payment intent succeeded: ${event.data.object.id}`);
-        break;
+      // Extract metadata
+      const metadata = session.metadata || {};
+      const type = metadata.type;
       
-      case 'charge.succeeded':
-        console.log(`✅ Charge succeeded: ${event.data.object.id}`);
-        break;
-      
-      default:
-        console.log(`ℹ️ Unhandled event type: ${event.type}`);
+      if (!type) {
+        console.log('⚠️ No type in metadata, skipping database save');
+        return;
+      }
+
+      try {
+        // Connect to database
+        const client = new MongoClient(MONGODB_URI);
+        await client.connect();
+        const db = client.db(DB_NAME);
+
+        if (type === 'bootcamp') {
+          // Check if this session already exists to prevent duplicates
+          const existingRegistration = await db.collection('bootcamp_registrations').findOne({
+            stripeSessionId: session.id
+          });
+
+          if (existingRegistration) {
+            console.log(`ℹ️ Registration already exists for session ${session.id}, skipping duplicate`);
+            await client.close();
+            return;
+          }
+
+          // Create bootcamp registration record
+          const registration = {
+            stripeSessionId: session.id,
+            bootcampId: metadata.bootcampId,
+            customerName: metadata.customerName,
+            customerEmail: metadata.customerEmail,
+            notes: metadata.notes || '',
+            amount: session.amount_total / 100,
+            currency: session.currency,
+            paymentStatus: 'paid',
+            status: 'confirmed',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+
+          await db.collection('bootcamp_registrations').insertOne(registration);
+          console.log(`✅ Bootcamp registration saved for ${metadata.customerEmail}`);
+          
+        } else if (type === 'booking') {
+          // Check if this session already exists to prevent duplicates
+          const existingBooking = await db.collection('bookings').findOne({
+            stripeSessionId: session.id
+          });
+
+          if (existingBooking) {
+            console.log(`ℹ️ Booking already exists for session ${session.id}, skipping duplicate`);
+            await client.close();
+            return;
+          }
+
+          // Create booking record
+          const booking = {
+            stripeSessionId: session.id,
+            meetingTypeId: metadata.meetingTypeId,
+            customerName: metadata.customerName,
+            customerEmail: metadata.customerEmail,
+            amount: session.amount_total / 100,
+            currency: session.currency,
+            paymentStatus: 'paid',
+            status: 'confirmed',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          };
+
+          await db.collection('bookings').insertOne(booking);
+          console.log(`✅ Booking saved for ${metadata.customerEmail}`);
+        }
+
+        await client.close();
+      } catch (dbError) {
+        console.error('Database error in webhook:', dbError);
+      }
+    } else {
+      // Log other events but don't process them
+      console.log(`ℹ️ Event ${event.type} received but not processed (to avoid duplicates)`);
     }
   } catch (error) {
     console.error('Error processing webhook:', error);
   }
 }
-
-// Database functions removed for now to prevent webhook timeouts
-// These can be re-added later when database connection is stable

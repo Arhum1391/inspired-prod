@@ -9,18 +9,49 @@ const BootcampSuccessContent: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showSuccess, setShowSuccess] = useState(false);
-
-    // Bootcamp-specific data
-    const bootcampName = searchParams.get('bootcamp') || '';
-    const userName = searchParams.get('name') || '';
-    const userEmail = searchParams.get('email') || '';
-    const notes = searchParams.get('notes') || '';
+    const [bootcampDetails, setBootcampDetails] = useState<{
+        bootcamp: string;
+        name: string;
+        email: string;
+        notes: string;
+        productName?: string;
+        amount?: number;
+    } | null>(null);
 
     useEffect(() => {
         // Animate the success checkmark
         const timer = setTimeout(() => setShowSuccess(true), 300);
+        
+        // Try to get bootcamp details from sessionStorage first
+        const storedDetails = sessionStorage.getItem('bootcampDetails');
+        if (storedDetails) {
+            try {
+                const details = JSON.parse(storedDetails);
+                setBootcampDetails(details);
+                // Clear sessionStorage after reading
+                sessionStorage.removeItem('bootcampDetails');
+            } catch (error) {
+                console.error('Failed to parse bootcamp details:', error);
+                // Fall back to URL parameters
+                setBootcampDetails({
+                    bootcamp: searchParams.get('bootcamp') || '',
+                    name: searchParams.get('name') || '',
+                    email: searchParams.get('email') || '',
+                    notes: searchParams.get('notes') || '',
+                });
+            }
+        } else {
+            // Fall back to URL parameters if sessionStorage is empty
+            setBootcampDetails({
+                bootcamp: searchParams.get('bootcamp') || '',
+                name: searchParams.get('name') || '',
+                email: searchParams.get('email') || '',
+                notes: searchParams.get('notes') || '',
+            });
+        }
+        
         return () => clearTimeout(timer);
-    }, []);
+    }, [searchParams]);
 
     return (
         <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative">
@@ -117,7 +148,7 @@ const BootcampSuccessContent: React.FC = () => {
                                             lineHeight: '100%'
                                         }}
                                     >
-                                        {bootcampName === 'crypto-trading' ? 'Crypto Trading Bootcamp' : bootcampName}
+                                        {bootcampDetails?.bootcamp === 'crypto-trading' ? 'Crypto Trading Bootcamp' : (bootcampDetails?.productName || bootcampDetails?.bootcamp || 'Unknown Bootcamp')}
                                     </p>
                                 </div>
                             </div>
@@ -156,7 +187,7 @@ const BootcampSuccessContent: React.FC = () => {
                         </div>
 
                         {/* Your Mentors */}
-                        {bootcampName === 'crypto-trading' && (
+                        {bootcampDetails?.bootcamp === 'crypto-trading' && (
                             <div className="flex flex-col gap-3">
                                 <p 
                                     className="text-[#909090]"
@@ -222,8 +253,51 @@ const BootcampSuccessContent: React.FC = () => {
                             </div>
                         </div>
 
+                        {/* User Details */}
+                        {(bootcampDetails?.name || bootcampDetails?.email) && (
+                            <div className="flex flex-col gap-3">
+                                <p 
+                                    className="text-[#909090]"
+                                    style={{
+                                        fontFamily: 'Gilroy-Medium',
+                                        fontWeight: 400,
+                                        fontSize: '14px',
+                                        lineHeight: '100%'
+                                    }}
+                                >
+                                    Registration Details
+                                </p>
+                                {bootcampDetails?.name && (
+                                    <p 
+                                        className="text-white"
+                                        style={{
+                                            fontFamily: 'Gilroy-Medium',
+                                            fontWeight: 400,
+                                            fontSize: '16px',
+                                            lineHeight: '100%'
+                                        }}
+                                    >
+                                        Name: {bootcampDetails.name}
+                                    </p>
+                                )}
+                                {bootcampDetails?.email && (
+                                    <p 
+                                        className="text-white"
+                                        style={{
+                                            fontFamily: 'Gilroy-Medium',
+                                            fontWeight: 400,
+                                            fontSize: '16px',
+                                            lineHeight: '100%'
+                                        }}
+                                    >
+                                        Email: {bootcampDetails.email}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
                         {/* Your Notes */}
-                        {notes && (
+                        {bootcampDetails?.notes && (
                             <div className="flex flex-col gap-3">
                                 <p 
                                     className="text-[#909090]"
@@ -245,7 +319,7 @@ const BootcampSuccessContent: React.FC = () => {
                                         lineHeight: '100%'
                                     }}
                                 >
-                                    {notes}
+                                    {bootcampDetails.notes}
                                 </p>
                             </div>
                         )}

@@ -6,6 +6,23 @@ import Joi from 'joi';
 const MONGODB_URI = process.env.MONGODB_URI!;
 const DB_NAME = 'inspired-analyst';
 
+// Get base URL for the application
+// In production on Vercel, this should be set to: https://inspired-analyst.vercel.app
+const getBaseUrl = () => {
+  // Check if NEXT_PUBLIC_BASE_URL is set (preferred method)
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, ''); // Remove trailing slash
+  }
+  
+  // For production on Vercel (if env var not set)
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  
+  // Fallback for development
+  return 'http://localhost:3000';
+};
+
 // Environment-based pricing configuration
 const isTestMode = process.env.NODE_ENV === 'development' || process.env.STRIPE_TEST_MODE === 'true';
 
@@ -140,11 +157,11 @@ export async function POST(request: NextRequest) {
         })
       },
       success_url: body.type === 'bootcamp' 
-        ? `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/bootcamp-success?session_id={CHECKOUT_SESSION_ID}`
-        : `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
+        ? `${getBaseUrl()}/bootcamp-success?session_id={CHECKOUT_SESSION_ID}`
+        : `${getBaseUrl()}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: body.type === 'bootcamp'
-        ? `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/bootcamp/crypto-trading/register?payment=cancelled`
-        : `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/meetings?payment=cancelled`,
+        ? `${getBaseUrl()}/bootcamp/crypto-trading/register?payment=cancelled`
+        : `${getBaseUrl()}/meetings?payment=cancelled`,
       expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes from now
     });
 

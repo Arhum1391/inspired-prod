@@ -286,7 +286,7 @@ export default function BootcampPage() {
               <div
                 className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
                 style={{
-                  backgroundImage: 'url("inspired analysts team/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
+                  backgroundImage: 'url("rectangle 1/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat'

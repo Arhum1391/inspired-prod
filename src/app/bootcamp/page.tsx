@@ -177,7 +177,7 @@ export default function BootcampPage() {
             <div className="animate-scrollUp flex flex-col gap-5">
               {/* First set of images */}
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full mr-auto ml-1"
                 style={{
                   backgroundImage: 'url("inspired analysts team/1.png")',
                   backgroundSize: 'cover',
@@ -186,7 +186,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full mr-auto ml-1"
                 style={{
                   backgroundImage: 'url("inspired analysts team/2 improved.png")',
                   backgroundSize: 'cover',
@@ -195,7 +195,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full mr-auto ml-1"
                 style={{
                   backgroundImage: 'url("inspired analysts team/3.jpg")',
                   backgroundSize: 'cover',
@@ -204,7 +204,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full mr-auto ml-1"
                 style={{
                   backgroundImage: 'url("inspired analysts team/4.png")',
                   backgroundSize: 'cover',
@@ -214,7 +214,7 @@ export default function BootcampPage() {
               ></div>
               {/* Duplicate for seamless loop */}
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full mr-auto ml-1"
                 style={{
                   backgroundImage: 'url("inspired analysts team/1.png")',
                   backgroundSize: 'cover',
@@ -223,7 +223,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full mr-auto ml-1"
                 style={{
                   backgroundImage: 'url("inspired analysts team/2 improved.png")',
                   backgroundSize: 'cover',
@@ -232,7 +232,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full mr-auto ml-1"
                 style={{
                   backgroundImage: 'url("inspired analysts team/3.jpg")',
                   backgroundSize: 'cover',
@@ -241,7 +241,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 mr-auto ml-1"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full mr-auto ml-1"
                 style={{
                   backgroundImage: 'url("inspired analysts team/4.png")',
                   backgroundSize: 'cover',
@@ -257,7 +257,7 @@ export default function BootcampPage() {
             <div className="animate-scrollDown flex flex-col gap-5">
               {/* First set of images */}
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full ml-1 mr-auto"
                 style={{
                   backgroundImage: 'url("inspired analysts team/5.png")',
                   backgroundSize: 'cover',
@@ -266,7 +266,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full ml-1 mr-auto"
                 style={{
                   backgroundImage: 'url("inspired analysts team/6.jpg")',
                   backgroundSize: 'cover',
@@ -275,7 +275,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full ml-1 mr-auto"
                 style={{
                   backgroundImage: 'url("inspired analysts team/7.png")',
                   backgroundSize: 'cover',
@@ -284,7 +284,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full ml-1 mr-auto"
                 style={{
                   backgroundImage: 'url("rectangle 1/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
                   backgroundSize: 'cover',
@@ -294,7 +294,7 @@ export default function BootcampPage() {
               ></div>
               {/* Duplicate for seamless loop */}
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full ml-1 mr-auto"
                 style={{
                   backgroundImage: 'url("inspired analysts team/5.png")',
                   backgroundSize: 'cover',
@@ -303,7 +303,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full ml-1 mr-auto"
                 style={{
                   backgroundImage: 'url("inspired analysts team/6.jpg")',
                   backgroundSize: 'cover',
@@ -312,7 +312,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full ml-1 mr-auto"
                 style={{
                   backgroundImage: 'url("inspired analysts team/7.png")',
                   backgroundSize: 'cover',
@@ -321,7 +321,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full bg-zinc-800 ml-1 mr-auto"
+                className="aspect-[1/2.2] w-18 xl:w-24 rounded-full ml-1 mr-auto"
                 style={{
                   backgroundImage: 'url("inspired analysts team/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
                   backgroundSize: 'cover',
@@ -335,17 +335,6 @@ export default function BootcampPage() {
       </div>
 
 
-      {/* Mobile Bottom Fade Mask - positioned just under navbar */}
-      <div className="absolute inset-0 sm:hidden z-1 pointer-events-none">
-        <div
-          className="absolute left-0 w-full h-32"
-          style={{
-            top: '450px',
-            background: 'linear-gradient(to top, rgba(10, 10, 10, 1) 0%, rgba(10, 10, 10, 1) 15%, rgba(10, 10, 10, 0.9) 30%, rgba(10, 10, 10, 0.6) 50%, rgba(10, 10, 10, 0.4) 70%, rgba(10, 10, 10, 0.3) 85%, rgba(10, 10, 10, 0.2) 95%, transparent 100%)',
-            filter: 'blur(4px)'
-          }}
-        />
-      </div>
 
       {/* Mobile Screen Border Masks */}
       <div className="absolute inset-0 sm:hidden z-0 pointer-events-none">
@@ -402,7 +391,7 @@ export default function BootcampPage() {
             <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
               {/* First set of images */}
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/1.png")',
                   backgroundSize: 'cover',
@@ -411,7 +400,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/2 improved.png")',
                   backgroundSize: 'cover',
@@ -420,7 +409,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/3.jpg")',
                   backgroundSize: 'cover',
@@ -429,7 +418,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/4 - colored.png")',
                   backgroundSize: 'cover',
@@ -438,7 +427,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/5.png")',
                   backgroundSize: 'cover',
@@ -447,7 +436,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/6.jpg")',
                   backgroundSize: 'cover',
@@ -456,7 +445,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/7.png")',
                   backgroundSize: 'cover',
@@ -465,7 +454,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
                   backgroundSize: 'cover',
@@ -475,7 +464,7 @@ export default function BootcampPage() {
               ></div>
               {/* Duplicate for seamless loop */}
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/1.png")',
                   backgroundSize: 'cover',
@@ -484,7 +473,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/2 improved.png")',
                   backgroundSize: 'cover',
@@ -493,7 +482,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/3.jpg")',
                   backgroundSize: 'cover',
@@ -502,7 +491,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/4 - colored.png")',
                   backgroundSize: 'cover',
@@ -511,7 +500,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/5.png")',
                   backgroundSize: 'cover',
@@ -520,7 +509,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/6.jpg")',
                   backgroundSize: 'cover',
@@ -529,7 +518,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/7.png")',
                   backgroundSize: 'cover',
@@ -538,7 +527,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
                   backgroundSize: 'cover',
@@ -554,7 +543,7 @@ export default function BootcampPage() {
             <div className="animate-scrollDown flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
               {/* First set of images */}
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/5.png")',
                   backgroundSize: 'cover',
@@ -563,7 +552,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/6.jpg")',
                   backgroundSize: 'cover',
@@ -572,7 +561,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/7.png")',
                   backgroundSize: 'cover',
@@ -581,7 +570,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
                   backgroundSize: 'cover',
@@ -590,7 +579,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/1.png")',
                   backgroundSize: 'cover',
@@ -599,7 +588,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/2 improved.png")',
                   backgroundSize: 'cover',
@@ -608,7 +597,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/3.jpg")',
                   backgroundSize: 'cover',
@@ -617,7 +606,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/4 - colored.png")',
                   backgroundSize: 'cover',
@@ -627,7 +616,7 @@ export default function BootcampPage() {
               ></div>
               {/* Duplicate for seamless loop */}
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/5.png")',
                   backgroundSize: 'cover',
@@ -636,7 +625,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/6.jpg")',
                   backgroundSize: 'cover',
@@ -645,7 +634,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/7.png")',
                   backgroundSize: 'cover',
@@ -654,7 +643,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/cc997f059c3f8ef1a60e530cd062817abadc1f9a.jpg")',
                   backgroundSize: 'cover',
@@ -663,7 +652,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/1.png")',
                   backgroundSize: 'cover',
@@ -672,7 +661,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/2 improved.png")',
                   backgroundSize: 'cover',
@@ -681,7 +670,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/3.jpg")',
                   backgroundSize: 'cover',
@@ -690,7 +679,7 @@ export default function BootcampPage() {
                 }}
               ></div>
               <div
-                className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
+                className="aspect-[1.95/1] h-full rounded-full overflow-hidden flex-shrink-0 w-28"
                 style={{
                   backgroundImage: 'url("team-mob/4 - colored.png")',
                   backgroundSize: 'cover',
@@ -703,17 +692,6 @@ export default function BootcampPage() {
         </div>
       </div>
 
-      {/* Mobile Hero Section Fade Mask */}
-      <div className="absolute inset-0 sm:hidden z-10 pointer-events-none">
-        <div
-          className="absolute left-0 w-full h-40"
-          style={{
-            top: '65vh',
-            background: 'linear-gradient(to bottom, rgba(10, 10, 10, 1) 0%, rgba(10, 10, 10, 0.8) 15%, rgba(10, 10, 10, 0.6) 35%, rgba(10, 10, 10, 0.4) 60%, rgba(10, 10, 10, 0.2) 85%, transparent 100%)',
-            filter: 'blur(1px)'
-          }}
-        />
-      </div>
 
       {/* Bootcamp Cards Section */}
       <section className="relative z-0 pt-32 sm:pt-40 lg:pt-44 pb-12 sm:pb-16 lg:pb-20">

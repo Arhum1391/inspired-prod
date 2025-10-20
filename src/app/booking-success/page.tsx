@@ -43,20 +43,35 @@ const BookingSuccessContent: React.FC = () => {
 
     // Load Calendly script
     useEffect(() => {
-        // Get booking details from sessionStorage
-        const storedDetails = sessionStorage.getItem('bookingDetails');
-        
-        if (storedDetails) {
-            const details = JSON.parse(storedDetails);
-            setBookingDetails(details);
-            console.log('Booking details loaded:', details);
+        // Get booking details from sessionStorage (only on client-side)
+        if (typeof window !== 'undefined') {
+            const storedDetails = sessionStorage.getItem('bookingDetails');
             
-            // If analyst has Calendly integration, load the script
-            if (details.hasCalendlyIntegration && details.calendlyUrl) {
-                loadCalendlyScript();
+            if (storedDetails) {
+                const details = JSON.parse(storedDetails);
+                setBookingDetails(details);
+                console.log('Booking details loaded:', details);
+                
+                // If analyst has Calendly integration, load the script
+                if (details.hasCalendlyIntegration && details.calendlyUrl) {
+                    loadCalendlyScript();
+                }
+            } else {
+                // Fallback to URL parameters if no sessionStorage
+                const details = {
+                    analystName: analysts.find(a => a.id === parseInt(searchParams.get('analyst') || '0'))?.name || 'Unknown',
+                    meetingTitle: meetings.find(m => m.id === parseInt(searchParams.get('meeting') || '2'))?.title || 'Unknown',
+                    meetingDuration: meetings.find(m => m.id === parseInt(searchParams.get('meeting') || '2'))?.duration || 'Unknown',
+                    date: searchParams.get('date') || '',
+                    time: searchParams.get('time') || '',
+                    timezone: searchParams.get('timezone') || '',
+                    notes: searchParams.get('notes') || '',
+                    hasCalendlyIntegration: false
+                };
+                setBookingDetails(details);
             }
         } else {
-            // Fallback to URL parameters if no sessionStorage
+            // Server-side: use URL parameters only
             const details = {
                 analystName: analysts.find(a => a.id === parseInt(searchParams.get('analyst') || '0'))?.name || 'Unknown',
                 meetingTitle: meetings.find(m => m.id === parseInt(searchParams.get('meeting') || '2'))?.title || 'Unknown',
@@ -76,6 +91,9 @@ const BookingSuccessContent: React.FC = () => {
     }, [searchParams]);
 
     const loadCalendlyScript = () => {
+        // Only run on client-side
+        if (typeof window === 'undefined') return;
+        
         // Load Calendly CSS if not already loaded
         if (!document.querySelector('link[href*="calendly"]')) {
             const link = document.createElement('link');
@@ -112,8 +130,8 @@ const BookingSuccessContent: React.FC = () => {
     }, [calendlyLoaded, bookingDetails, calendlyOpened]);
 
     const openCalendlyPopup = () => {
-        if (!bookingDetails || !bookingDetails.calendlyUrl) {
-            console.error('No Calendly URL available');
+        if (!bookingDetails || !bookingDetails.calendlyUrl || typeof window === 'undefined') {
+            console.error('No Calendly URL available or not in browser environment');
             return;
         }
 
@@ -157,7 +175,9 @@ const BookingSuccessContent: React.FC = () => {
                             bookingConfirmed: true
                         };
                         
-                        sessionStorage.setItem('bookingDetails', JSON.stringify(updatedDetails));
+                        if (typeof window !== 'undefined') {
+                            sessionStorage.setItem('bookingDetails', JSON.stringify(updatedDetails));
+                        }
                         setBookingDetails(updatedDetails);
                         
                         // Popup will close automatically, success page is already visible behind it

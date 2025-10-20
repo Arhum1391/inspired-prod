@@ -22,17 +22,27 @@ const BootcampSuccessContent: React.FC = () => {
         // Animate the success checkmark
         const timer = setTimeout(() => setShowSuccess(true), 300);
         
-        // Try to get bootcamp details from sessionStorage first
-        const storedDetails = sessionStorage.getItem('bootcampDetails');
-        if (storedDetails) {
-            try {
-                const details = JSON.parse(storedDetails);
-                setBootcampDetails(details);
-                // Clear sessionStorage after reading
-                sessionStorage.removeItem('bootcampDetails');
-            } catch (error) {
-                console.error('Failed to parse bootcamp details:', error);
-                // Fall back to URL parameters
+        // Try to get bootcamp details from sessionStorage first (only on client-side)
+        if (typeof window !== 'undefined') {
+            const storedDetails = sessionStorage.getItem('bootcampDetails');
+            if (storedDetails) {
+                try {
+                    const details = JSON.parse(storedDetails);
+                    setBootcampDetails(details);
+                    // Clear sessionStorage after reading
+                    sessionStorage.removeItem('bootcampDetails');
+                } catch (error) {
+                    console.error('Failed to parse bootcamp details:', error);
+                    // Fall back to URL parameters
+                    setBootcampDetails({
+                        bootcamp: searchParams.get('bootcamp') || '',
+                        name: searchParams.get('name') || '',
+                        email: searchParams.get('email') || '',
+                        notes: searchParams.get('notes') || '',
+                    });
+                }
+            } else {
+                // Fall back to URL parameters if sessionStorage is empty
                 setBootcampDetails({
                     bootcamp: searchParams.get('bootcamp') || '',
                     name: searchParams.get('name') || '',
@@ -41,7 +51,7 @@ const BootcampSuccessContent: React.FC = () => {
                 });
             }
         } else {
-            // Fall back to URL parameters if sessionStorage is empty
+            // Server-side: only use URL parameters
             setBootcampDetails({
                 bootcamp: searchParams.get('bootcamp') || '',
                 name: searchParams.get('name') || '',

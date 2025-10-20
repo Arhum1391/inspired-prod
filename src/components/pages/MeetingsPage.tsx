@@ -298,7 +298,7 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
         setTimeout(() => {
             onAdvance();
             // Scroll to top on mobile when advancing to next step
-            if (window.innerWidth < 768) {
+            if (typeof window !== 'undefined' && window.innerWidth < 768) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }, 100);
@@ -701,7 +701,7 @@ const MeetingsPage = () => {
         setIsLoadingAvailability(true);
         console.log('Fetching Calendly availability:', { eventTypeUri, startDate, endDate, timezone, analystId: selectedAnalyst });
         try {
-            const url = new URL('/api/calendly/availability', window.location.origin);
+            const url = new URL('/api/calendly/availability', typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
             url.searchParams.append('eventTypeUri', eventTypeUri);
             url.searchParams.append('startDate', startDate);
             url.searchParams.append('endDate', endDate);
@@ -744,6 +744,9 @@ const MeetingsPage = () => {
 
     // Load Calendly widget script for popup functionality
     useEffect(() => {
+        // Only run on client-side
+        if (typeof window === 'undefined') return;
+        
         // Load Calendly CSS
         const link = document.createElement('link');
         link.href = 'https://assets.calendly.com/assets/external/widget.css';
@@ -757,8 +760,14 @@ const MeetingsPage = () => {
         document.body.appendChild(script);
         
         return () => {
-            document.head.removeChild(link);
-            document.body.removeChild(script);
+            if (typeof window !== 'undefined') {
+                try {
+                    document.head.removeChild(link);
+                    document.body.removeChild(script);
+                } catch (e) {
+                    // Ignore errors if elements don't exist
+                }
+            }
         };
     }, []);
 
@@ -1108,7 +1117,7 @@ const MeetingsPage = () => {
                         console.log('Fetching availability chunk:', { startDateStr, endDateStr });
                         
                         try {
-                            const url = new URL('/api/calendly/availability', window.location.origin);
+                            const url = new URL('/api/calendly/availability', typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
                             url.searchParams.append('eventTypeUri', selectedEventType.id);
                             url.searchParams.append('startDate', startDateStr);
                             url.searchParams.append('endDate', endDateStr);
@@ -1415,7 +1424,9 @@ const MeetingsPage = () => {
                 console.log('Stripe session created successfully. Redirecting to:', data.url);
                 // Small delay to ensure sessionStorage write completes
                 setTimeout(() => {
-                    window.location.href = data.url;
+                    if (typeof window !== 'undefined') {
+                        window.location.href = data.url;
+                    }
                 }, 100);
             } else {
                 console.error('Failed to create Stripe checkout session:', data);
@@ -1444,7 +1455,7 @@ const MeetingsPage = () => {
                 console.log('Advancing to step 3');
                 setCurrentStep(3);
                 // Scroll to top on mobile when advancing to next step
-                if (window.innerWidth < 768) {
+                if (typeof window !== 'undefined' && window.innerWidth < 768) {
                     setTimeout(() => {
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                     }, 100);

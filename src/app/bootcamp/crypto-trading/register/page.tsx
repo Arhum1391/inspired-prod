@@ -24,6 +24,8 @@ export default function CryptoTradingRegisterPage() {
 
   // Check payment status and restore form data on mount
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const paymentStatus = searchParams.get('payment');
     const sessionId = searchParams.get('session_id');
     const formDataKey = 'bootcamp-form-crypto-trading';
@@ -199,7 +201,9 @@ export default function CryptoTradingRegisterPage() {
         email: email.trim().toLowerCase(),
         notes: notes.trim()
       };
-      sessionStorage.setItem(formDataKey, JSON.stringify(formData));
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem(formDataKey, JSON.stringify(formData));
+      }
 
       // Create Stripe checkout session for bootcamp payment
       const response = await fetch('/api/stripe/create-checkout-session', {
@@ -257,11 +261,13 @@ export default function CryptoTradingRegisterPage() {
         paymentCompleted: true
       };
       
-      sessionStorage.setItem('bootcampDetails', JSON.stringify(bootcampDetails));
-      
-      // Clear form data from sessionStorage
-      const formDataKey = 'bootcamp-form-crypto-trading';
-      sessionStorage.removeItem(formDataKey);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('bootcampDetails', JSON.stringify(bootcampDetails));
+        
+        // Clear form data from sessionStorage
+        const formDataKey = 'bootcamp-form-crypto-trading';
+        sessionStorage.removeItem(formDataKey);
+      }
       
       // Redirect to success page
       router.push('/bootcamp-success?bootcamp=crypto-trading');

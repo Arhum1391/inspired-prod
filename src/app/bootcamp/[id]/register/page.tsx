@@ -30,6 +30,8 @@ export default function BootcampRegisterPage() {
 
   // Check payment status and restore form data on mount
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const paymentStatus = searchParams.get('payment');
     const sessionId = searchParams.get('session_id');
     const formDataKey = `bootcamp-form-${params.id}`;
@@ -201,7 +203,9 @@ export default function BootcampRegisterPage() {
         email: email.trim().toLowerCase(),
         notes: notes.trim()
       };
-      sessionStorage.setItem(formDataKey, JSON.stringify(formData));
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem(formDataKey, JSON.stringify(formData));
+      }
 
       // Create Stripe checkout session for bootcamp payment
       const response = await fetch('/api/stripe/create-checkout-session', {
@@ -223,7 +227,9 @@ export default function BootcampRegisterPage() {
       if (response.ok && data.success) {
         console.log('Redirecting to Stripe checkout:', data);
         // Redirect to Stripe Checkout
-        window.location.href = data.url;
+        if (typeof window !== 'undefined') {
+          window.location.href = data.url;
+        }
       } else {
         console.error('Failed to create Stripe checkout session:', data);
         setPaymentError(data.error || 'Failed to create payment session. Please try again.');
@@ -259,11 +265,13 @@ export default function BootcampRegisterPage() {
         paymentCompleted: true
       };
       
-      sessionStorage.setItem('bootcampDetails', JSON.stringify(bootcampDetails));
-      
-      // Clear form data from sessionStorage
-      const formDataKey = `bootcamp-form-${params.id}`;
-      sessionStorage.removeItem(formDataKey);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('bootcampDetails', JSON.stringify(bootcampDetails));
+        
+        // Clear form data from sessionStorage
+        const formDataKey = `bootcamp-form-${params.id}`;
+        sessionStorage.removeItem(formDataKey);
+      }
       
       // Redirect to success page
       router.push(`/bootcamp-success?bootcamp=${params.id}`);

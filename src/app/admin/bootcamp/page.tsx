@@ -343,15 +343,17 @@ export default function BootcampPage() {
       }
     };
 
-    if (showModal) {
+    if (showModal && typeof window !== 'undefined') {
       document.addEventListener('keydown', handleEscape);
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
-      document.body.style.overflow = 'unset';
+      if (typeof window !== 'undefined') {
+        document.removeEventListener('keydown', handleEscape);
+        document.body.style.overflow = 'unset';
+      }
     };
   }, [showModal]);
 

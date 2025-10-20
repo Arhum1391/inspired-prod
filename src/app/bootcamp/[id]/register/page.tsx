@@ -641,17 +641,14 @@ export default function BootcampRegisterPage() {
                           className="text-xs text-white"
                           style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
                         >
-                          {new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', { 
+                          {(bootcamp.bootcampStartDate 
+                            ? new Date(bootcamp.bootcampStartDate)
+                            : new Date(bootcamp.registrationStartDate)
+                          ).toLocaleDateString('en-US', { 
                             weekday: 'long', 
                             month: 'long', 
                             day: 'numeric' 
                           })}
-                        </span>
-                        <span
-                          className="text-xs text-white"
-                          style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
-                        >
-                          11:30 AM (Berlin, Germany)
                         </span>
                       </div>
                     </div>

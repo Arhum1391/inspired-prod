@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { MongoClient } from 'mongodb';
+import { getDatabase } from '@/lib/mongodb';
 import { stripe, createLineItem, createSessionMetadata, SessionData, getSuccessUrl, getCancelUrl } from '@/lib/stripe';
 import Joi from 'joi';
-
-const MONGODB_URI = process.env.MONGODB_URI!;
-const DB_NAME = 'inspired-analyst';
+import { Bootcamp } from '@/types/admin';
 
 // Get base URL for the application
 // In production on Vercel, this should be set to: https://inspired-analyst.vercel.app
@@ -64,45 +62,7 @@ const meetingTypes = [
   }
 ];
 
-// Bootcamp configuration
-const bootcamps = [
-  {
-    id: 'crypto-trading',
-    name: 'Crypto Trading Bootcamp',
-    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
-    description: 'Interactive mentorship bootcamp guided by Senior Crypto Analyst'
-  },
-  {
-    id: 'ai-data-finance',
-    name: 'AI & Data for Finance',
-    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
-    description: 'Explore the power of AI-driven trading and master data analysis techniques'
-  },
-  {
-    id: 'forex-mastery',
-    name: 'Forex Mastery Mentorship',
-    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
-    description: 'Learn the fundamentals of forex trading and develop advanced strategies'
-  },
-  {
-    id: 'stock-investing',
-    name: 'Stock Market Investing Bootcamp',
-    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
-    description: 'Learn how to build and manage a strong investment portfolio'
-  },
-  {
-    id: 'web3-blockchain',
-    name: 'Web3 & Blockchain Mentorship',
-    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
-    description: 'Take a deep dive into blockchain technology and DeFi applications'
-  },
-  {
-    id: 'career-growth',
-    name: 'Career Growth in Finance & Tech',
-    price: isTestMode ? 1 : 30, // $1 for testing, $30 for production
-    description: 'Receive personalized career guidance and professional development'
-  }
-];
+// Bootcamp configuration removed - now fetched from database
 
 // Validation schemas
 const bookingSchema = Joi.object({
@@ -147,15 +107,30 @@ export async function POST(request: NextRequest) {
       productDetails = meetingType;
       amount = meetingType.price * 100; // Convert to cents
     } else if (body.type === 'bootcamp') {
-      const bootcamp = bootcamps.find(bc => bc.id === body.bootcampId);
+      // Fetch bootcamp from database
+      const db = await getDatabase();
+      const bootcamp: Bootcamp | null = await db.collection('bootcamps').findOne({ 
+        id: body.bootcampId,
+        isActive: true 
+      });
+      
       if (!bootcamp) {
         return NextResponse.json(
-          { error: 'Invalid bootcamp' },
+          { error: 'Invalid bootcamp or bootcamp not active' },
           { status: 400 }
         );
       }
-      productDetails = bootcamp;
-      amount = bootcamp.price * 100; // Convert to cents
+
+      // Prepare product details for Stripe
+      productDetails = {
+        name: bootcamp.title,
+        description: bootcamp.description,
+        price: bootcamp.priceAmount || parseFloat(bootcamp.price.replace(/[^0-9.]/g, '')) || (isTestMode ? 1 : 30)
+      };
+
+      // Use priceAmount if available, otherwise parse from price string, with fallback
+      const priceValue = bootcamp.priceAmount || parseFloat(bootcamp.price.replace(/[^0-9.]/g, '')) || (isTestMode ? 1 : 30);
+      amount = priceValue * 100; // Convert to cents
     } else {
       return NextResponse.json(
         { error: 'Invalid type. Must be "booking" or "bootcamp"' },

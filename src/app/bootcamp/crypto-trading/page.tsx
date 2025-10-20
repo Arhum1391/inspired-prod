@@ -1,13 +1,95 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target } from 'lucide-react';
+import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target, LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { Bootcamp } from '@/types/admin';
+import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
+
+// Helper function to get icon component dynamically
+const getIconComponent = (iconName: string): LucideIcon => {
+  const icons: { [key: string]: LucideIcon } = {
+    Clock,
+    Globe,
+    Calendar,
+    Award,
+    BookOpen,
+    TrendingUp,
+    Target,
+  };
+  return icons[iconName] || BookOpen;
+};
 
 export default function CryptoTradingBootcampPage() {
   const router = useRouter();
+  const [bootcamp, setBootcamp] = useState<Bootcamp | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchBootcamp('crypto-trading');
+  }, []);
+
+  const fetchBootcamp = async (id: string) => {
+    try {
+      const response = await fetch(`/api/bootcamp/${id}`);
+      if (response.ok) {
+        const data = await response.json();
+        setBootcamp(data);
+      } else if (response.status === 404) {
+        // Try to find in fallback data
+        const fallbackBootcamp = getFallbackBootcamps().find(b => b.id === id);
+        if (fallbackBootcamp) {
+          setBootcamp(fallbackBootcamp);
+        } else {
+          setError('Bootcamp not found');
+        }
+      } else {
+        setError('Failed to load bootcamp');
+      }
+    } catch (error) {
+      console.error('Failed to fetch bootcamp:', error);
+      // Try to find in fallback data
+      const fallbackBootcamp = getFallbackBootcamps().find(b => b.id === id);
+      if (fallbackBootcamp) {
+        setBootcamp(fallbackBootcamp);
+      } else {
+        setError('Failed to load bootcamp');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
+        <Navbar variant="hero" />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-white">Loading bootcamp...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !bootcamp) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
+        <Navbar variant="hero" />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h3 className="text-xl font-semibold text-white mb-2">{error || 'Bootcamp not found'}</h3>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
@@ -41,33 +123,32 @@ export default function CryptoTradingBootcampPage() {
                 <div className="flex flex-col gap-6">
                   {/* Main Heading */}
                   <h1 className="text-3xl sm:text-4xl lg:text-5xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '120%'}}>
-                    Crypto Trading Bootcamp
+                    {bootcamp.title}
                   </h1>
 
                   {/* Subheading */}
-                  <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
-                    Master cryptocurrency trading with proven strategies, technical analysis, and risk management. Transform from beginner to confident trader in just 6 weeks.
-                  </p>
+                  {bootcamp.heroSubheading && (
+                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
+                      {bootcamp.heroSubheading}
+                    </p>
+                  )}
 
-                  {/* Description Paragraph 1 */}
-                  <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
-                    The Crypto Trading Bootcamp is designed for anyone who wants to confidently trade cryptocurrencies by combining technical analysis, market psychology, and practical strategies. Over 6 weeks, you&apos;ll learn how to read charts, identify trends, manage risks, and build a sustainable trading approach that suits your goals.
-                  </p>
-
-                  {/* Description Paragraph 2 */}
-                  <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
-                    Unlike generic trading courses, this mentorship bootcamp is interactive and guided by a Senior Crypto Analyst with years of hands-on experience. You&apos;ll work on real market scenarios, case studies, and live examples — ensuring that you not only learn but also apply the strategies in real time.
-                  </p>
+                  {/* Description Paragraphs */}
+                  {bootcamp.heroDescription && bootcamp.heroDescription.map((paragraph, index) => (
+                    <p key={index} className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
+                      {paragraph}
+                    </p>
+                  ))}
                 </div>
 
                 {/* CTA Button */}
                 <div className="flex">
                   <button
-                    onClick={() => router.push('/bootcamp/crypto-trading/register')}
+                    onClick={() => router.push(`/bootcamp/${bootcamp.id}/register`)}
                     className="bg-white rounded-full px-6 py-4 text-sm text-[#0A0A0A] hover:bg-gray-100 transition-colors"
                     style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}
                   >
-                    Register Now - 30 BNB
+                    Register Now - {bootcamp.price}
                   </button>
                 </div>
               </div>
@@ -116,10 +197,10 @@ export default function CryptoTradingBootcampPage() {
                     {/* Text */}
                     <div className="flex flex-col gap-3 relative z-10">
                       <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
-                        6 Weeks
+                        {bootcamp.infoCards?.duration?.value || bootcamp.duration}
                       </h3>
                       <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Duration
+                        {bootcamp.infoCards?.duration?.label || 'Duration'}
                       </p>
                     </div>
                   </div>
@@ -164,10 +245,10 @@ export default function CryptoTradingBootcampPage() {
                     {/* Text */}
                     <div className="flex flex-col gap-3 relative z-10">
                       <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
-                        Online
+                        {bootcamp.infoCards?.mode?.value || bootcamp.format}
                       </h3>
                       <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Mode
+                        {bootcamp.infoCards?.mode?.label || 'Mode'}
                       </p>
                     </div>
                   </div>
@@ -215,10 +296,10 @@ export default function CryptoTradingBootcampPage() {
                     {/* Text */}
                     <div className="flex flex-col gap-2 relative z-10">
                       <h3 className="text-lg text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
-                        Live Sessions
+                        {bootcamp.infoCards?.interactive?.value || 'Live Sessions'}
                       </h3>
                       <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Interactive
+                        {bootcamp.infoCards?.interactive?.label || 'Interactive'}
                       </p>
                     </div>
                   </div>
@@ -263,10 +344,10 @@ export default function CryptoTradingBootcampPage() {
                     {/* Text */}
                     <div className="flex flex-col gap-2 relative z-10">
                       <h3 className="text-lg text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
-                        Certificate
+                        {bootcamp.infoCards?.certificate?.value || 'Certificate'}
                       </h3>
                       <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Completion
+                        {bootcamp.infoCards?.certificate?.label || 'Completion'}
                       </p>
                     </div>
                   </div>
@@ -310,7 +391,17 @@ export default function CryptoTradingBootcampPage() {
                       Registration Open
                     </h3>
                     <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                      1st Oct, 2025 - 30th Oct, 2025
+                      {bootcamp.infoCards?.registrationText || 
+                        `${new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', { 
+                          day: 'numeric', 
+                          month: 'long', 
+                          year: 'numeric' 
+                        })} - ${new Date(bootcamp.registrationEndDate).toLocaleDateString('en-US', { 
+                          day: 'numeric', 
+                          month: 'long', 
+                          year: 'numeric' 
+                        })}`
+                      }
                     </p>
                   </div>
 
@@ -343,109 +434,72 @@ export default function CryptoTradingBootcampPage() {
 
               {/* Mentor Cards */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
-                {/* Mentor Card 1 - Adnan */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4 relative">
-                  {/* Curved Gradient Border */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      borderRadius: '16px',
-                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                      padding: '1px'
-                    }}
-                  >
-                    <div
-                      className="w-full h-full rounded-[15px]"
-                      style={{
-                        background: '#1F1F1F'
-                      }}
-                    ></div>
-                  </div>
+                {bootcamp.mentorDetails && bootcamp.mentorDetails.length > 0 ? (
+                  bootcamp.mentorDetails.map((mentor, index) => (
+                    <div key={index} className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4 relative">
+                      {/* Curved Gradient Border */}
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          borderRadius: '16px',
+                          background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                          padding: '1px'
+                        }}
+                      >
+                        <div
+                          className="w-full h-full rounded-[15px]"
+                          style={{
+                            background: '#1F1F1F'
+                          }}
+                        ></div>
+                      </div>
 
-                  {/* Profile Image */}
-                  <div className="w-16 h-16 rounded-full overflow-hidden relative z-10">
-                    <Image
-                      src="/team dark/Adnan.png"
-                      alt="Adnan"
-                      width={64}
-                      height={64}
-                      className="object-cover"
-                    />
-                  </div>
+                      {/* Profile Image */}
+                      <div className="w-16 h-16 rounded-full overflow-hidden relative z-10">
+                        {mentor.image ? (
+                          <Image
+                            src={mentor.image}
+                            alt={mentor.name}
+                            width={64}
+                            height={64}
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-600 flex items-center justify-center">
+                            <span className="text-white text-xs font-semibold">
+                              {mentor.name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                        )}
+                      </div>
 
-                  {/* Mentor Info */}
-                  <div className="flex flex-col items-start gap-2 w-full relative z-10">
-                    {/* Name */}
-                    <h3 className="text-lg sm:text-xl text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
-                      Adnan
-                    </h3>
+                      {/* Mentor Info */}
+                      <div className="flex flex-col items-start gap-2 w-full relative z-10">
+                        {/* Name */}
+                        <h3 className="text-lg sm:text-xl text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                          {mentor.name}
+                        </h3>
 
-                    {/* Details */}
-                    <div className="flex flex-col items-center gap-4 w-full">
-                      {/* Title */}
-                      <p className="text-sm text-[#909090] text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
-                        Senior Marketing Analyst
-                      </p>
+                        {/* Details */}
+                        <div className="flex flex-col items-center gap-4 w-full">
+                          {/* Title */}
+                          <p className="text-sm text-[#909090] text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
+                            {mentor.role}
+                          </p>
 
-                      {/* Description */}
-                      <p className="text-sm text-[#909090] text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
-                        Content creator specializing in stocks, crypto, data science, and side hustles. Known for making complex financial concepts accessible with humor and real-world examples.
-                      </p>
+                          {/* Description */}
+                          <p className="text-sm text-[#909090] text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
+                            {mentor.description}
+                          </p>
+                        </div>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="col-span-full text-center text-gray-400">
+                    No mentor details available
                   </div>
-                </div>
-
-                {/* Mentor Card 2 - Assassin */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4 relative">
-                  {/* Curved Gradient Border */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      borderRadius: '16px',
-                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                      padding: '1px'
-                    }}
-                  >
-                    <div
-                      className="w-full h-full rounded-[15px]"
-                      style={{
-                        background: '#1F1F1F'
-                      }}
-                    ></div>
-                  </div>
-
-                  {/* Profile Image */}
-                  <div className="w-16 h-16 rounded-full overflow-hidden relative z-10">
-                    <Image
-                      src="/team dark/Assassin.png"
-                      alt="Assassin"
-                      width={64}
-                      height={64}
-                      className="object-cover"
-                    />
-                  </div>
-
-                  {/* Mentor Info */}
-                  <div className="flex flex-col items-start gap-2 w-full relative z-10">
-                    {/* Name */}
-                    <h3 className="text-lg sm:text-xl text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
-                      Assassin
-                    </h3>
-
-                    {/* Details */}
-                    <div className="flex flex-col items-center gap-4 w-full">
-                      {/* Title */}
-                      <p className="text-sm text-[#909090] text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
-                        Co-Founder, Inspired Analyst
-                      </p>
-
-                      {/* Description */}
-                      <p className="text-sm text-[#909090] text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
-                        Co-founder with deep expertise in Fibonacci retracements, ICT concepts, volume profiling, and institutional orderflow. Trading crypto since 2019.
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -472,242 +526,78 @@ export default function CryptoTradingBootcampPage() {
 
               {/* Curriculum Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 w-full">
-                {/* Week 1-2: Crypto Fundamentals */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
-                  {/* Curved Gradient Border */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      borderRadius: '16px',
-                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                      padding: '1px'
-                    }}
-                  >
-                    <div
-                      className="w-full h-full rounded-[15px]"
-                      style={{
-                        background: '#1F1F1F'
-                      }}
-                    ></div>
+                {bootcamp.curriculumSections && bootcamp.curriculumSections.length > 0 ? (
+                  bootcamp.curriculumSections.map((section, index) => {
+                    const IconComponent = getIconComponent(section.icon);
+                    return (
+                      <div key={index} className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
+                        {/* Curved Gradient Border */}
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{
+                            borderRadius: '16px',
+                            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                            padding: '1px'
+                          }}
+                        >
+                          <div
+                            className="w-full h-full rounded-[15px]"
+                            style={{
+                              background: '#1F1F1F'
+                            }}
+                          ></div>
+                        </div>
+
+                        {/* Background Ellipse */}
+                        <div
+                          className="absolute w-[588px] h-[588px] z-0"
+                          style={{
+                            left: '285.45px',
+                            top: '-359.87px',
+                            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                            filter: 'blur(100px)',
+                            transform: 'rotate(-172.95deg)',
+                            borderRadius: '50%'
+                          }}
+                        />
+
+                        {/* Header */}
+                        <div className="flex items-start gap-4 relative z-10">
+                          {/* Icon */}
+                          <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center flex-shrink-0">
+                            <IconComponent className="w-5 h-5 text-white" />
+                          </div>
+
+                          {/* Title */}
+                          <div className="flex flex-col gap-2 flex-1">
+                            <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                              {section.weekRange}
+                            </p>
+                            <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
+                              {section.title}
+                            </h3>
+                          </div>
+                        </div>
+
+                        {/* List Items */}
+                        <div className="flex flex-col gap-4 relative z-10">
+                          {section.items.map((item, itemIndex) => (
+                            <div key={itemIndex} className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                              <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                                {item}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="col-span-full text-center text-gray-400">
+                    No curriculum sections available
                   </div>
-
-                  {/* Background Ellipse */}
-                  <div
-                    className="absolute w-[588px] h-[588px] z-0"
-                    style={{
-                      left: '285.45px',
-                      top: '-359.87px',
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
-                      transform: 'rotate(-172.95deg)',
-                      borderRadius: '50%'
-                    }}
-                  />
-
-                  {/* Header */}
-                  <div className="flex items-start gap-4 relative z-10">
-                    {/* Icon */}
-                    <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center flex-shrink-0">
-                      <BookOpen className="w-5 h-5 text-white" />
-                    </div>
-
-                    {/* Title */}
-                    <div className="flex flex-col gap-2 flex-1">
-                      <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Week 1-2
-                      </p>
-                      <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
-                        Crypto Fundamentals
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* List Items */}
-                  <div className="flex flex-col gap-4 relative z-10">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Blockchain technology basics
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Understanding market cycles
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Major cryptocurrencies overview
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Wallet security & setup
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Week 3-4: Technical Analysis */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
-                  {/* Curved Gradient Border */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      borderRadius: '16px',
-                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                      padding: '1px'
-                    }}
-                  >
-                    <div
-                      className="w-full h-full rounded-[15px]"
-                      style={{
-                        background: '#1F1F1F'
-                      }}
-                    ></div>
-                  </div>
-
-                  {/* Background Ellipse */}
-                  <div
-                    className="absolute w-[588px] h-[588px] z-0"
-                    style={{
-                      left: '285.11px',
-                      top: '-359.87px',
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
-                      transform: 'rotate(-172.95deg)',
-                      borderRadius: '50%'
-                    }}
-                  />
-
-                  {/* Header */}
-                  <div className="flex items-start gap-4 relative z-10">
-                    {/* Icon */}
-                    <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center flex-shrink-0">
-                      <TrendingUp className="w-5 h-5 text-white" />
-                    </div>
-
-                    {/* Title */}
-                    <div className="flex flex-col gap-2 flex-1">
-                      <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Week 3-4
-                      </p>
-                      <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
-                        Technical Analysis
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* List Items */}
-                  <div className="flex flex-col gap-4 relative z-10">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Chart patterns & indicators
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Support & resistance levels
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Volume & momentum studies
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Candlestick analysis
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Week 5-6: Advanced Strategies */}
-                <div className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden">
-                  {/* Curved Gradient Border */}
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      borderRadius: '16px',
-                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                      padding: '1px'
-                    }}
-                  >
-                    <div
-                      className="w-full h-full rounded-[15px]"
-                      style={{
-                        background: '#1F1F1F'
-                      }}
-                    ></div>
-                  </div>
-
-                  {/* Background Ellipse */}
-                  <div
-                    className="absolute w-[588px] h-[588px] z-0"
-                    style={{
-                      left: '285.78px',
-                      top: '-359.87px',
-                      background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                      filter: 'blur(100px)',
-                      transform: 'rotate(-172.95deg)',
-                      borderRadius: '50%'
-                    }}
-                  />
-
-                  {/* Header */}
-                  <div className="flex items-start gap-4 relative z-10">
-                    {/* Icon */}
-                    <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center flex-shrink-0">
-                      <Target className="w-5 h-5 text-white" />
-                    </div>
-
-                    {/* Title */}
-                    <div className="flex flex-col gap-2 flex-1">
-                      <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Week 5-6
-                      </p>
-                      <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
-                        Advanced Strategies
-                      </h3>
-                    </div>
-                  </div>
-
-                  {/* List Items */}
-                  <div className="flex flex-col gap-4 relative z-10">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Risk management techniques
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Portfolio diversification
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        DeFi & yield farming
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                        Trading psychology
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                )}
               </div>
             </div>
           </div>
@@ -753,34 +643,28 @@ export default function CryptoTradingBootcampPage() {
               <div className="flex flex-col gap-6 relative z-10">
                 {/* Title */}
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
-                  Who Should Join?
+                  {bootcamp.targetAudience?.title || 'Who Should Join?'}
                 </h2>
 
                 {/* Subtitle */}
                 <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
-                  This bootcamp is perfect for:
+                  {bootcamp.targetAudience?.subtitle || 'This bootcamp is perfect for:'}
                 </p>
 
                 {/* List Items */}
                 <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                    <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                      Beginners who want to enter the crypto trading world with confidence.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                    <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                      Traders who want to refine their strategies and avoid common mistakes.
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                    <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                      Investors looking to manage risk and grow their crypto portfolios.
-                    </p>
-                  </div>
+                  {bootcamp.targetAudience?.items && bootcamp.targetAudience.items.length > 0 ? (
+                    bootcamp.targetAudience.items.map((item, index) => (
+                      <div key={index} className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                        <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                          {item}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-gray-400">No target audience information available</div>
+                  )}
                 </div>
               </div>
             </div>

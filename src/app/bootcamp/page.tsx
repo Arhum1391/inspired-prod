@@ -102,21 +102,23 @@ export default function BootcampPage() {
         ))}
       </div>
 
-      {/* Tags */}
+      {/* Tags - Dynamic Duration and Format */}
       <div className="flex gap-2 relative z-10">
-        {bootcamp.tags.map((tag, index) => (
-          <span 
-            key={index}
-            className={`border rounded-full px-2.5 py-1 text-xs ${
-              index === 0 
-                ? 'border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3]' 
-                : 'border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC]'
-            }`}
-            style={{fontFamily: 'Gilroy', fontWeight: 500}}
-          >
-            {tag}
-          </span>
-        ))}
+        {/* Duration tag */}
+        <span 
+          className="border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] border rounded-full px-2.5 py-1 text-xs"
+          style={{fontFamily: 'Gilroy', fontWeight: 500}}
+        >
+          {bootcamp.duration}
+        </span>
+        
+        {/* Format tag */}
+        <span 
+          className="border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC] border rounded-full px-2.5 py-1 text-xs"
+          style={{fontFamily: 'Gilroy', fontWeight: 500}}
+        >
+          {bootcamp.format}
+        </span>
       </div>
 
       {/* Registration Dates */}

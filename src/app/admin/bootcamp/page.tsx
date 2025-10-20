@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Bootcamp, TeamMember } from '@/types/admin';
+import { Bootcamp, TeamMember, MentorDetail, CurriculumSection, TargetAudience } from '@/types/admin';
 
 export default function BootcampPage() {
   const [bootcamps, setBootcamps] = useState<Bootcamp[]>([]);
@@ -15,20 +15,44 @@ export default function BootcampPage() {
     title: '',
     description: '',
     price: '',
+    priceAmount: 0,
     duration: '',
     format: 'Online' as 'Online' | 'In-Person' | 'Hybrid',
     mentors: [] as string[],
     registrationStartDate: '',
     registrationEndDate: '',
-    tags: [] as string[],
+    bootcampStartDate: '',
     gradientPosition: {
       left: '399px',
       top: '-326px',
       rotation: '90deg'
     },
     isActive: true,
+    // Hero content fields
+    heroSubheading: '',
+    heroDescription: [] as string[],
+    // Additional detailed content fields
+    mentorDetails: [] as MentorDetail[],
+    curriculumSections: [] as CurriculumSection[],
+    targetAudience: {
+      title: '',
+      subtitle: '',
+      items: [] as string[]
+    }
   });
-  const [newTag, setNewTag] = useState('');
+  const [newHeroDescription, setNewHeroDescription] = useState('');
+  
+  // Additional state for managing new sections
+  const [selectedMentorForDetail, setSelectedMentorForDetail] = useState('');
+  const [newMentorDescription, setNewMentorDescription] = useState('');
+  const [newCurriculumSection, setNewCurriculumSection] = useState({
+    weekRange: '',
+    title: '',
+    icon: 'BookOpen',
+    items: [] as string[]
+  });
+  const [newCurriculumItem, setNewCurriculumItem] = useState('');
+  const [newTargetAudienceItem, setNewTargetAudienceItem] = useState('');
 
   useEffect(() => {
     fetchBootcamps();
@@ -66,18 +90,62 @@ export default function BootcampPage() {
     setSubmitting(true);
     
     try {
-      const bootcampData = {
-        ...formData,
+      console.log('Form data before processing:', formData);
+      console.log('Hero subheading from form:', formData.heroSubheading);
+      
+      // Prepare the bootcamp data with required fields
+      const bootcampData: any = {
+        id: formData.id,
+        title: formData.title,
+        description: formData.description,
+        price: formData.price,
+        priceAmount: formData.priceAmount,
+        duration: formData.duration,
+        format: formData.format,
         mentors: formData.mentors,
-        tags: formData.tags,
+        gradientPosition: formData.gradientPosition,
+        isActive: formData.isActive,
         registrationStartDate: new Date(formData.registrationStartDate),
         registrationEndDate: new Date(formData.registrationEndDate),
       };
+
+      // Handle bootcampStartDate - only include if it has a value
+      if (formData.bootcampStartDate && formData.bootcampStartDate.trim()) {
+        bootcampData.bootcampStartDate = new Date(formData.bootcampStartDate);
+      }
+
+      // Handle optional fields - always include for updates to allow clearing, only include meaningful content for creates
+      if (editingBootcamp) {
+        // For updates, always include optional fields (even if empty) so they can be cleared
+        bootcampData.heroSubheading = formData.heroSubheading;
+        bootcampData.heroDescription = formData.heroDescription;
+        bootcampData.mentorDetails = formData.mentorDetails;
+        bootcampData.curriculumSections = formData.curriculumSections;
+        bootcampData.targetAudience = formData.targetAudience;
+      } else {
+        // For creates, only include fields with meaningful content
+        if (formData.heroSubheading && formData.heroSubheading.trim()) {
+          bootcampData.heroSubheading = formData.heroSubheading;
+        }
+        if (formData.heroDescription && formData.heroDescription.length > 0) {
+          bootcampData.heroDescription = formData.heroDescription;
+        }
+        if (formData.mentorDetails && formData.mentorDetails.length > 0) {
+          bootcampData.mentorDetails = formData.mentorDetails;
+        }
+        if (formData.curriculumSections && formData.curriculumSections.length > 0) {
+          bootcampData.curriculumSections = formData.curriculumSections;
+        }
+        if (formData.targetAudience && (formData.targetAudience.title.trim() || formData.targetAudience.subtitle.trim() || formData.targetAudience.items.length > 0)) {
+          bootcampData.targetAudience = formData.targetAudience;
+        }
+      }
 
       if (editingBootcamp) {
         // Update existing bootcamp
         console.log('Updating bootcamp with ID:', editingBootcamp._id);
         console.log('Update data:', bootcampData);
+        console.log('Hero subheading being sent:', bootcampData.heroSubheading);
         
         const response = await fetch(`/admin/api/bootcamp/${editingBootcamp._id}`, {
           method: 'PUT',
@@ -95,7 +163,14 @@ export default function BootcampPage() {
         } else {
           const errorData = await response.json();
           console.error('Update failed:', errorData);
-          alert(`Failed to update bootcamp: ${errorData.error || 'Unknown error'}`);
+          
+          // Show detailed error message
+          let errorMessage = `Failed to update bootcamp: ${errorData.error || 'Unknown error'}`;
+          if (errorData.details && Array.isArray(errorData.details)) {
+            errorMessage += '\n\nValidation errors:\n' + errorData.details.join('\n');
+          }
+          
+          alert(errorMessage);
         }
       } else {
         // Create new bootcamp
@@ -117,7 +192,14 @@ export default function BootcampPage() {
         } else {
           const errorData = await response.json();
           console.error('Create failed:', errorData);
-          alert(`Failed to create bootcamp: ${errorData.error || 'Unknown error'}`);
+          
+          // Show detailed error message
+          let errorMessage = `Failed to create bootcamp: ${errorData.error || 'Unknown error'}`;
+          if (errorData.details && Array.isArray(errorData.details)) {
+            errorMessage += '\n\nValidation errors:\n' + errorData.details.join('\n');
+          }
+          
+          alert(errorMessage);
         }
       }
     } catch (error) {
@@ -147,14 +229,24 @@ export default function BootcampPage() {
       title: bootcamp.title,
       description: bootcamp.description,
       price: bootcamp.price,
+      priceAmount: bootcamp.priceAmount || parseFloat(bootcamp.price.replace(/[^0-9.]/g, '')) || 0,
       duration: bootcamp.duration,
       format: bootcamp.format,
       mentors: bootcamp.mentors,
       registrationStartDate: formatDateForInput(bootcamp.registrationStartDate),
       registrationEndDate: formatDateForInput(bootcamp.registrationEndDate),
-      tags: bootcamp.tags,
+      bootcampStartDate: bootcamp.bootcampStartDate ? formatDateForInput(bootcamp.bootcampStartDate) : '',
       gradientPosition: bootcamp.gradientPosition,
       isActive: bootcamp.isActive,
+      heroSubheading: bootcamp.heroSubheading || '',
+      heroDescription: bootcamp.heroDescription || [],
+      mentorDetails: bootcamp.mentorDetails || [],
+      curriculumSections: bootcamp.curriculumSections || [],
+      targetAudience: bootcamp.targetAudience || {
+        title: '',
+        subtitle: '',
+        items: []
+      }
     });
     setShowModal(true);
   };
@@ -195,20 +287,40 @@ export default function BootcampPage() {
       title: '',
       description: '',
       price: '',
+      priceAmount: 0,
       duration: '',
       format: 'Online',
       mentors: [],
       registrationStartDate: '',
       registrationEndDate: '',
-      tags: [],
+      bootcampStartDate: '',
       gradientPosition: {
         left: '399px',
         top: '-326px',
         rotation: '90deg'
       },
       isActive: true,
+      heroSubheading: '',
+      heroDescription: [],
+      mentorDetails: [],
+      curriculumSections: [],
+      targetAudience: {
+        title: '',
+        subtitle: '',
+        items: []
+      }
     });
-    setNewTag('');
+    setNewHeroDescription('');
+    setSelectedMentorForDetail('');
+    setNewMentorDescription('');
+    setNewCurriculumSection({
+      weekRange: '',
+      title: '',
+      icon: 'BookOpen',
+      items: []
+    });
+    setNewCurriculumItem('');
+    setNewTargetAudienceItem('');
   };
 
   const openModal = () => {
@@ -269,6 +381,16 @@ export default function BootcampPage() {
     return teamMembers.filter(member => !selectedMentorNames.includes(member.name));
   };
 
+  // Get team members who are selected as mentors and available for adding details
+  const getMentorsAvailableForDetails = () => {
+    const selectedMentorNames = formData.mentors.map(mentor => mentor.split(' - ')[0]);
+    const availableForDetails = teamMembers.filter(member => 
+      selectedMentorNames.includes(member.name) && 
+      !formData.mentorDetails.some(detail => detail.mentorId === member.id)
+    );
+    return availableForDetails;
+  };
+
   // Get unique mentors across all bootcamps
   const getUniqueMentorsCount = () => {
     const allMentorNames = bootcamps.flatMap(bootcamp => 
@@ -283,20 +405,138 @@ export default function BootcampPage() {
     return bootcamps.reduce((acc, bootcamp) => acc + bootcamp.mentors.length, 0);
   };
 
-  const addTag = () => {
-    if (newTag.trim()) {
+
+  // Hero description management
+  const addHeroDescription = () => {
+    if (newHeroDescription.trim()) {
       setFormData({
         ...formData,
-        tags: [...formData.tags, newTag.trim()]
+        heroDescription: [...formData.heroDescription, newHeroDescription.trim()]
       });
-      setNewTag('');
+      setNewHeroDescription('');
     }
   };
 
-  const removeTag = (index: number) => {
+  const removeHeroDescription = (index: number) => {
     setFormData({
       ...formData,
-      tags: formData.tags.filter((_, i) => i !== index)
+      heroDescription: formData.heroDescription.filter((_, i) => i !== index)
+    });
+  };
+
+  // Mentor details management
+  const addMentorDetail = () => {
+    if (selectedMentorForDetail && newMentorDescription.trim()) {
+      // Find the team member data for the selected mentor
+      const teamMember = teamMembers.find(member => member.id === selectedMentorForDetail);
+      
+      if (teamMember) {
+        // Create mentor detail with data from team member
+        const mentorDetail: MentorDetail = {
+          mentorId: teamMember.id,
+          name: teamMember.name,
+          role: teamMember.role,
+          ...(teamMember.image && { image: teamMember.image }), // Only include image if it exists
+          description: newMentorDescription.trim()
+        };
+
+        // Check if this mentor detail already exists
+        const existingMentorDetail = formData.mentorDetails.find(detail => detail.mentorId === teamMember.id);
+        if (existingMentorDetail) {
+          alert('This mentor already has details added. You can edit or remove the existing details.');
+          return;
+        }
+
+        setFormData({
+          ...formData,
+          mentorDetails: [...formData.mentorDetails, mentorDetail]
+        });
+        
+        // Reset the form
+        setSelectedMentorForDetail('');
+        setNewMentorDescription('');
+      }
+    }
+  };
+
+  const removeMentorDetail = (index: number) => {
+    setFormData({
+      ...formData,
+      mentorDetails: formData.mentorDetails.filter((_, i) => i !== index)
+    });
+  };
+
+  // Curriculum sections management
+  const addCurriculumSection = () => {
+    if (newCurriculumSection.weekRange && newCurriculumSection.title && newCurriculumSection.items.length > 0) {
+      setFormData({
+        ...formData,
+        curriculumSections: [...formData.curriculumSections, { ...newCurriculumSection }]
+      });
+      setNewCurriculumSection({
+        weekRange: '',
+        title: '',
+        icon: 'BookOpen',
+        items: []
+      });
+      setNewCurriculumItem('');
+    }
+  };
+
+  const removeCurriculumSection = (index: number) => {
+    setFormData({
+      ...formData,
+      curriculumSections: formData.curriculumSections.filter((_, i) => i !== index)
+    });
+  };
+
+  const addCurriculumItem = () => {
+    if (newCurriculumItem.trim()) {
+      setNewCurriculumSection({
+        ...newCurriculumSection,
+        items: [...newCurriculumSection.items, newCurriculumItem.trim()]
+      });
+      setNewCurriculumItem('');
+    }
+  };
+
+  const removeCurriculumItem = (sectionIndex: number, itemIndex: number) => {
+    const updatedSections = formData.curriculumSections.map((section, index) => {
+      if (index === sectionIndex) {
+        return {
+          ...section,
+          items: section.items.filter((_, i) => i !== itemIndex)
+        };
+      }
+      return section;
+    });
+    setFormData({
+      ...formData,
+      curriculumSections: updatedSections
+    });
+  };
+
+  // Target audience management
+  const addTargetAudienceItem = () => {
+    if (newTargetAudienceItem.trim()) {
+      setFormData({
+        ...formData,
+        targetAudience: {
+          ...formData.targetAudience,
+          items: [...formData.targetAudience.items, newTargetAudienceItem.trim()]
+        }
+      });
+      setNewTargetAudienceItem('');
+    }
+  };
+
+  const removeTargetAudienceItem = (index: number) => {
+    setFormData({
+      ...formData,
+      targetAudience: {
+        ...formData.targetAudience,
+        items: formData.targetAudience.items.filter((_, i) => i !== index)
+      }
     });
   };
 
@@ -448,16 +688,6 @@ export default function BootcampPage() {
                 </div>
               </div>
               
-              <div className="flex gap-2">
-                {bootcamp.tags.map((tag, index) => (
-                  <span 
-                    key={index}
-                    className="border border-indigo-500 bg-indigo-500/20 rounded-full px-2 py-1 text-xs text-indigo-400"
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
               
               <div className="text-xs text-gray-500">
                 <p>Registration: {new Date(bootcamp.registrationStartDate).toLocaleDateString()} - {new Date(bootcamp.registrationEndDate).toLocaleDateString()}</p>
@@ -564,17 +794,102 @@ export default function BootcampPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Hero Content Section */}
+              <div className="border-t border-slate-600 pt-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Hero Content for Details Page (Optional)</h3>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                      Hero Subheading for Details Page
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.heroSubheading}
+                      onChange={(e) => setFormData({ ...formData, heroSubheading: e.target.value })}
+                      placeholder="Brief subheading displayed below the main title"
+                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                      Hero Description Paragraphs
+                    </label>
+                    <div className="space-y-3">
+                      <div className="flex gap-2">
+                        <textarea
+                          value={newHeroDescription}
+                          onChange={(e) => setNewHeroDescription(e.target.value)}
+                          placeholder="Add a new description paragraph..."
+                          rows={3}
+                          className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          onKeyPress={(e) => e.key === 'Enter' && e.ctrlKey && (e.preventDefault(), addHeroDescription())}
+                        />
+                        <button
+                          type="button"
+                          onClick={addHeroDescription}
+                          disabled={!newHeroDescription.trim()}
+                          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed"
+                        >
+                          Add
+                        </button>
+                      </div>
+                      
+                      {/* Display current hero description paragraphs */}
+                      {formData.heroDescription.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-xs text-gray-400">Current paragraphs:</p>
+                          {formData.heroDescription.map((paragraph, index) => (
+                            <div key={index} className="flex items-start gap-2 bg-slate-800 rounded-lg p-3">
+                              <span className="text-xs text-gray-400 mt-1">#{index + 1}</span>
+                              <p className="flex-1 text-sm text-white">{paragraph}</p>
+                              <button
+                                type="button"
+                                onClick={() => removeHeroDescription(index)}
+                                className="text-red-400 hover:text-red-300 flex-shrink-0"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      
+                      <p className="text-xs text-gray-400">
+                        Tip: Press Ctrl+Enter in the textarea to quickly add a paragraph.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Price
+                    Price (Display)
                   </label>
                   <input
                     type="text"
                     required
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                    placeholder="30 BNB"
+                    placeholder="$99"
+                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Price Amount (USD)
+                  </label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    step="0.01"
+                    value={formData.priceAmount}
+                    onChange={(e) => setFormData({ ...formData, priceAmount: parseFloat(e.target.value) || 0 })}
+                    placeholder="99"
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
@@ -681,47 +996,8 @@ export default function BootcampPage() {
                 </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Tags
-                </label>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={newTag}
-                    onChange={(e) => setNewTag(e.target.value)}
-                    placeholder="Add tag"
-                    className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-                  />
-                  <button
-                    type="button"
-                    onClick={addTag}
-                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
-                  >
-                    Add
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {formData.tags.map((tag, index) => (
-                    <span
-                      key={index}
-                      className="flex items-center gap-1 bg-indigo-600 text-white px-2 py-1 rounded text-sm"
-                    >
-                      {tag}
-                      <button
-                        type="button"
-                        onClick={() => removeTag(index)}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
                     Registration Start Date
@@ -746,6 +1022,18 @@ export default function BootcampPage() {
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Bootcamp Start Date
+                  </label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.bootcampStartDate}
+                    onChange={(e) => setFormData({ ...formData, bootcampStartDate: e.target.value })}
+                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
               </div>
 
               <div className="flex items-center gap-2">
@@ -759,6 +1047,349 @@ export default function BootcampPage() {
                 <label htmlFor="isActive" className="text-sm font-medium text-gray-300">
                   Active
                 </label>
+              </div>
+
+              {/* Mentor Details Section */}
+              <div className="border-t border-slate-600 pt-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Mentor Details (Optional)</h3>
+                
+                <div className="space-y-4">
+                  {/* Add Mentor Detail Form */}
+                  {formData.mentors.length === 0 ? (
+                    <div className="bg-slate-800 rounded-lg p-4">
+                      <p className="text-gray-400 text-sm">
+                        Please select mentors above before adding mentor details.
+                      </p>
+                    </div>
+                  ) : getMentorsAvailableForDetails().length === 0 ? (
+                    <div className="bg-slate-800 rounded-lg p-4">
+                      <p className="text-gray-400 text-sm">
+                        All selected mentors already have details added.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bg-slate-800 rounded-lg p-4">
+                      <h4 className="text-md font-medium text-white mb-3">Add New Mentor Detail</h4>
+                      
+                      {/* Mentor Selection Dropdown */}
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Select Mentor
+                        </label>
+                        <select
+                          value={selectedMentorForDetail}
+                          onChange={(e) => setSelectedMentorForDetail(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                          <option value="">Choose a mentor to add details...</option>
+                          {getMentorsAvailableForDetails().map((member) => (
+                            <option key={member.id} value={member.id}>
+                              {member.name} - {member.role}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Show selected mentor info */}
+                      {selectedMentorForDetail && (
+                        <div className="mb-4 p-3 bg-slate-700 rounded-lg">
+                          {(() => {
+                            const selectedMember = teamMembers.find(member => member.id === selectedMentorForDetail);
+                            return selectedMember ? (
+                              <div>
+                                <h5 className="text-white font-medium">{selectedMember.name}</h5>
+                                <p className="text-gray-300 text-sm">{selectedMember.role}</p>
+                                {selectedMember.image && (
+                                  <p className="text-gray-400 text-xs mt-1">Image: {selectedMember.image}</p>
+                                )}
+                              </div>
+                            ) : null;
+                          })()}
+                        </div>
+                      )}
+
+                      {/* Description Input */}
+                      <div className="mb-4">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                          Mentor Description
+                        </label>
+                        <textarea
+                          value={newMentorDescription}
+                          onChange={(e) => setNewMentorDescription(e.target.value)}
+                          placeholder="Add detailed description for this mentor in the bootcamp context..."
+                          rows={4}
+                          className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={addMentorDetail}
+                        disabled={!selectedMentorForDetail || !newMentorDescription.trim()}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed"
+                      >
+                        Add Mentor Detail
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Current Mentor Details */}
+                  {formData.mentorDetails.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="text-md font-medium text-white">Current Mentor Details:</h4>
+                      {formData.mentorDetails.map((mentor, index) => (
+                        <div key={index} className="bg-slate-800 rounded-lg p-4">
+                          <div className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <h5 className="text-white font-medium">{mentor.name}</h5>
+                              <p className="text-gray-300 text-sm">{mentor.role}</p>
+                              <p className="text-gray-400 text-xs mt-1">{mentor.description}</p>
+                              <p className="text-gray-500 text-xs">
+                                ID: {mentor.mentorId}
+                                {mentor.image && ` | Image: ${mentor.image}`}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeMentorDetail(index)}
+                              className="text-red-400 hover:text-red-300 ml-2"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Curriculum Sections */}
+              <div className="border-t border-slate-600 pt-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Curriculum Sections (Optional)</h3>
+                
+                <div className="space-y-4">
+                  {/* Add Curriculum Section Form */}
+                  <div className="bg-slate-800 rounded-lg p-4">
+                    <h4 className="text-md font-medium text-white mb-3">Add New Curriculum Section</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1">
+                          Week Range
+                        </label>
+                        <input
+                          type="text"
+                          value={newCurriculumSection.weekRange}
+                          onChange={(e) => setNewCurriculumSection({ ...newCurriculumSection, weekRange: e.target.value })}
+                          placeholder="e.g., Week 1-2"
+                          className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1">
+                          Title
+                        </label>
+                        <input
+                          type="text"
+                          value={newCurriculumSection.title}
+                          onChange={(e) => setNewCurriculumSection({ ...newCurriculumSection, title: e.target.value })}
+                          placeholder="e.g., Crypto Fundamentals"
+                          className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-1">
+                          Icon
+                        </label>
+                        <select
+                          value={newCurriculumSection.icon}
+                          onChange={(e) => setNewCurriculumSection({ ...newCurriculumSection, icon: e.target.value })}
+                          className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        >
+                          <option value="BookOpen">BookOpen</option>
+                          <option value="TrendingUp">TrendingUp</option>
+                          <option value="Target">Target</option>
+                          <option value="Clock">Clock</option>
+                          <option value="Globe">Globe</option>
+                          <option value="Calendar">Calendar</option>
+                          <option value="Award">Award</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Curriculum Items */}
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                        Section Items
+                      </label>
+                      <div className="flex gap-2 mb-2">
+                        <input
+                          type="text"
+                          value={newCurriculumItem}
+                          onChange={(e) => setNewCurriculumItem(e.target.value)}
+                          placeholder="Add curriculum item..."
+                          className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCurriculumItem())}
+                        />
+                        <button
+                          type="button"
+                          onClick={addCurriculumItem}
+                          className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                        >
+                          Add Item
+                        </button>
+                      </div>
+                      
+                      {/* Current items for this section */}
+                      {newCurriculumSection.items.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-xs text-gray-400">Items for this section:</p>
+                          {newCurriculumSection.items.map((item, index) => (
+                            <div key={index} className="flex items-center gap-2 bg-slate-700 rounded px-3 py-2">
+                              <span className="text-xs text-gray-400">#{index + 1}</span>
+                              <span className="flex-1 text-sm text-white">{item}</span>
+                              <button
+                                type="button"
+                                onClick={() => setNewCurriculumSection({
+                                  ...newCurriculumSection,
+                                  items: newCurriculumSection.items.filter((_, i) => i !== index)
+                                })}
+                                className="text-red-400 hover:text-red-300"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={addCurriculumSection}
+                      disabled={!newCurriculumSection.weekRange || !newCurriculumSection.title || newCurriculumSection.items.length === 0}
+                      className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed"
+                    >
+                      Add Curriculum Section
+                    </button>
+                  </div>
+
+                  {/* Current Curriculum Sections */}
+                  {formData.curriculumSections.length > 0 && (
+                    <div className="space-y-3">
+                      <h4 className="text-md font-medium text-white">Current Curriculum Sections:</h4>
+                      {formData.curriculumSections.map((section, index) => (
+                        <div key={index} className="bg-slate-800 rounded-lg p-4">
+                          <div className="flex justify-between items-start mb-3">
+                            <div>
+                              <h5 className="text-white font-medium">{section.weekRange} - {section.title}</h5>
+                              <p className="text-gray-400 text-sm">Icon: {section.icon}</p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeCurriculumSection(index)}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              ×
+                            </button>
+                          </div>
+                          <div className="space-y-1">
+                            {section.items.map((item, itemIndex) => (
+                              <div key={itemIndex} className="flex items-center gap-2 text-sm">
+                                <span className="text-gray-500">•</span>
+                                <span className="text-gray-300">{item}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Target Audience Section */}
+              <div className="border-t border-slate-600 pt-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Target Audience (Optional)</h3>
+                
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                        Title
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.targetAudience.title}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          targetAudience: { ...formData.targetAudience, title: e.target.value }
+                        })}
+                        placeholder="e.g., Who Should Join?"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">
+                        Subtitle
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.targetAudience.subtitle}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          targetAudience: { ...formData.targetAudience, subtitle: e.target.value }
+                        })}
+                        placeholder="e.g., This bootcamp is perfect for:"
+                        className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Target Audience Items */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-1">
+                      Target Audience Items
+                    </label>
+                    <div className="flex gap-2 mb-2">
+                      <input
+                        type="text"
+                        value={newTargetAudienceItem}
+                        onChange={(e) => setNewTargetAudienceItem(e.target.value)}
+                        placeholder="Add target audience item..."
+                        className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTargetAudienceItem())}
+                      />
+                      <button
+                        type="button"
+                        onClick={addTargetAudienceItem}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                      >
+                        Add Item
+                      </button>
+                    </div>
+                    
+                    {/* Current target audience items */}
+                    {formData.targetAudience.items.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-xs text-gray-400">Current items:</p>
+                        {formData.targetAudience.items.map((item, index) => (
+                          <div key={index} className="flex items-center gap-2 bg-slate-800 rounded-lg px-3 py-2">
+                            <span className="text-xs text-gray-400">#{index + 1}</span>
+                            <span className="flex-1 text-sm text-white">{item}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeTargetAudienceItem(index)}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="flex space-x-3 pt-4">

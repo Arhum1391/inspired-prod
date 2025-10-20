@@ -16,7 +16,93 @@ export const getFallbackBootcamps = (): Bootcamp[] => [
     gradientPosition: { left: '399px', top: '-326px', rotation: '90deg' },
     isActive: true,
     createdAt: new Date(),
-    updatedAt: new Date()
+    updatedAt: new Date(),
+    
+    // New detailed content fields
+    heroSubheading: 'Master cryptocurrency trading with proven strategies, technical analysis, and risk management. Transform from beginner to confident trader in just 6 weeks.',
+    heroDescription: [
+      'The Crypto Trading Bootcamp is designed for anyone who wants to confidently trade cryptocurrencies by combining technical analysis, market psychology, and practical strategies. Over 6 weeks, you\'ll learn how to read charts, identify trends, manage risks, and build a sustainable trading approach that suits your goals.',
+      'Unlike generic trading courses, this mentorship bootcamp is interactive and guided by a Senior Crypto Analyst with years of hands-on experience. You\'ll work on real market scenarios, case studies, and live examples — ensuring that you not only learn but also apply the strategies in real time.'
+    ],
+    infoCards: {
+      duration: {
+        value: '6 Weeks',
+        label: 'Duration'
+      },
+      mode: {
+        value: 'Online',
+        label: 'Mode'
+      },
+      interactive: {
+        value: 'Live Sessions',
+        label: 'Interactive'
+      },
+      certificate: {
+        value: 'Certificate',
+        label: 'Completion'
+      },
+      registrationText: '1st Oct, 2025 - 30th Oct, 2025'
+    },
+    mentorDetails: [
+      {
+        mentorId: 'adnan',
+        name: 'Adnan',
+        role: 'Senior Marketing Analyst',
+        image: '/team dark/Adnan.png',
+        description: 'Content creator specializing in stocks, crypto, data science, and side hustles. Known for making complex financial concepts accessible with humor and real-world examples.'
+      },
+      {
+        mentorId: 'assassin',
+        name: 'Assassin',
+        role: 'Co-Founder, Inspired Analyst',
+        image: '/team dark/Assassin.png',
+        description: 'Co-founder with deep expertise in Fibonacci retracements, ICT concepts, volume profiling, and institutional orderflow. Trading crypto since 2019.'
+      }
+    ],
+    curriculumSections: [
+      {
+        weekRange: 'Week 1-2',
+        title: 'Crypto Fundamentals',
+        icon: 'BookOpen',
+        items: [
+          'Blockchain technology basics',
+          'Understanding market cycles',
+          'Major cryptocurrencies overview',
+          'Wallet security & setup'
+        ]
+      },
+      {
+        weekRange: 'Week 3-4',
+        title: 'Technical Analysis',
+        icon: 'TrendingUp',
+        items: [
+          'Chart patterns & indicators',
+          'Support & resistance levels',
+          'Volume & momentum studies',
+          'Candlestick analysis'
+        ]
+      },
+      {
+        weekRange: 'Week 5-6',
+        title: 'Advanced Strategies',
+        icon: 'Target',
+        items: [
+          'Risk management techniques',
+          'Portfolio diversification',
+          'DeFi & yield farming',
+          'Trading psychology'
+        ]
+      }
+    ],
+    targetAudience: {
+      title: 'Who Should Join?',
+      subtitle: 'This bootcamp is perfect for:',
+      items: [
+        'Beginners who want to enter the crypto trading world with confidence.',
+        'Traders who want to refine their strategies and avoid common mistakes.',
+        'Investors looking to manage risk and grow their crypto portfolios.'
+      ]
+    }
   },
   {
     _id: 'fallback-2',

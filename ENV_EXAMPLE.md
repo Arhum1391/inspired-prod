@@ -10,6 +10,31 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/inspired-analyst
 
 # Calendly Configuration (OPTIONAL - for team setup page only)
 CALENDLY_ACCESS_TOKEN=eyJraWQiOi...
+
+# Email Configuration (REQUIRED for collaboration form)
+COLLAB_EMAIL=your-email@example.com
+
+# SMTP Configuration (for sending emails - choose one option below)
+# Option 1: Gmail/Google Workspace
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+
+# Option 2: Outlook/Office 365
+# SMTP_HOST=smtp-mail.outlook.com
+# SMTP_PORT=587
+# SMTP_SECURE=false
+# SMTP_USER=your-email@outlook.com
+# SMTP_PASS=your-password
+
+# Option 3: Custom SMTP server
+# SMTP_HOST=your-smtp-server.com
+# SMTP_PORT=587
+# SMTP_SECURE=false
+# SMTP_USER=your-username
+# SMTP_PASS=your-password
 ```
 
 ## ❌ NO LONGER NEEDED:

@@ -31,15 +31,26 @@ export default function CollaborationForm() {
     // Reset status after 3 seconds
     setTimeout(() => setStatus('idle'), 3000);
 
-    // Submit to API in the background (fire and forget)
+    // Submit to API and handle response properly
     fetch('/api/collaboration', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(submittedData),
-    }).catch(error => {
-      console.error('Background submission error:', error);
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log('Form submitted successfully:', data);
+    })
+    .catch(error => {
+      console.error('Form submission error:', error);
+      // You could set error state here if needed
     });
   };
 

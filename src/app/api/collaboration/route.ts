@@ -87,6 +87,15 @@ const sendEmailNotification = async (formData: {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check environment variables first
+    if (!MONGODB_URI) {
+      console.error('MONGODB_URI environment variable is not set');
+      return NextResponse.json(
+        { error: 'Database configuration error' },
+        { status: 500 }
+      );
+    }
+
     const { brandName, email, website, message } = await request.json();
 
     // Validate required fields
@@ -160,8 +169,23 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Collaboration submission error:', error);
+    
+    // Log specific error details for debugging
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    
+    // Check if it's a MongoDB connection error
+    if (error && typeof error === 'object' && 'name' in error) {
+      console.error('Error name:', (error as any).name);
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error.message : 'Contact support'
+      },
       { status: 500 }
     );
   }

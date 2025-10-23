@@ -365,7 +365,7 @@ export default function BootcampPage() {
   }, [showModal]);
 
   const addMentor = (teamMemberId: string) => {
-    const teamMember = teamMembers.find(member => member.id === teamMemberId);
+    const teamMember = teamMembers.find(member => member.id.toString() === teamMemberId);
     if (teamMember) {
       const mentorString = `${teamMember.name} - ${teamMember.role}`;
       if (!formData.mentors.includes(mentorString)) {
@@ -395,7 +395,7 @@ export default function BootcampPage() {
     const selectedMentorNames = formData.mentors.map(mentor => mentor.split(' - ')[0]);
     const availableForDetails = teamMembers.filter(member => 
       selectedMentorNames.includes(member.name) && 
-      !formData.mentorDetails.some(detail => detail.mentorId === member.id)
+      !formData.mentorDetails.some(detail => detail.mentorId === member.id.toString())
     );
     return availableForDetails;
   };
@@ -437,12 +437,12 @@ export default function BootcampPage() {
   const addMentorDetail = () => {
     if (selectedMentorForDetail && newMentorDescription.trim()) {
       // Find the team member data for the selected mentor
-      const teamMember = teamMembers.find(member => member.id === selectedMentorForDetail);
+      const teamMember = teamMembers.find(member => member.id.toString() === selectedMentorForDetail);
       
       if (teamMember) {
         // Create mentor detail with data from team member
         const mentorDetail: MentorDetail = {
-          mentorId: teamMember.id,
+          mentorId: teamMember.id.toString(),
           name: teamMember.name,
           role: teamMember.role,
           ...(teamMember.image && { image: teamMember.image }), // Only include image if it exists
@@ -450,7 +450,7 @@ export default function BootcampPage() {
         };
 
         // Check if this mentor detail already exists
-        const existingMentorDetail = formData.mentorDetails.find(detail => detail.mentorId === teamMember.id);
+        const existingMentorDetail = formData.mentorDetails.find(detail => detail.mentorId === teamMember.id.toString());
         if (existingMentorDetail) {
           alert('This mentor already has details added. You can edit or remove the existing details.');
           return;
@@ -1113,7 +1113,7 @@ export default function BootcampPage() {
                       {selectedMentorForDetail && (
                         <div className="mb-4 p-3 bg-slate-700 rounded-lg">
                           {(() => {
-                            const selectedMember = teamMembers.find(member => member.id === selectedMentorForDetail);
+                            const selectedMember = teamMembers.find(member => member.id.toString() === selectedMentorForDetail);
                             return selectedMember ? (
                               <div>
                                 <h5 className="text-white font-medium">{selectedMember.name}</h5>

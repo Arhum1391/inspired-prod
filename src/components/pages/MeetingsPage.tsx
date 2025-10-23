@@ -51,7 +51,7 @@ const meetings: Meeting[] = [
     id: 2,
     title: '30-Min Strategy',
     duration: '30 minutes',
-    price: '3 BNB',
+    price: '50 USD',
     description: 'A focused session to address specific challenges and develop targeted strategies.',
     color: 'text-purple-400',
   },
@@ -59,7 +59,7 @@ const meetings: Meeting[] = [
     id: 3,
     title: '60-Min Deep',
     duration: '60 minutes',
-    price: '5 BNB',
+    price: '50 USD',
     description: 'A comprehensive consultation to analyze complex issues and create detailed action plans.',
     color: 'text-yellow-400',
   },
@@ -694,7 +694,7 @@ const MeetingsPage = () => {
                     id: index + 2, // Start from 2 to match existing IDs
                     title: eventType.name,
                     duration: `${eventType.duration} minutes`,
-                    price: '3 BNB', // Default price, can be customized
+                    price: '50 USD', // Default price, can be customized
                     description: eventType.description || 'A focused session to address specific challenges.',
                     color: index % 2 === 0 ? 'text-purple-400' : 'text-yellow-400',
                 }));
@@ -1982,7 +1982,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
 
     const getMeetingPrice = () => {
         const meeting = getSelectedMeetingData();
-        return meeting ? meeting.price : '0 BNB';
+        return meeting ? meeting.price : '50 USD';
     };
 
     return (

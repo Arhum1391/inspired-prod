@@ -15,11 +15,14 @@ interface Analyst {
 
 export async function GET() {
     try {
+        console.log('🔄 Team API: Starting database connection...');
         await client.connect();
         const database = client.db('inspired-analyst');
         const collection = database.collection('team');
 
+        console.log('📊 Team API: Fetching team members...');
         const teamMembers = await collection.find({}).toArray();
+        console.log(`📊 Team API: Found ${teamMembers.length} team members`);
 
         // Transform TeamMember[] to Analyst[] format
         const analysts: Analyst[] = teamMembers.map(member => {
@@ -40,14 +43,28 @@ export async function GET() {
             };
         });
 
+        console.log('✅ Team API: Successfully processed team data');
         return NextResponse.json({ 
             team: analysts,
             rawTeam: teamMembers // Keep raw data for admin panel
         });
     } catch (error) {
-        console.error('MongoDB connection or query error:', error);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        console.error('❌ Team API: MongoDB connection or query error:', error);
+        console.error('❌ Team API: Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+        });
+        return NextResponse.json({ 
+            error: 'Internal Server Error',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        }, { status: 500 });
     } finally {
-        await client.close();
+        try {
+            await client.close();
+            console.log('🔌 Team API: Database connection closed');
+        } catch (closeError) {
+            console.error('⚠️ Team API: Error closing connection:', closeError);
+        }
     }
 }

@@ -515,10 +515,10 @@ const MeetingsPage = () => {
         }
     };
 
-    // Function to fetch team data from MongoDB
-    const fetchTeamData = async () => {
+    // Function to fetch team data from MongoDB with retry logic
+    const fetchTeamData = async (retryCount = 0) => {
         try {
-            console.log('🔄 Fetching team data from API...');
+            console.log(`🔄 Fetching team data from API... (attempt ${retryCount + 1})`);
             setTeamDataError(''); // Clear any previous errors
             
             const response = await fetch('/api/team');
@@ -554,11 +554,31 @@ const MeetingsPage = () => {
                 console.log('✅ Team data loaded successfully');
             } else {
                 console.error('❌ API failed with status:', response.status);
+                
+                // Retry logic for 500 errors (server issues)
+                if (response.status === 500 && retryCount < 2) {
+                    console.log(`🔄 Retrying in ${(retryCount + 1) * 1000}ms...`);
+                    setTimeout(() => {
+                        fetchTeamData(retryCount + 1);
+                    }, (retryCount + 1) * 1000);
+                    return;
+                }
+                
                 setTeamDataError('We encountered an issue, please try again later');
                 setIsTeamDataLoaded(true);
             }
         } catch (error) {
             console.error('❌ Error fetching team data:', error);
+            
+            // Retry logic for network errors
+            if (retryCount < 2) {
+                console.log(`🔄 Retrying in ${(retryCount + 1) * 1000}ms...`);
+                setTimeout(() => {
+                    fetchTeamData(retryCount + 1);
+                }, (retryCount + 1) * 1000);
+                return;
+            }
+            
             setTeamDataError('We encountered an issue, please try again later');
             setIsTeamDataLoaded(true);
         }
@@ -914,8 +934,13 @@ const MeetingsPage = () => {
 
     // Fetch team data and check Calendly integration on component mount
     useEffect(() => {
-        fetchTeamData();
-        checkAllAnalystsCalendlyIntegration();
+        // Small delay to ensure any recent database operations have completed
+        const timer = setTimeout(() => {
+            fetchTeamData();
+            checkAllAnalystsCalendlyIntegration();
+        }, 100);
+        
+        return () => clearTimeout(timer);
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Auto-refresh team data when user returns to the page (focus event)
@@ -2716,7 +2741,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                         <div>
                                             <p className="text-red-400 font-medium">{teamDataError}</p>
                                             <button 
-                                                onClick={fetchTeamData}
+                                                onClick={() => fetchTeamData()}
                                                 className="text-red-300 text-sm underline hover:text-red-200 mt-1"
                                             >
                                                 Try again
@@ -2791,7 +2816,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                     </div>
                                     <p className="text-gray-400 text-lg">No analysts available at the moment</p>
                                     <button 
-                                        onClick={fetchTeamData}
+                                        onClick={() => fetchTeamData()}
                                         className="text-indigo-400 hover:text-indigo-300 underline mt-2"
                                     >
                                         Refresh

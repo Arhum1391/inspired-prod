@@ -15,7 +15,7 @@ export default function BootcampPage() {
     title: '',
     description: '',
     price: '',
-    priceAmount: 0,
+    priceAmount: '',
     duration: '',
     format: 'Online' as 'Online' | 'In-Person' | 'Hybrid',
     mentors: [] as string[],
@@ -85,6 +85,13 @@ export default function BootcampPage() {
     }
   };
 
+  // Prevent form submission on Enter key press for text inputs
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
+      e.preventDefault();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
@@ -99,7 +106,7 @@ export default function BootcampPage() {
         title: formData.title,
         description: formData.description,
         price: formData.price,
-        priceAmount: formData.priceAmount,
+        priceAmount: parseFloat(formData.priceAmount) || 0,
         duration: formData.duration,
         format: formData.format,
         mentors: formData.mentors,
@@ -229,7 +236,7 @@ export default function BootcampPage() {
       title: bootcamp.title,
       description: bootcamp.description,
       price: bootcamp.price,
-      priceAmount: bootcamp.priceAmount || parseFloat(bootcamp.price.replace(/[^0-9.]/g, '')) || 0,
+      priceAmount: bootcamp.priceAmount ? bootcamp.priceAmount.toString() : '',
       duration: bootcamp.duration,
       format: bootcamp.format,
       mentors: bootcamp.mentors,
@@ -287,7 +294,7 @@ export default function BootcampPage() {
       title: '',
       description: '',
       price: '',
-      priceAmount: 0,
+      priceAmount: '',
       duration: '',
       format: 'Online',
       mentors: [],
@@ -765,6 +772,7 @@ export default function BootcampPage() {
                     required
                     value={formData.id}
                     onChange={(e) => setFormData({ ...formData, id: e.target.value })}
+                    onKeyDown={handleKeyDown}
                     placeholder="crypto-trading"
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
@@ -778,6 +786,7 @@ export default function BootcampPage() {
                     required
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onKeyDown={handleKeyDown}
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
@@ -791,6 +800,7 @@ export default function BootcampPage() {
                   required
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onKeyDown={handleKeyDown}
                   rows={3}
                   className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
@@ -809,6 +819,7 @@ export default function BootcampPage() {
                       type="text"
                       value={formData.heroSubheading}
                       onChange={(e) => setFormData({ ...formData, heroSubheading: e.target.value })}
+                      onKeyDown={handleKeyDown}
                       placeholder="Brief subheading displayed below the main title"
                       className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     />
@@ -876,6 +887,7 @@ export default function BootcampPage() {
                     required
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                    onKeyDown={handleKeyDown}
                     placeholder="$99"
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
@@ -890,7 +902,8 @@ export default function BootcampPage() {
                     min="0"
                     step="0.01"
                     value={formData.priceAmount}
-                    onChange={(e) => setFormData({ ...formData, priceAmount: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) => setFormData({ ...formData, priceAmount: e.target.value })}
+                    onKeyDown={handleKeyDown}
                     placeholder="99"
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
@@ -904,6 +917,7 @@ export default function BootcampPage() {
                     required
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                    onKeyDown={handleKeyDown}
                     placeholder="6 Weeks"
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
@@ -1007,6 +1021,7 @@ export default function BootcampPage() {
                   <input
                     type="date"
                     required
+                    min={new Date().toISOString().split('T')[0]}
                     value={formData.registrationStartDate}
                     onChange={(e) => setFormData({ ...formData, registrationStartDate: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -1019,6 +1034,7 @@ export default function BootcampPage() {
                   <input
                     type="date"
                     required
+                    min={formData.registrationStartDate || new Date().toISOString().split('T')[0]}
                     value={formData.registrationEndDate}
                     onChange={(e) => setFormData({ ...formData, registrationEndDate: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -1031,6 +1047,7 @@ export default function BootcampPage() {
                   <input
                     type="date"
                     required
+                    min={formData.registrationEndDate || new Date().toISOString().split('T')[0]}
                     value={formData.bootcampStartDate}
                     onChange={(e) => setFormData({ ...formData, bootcampStartDate: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -1118,6 +1135,7 @@ export default function BootcampPage() {
                         <textarea
                           value={newMentorDescription}
                           onChange={(e) => setNewMentorDescription(e.target.value)}
+                          onKeyDown={handleKeyDown}
                           placeholder="Add detailed description for this mentor in the bootcamp context..."
                           rows={4}
                           className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -1183,6 +1201,7 @@ export default function BootcampPage() {
                           type="text"
                           value={newCurriculumSection.weekRange}
                           onChange={(e) => setNewCurriculumSection({ ...newCurriculumSection, weekRange: e.target.value })}
+                          onKeyDown={handleKeyDown}
                           placeholder="e.g., Week 1-2"
                           className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
@@ -1195,6 +1214,7 @@ export default function BootcampPage() {
                           type="text"
                           value={newCurriculumSection.title}
                           onChange={(e) => setNewCurriculumSection({ ...newCurriculumSection, title: e.target.value })}
+                          onKeyDown={handleKeyDown}
                           placeholder="e.g., Crypto Fundamentals"
                           className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         />
@@ -1327,6 +1347,7 @@ export default function BootcampPage() {
                           ...formData,
                           targetAudience: { ...formData.targetAudience, title: e.target.value }
                         })}
+                        onKeyDown={handleKeyDown}
                         placeholder="e.g., Who Should Join?"
                         className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />
@@ -1342,6 +1363,7 @@ export default function BootcampPage() {
                           ...formData,
                           targetAudience: { ...formData.targetAudience, subtitle: e.target.value }
                         })}
+                        onKeyDown={handleKeyDown}
                         placeholder="e.g., This bootcamp is perfect for:"
                         className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />

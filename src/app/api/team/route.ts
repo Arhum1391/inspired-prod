@@ -24,19 +24,14 @@ export async function GET() {
         const teamMembers = await collection.find({}).toArray();
         console.log(`📊 Team API: Found ${teamMembers.length} team members`);
 
-        // Fetch images from images collection
-        const imagesCollection = database.collection('images');
-        const images = await imagesCollection.find({}).toArray();
-        const imageMap = images.reduce((acc, img) => {
-            acc[img.memberId] = img.imageUrl;
-            return acc;
-        }, {} as Record<number, string>);
-
-        console.log('📊 Team API: Found images for members:', Object.keys(imageMap));
 
         // Transform TeamMember[] to Analyst[] format
         const analysts: Analyst[] = teamMembers.map(member => {
-            const imageUrl = imageMap[member.id] || member.image || `/team dark/${member.name}.png`;
+            // Validate and sanitize image URL
+            let imageUrl = member.image;
+            if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'null' || imageUrl === 'undefined') {
+                imageUrl = `/team dark/${member.name}.png`;
+            }
             
             console.log('🔄 Mapping team member:', {
                 id: member.id,
@@ -44,7 +39,7 @@ export async function GET() {
                 role: member.role,
                 about: member.about?.substring(0, 50) + '...', // Log first 50 chars
                 hasImage: !!imageUrl,
-                imageSource: imageMap[member.id] ? 'images collection' : 'team member field'
+                imageSource: member.image && member.image.trim() !== '' ? 'team member field' : 'static fallback'
             });
             
             return {

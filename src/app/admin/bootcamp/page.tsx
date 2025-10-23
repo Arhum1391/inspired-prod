@@ -53,11 +53,24 @@ export default function BootcampPage() {
   });
   const [newCurriculumItem, setNewCurriculumItem] = useState('');
   const [newTargetAudienceItem, setNewTargetAudienceItem] = useState('');
+  
+  // Validation state
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     fetchBootcamps();
     fetchTeamMembers();
   }, []);
+
+  // Trigger validation when modal opens or form data changes
+  useEffect(() => {
+    if (showModal) {
+      // Small delay to ensure form is rendered
+      setTimeout(() => {
+        validateForm();
+      }, 100);
+    }
+  }, [showModal, formData.title, formData.description, formData.heroDescription]);
 
   const fetchTeamMembers = async () => {
     try {
@@ -92,8 +105,67 @@ export default function BootcampPage() {
     }
   };
 
+  // Validation functions
+  const validateTitle = (title: string): string => {
+    if (!title.trim()) {
+      return 'Title is required';
+    }
+    // Check for symbols (allow only letters, numbers, spaces, hyphens, and apostrophes)
+    const symbolRegex = /[^a-zA-Z0-9\s\-']/;
+    if (symbolRegex.test(title)) {
+      return 'Title cannot contain symbols. Only letters, numbers, spaces, hyphens, and apostrophes are allowed.';
+    }
+    return '';
+  };
+
+  const validateDescription = (description: string, fieldName: string): string => {
+    if (!description.trim()) {
+      return `${fieldName} is required`;
+    }
+    // Check if description contains at least some alphabetic characters
+    const hasAlphabetic = /[a-zA-Z]/.test(description);
+    if (!hasAlphabetic) {
+      return `${fieldName} must contain alphabetic characters`;
+    }
+    return '';
+  };
+
+  const validateForm = (): boolean => {
+    const errors: {[key: string]: string} = {};
+    
+    // Validate title
+    const titleError = validateTitle(formData.title);
+    if (titleError) errors.title = titleError;
+    
+    // Validate description
+    const descriptionError = validateDescription(formData.description, 'Description');
+    if (descriptionError) errors.description = descriptionError;
+    
+    // Validate hero description paragraphs
+    formData.heroDescription.forEach((paragraph, index) => {
+      const paragraphError = validateDescription(paragraph, `Hero Description Paragraph ${index + 1}`);
+      if (paragraphError) errors[`heroDescription_${index}`] = paragraphError;
+    });
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form before submission
+    if (!validateForm()) {
+      // Scroll to validation summary to make it visible
+      setTimeout(() => {
+        const validationElement = document.querySelector('[data-validation-summary]');
+        if (validationElement) {
+          validationElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+      return;
+    }
+    
     setSubmitting(true);
     
     try {
@@ -256,6 +328,9 @@ export default function BootcampPage() {
       }
     });
     setShowModal(true);
+    
+    // Clear validation errors when editing
+    setValidationErrors({});
   };
 
   const handleDelete = async (id: string) => {
@@ -328,6 +403,7 @@ export default function BootcampPage() {
     });
     setNewCurriculumItem('');
     setNewTargetAudienceItem('');
+    setValidationErrors({});
   };
 
   const openModal = () => {
@@ -785,10 +861,24 @@ export default function BootcampPage() {
                     type="text"
                     required
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) => {
+                      const newTitle = e.target.value;
+                      setFormData({ ...formData, title: newTitle });
+                      // Clear title error when user starts typing
+                      if (validationErrors.title) {
+                        setValidationErrors({ ...validationErrors, title: '' });
+                      }
+                    }}
                     onKeyDown={handleKeyDown}
-                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
+                      validationErrors.title 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-slate-600 focus:ring-indigo-500'
+                    }`}
                   />
+                  {validationErrors.title && (
+                    <p className="text-red-400 text-xs mt-1">{validationErrors.title}</p>
+                  )}
                 </div>
               </div>
 
@@ -799,11 +889,25 @@ export default function BootcampPage() {
                 <textarea
                   required
                   value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  onChange={(e) => {
+                    const newDescription = e.target.value;
+                    setFormData({ ...formData, description: newDescription });
+                    // Clear description error when user starts typing
+                    if (validationErrors.description) {
+                      setValidationErrors({ ...validationErrors, description: '' });
+                    }
+                  }}
                   onKeyDown={handleKeyDown}
                   rows={3}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
+                    validationErrors.description 
+                      ? 'border-red-500 focus:ring-red-500' 
+                      : 'border-slate-600 focus:ring-indigo-500'
+                  }`}
                 />
+                {validationErrors.description && (
+                  <p className="text-red-400 text-xs mt-1">{validationErrors.description}</p>
+                )}
               </div>
 
               {/* Hero Content Section */}
@@ -833,7 +937,16 @@ export default function BootcampPage() {
                       <div className="flex gap-2">
                         <textarea
                           value={newHeroDescription}
-                          onChange={(e) => setNewHeroDescription(e.target.value)}
+                          onChange={(e) => {
+                            setNewHeroDescription(e.target.value);
+                            // Clear any hero description errors when user starts typing
+                            const heroDescErrors = Object.keys(validationErrors).filter(key => key.startsWith('heroDescription_'));
+                            if (heroDescErrors.length > 0) {
+                              const newErrors = { ...validationErrors };
+                              heroDescErrors.forEach(key => delete newErrors[key]);
+                              setValidationErrors(newErrors);
+                            }
+                          }}
                           placeholder="Add a new description paragraph..."
                           rows={3}
                           className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -856,7 +969,12 @@ export default function BootcampPage() {
                           {formData.heroDescription.map((paragraph, index) => (
                             <div key={index} className="flex items-start gap-2 bg-slate-800 rounded-lg p-3">
                               <span className="text-xs text-gray-400 mt-1">#{index + 1}</span>
-                              <p className="flex-1 text-sm text-white">{paragraph}</p>
+                              <div className="flex-1">
+                                <p className="text-sm text-white">{paragraph}</p>
+                                {validationErrors[`heroDescription_${index}`] && (
+                                  <p className="text-red-400 text-xs mt-1">{validationErrors[`heroDescription_${index}`]}</p>
+                                )}
+                              </div>
                               <button
                                 type="button"
                                 onClick={() => removeHeroDescription(index)}
@@ -1416,13 +1534,52 @@ export default function BootcampPage() {
                 </div>
               </div>
 
+              {/* Validation Summary - Always show if there are errors */}
+              {Object.keys(validationErrors).length > 0 && (
+                <div data-validation-summary className="bg-red-900/30 border-2 border-red-500 rounded-lg p-4 mb-4 animate-pulse">
+                  <div className="flex items-center gap-2 mb-3">
+                    <svg className="w-6 h-6 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                    </svg>
+                    <h3 className="text-red-400 font-bold text-lg">⚠️ Please fix the following errors before submitting:</h3>
+                  </div>
+                  <ul className="space-y-2">
+                    {Object.entries(validationErrors).map(([field, error]) => (
+                      <li key={field} className="flex items-start gap-2 text-sm bg-red-900/20 rounded p-2">
+                        <span className="text-red-400 mt-0.5 font-bold">•</span>
+                        <span className="text-red-200">
+                          <span className="font-bold text-red-300">
+                            {field === 'title' && '📝 Title: '}
+                            {field === 'description' && '📄 Description: '}
+                            {field.startsWith('heroDescription_') && `📋 Hero Description Paragraph ${parseInt(field.split('_')[1]) + 1}: `}
+                          </span>
+                          {error}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-3 p-2 bg-red-800/30 rounded text-xs text-red-300">
+                    💡 <strong>Tip:</strong> Fix the errors above and try submitting again.
+                  </div>
+                </div>
+              )}
+
               <div className="flex space-x-3 pt-4">
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed text-white py-2 rounded-lg transition-colors"
+                  className={`flex-1 py-2 rounded-lg transition-colors text-white ${
+                    Object.keys(validationErrors).length > 0 
+                      ? 'bg-red-600 hover:bg-red-700 cursor-not-allowed' 
+                      : 'bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed'
+                  }`}
                 >
-                  {submitting ? 'Saving...' : (editingBootcamp ? 'Update' : 'Create') + ' Bootcamp'}
+                  {submitting 
+                    ? 'Saving...' 
+                    : Object.keys(validationErrors).length > 0 
+                      ? `⚠️ Fix ${Object.keys(validationErrors).length} error${Object.keys(validationErrors).length > 1 ? 's' : ''} first`
+                      : (editingBootcamp ? 'Update' : 'Create') + ' Bootcamp'
+                  }
                 </button>
                 <button
                   type="button"

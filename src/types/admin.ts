@@ -7,7 +7,7 @@ export interface User {
 
 export interface TeamMember {
   _id?: string;
-  id: string;
+  id: number;
   name: string;
   role: string;
   about: string; // General about for mentorship flow

@@ -4,6 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Inspired Analyst - Making Finance & Tech Accessible",
   description: "Expert analysis on stocks, crypto, and data science - delivered with clarity and humor",
+  icons: {
+    icon: "/logo/favicon.svg",
+    shortcut: "/logo/favicon.svg",
+    apple: "/logo/favicon.svg",
+  },
 };
 
 export default function RootLayout({

@@ -49,31 +49,308 @@ const sendEmailNotification = async (formData: {
     const mailOptions = {
       from: SMTP_USER,
       to: COLLAB_EMAIL,
-      subject: `New Collaboration Request from ${formData.brandName}`,
+      subject: `🚀 New Collaboration Request from ${formData.brandName}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #333; border-bottom: 2px solid #4B25FD; padding-bottom: 10px;">
-            New Collaboration Request
-          </h2>
-          
-          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <h3 style="color: #555; margin-top: 0;">Contact Details:</h3>
-            <p><strong>Brand Name:</strong> ${formData.brandName}</p>
-            <p><strong>Email:</strong> <a href="mailto:${formData.email}">${formData.email}</a></p>
-            ${formData.website ? `<p><strong>Website:</strong> <a href="${formData.website}" target="_blank">${formData.website}</a></p>` : ''}
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>New Collaboration Request</title>
+          <link href="https://db.onlinewebfonts.com/c/1dc8ecd8056a5ea7aa7de1db42b5b639?family=Gilroy-Regular" rel="stylesheet">
+          <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            }
+            
+            body {
+              font-family: 'Gilroy', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+              background: #0A0A0A;
+              color: #ffffff;
+              line-height: 1.6;
+            }
+            
+            .email-container {
+              max-width: 600px;
+              margin: 0 auto;
+              background: #0A0A0A;
+              padding: 40px 20px;
+            }
+            
+            .header {
+              text-align: center;
+              margin-bottom: 40px;
+            }
+            
+            .logo {
+              font-size: 28px;
+              font-weight: 700;
+              color: #ffffff;
+              margin-bottom: 8px;
+            }
+            
+            .tagline {
+              font-size: 14px;
+              color: rgba(255, 255, 255, 0.7);
+              font-weight: 400;
+            }
+            
+            .main-card {
+              background: linear-gradient(135deg, rgba(75, 37, 253, 0.1) 0%, rgba(222, 80, 236, 0.1) 100%);
+              border: 1px solid rgba(75, 37, 253, 0.2);
+              border-radius: 16px;
+              padding: 32px;
+              margin-bottom: 24px;
+              position: relative;
+              overflow: hidden;
+            }
+            
+            .card-content {
+              position: relative;
+              z-index: 1;
+            }
+            
+            .card-title {
+              font-size: 24px;
+              font-weight: 600;
+              color: #ffffff;
+              margin-bottom: 24px;
+              text-align: center;
+            }
+            
+            .info-section {
+              background: linear-gradient(135deg, rgba(75, 37, 253, 0.08) 0%, rgba(222, 80, 236, 0.08) 100%);
+              border: 1px solid rgba(75, 37, 253, 0.15);
+              border-radius: 12px;
+              padding: 24px;
+              margin-bottom: 24px;
+            }
+            
+            .info-title {
+              font-size: 16px;
+              font-weight: 600;
+              color: #ffffff;
+              margin-bottom: 16px;
+            }
+            
+            .info-item {
+              margin-bottom: 12px;
+              display: flex;
+              align-items: flex-start;
+              gap: 12px;
+            }
+            
+            .info-label {
+              font-weight: 600;
+              color: rgba(255, 255, 255, 0.8);
+              min-width: 90px;
+              flex-shrink: 0;
+              padding-top: 2px;
+            }
+            
+            .info-value {
+              color: #ffffff;
+              flex: 1;
+              word-break: break-all;
+              overflow-wrap: break-word;
+              hyphens: auto;
+              padding-top: 2px;
+            }
+            
+            .info-value a {
+              color: #4B25FD;
+              text-decoration: none;
+              font-weight: 500;
+              word-break: break-all;
+              overflow-wrap: break-word;
+            }
+            
+            .info-value a:hover {
+              color: #6B46C1;
+            }
+            
+            .message-section {
+              background: linear-gradient(135deg, rgba(75, 37, 253, 0.08) 0%, rgba(222, 80, 236, 0.08) 100%);
+              border: 1px solid rgba(75, 37, 253, 0.15);
+              border-radius: 12px;
+              padding: 24px;
+              margin-bottom: 24px;
+            }
+            
+            .message-title {
+              font-size: 16px;
+              font-weight: 600;
+              color: #ffffff;
+              margin-bottom: 16px;
+            }
+            
+            .message-content {
+              color: rgba(255, 255, 255, 0.9);
+              line-height: 1.7;
+              white-space: pre-wrap;
+            }
+            
+            .footer {
+              text-align: center;
+              padding: 24px;
+              background: linear-gradient(135deg, rgba(75, 37, 253, 0.1) 0%, rgba(222, 80, 236, 0.1) 100%);
+              border-radius: 12px;
+              border: 1px solid rgba(75, 37, 253, 0.2);
+            }
+            
+            .footer-text {
+              color: rgba(255, 255, 255, 0.7);
+              font-size: 14px;
+              margin-bottom: 8px;
+            }
+            
+            .footer-subtext {
+              color: rgba(255, 255, 255, 0.5);
+              font-size: 12px;
+            }
+            
+            .gradient-accent {
+              background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              background-clip: text;
+              font-weight: 600;
+            }
+            
+            @media (max-width: 600px) {
+              .email-container {
+                padding: 16px 12px;
+              }
+              
+              .main-card {
+                padding: 20px 16px;
+              }
+              
+              .card-title {
+                font-size: 18px;
+                margin-bottom: 20px;
+              }
+              
+              .info-section {
+                padding: 16px 12px;
+                margin-bottom: 16px;
+              }
+              
+              .message-section {
+                padding: 16px 12px;
+                margin-bottom: 16px;
+              }
+              
+              .info-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                margin-bottom: 8px;
+              }
+              
+              .info-label {
+                margin-bottom: 0;
+                margin-right: 0;
+                min-width: auto;
+                font-size: 12px;
+                font-weight: 600;
+                padding-top: 0;
+              }
+              
+              .info-value {
+                font-size: 12px;
+                line-height: 1.4;
+                word-break: break-all;
+                overflow-wrap: break-word;
+                padding-top: 0;
+              }
+              
+              .info-value a {
+                font-size: 12px;
+                word-break: break-all;
+                overflow-wrap: break-word;
+              }
+              
+              .message-content {
+                font-size: 12px;
+                line-height: 1.5;
+              }
+              
+              .message-title {
+                font-size: 14px;
+                margin-bottom: 12px;
+              }
+              
+              .info-title {
+                font-size: 14px;
+                margin-bottom: 12px;
+              }
+              
+              .footer {
+                padding: 16px 12px;
+              }
+              
+              .footer-text {
+                font-size: 12px;
+              }
+              
+              .footer-subtext {
+                font-size: 10px;
+              }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="email-container">
+            <!-- Header -->
+            <div class="header">
+              <div class="logo">Inspired Analyst</div>
+              <div class="tagline">Making Finance & Tech Accessible</div>
+            </div>
+            
+            <!-- Main Card -->
+            <div class="main-card">
+              <div class="gradient-border"></div>
+              <div class="card-content">
+                <h1 class="card-title">New Collaboration Request</h1>
+                
+                <!-- Contact Information -->
+                <div class="info-section">
+                  <h3 class="info-title">Contact Details</h3>
+                  <div class="info-item">
+                    <span class="info-label">Brand:</span>
+                    <span class="info-value">${formData.brandName}</span>
+                  </div>
+                  <div class="info-item">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value"><a href="mailto:${formData.email}">${formData.email}</a></span>
+                  </div>
+                  ${formData.website ? `
+                  <div class="info-item">
+                    <span class="info-label">Website:</span>
+                    <span class="info-value"><a href="${formData.website}" target="_blank">${formData.website}</a></span>
+                  </div>
+                  ` : ''}
           </div>
           
-          <div style="background: #fff; border: 1px solid #ddd; padding: 15px; border-radius: 8px;">
-            <h3 style="color: #555; margin-top: 0;">Message:</h3>
-            <p style="line-height: 1.6; color: #666;">${formData.message.replace(/\n/g, '<br>')}</p>
+                <!-- Message -->
+                <div class="message-section">
+                  <h3 class="message-title">Message</h3>
+                  <div class="message-content">${formData.message.replace(/\n/g, '<br>')}</div>
+                </div>
+              </div>
           </div>
           
-          <div style="margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px; border-left: 4px solid #4B25FD;">
-            <p style="margin: 0; color: #666; font-size: 14px;">
-              This message was sent from the "Work with Inspired Analyst" form on your website.
-            </p>
+            <!-- Footer -->
+            <div class="footer">
+              <div class="footer-text">This message was sent from the <span class="gradient-accent">"Work with Inspired Analyst"</span> form</div>
+              <div class="footer-subtext">Submitted on ${new Date().toLocaleString()}</div>
+            </div>
           </div>
-        </div>
+        </body>
+        </html>
       `,
     };
 

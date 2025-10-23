@@ -10,7 +10,7 @@ export default function TeamPage() {
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    id: '',
+    id: 0,
     name: '',
     role: '',
     about: '',
@@ -231,7 +231,7 @@ export default function TeamPage() {
 
   const resetForm = () => {
     setFormData({
-      id: '',
+      id: 0,
       name: '',
       role: '',
       about: '',
@@ -247,8 +247,8 @@ export default function TeamPage() {
   const openModal = () => {
     setEditingMember(null);
     resetForm();
-    // Set the next ID for new members
-    setFormData(prev => ({ ...prev, id: nextId.toString() }));
+    // Set the next ID for new members (keep as number)
+    setFormData(prev => ({ ...prev, id: nextId }));
     setShowModal(true);
   };
 
@@ -428,7 +428,7 @@ export default function TeamPage() {
                   ID {editingMember ? '(Read-only)' : '(Auto-generated)'}
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   required
                   value={formData.id}
                   readOnly

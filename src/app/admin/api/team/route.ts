@@ -24,9 +24,11 @@ async function getTeamMembers(req: NextRequest, userId: string) {
 async function createTeamMember(req: NextRequest, userId: string) {
   try {
     const body = await req.json();
+    console.log('🔍 Create Team Member - Request body:', body);
     const { id, name, role, about, bootcampAbout, calendar, image } = body;
 
     if (!id || !name || !role || !about || !calendar) {
+      console.log('❌ Missing required fields:', { id, name, role, about, calendar });
       return NextResponse.json(
         { error: 'ID, name, role, about, and calendar link are required' },
         { status: 400 }
@@ -77,10 +79,13 @@ async function createTeamMember(req: NextRequest, userId: string) {
     
     // Verify the ID is the next available ID
     const existingMembers = await db.collection('team').find({}).toArray();
+    console.log('📊 Existing members:', existingMembers.map(m => ({ id: m.id, name: m.name })));
     const maxId = Math.max(...existingMembers.map(member => member.id || 0), -1);
     const expectedId = maxId + 1;
+    console.log('🔢 ID validation:', { receivedId: id, maxId, expectedId });
     
     if (id !== expectedId) {
+      console.log('❌ ID mismatch:', { received: id, expected: expectedId });
       return NextResponse.json(
         { error: `Invalid ID. Expected ${expectedId}, got ${id}` },
         { status: 400 }

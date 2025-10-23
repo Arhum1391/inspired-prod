@@ -7,7 +7,9 @@ async function updateTeamMember(req: NextRequest, userId: string, { params }: { 
   try {
     const { id } = params;
     const body = await req.json();
-    const { id: memberId, name, role, about, calendar, image } = body;
+    console.log('🔄 API: Updating team member with ID:', id);
+    console.log('📝 API: Received data:', body);
+    const { id: memberId, name, role, about, bootcampAbout, calendar, image } = body;
 
     if (!ObjectId.isValid(id)) {
       return NextResponse.json(
@@ -16,21 +18,33 @@ async function updateTeamMember(req: NextRequest, userId: string, { params }: { 
       );
     }
 
+    // Prevent ID changes - ID field is read-only for existing members
+    if (memberId !== undefined) {
+      return NextResponse.json(
+        { error: 'ID cannot be changed for existing team members' },
+        { status: 400 }
+      );
+    }
+
     const db = await getDatabase();
     const updateData = {
-      ...(memberId && { id: memberId }),
-      ...(name && { name }),
-      ...(role && { role }),
+      ...(name !== undefined && { name }),
+      ...(role !== undefined && { role }),
       ...(about !== undefined && { about }),
+      ...(bootcampAbout !== undefined && { bootcampAbout }),
       ...(calendar !== undefined && { calendar }),
       ...(image !== undefined && { image }),
       updatedAt: new Date(),
     };
 
+    console.log('📝 API: Update data to be applied:', updateData);
+
     const result = await db.collection('team').updateOne(
       { _id: new ObjectId(id) },
       { $set: updateData }
     );
+
+    console.log('📊 API: Update result:', result);
 
     if (result.matchedCount === 0) {
       return NextResponse.json(

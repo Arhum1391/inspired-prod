@@ -43,57 +43,8 @@ interface Timezone {
     label: string;
 }
 
-// --- MOCK DATA ---
-const baseAnalysts: Analyst[] = [
-  {
-    id: 0,
-    name: 'Adnan',
-    description: 'Content creator specializing in stocks, crypto, data science, & side hustles.',
-    image: '/team dark/Adnan.png'
-  },
-  {
-    id: 1,
-    name: 'Assassin',
-    description: 'Better known as Assassin Co-Founder of Inspired Analyst Discord Server, Trading crypto since 2019. My expertise is in Fibonacci Retracements, Trend-based-Fibs, Quant Analysis, Institutional Orderflow, Volume Profiling, Orderblocks, Fair Value Gaps, Supply/Demand, ICT Concepts, and textbook charts/candlestick patterns.',
-    image: '/team dark/Assassin.png'
-  },
-  {
-    id: 2,
-    name: 'Hassan Tariq',
-    description: 'I am Hassan Tariq and I have been trading crypto solely since 2020. I have been a part of Inspired Analyst team since April 2023. My expertise is in Fibonacci Retracements, Trend-based-Fibs, Fixed Range Volume Profile, Harmonics and Supply & Demand Concept.',
-    image: '/team dark/Hassan Tariq.png'
-  },
-  {
-    id: 3,
-    name: 'Hamza Ali',
-    description: 'My name is Hamza Ali and I have 5 years of experience in trading I specialize in risk management and consistent profit-making. My core strategy is price action trading, which naturally covers SMC, ICT, and other advanced concepts in a simplified way I keep my charts clean and to the point no unnecessary complications, just clarity and precision.',
-    image: '/team dark/Hamza Ali.png'
-  },
-  {
-    id: 4,
-    name: 'Hassan Khan',
-    description: 'I\'m Hassankhan, Co-founder of Inspired Analyst Forex Server, I don\'t just trade gold — I eat, breathe, and live XAU. I am also leading the CIVIC CHALLENGE, one of the most recognized and respected trading challenges across local Discord communities. With over 4–5 years of dedicated experience in trading gold, I\'ve developed a deep understanding of market movements, risk management, and profitable trading strategies.',
-    image: '/team dark/Hassan Khan.png'
-  },
-  {
-    id: 5,
-    name: 'Meower',
-    description: 'I\'m Meower, a 17-year-old cryptocurrency trader with experience in the market since February 2021. I specialize in breakout trading, focusing on large percentage moves on centralized exchanges. My strategy is based on a high-risk-to-reward framework, with a consistent win rate of over 85%. In 2025, I completed a publicly tracked $1,000 to $2,000 trading challenge.',
-    image: '/team dark/Meower.png'
-  },
-  {
-    id: 6,
-    name: 'Mohid',
-    description: 'Stop wasting time on outdated trading strategies that don\'t work anymore. As a professional trader with over 5 years of experience, I specialize in teaching advanced, fresh ICT concepts that are both simple to grasp and highly effective. My unique approach is built on two core trading models, the Fractal Model and the Forever Model, designed for maximum accuracy and clarity.',
-    image: '/team dark/Mohid.png'
-  },
-  {
-    id: 7,
-    name: 'M. Usama',
-    description: 'I\'m Muhammad Usama, and I\'ve been trading crypto since 2020, and I started trading forex in 2023. This experience has taught me how to navigate everything from bull runs to brutal bear markets. I trade on indicators to refine my entries and exits, and try to keep my trading simple by using the price action. What keeps me consistent is blending institutional concepts with simple, practical tools.',
-    image: '/team dark/M. Usama.png'
-  }
-];
+// --- NO HARDCODED DATA ---
+// All analyst data is now fetched dynamically from the database
 
 const meetings: Meeting[] = [
   {
@@ -459,11 +410,65 @@ const MeetingsPage = () => {
     const [selectedAnalyst, setSelectedAnalyst] = useState<number | null>(null); // No default selection
     const [selectedMeeting, setSelectedMeeting] = useState<number | null>(null); // No default selection
     const [selectedTimezone, setSelectedTimezone] = useState<string>('');
+    
+    // Cache invalidation function
+    const invalidateCache = () => {
+        if (typeof sessionStorage !== 'undefined') {
+            console.log('🗑️ Invalidating cache for section navigation');
+            sessionStorage.removeItem('teamData');
+            sessionStorage.removeItem('lastTeamDataFetch');
+            sessionStorage.removeItem('calendlyEventTypes');
+            sessionStorage.removeItem('calendlyAvailability');
+            sessionStorage.removeItem('calendlyEventDetails');
+        }
+    };
+    
+    // Data validation function to ensure consistent data structure
+    const validateAnalystData = (analyst: Analyst) => {
+        const isValid = analyst && 
+                       typeof analyst.id === 'number' && 
+                       typeof analyst.name === 'string' && 
+                       typeof analyst.description === 'string' &&
+                       typeof analyst.image === 'string';
+        
+        if (!isValid) {
+            console.warn('⚠️ Invalid analyst data:', analyst);
+        }
+        
+        return isValid;
+    };
+    
+    // Cache invalidation on step navigation
+    useEffect(() => {
+        console.log(`🔄 Step changed to: ${currentStep}`);
+        
+        // Invalidate cache when moving between sections
+        if (currentStep === 1) {
+            // Moving to analyst selection - invalidate all cache
+            console.log('🗑️ Moving to analyst selection - invalidating all cache');
+            invalidateCache();
+        } else if (currentStep === 2) {
+            // Moving to meeting selection - invalidate Calendly cache
+            console.log('🗑️ Moving to meeting selection - invalidating Calendly cache');
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.removeItem('calendlyEventTypes');
+                sessionStorage.removeItem('calendlyAvailability');
+                sessionStorage.removeItem('calendlyEventDetails');
+            }
+        } else if (currentStep === 3) {
+            // Moving to payment - invalidate booking cache
+            console.log('🗑️ Moving to payment - invalidating booking cache');
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.removeItem('calendlyEventDetails');
+            }
+        }
+    }, [currentStep]);
     const [analystAbout, setAnalystAbout] = useState<string>('');
     const [isLoadingAbout, setIsLoadingAbout] = useState<boolean>(false);
     const [isTimezoneOpen, setIsTimezoneOpen] = useState<boolean>(false);
-    const [analysts, setAnalysts] = useState<Analyst[]>(baseAnalysts);
+    const [analysts, setAnalysts] = useState<Analyst[]>([]);
     const [isTeamDataLoaded, setIsTeamDataLoaded] = useState<boolean>(false);
+    const [teamDataError, setTeamDataError] = useState<string>('');
     
     // Calendly Integration States
     const [calendlyEventTypes, setCalendlyEventTypes] = useState<any[]>([]);
@@ -513,53 +518,52 @@ const MeetingsPage = () => {
     // Function to fetch team data from MongoDB
     const fetchTeamData = async () => {
         try {
-            // Always fetch fresh data from API to ensure we get the latest roles
+            console.log('🔄 Fetching team data from API...');
+            setTeamDataError(''); // Clear any previous errors
+            
             const response = await fetch('/api/team');
             if (response.ok) {
                 const data = await response.json();
-                updateAnalystsWithTeamData(data.team);
+                console.log('📊 API Response:', {
+                    teamCount: data.team?.length || 0,
+                    hasRawTeam: !!data.rawTeam,
+                    firstAnalyst: data.team?.[0] ? {
+                        id: data.team[0].id,
+                        name: data.team[0].name,
+                        description: data.team[0].description?.substring(0, 30) + '...',
+                        hasImage: !!data.team[0].image
+                    } : null
+                });
+                
+                // Use the transformed analyst data directly and sort by ID
+                const sortedAnalysts = data.team.sort((a: Analyst, b: Analyst) => a.id - b.id);
+                
+                // Validate data before setting
+                const validAnalysts = sortedAnalysts.filter(validateAnalystData);
+                if (validAnalysts.length !== sortedAnalysts.length) {
+                    console.warn('⚠️ Some analyst data is invalid, filtering out invalid entries');
+                }
+                
+                setAnalysts(validAnalysts);
                 // Cache for future use
                 if (typeof sessionStorage !== 'undefined') {
-                    sessionStorage.setItem('teamData', JSON.stringify(data.team));
+                    sessionStorage.setItem('teamData', JSON.stringify(sortedAnalysts));
+                    sessionStorage.setItem('lastTeamDataFetch', Date.now().toString());
                 }
                 setIsTeamDataLoaded(true);
+                console.log('✅ Team data loaded successfully');
             } else {
-                // Fallback to cached data if API fails
-                const cachedData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('teamData') : null;
-                if (cachedData) {
-                    const team = JSON.parse(cachedData);
-                    updateAnalystsWithTeamData(team);
-                    setIsTeamDataLoaded(true);
-                } else {
-                    setIsTeamDataLoaded(true); // Still mark as loaded even if no data
-                }
+                console.error('❌ API failed with status:', response.status);
+                setTeamDataError('We encountered an issue, please try again later');
+                setIsTeamDataLoaded(true);
             }
         } catch (error) {
-            console.error('Error fetching team data:', error);
-            // Fallback to cached data if API fails
-            const cachedData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem('teamData') : null;
-            if (cachedData) {
-                const team = JSON.parse(cachedData);
-                updateAnalystsWithTeamData(team);
-            }
+            console.error('❌ Error fetching team data:', error);
+            setTeamDataError('We encountered an issue, please try again later');
             setIsTeamDataLoaded(true);
         }
     };
 
-    // Function to update analysts array with team data
-    const updateAnalystsWithTeamData = (team: {name: string, role: string}[]) => {
-        const updatedAnalysts = baseAnalysts.map(analyst => {
-            const teamMember = team.find(member => member.name === analyst.name);
-            if (teamMember && teamMember.role) {
-                return {
-                    ...analyst,
-                    description: teamMember.role
-                };
-            }
-            return analyst;
-        });
-        setAnalysts(updatedAnalysts);
-    };
 
     // Helper function to check if an analyst has Calendly integration
     const hasCalendlyIntegration = (analystId: number) => {
@@ -912,6 +916,36 @@ const MeetingsPage = () => {
     useEffect(() => {
         fetchTeamData();
         checkAllAnalystsCalendlyIntegration();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Auto-refresh team data when user returns to the page (focus event)
+    useEffect(() => {
+        const handleFocus = () => {
+            // Only refresh if we're not currently loading and it's been more than 30 seconds since last fetch
+            const lastFetch = sessionStorage.getItem('lastTeamDataFetch');
+            const now = Date.now();
+            const timeSinceLastFetch = lastFetch ? now - parseInt(lastFetch) : Infinity;
+            
+            if (timeSinceLastFetch > 30000) { // 30 seconds
+                console.log('🔄 Page focused - refreshing team data...');
+                fetchTeamData();
+            }
+        };
+
+        // Listen for focus events
+        window.addEventListener('focus', handleFocus);
+        
+        // Also refresh when page becomes visible (handles tab switching)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                handleFocus();
+            }
+        });
+
+        return () => {
+            window.removeEventListener('focus', handleFocus);
+            document.removeEventListener('visibilitychange', handleFocus);
+        };
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Fetch Calendly event types when an analyst with Calendly integration is selected
@@ -1452,7 +1486,10 @@ const MeetingsPage = () => {
         
         if (!isContinueDisabled) {
             if (currentStep === 2) {
-                console.log('Advancing to step 3');
+                console.log('➡️ Advancing from step 2 to step 3 - invalidating booking cache');
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.removeItem('calendlyEventDetails');
+                }
                 setCurrentStep(3);
                 // Scroll to top on mobile when advancing to next step
                 if (typeof window !== 'undefined' && window.innerWidth < 768) {
@@ -1572,6 +1609,14 @@ const MeetingsPage = () => {
                                     sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
                                 }
                                 
+                                // Close the Calendly popup automatically
+                                console.log('Closing Calendly popup automatically...');
+                                // @ts-ignore
+                                if (window.Calendly && window.Calendly.closePopupWidget) {
+                                    // @ts-ignore
+                                    window.Calendly.closePopupWidget();
+                                }
+                                
                                 // Redirect to success page after Calendly booking
                                 console.log('Redirecting to success page...');
                                 setTimeout(() => {
@@ -1604,8 +1649,14 @@ const MeetingsPage = () => {
 
     const handleBack = () => {
         if (currentStep === 2) {
+            console.log('⬅️ Navigating back from step 2 to step 1 - invalidating cache');
+            invalidateCache();
             setCurrentStep(1);
         } else if (currentStep === 3) {
+            console.log('⬅️ Navigating back from step 3 to step 2 - invalidating booking cache');
+            if (typeof sessionStorage !== 'undefined') {
+                sessionStorage.removeItem('calendlyEventDetails');
+            }
             setCurrentStep(2);
         } else {
         // Navigate to the landing page using standard web APIs
@@ -2654,18 +2705,99 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Select Your Analyst</h2>
                                 <p className="text-sm sm:text-base text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Choose the expert who best matches your needs and investment goals</p>
                             </div>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 justify-items-stretch max-w-none">
-                                {analysts.map((analyst) => (
-                                    <AnalystCard
-                                        key={analyst.id}
-                                        analyst={analyst}
-                                        isSelected={selectedAnalyst === analyst.id}
-                                        onSelect={setSelectedAnalyst}
-                                        onAdvance={() => setCurrentStep(2)}
-                                        isTeamDataLoaded={isTeamDataLoaded}
-                                    />
-                                ))}
-                            </div>
+                            
+                            {/* Error Message */}
+                            {teamDataError && (
+                                <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
+                                            <span className="text-white text-sm">!</span>
+                                        </div>
+                                        <div>
+                                            <p className="text-red-400 font-medium">{teamDataError}</p>
+                                            <button 
+                                                onClick={fetchTeamData}
+                                                className="text-red-300 text-sm underline hover:text-red-200 mt-1"
+                                            >
+                                                Try again
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            
+                            {/* Loading State - 8 Skeleton Cards */}
+                            {!isTeamDataLoaded && !teamDataError && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 justify-items-stretch max-w-none">
+                                    {Array.from({ length: 8 }, (_, index) => (
+                                        <div key={index} className="cursor-pointer relative overflow-hidden group transition-all duration-300 flex flex-col items-center p-4 gap-4 w-full min-w-[180px] sm:max-w-[220px] h-44 bg-[#1F1F1F] rounded-2xl">
+                                            {/* Curved Gradient Border - Same as real cards */}
+                                            <div 
+                                                className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
+                                                style={{
+                                                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
+                                                }}
+                                            >
+                                                <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
+                                            </div>
+                                            
+                                            {/* Content with relative positioning to appear above gradient */}
+                                            <div className="relative z-10 flex flex-col items-center text-center w-full">
+                                                {/* Skeleton Image - Same size and style as real cards */}
+                                                <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
+                                                    <div className="w-16 h-16 bg-gray-600 rounded-full animate-pulse"></div>
+                                                </div>
+                                                
+                                                {/* Skeleton Name - Same styling as real cards */}
+                                                <div className="w-20 h-4 bg-gray-600 rounded animate-pulse mb-2 mt-3"></div>
+                                                
+                                                {/* Skeleton Role - Same styling as real cards */}
+                                                <div className="w-16 h-3 bg-gray-600 rounded animate-pulse"></div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* Analyst Cards */}
+                            {isTeamDataLoaded && !teamDataError && analysts.length > 0 && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 justify-items-stretch max-w-none">
+                                    {analysts.map((analyst) => (
+                                        <AnalystCard
+                                            key={analyst.id}
+                                            analyst={analyst}
+                                            isSelected={selectedAnalyst === analyst.id}
+                                            onSelect={setSelectedAnalyst}
+                                            onAdvance={() => {
+                                                console.log('➡️ Advancing from step 1 to step 2 - invalidating Calendly cache');
+                                                if (typeof sessionStorage !== 'undefined') {
+                                                    sessionStorage.removeItem('calendlyEventTypes');
+                                                    sessionStorage.removeItem('calendlyAvailability');
+                                                    sessionStorage.removeItem('calendlyEventDetails');
+                                                }
+                                                setCurrentStep(2);
+                                            }}
+                                            isTeamDataLoaded={isTeamDataLoaded}
+                                        />
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* No Analysts Available */}
+                            {isTeamDataLoaded && !teamDataError && analysts.length === 0 && (
+                                <div className="text-center py-12">
+                                    <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <span className="text-gray-400 text-2xl">👥</span>
+                                    </div>
+                                    <p className="text-gray-400 text-lg">No analysts available at the moment</p>
+                                    <button 
+                                        onClick={fetchTeamData}
+                                        className="text-indigo-400 hover:text-indigo-300 underline mt-2"
+                                    >
+                                        Refresh
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
 

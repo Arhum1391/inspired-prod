@@ -217,8 +217,14 @@ export default function CollaborationForm() {
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="bg-white text-[#0A0A0A] rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 cursor-pointer px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold"
-                style={{ fontFamily: 'Gilroy, sans-serif' }}
+                className="no-focus bg-white text-[#0A0A0A] rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 cursor-pointer px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:border-none"
+                style={{ 
+                  fontFamily: 'Gilroy, sans-serif', 
+                  outline: 'none !important', 
+                  boxShadow: 'none !important',
+                  border: 'none !important'
+                }}
+                onFocus={(e) => e.target.blur()}
               >
                 {status === 'loading' ? 'Sending...' : status === 'success' ? 'Sent!' : status === 'error' ? 'Failed' : 'Send Message'}
               </button>

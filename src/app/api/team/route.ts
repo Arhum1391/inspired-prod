@@ -27,7 +27,11 @@ export async function GET() {
 
         // Transform TeamMember[] to Analyst[] format
         const analysts: Analyst[] = teamMembers.map(member => {
-            const imageUrl = member.image || `/team dark/${member.name}.png`;
+            // Validate and sanitize image URL
+            let imageUrl = member.image;
+            if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'null' || imageUrl === 'undefined') {
+                imageUrl = `/team dark/${member.name}.png`;
+            }
             
             console.log('🔄 Mapping team member:', {
                 id: member.id,
@@ -35,7 +39,7 @@ export async function GET() {
                 role: member.role,
                 about: member.about?.substring(0, 50) + '...', // Log first 50 chars
                 hasImage: !!imageUrl,
-                imageSource: member.image ? 'team member field' : 'static fallback'
+                imageSource: member.image && member.image.trim() !== '' ? 'team member field' : 'static fallback'
             });
             
             return {

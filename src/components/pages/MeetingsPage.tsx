@@ -287,22 +287,24 @@ const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect
             <div className="relative z-10 flex flex-col items-center text-center w-full">
                 {/* Large Circular Image */}
                 <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <Image 
-                                src={analyst.image} 
-                                alt={analyst.name}
-                                width={80}
-                                height={80}
-                                className="w-full h-full object-cover filter grayscale"
-                                onError={(e) => {
-                                    // Fallback to placeholder if image doesn't exist
-                                    e.currentTarget.style.display = 'none';
-                                    const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                                    if (nextElement) {
-                                        nextElement.style.display = 'flex';
-                                    }
-                                }}
-                            />
-                    <div className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-gray-300 text-lg font-bold" style={{display: 'none'}}>
+                            {analyst.image && analyst.image.trim() !== '' ? (
+                                <Image 
+                                    src={analyst.image} 
+                                    alt={analyst.name}
+                                    width={80}
+                                    height={80}
+                                    className="w-full h-full object-cover filter grayscale"
+                                    onError={(e) => {
+                                        // Fallback to placeholder if image doesn't exist
+                                        e.currentTarget.style.display = 'none';
+                                        const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
+                                        if (nextElement) {
+                                            nextElement.style.display = 'flex';
+                                        }
+                                    }}
+                                />
+                            ) : null}
+                    <div className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-gray-300 text-lg font-bold" style={{display: analyst.image && analyst.image.trim() !== '' ? 'none' : 'flex'}}>
                                 {analyst.name.charAt(0)}
                             </div>
                         </div>
@@ -2627,7 +2629,11 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                     {/* Profile Image */}
                                     <div className="rounded-full overflow-hidden relative z-10 w-20 h-20">
                                         <Image
-                                            src={analysts.find(a => a.id === selectedAnalyst)?.image || '/team dark/Adnan.png'}
+                                            src={(() => {
+                                                const analyst = analysts.find(a => a.id === selectedAnalyst);
+                                                const imageUrl = analyst?.image;
+                                                return (imageUrl && imageUrl.trim() !== '') ? imageUrl : '/team dark/Adnan.png';
+                                            })()}
                                             alt={analysts.find(a => a.id === selectedAnalyst)?.name || 'Analyst'}
                                             width={80}
                                             height={80}

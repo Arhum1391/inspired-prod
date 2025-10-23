@@ -374,11 +374,20 @@ body {
 
 /* Focus states for accessibility */
 a:focus,
-button:focus,
 input:focus {
   outline: 2px solid rgba(255, 255, 255, 0.5);
   outline-offset: 2px;
 }
+
+/* Remove focus styles from all buttons */
+button:focus,
+button:active,
+button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
 
 /* Custom scroll behavior */
 html {

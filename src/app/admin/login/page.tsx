@@ -117,15 +117,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Footer */}
-          <div className="mt-8 text-center">
-            <p className="text-slate-400 text-sm">
-              Don&apos;t have an account?{' '}
-              <a href="/admin/setup" className="text-purple-400 hover:text-purple-300 transition-colors font-medium">
-                Create one here
-              </a>
-            </p>
-          </div>
         </div>
       </div>
     </div>

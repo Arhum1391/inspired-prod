@@ -118,16 +118,17 @@ const BookingSuccessContent: React.FC = () => {
     };
 
     // Auto-open Calendly popup when script is loaded
-    useEffect(() => {
-        if (calendlyLoaded && bookingDetails?.hasCalendlyIntegration && bookingDetails?.calendlyUrl && !calendlyOpened) {
-            // Small delay to ensure page is fully loaded
-            const timer = setTimeout(() => {
-                openCalendlyPopup();
-                setCalendlyOpened(true);
-            }, 800);
-            return () => clearTimeout(timer);
-        }
-    }, [calendlyLoaded, bookingDetails, calendlyOpened]);
+    // COMMENTED OUT TO PREVENT DOUBLE POPUP - The popup is already opened from the meetings page
+    // useEffect(() => {
+    //     if (calendlyLoaded && bookingDetails?.hasCalendlyIntegration && bookingDetails?.calendlyUrl && !calendlyOpened) {
+    //         // Small delay to ensure page is fully loaded
+    //         const timer = setTimeout(() => {
+    //             openCalendlyPopup();
+    //             setCalendlyOpened(true);
+    //         }, 800);
+    //         return () => clearTimeout(timer);
+    //     }
+    // }, [calendlyLoaded, bookingDetails, calendlyOpened]);
 
     const openCalendlyPopup = () => {
         if (!bookingDetails || !bookingDetails.calendlyUrl || typeof window === 'undefined') {
@@ -179,6 +180,14 @@ const BookingSuccessContent: React.FC = () => {
                             sessionStorage.setItem('bookingDetails', JSON.stringify(updatedDetails));
                         }
                         setBookingDetails(updatedDetails);
+                        
+                        // Close the Calendly popup automatically
+                        console.log('Closing Calendly popup automatically from success page...');
+                        // @ts-ignore
+                        if (window.Calendly && window.Calendly.closePopupWidget) {
+                            // @ts-ignore
+                            window.Calendly.closePopupWidget();
+                        }
                         
                         // Popup will close automatically, success page is already visible behind it
                         console.log('Calendly popup closed, showing success page');

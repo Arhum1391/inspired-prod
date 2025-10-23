@@ -16,6 +16,9 @@ export default function SubscribersAdmin() {
   const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [viewMode, setViewMode] = useState<'paginated' | 'list'>('paginated');
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchSubscribers();
@@ -58,6 +61,23 @@ export default function SubscribersAdmin() {
     }
   };
 
+  // Pagination logic
+  const totalPages = Math.ceil(subscribers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentSubscribers = viewMode === 'paginated' 
+    ? subscribers.slice(startIndex, endIndex) 
+    : subscribers;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleViewModeChange = (mode: 'paginated' | 'list') => {
+    setViewMode(mode);
+    setCurrentPage(1); // Reset to first page when changing view
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -72,13 +92,42 @@ export default function SubscribersAdmin() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          Subscribers Management
-        </h1>
-        <p className="text-slate-400">
-          Manage your newsletter subscribers and their status
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-center sm:text-left mb-4 sm:mb-0">
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Subscribers Management
+          </h1>
+          <p className="text-slate-400">
+            Manage your newsletter subscribers and their status
+          </p>
+        </div>
+        
+        {/* View Toggle */}
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-slate-400">View:</span>
+          <div className="flex bg-slate-700 rounded-lg p-1">
+            <button
+              onClick={() => handleViewModeChange('paginated')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                viewMode === 'paginated'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              Pages
+            </button>
+            <button
+              onClick={() => handleViewModeChange('list')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                viewMode === 'list'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-slate-300 hover:text-white'
+              }`}
+            >
+              All
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Error Message */}
@@ -91,9 +140,21 @@ export default function SubscribersAdmin() {
       {/* Subscribers Table */}
       <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-700">
-          <h2 className="text-lg font-semibold text-white">
-            Subscribers ({subscribers.length})
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-white">
+              Subscribers ({subscribers.length})
+              {viewMode === 'paginated' && (
+                <span className="text-sm text-slate-400 ml-2">
+                  (Page {currentPage} of {totalPages})
+                </span>
+              )}
+            </h2>
+            {viewMode === 'paginated' && (
+              <span className="text-sm text-slate-400">
+                Showing {startIndex + 1}-{Math.min(endIndex, subscribers.length)} of {subscribers.length}
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -118,7 +179,7 @@ export default function SubscribersAdmin() {
               </tr>
             </thead>
             <tbody className="bg-slate-800 divide-y divide-slate-700">
-              {subscribers.map((subscriber) => (
+              {currentSubscribers.map((subscriber) => (
                 <tr key={subscriber._id} className="hover:bg-slate-700/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
                     {subscriber.email}
@@ -174,6 +235,64 @@ export default function SubscribersAdmin() {
             </div>
             <p className="text-slate-400">No subscribers yet.</p>
             <p className="text-slate-500 text-sm mt-1">Subscribers will appear here once they sign up for your newsletter.</p>
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {viewMode === 'paginated' && subscribers.length > itemsPerPage && (
+          <div className="px-6 py-4 border-t border-slate-700">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-slate-400">
+                Page {currentPage} of {totalPages}
+              </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 text-sm font-medium text-slate-300 hover:text-white disabled:text-slate-500 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                
+                {/* Page Numbers */}
+                <div className="flex items-center space-x-1">
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let pageNum;
+                    if (totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= totalPages - 2) {
+                      pageNum = totalPages - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => handlePageChange(pageNum)}
+                        className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                          currentPage === pageNum
+                            ? 'bg-purple-600 text-white'
+                            : 'text-slate-300 hover:text-white hover:bg-slate-700'
+                        }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 text-sm font-medium text-slate-300 hover:text-white disabled:text-slate-500 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

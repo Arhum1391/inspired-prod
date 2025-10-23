@@ -1572,6 +1572,14 @@ const MeetingsPage = () => {
                                     sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
                                 }
                                 
+                                // Close the Calendly popup automatically
+                                console.log('Closing Calendly popup automatically...');
+                                // @ts-ignore
+                                if (window.Calendly && window.Calendly.closePopupWidget) {
+                                    // @ts-ignore
+                                    window.Calendly.closePopupWidget();
+                                }
+                                
                                 // Redirect to success page after Calendly booking
                                 console.log('Redirecting to success page...');
                                 setTimeout(() => {

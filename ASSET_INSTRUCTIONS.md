@@ -1,4 +1,3 @@
-
 # Asset Instructions for Hero Section
 
 ## Required Background Image

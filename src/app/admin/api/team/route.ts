@@ -105,6 +105,26 @@ async function createTeamMember(req: NextRequest, userId: string) {
     };
 
     const result = await db.collection('team').insertOne(teamMember);
+    console.log('✅ Team member created successfully:', result.insertedId);
+    
+    // Store image in images collection if provided
+    if (image && image.trim() !== '') {
+      try {
+        const imagesCollection = db.collection('images');
+        const imageDoc = {
+          memberId: id,
+          imageUrl: image,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        
+        await imagesCollection.insertOne(imageDoc);
+        console.log('✅ Image stored in images collection for member:', id);
+      } catch (imageError) {
+        console.error('⚠️ Failed to store image in images collection:', imageError);
+        // Don't fail the team member creation if image storage fails
+      }
+    }
 
     return NextResponse.json({
       ...teamMember,

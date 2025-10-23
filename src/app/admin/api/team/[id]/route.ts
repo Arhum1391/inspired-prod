@@ -53,6 +53,39 @@ async function updateTeamMember(req: NextRequest, userId: string, { params }: { 
       );
     }
 
+    // Update image in images collection if image was provided
+    if (image !== undefined) {
+      try {
+        // Get the team member to get their ID
+        const teamMember = await db.collection('team').findOne({ _id: new ObjectId(id) });
+        if (teamMember && teamMember.id !== undefined) {
+          const imagesCollection = db.collection('images');
+          
+          if (image && image.trim() !== '') {
+            // Update or create image entry
+            await imagesCollection.updateOne(
+              { memberId: teamMember.id },
+              { 
+                $set: { 
+                  imageUrl: image, 
+                  updatedAt: new Date() 
+                } 
+              },
+              { upsert: true }
+            );
+            console.log('✅ Image updated in images collection for member:', teamMember.id);
+          } else {
+            // Remove image entry if image is empty
+            await imagesCollection.deleteOne({ memberId: teamMember.id });
+            console.log('🗑️ Image removed from images collection for member:', teamMember.id);
+          }
+        }
+      } catch (imageError) {
+        console.error('⚠️ Failed to update image in images collection:', imageError);
+        // Don't fail the team member update if image storage fails
+      }
+    }
+
     return NextResponse.json({ message: 'Team member updated successfully' });
   } catch (error) {
     console.error('Update team member error:', error);
@@ -75,15 +108,41 @@ async function deleteTeamMember(req: NextRequest, userId: string, { params }: { 
     }
 
     const db = await getDatabase();
+    
+    // Get the team member first to get their ID for image cleanup
+    const teamMember = await db.collection('team').findOne({ _id: new ObjectId(id) });
+    if (!teamMember) {
+      return NextResponse.json(
+        { error: 'Team member not found' },
+        { status: 404 }
+      );
+    }
+    
+    console.log('🗑️ Deleting team member:', teamMember.name, 'ID:', teamMember.id);
+    
+    // Delete from team collection
     const result = await db.collection('team').deleteOne({ _id: new ObjectId(id) });
-
+    
     if (result.deletedCount === 0) {
       return NextResponse.json(
         { error: 'Team member not found' },
         { status: 404 }
       );
     }
-
+    
+    // Clean up associated image from images collection
+    if (teamMember.id !== undefined) {
+      try {
+        const imagesCollection = db.collection('images');
+        const imageResult = await imagesCollection.deleteOne({ memberId: teamMember.id });
+        console.log('🗑️ Deleted image from images collection:', imageResult.deletedCount > 0 ? 'Yes' : 'No image found');
+      } catch (imageError) {
+        console.error('⚠️ Failed to delete image from images collection:', imageError);
+        // Don't fail the team member deletion if image cleanup fails
+      }
+    }
+    
+    console.log('✅ Team member and associated image deleted successfully');
     return NextResponse.json({ message: 'Team member deleted successfully' });
   } catch (error) {
     console.error('Delete team member error:', error);

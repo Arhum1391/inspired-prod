@@ -174,7 +174,8 @@ export default function BootcampPage() {
       
       // Prepare the bootcamp data with required fields
       const bootcampData: any = {
-        id: formData.id,
+        // ID is auto-generated for new bootcamps, included only for updates
+        ...(editingBootcamp && { id: formData.id }),
         title: formData.title,
         description: formData.description,
         price: formData.price,
@@ -841,16 +842,15 @@ export default function BootcampPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
-                    ID
+                    ID {editingBootcamp ? '(Read-only)' : '(Auto-generated)'}
                   </label>
                   <input
                     type="text"
-                    required
-                    value={formData.id}
-                    onChange={(e) => setFormData({ ...formData, id: e.target.value })}
-                    onKeyDown={handleKeyDown}
-                    placeholder="crypto-trading"
-                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    value={editingBootcamp ? formData.id : 'Auto-generated'}
+                    readOnly
+                    disabled
+                    className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-gray-400 cursor-not-allowed"
+                    title={editingBootcamp ? 'ID cannot be changed' : 'ID will be automatically generated'}
                   />
                 </div>
                 <div>

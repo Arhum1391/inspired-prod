@@ -208,6 +208,15 @@ export default function BootcampRegisterPage() {
       }
 
       // Create Stripe checkout session for bootcamp payment
+      const bootcampId = params.id as string;
+      console.log('Sending bootcamp payment request:', {
+        bootcampId: bootcampId,
+        bootcampIdType: typeof bootcampId,
+        bootcampIdLength: bootcampId?.length,
+        customerEmail: email.trim().toLowerCase(),
+        customerName: fullName.trim()
+      });
+      
       const response = await fetch('/api/stripe/create-checkout-session', {
         method: 'POST',
         headers: {
@@ -215,7 +224,7 @@ export default function BootcampRegisterPage() {
         },
         body: JSON.stringify({
           type: 'bootcamp',
-          bootcampId: params.id,
+          bootcampId: bootcampId,
           customerEmail: email.trim().toLowerCase(),
           customerName: fullName.trim(),
           notes: notes.trim() || ''
@@ -223,6 +232,7 @@ export default function BootcampRegisterPage() {
       });
 
       const data = await response.json();
+      console.log('Stripe checkout response:', { status: response.status, statusText: response.statusText, data });
 
       if (response.ok && data.success) {
         console.log('Redirecting to Stripe checkout:', data);
@@ -231,8 +241,18 @@ export default function BootcampRegisterPage() {
           window.location.href = data.url;
         }
       } else {
-        console.error('Failed to create Stripe checkout session:', data);
-        setPaymentError(data.error || 'Failed to create payment session. Please try again.');
+        console.error('Failed to create Stripe checkout session:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: data.error,
+          details: data.details,
+          availableIds: data.availableIds,
+          fullData: data
+        });
+        const errorMessage = data.error 
+          + (data.details ? ` - ${data.details}` : '')
+          + (data.availableIds ? ` (Available IDs: ${data.availableIds.map((b: any) => `${b.id} [${b.isActive ? 'active' : 'inactive'}]`).join(', ')})` : '');
+        setPaymentError(errorMessage || 'Failed to create payment session. Please try again.');
         setPaymentInitiating(false);
       }
     } catch (error) {

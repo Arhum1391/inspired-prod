@@ -143,21 +143,22 @@ export async function PUT(
       body.bootcampStartDate = new Date(body.bootcampStartDate);
     }
 
-    // Check if updating the ID and if it conflicts with existing bootcamp
-    if (body.id) {
-      const existingBootcamp = await db.collection('bootcamps').findOne({ 
-        id: body.id,
-        _id: { $ne: new ObjectId(params.id) } // Exclude current bootcamp
-      });
-      if (existingBootcamp) {
-        return NextResponse.json({ 
-          error: 'Bootcamp with this ID already exists' 
-        }, { status: 400 });
-      }
+    // Prevent ID changes - IDs are auto-generated and immutable
+    // Get the current bootcamp to preserve its ID
+    const currentBootcamp = await db.collection('bootcamps').findOne({ 
+      _id: new ObjectId(params.id) 
+    });
+    
+    if (!currentBootcamp) {
+      return NextResponse.json({ error: 'Bootcamp not found' }, { status: 404 });
     }
 
+    // Remove ID from update data - IDs cannot be changed
+    const { id, ...updateFields } = body;
+    
     const updateData = {
-      ...body,
+      ...updateFields,
+      id: currentBootcamp.id, // Preserve original ID
       updatedAt: new Date(),
     };
 

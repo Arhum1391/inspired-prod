@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "rename-collection": "node rename-collection.js",
-    "create-analysts": "node scripts/create-analysts.js"
+    "create-analysts": "node scripts/create-analysts.js",
+    "migrate-bootcamp-ids": "node scripts/migrate-bootcamp-ids.js"
   },
   "dependencies": {
     "axios": "^1.12.2",

@@ -122,8 +122,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const db = await getDatabase();
 
-    // Validate required fields
-    const requiredFields = ['id', 'title', 'description', 'price', 'priceAmount', 'duration', 'format'];
+    // Validate required fields (ID is auto-generated, so removed from required)
+    const requiredFields = ['title', 'description', 'price', 'priceAmount', 'duration', 'format'];
     const missingFields = requiredFields.filter(field => !body[field] && body[field] !== 0);
     
     if (missingFields.length > 0) {
@@ -149,6 +149,22 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Auto-generate numeric ID
+    // Find the highest numeric ID and increment
+    const allBootcamps = await db.collection('bootcamps').find({}).toArray();
+    let maxId = 0;
+    
+    for (const bootcamp of allBootcamps) {
+      // Handle both string numeric IDs and actual numbers
+      const idValue = typeof bootcamp.id === 'number' ? bootcamp.id : parseInt(bootcamp.id);
+      if (!isNaN(idValue) && idValue > maxId) {
+        maxId = idValue;
+      }
+    }
+    
+    const newId = maxId + 1;
+    console.log(`Auto-generating bootcamp ID: ${newId}`);
+
     // Convert dates to Date objects if they're strings
     if (body.registrationStartDate && typeof body.registrationStartDate === 'string') {
       body.registrationStartDate = new Date(body.registrationStartDate);
@@ -160,16 +176,9 @@ export async function POST(request: NextRequest) {
       body.bootcampStartDate = new Date(body.bootcampStartDate);
     }
 
-    // Check if bootcamp with same ID already exists
-    const existingBootcamp = await db.collection('bootcamps').findOne({ id: body.id });
-    if (existingBootcamp) {
-      return NextResponse.json({ 
-        error: 'Bootcamp with this ID already exists' 
-      }, { status: 400 });
-    }
-
     const bootcampData: Bootcamp = {
       ...body,
+      id: newId.toString(), // Store as string for consistency with URL routing
       mentors: body.mentors || [],
       tags: body.tags || [],
       gradientPosition: body.gradientPosition || {
@@ -186,7 +195,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: 'Bootcamp created successfully',
-      id: result.insertedId
+      id: newId.toString(),
+      insertedId: result.insertedId
     });
   } catch (error) {
     console.error('Failed to create bootcamp:', error);

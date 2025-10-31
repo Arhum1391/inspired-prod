@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChevronDown, ChevronLeft } from 'lucide-react';
+import { ChevronDown, ChevronLeft, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 
@@ -51,7 +51,7 @@ const meetings: Meeting[] = [
     id: 2,
     title: '30-Min Strategy',
     duration: '30 minutes',
-    price: '50 USD',
+    price: '60 USD',
     description: 'A focused session to address specific challenges and develop targeted strategies.',
     color: 'text-purple-400',
   },
@@ -59,7 +59,7 @@ const meetings: Meeting[] = [
     id: 3,
     title: '60-Min Deep',
     duration: '60 minutes',
-    price: '50 USD',
+    price: '80 USD',
     description: 'A comprehensive consultation to analyze complex issues and create detailed action plans.',
     color: 'text-yellow-400',
   },
@@ -690,14 +690,26 @@ const MeetingsPage = () => {
                 
                 console.log(`🔄 Filtered ${data.eventTypes.length} event types to ${uniqueEventTypes.length} unique types`);
                 
-                const transformedMeetings: Meeting[] = uniqueEventTypes.map((eventType: any, index: number) => ({
-                    id: index + 2, // Start from 2 to match existing IDs
-                    title: eventType.name,
-                    duration: `${eventType.duration} minutes`,
-                    price: '50 USD', // Default price, can be customized
-                    description: eventType.description || 'A focused session to address specific challenges.',
-                    color: index % 2 === 0 ? 'text-purple-400' : 'text-yellow-400',
-                }));
+                const transformedMeetings: Meeting[] = uniqueEventTypes.map((eventType: any, index: number) => {
+                    // Set price based on duration
+                    let price = '60 USD'; // Default
+                    if (eventType.duration === 30) {
+                        price = '60 USD';
+                    } else if (eventType.duration === 60) {
+                        price = '80 USD';
+                    } else if (eventType.duration === 90) {
+                        price = '100 USD';
+                    }
+                    
+                    return {
+                        id: index + 2, // Start from 2 to match existing IDs
+                        title: eventType.name,
+                        duration: `${eventType.duration} minutes`,
+                        price: price,
+                        description: eventType.description || 'A focused session to address specific challenges.',
+                        color: index % 2 === 0 ? 'text-purple-400' : 'text-yellow-400',
+                    };
+                });
                 
                 console.log('🔄 Transformed meetings:', transformedMeetings);
                 
@@ -1462,8 +1474,20 @@ const MeetingsPage = () => {
                 setPaymentInitiating(false);
                         return;
                     }
+            
+            // Get the actual price from the selected meeting
+            const selectedMeetingData = getSelectedMeetingData();
+            let priceAmount = 60; // Default fallback
+            
+            if (selectedMeetingData && selectedMeetingData.price) {
+                // Extract numeric value from price string like "60 USD"
+                const priceMatch = selectedMeetingData.price.match(/[\d.]+/);
+                if (priceMatch) {
+                    priceAmount = parseFloat(priceMatch[0]);
+                }
+            }
                     
-            console.log('Creating Stripe checkout session...');
+            console.log('Creating Stripe checkout session...', { meetingTypeId, priceAmount });
             
             // Create Stripe checkout session
                     const response = await fetch('/api/stripe/create-checkout-session', {
@@ -1474,6 +1498,7 @@ const MeetingsPage = () => {
                         body: JSON.stringify({
                             type: 'booking',
                             meetingTypeId: meetingTypeId,
+                            priceAmount: priceAmount, // Send the actual price
                             customerEmail: email,
                             customerName: fullName
                         }),
@@ -1982,7 +2007,11 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
 
     const getMeetingPrice = () => {
         const meeting = getSelectedMeetingData();
-        return meeting ? meeting.price : '50 USD';
+        if (meeting) {
+            return meeting.price;
+        }
+        // Default fallback - should not happen in normal flow
+        return '60 USD';
     };
 
     return (
@@ -2116,13 +2145,12 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
             {/* Navigation Header */}
             <Navbar variant="hero" />
 
-            {/* Mobile Image Belts - Only visible on mobile - COMMENTED OUT */}
-            {/* Image belts commented out - images and containers hidden */}
-            {false && <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-24">
+            {/* Mobile Image Belts - Only visible on mobile */}
+            <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-24">
                 <div className="flex flex-col w-full h-full gap-2">
                     {/* Belt 1 - Rectangle 1 Images */}
                     <div className="flex-1 fade-mask overflow-hidden">
-                        <div className="flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
+                        <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
                             {/* First set of images */}
                             <div
                                 className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
@@ -2274,7 +2302,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
 
                     {/* Belt 2 - Rectangle 2 Images */}
                     <div className="flex-1 fade-mask overflow-hidden">
-                        <div className="flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
+                        <div className="animate-scrollDown flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
                             {/* First set of images */}
                             <div
                                 className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
@@ -2424,18 +2452,17 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                         </div>
                     </div>
                 </div>
-            </div>}
+            </div>
 
             <div className="flex items-center justify-center px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 -mt-2 lg:-mt-8">
-                <div className="w-full max-w-4xl mx-auto">
+                <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 items-start">
                 
-                {/* Left Side: Image Belts - COMMENTED OUT */}
-                {/* Desktop image belts commented out - images and containers hidden */}
-                {false && <div className="hidden lg:flex justify-center items-start h-full relative w-full max-w-xs xl:max-w-sm">
+                {/* Left Side: Image Belts */}
+                <div className="hidden lg:flex justify-center items-start h-full relative w-full max-w-xs xl:max-w-sm">
                     <div className="flex w-64 xl:w-80 h-screen pt-20 fixed left-24 xl:left-32 top-0">
                         {/* Belt 1 - Rectangle 1 Images */}
                         <div className="flex-1 fade-mask overflow-hidden">
-                            <div className="flex flex-col gap-6">
+                            <div className="animate-scrollUp flex flex-col gap-6">
                                 {/* First set of images */}
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
@@ -2515,7 +2542,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
 
                         {/* Belt 2 - Rectangle 2 Images */}
                         <div className="flex-1 fade-mask overflow-hidden">
-                            <div className="flex flex-col gap-6">
+                            <div className="animate-scrollDown flex flex-col gap-6">
                                 {/* First set of images */}
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
@@ -2593,10 +2620,10 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                             </div>
                         </div>
                     </div>
-                </div>}
-
+                </div>
+                
                 {/* Right Side: Booking Form */}
-                <div className="w-full px-2 sm:px-0">
+                <div className="w-full lg:col-span-2 px-2 sm:px-0">
                     {/* Back Button */}
                     <div className="mb-1 mt-24 lg:mt-20">
                         <button 
@@ -3328,7 +3355,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                             <button
                                                 onClick={handleStripePayment}
                                                 disabled={!fullName || !email || !!nameError || !!emailError || paymentInitiating || paymentCompleted}
-                                                className={`w-fit flex items-center justify-center px-4 py-3 border rounded-lg transition-all duration-300 ${
+                                                className={`w-fit flex items-center justify-center gap-2 px-4 py-3 border rounded-lg transition-all duration-300 ${
                                                     paymentCompleted
                                                         ? 'border-green-500/50 bg-green-500/10 cursor-not-allowed'
                                                         : !fullName || !email || !!nameError || !!emailError || paymentInitiating
@@ -3336,13 +3363,8 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                                         : 'border-white/30 hover:border-white/60 hover:bg-white/5 cursor-pointer hover:scale-105'
                                                 }`}
                                             >
-                                                <Image
-                                                    src="/stripe.svg"
-                                                    alt="Stripe"
-                                                    width={80}
-                                                    height={20}
-                                                    className="h-5 w-auto"
-                                                />
+                                                <CreditCard className="w-5 h-5 text-white" />
+                                                <span className="text-white font-semibold" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Card Payment</span>
                                             </button>
                                             
                                             {paymentCompleted && (

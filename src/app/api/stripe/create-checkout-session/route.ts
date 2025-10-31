@@ -68,6 +68,7 @@ const meetingTypes = [
 const bookingSchema = Joi.object({
   type: Joi.string().valid('booking').required(),
   meetingTypeId: Joi.string().required(),
+  priceAmount: Joi.number().positive().optional(), // Price from frontend (in USD)
   customerEmail: Joi.string().email().required(),
   customerName: Joi.string().optional()
 });
@@ -115,8 +116,23 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         );
       }
-      productDetails = meetingType;
-      amount = meetingType.price * 100; // Convert to cents
+      
+      // Use price from frontend if provided, otherwise fall back to meeting type default
+      let priceValue: number;
+      if (body.priceAmount && typeof body.priceAmount === 'number' && body.priceAmount > 0) {
+        priceValue = body.priceAmount;
+        console.log(`Using frontend price: $${priceValue}`);
+      } else {
+        priceValue = meetingType.price;
+        console.log(`Using default meeting type price: $${priceValue}`);
+      }
+      
+      productDetails = {
+        name: meetingType.name,
+        description: meetingType.description,
+        price: priceValue
+      };
+      amount = priceValue * 100; // Convert to cents
     } else if (body.type === 'bootcamp') {
       // Fetch bootcamp from database
       const db = await getDatabase();

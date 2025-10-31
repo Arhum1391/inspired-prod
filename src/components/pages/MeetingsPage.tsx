@@ -2116,12 +2116,13 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
             {/* Navigation Header */}
             <Navbar variant="hero" />
 
-            {/* Mobile Image Belts - Only visible on mobile */}
-            <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-24">
+            {/* Mobile Image Belts - Only visible on mobile - COMMENTED OUT */}
+            {/* Image belts commented out - images and containers hidden */}
+            {false && <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-24">
                 <div className="flex flex-col w-full h-full gap-2">
                     {/* Belt 1 - Rectangle 1 Images */}
                     <div className="flex-1 fade-mask overflow-hidden">
-                        <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
+                        <div className="flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
                             {/* First set of images */}
                             <div
                                 className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
@@ -2273,7 +2274,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
 
                     {/* Belt 2 - Rectangle 2 Images */}
                     <div className="flex-1 fade-mask overflow-hidden">
-                        <div className="animate-scrollDown flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
+                        <div className="flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
                             {/* First set of images */}
                             <div
                                 className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
@@ -2423,17 +2424,18 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>}
 
             <div className="flex items-center justify-center px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10 -mt-2 lg:-mt-8">
-                <div className="w-full max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-16 items-start">
+                <div className="w-full max-w-4xl mx-auto">
                 
-                {/* Left Side: Image Belts */}
-                <div className="hidden lg:flex justify-center items-start h-full relative w-full max-w-xs xl:max-w-sm">
+                {/* Left Side: Image Belts - COMMENTED OUT */}
+                {/* Desktop image belts commented out - images and containers hidden */}
+                {false && <div className="hidden lg:flex justify-center items-start h-full relative w-full max-w-xs xl:max-w-sm">
                     <div className="flex w-64 xl:w-80 h-screen pt-20 fixed left-24 xl:left-32 top-0">
                         {/* Belt 1 - Rectangle 1 Images */}
                         <div className="flex-1 fade-mask overflow-hidden">
-                            <div className="animate-scrollUp flex flex-col gap-6">
+                            <div className="flex flex-col gap-6">
                                 {/* First set of images */}
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
@@ -2513,7 +2515,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
 
                         {/* Belt 2 - Rectangle 2 Images */}
                         <div className="flex-1 fade-mask overflow-hidden">
-                            <div className="animate-scrollDown flex flex-col gap-6">
+                            <div className="flex flex-col gap-6">
                                 {/* First set of images */}
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
@@ -2591,10 +2593,10 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>}
 
                 {/* Right Side: Booking Form */}
-                <div className="w-full lg:col-span-2 px-2 sm:px-0">
+                <div className="w-full px-2 sm:px-0">
                     {/* Back Button */}
                     <div className="mb-1 mt-24 lg:mt-20">
                         <button 

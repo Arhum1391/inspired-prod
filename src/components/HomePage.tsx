@@ -77,33 +77,29 @@ export default function Home() {
           {/* Section Header with Inline Images */}
           <div className="mb-12 sm:mb-16 lg:mb-20">
             <h2 className="gilroy-heading text-white flex flex-wrap items-center justify-center px-2 sm:px-4">
-              <span>Breaking Down Markets,</span>
-              <img
+              <span>Breaking Down Markets, Crypto & Data Into Clear,</span>
+              <span className="w-full"></span>
+              <span>Actionable Insights - So You Can Learn, Grow & Succeed</span>
+              <span className="w-full"></span>
+              <span>Without The Jargon.</span>
+              {/* <img
                 src="\team images\group 1.svg"
                 alt="Chart"
                 className="inline-block w-12 sm:w-16 md:w-18 lg:w-20 h-8 sm:h-10 md:h-12 lg:h-14 rounded-xl transform rotate-4 object-contain"
                 style={{ imageRendering: 'crisp-edges' }}
-              />
-              <span>Crypto & Data Into Clear, </span>
-              <span className="w-full"></span>
-              
-              <span>Actionable </span>
-              <img
+              /> */}
+              {/* <img
                 src="\charts\Rectangle 51.png"
                 alt="Chart"
                 className="inline-block w-12 sm:w-16 md:w-18 lg:w-20 h-8 sm:h-10 md:h-12 lg:h-14 rounded-xl transform rotate-6 object-contain"
                 style={{ imageRendering: 'crisp-edges' }}
-              />
-              <span>Insights - So You Can Learn, Grow & Succeed</span>
-              <span className="w-full"></span>
-              <span>Without The</span>
-              <img
+              /> */}
+              {/* <img
                 src="\team images\group 2.svg"
                 alt="Chart"
                 className="inline-block w-12 sm:w-16 md:w-18 lg:w-20 h-8 sm:h-10 md:h-12 lg:h-14 rounded-xl transform -rotate-3 object-contain"
                 style={{ imageRendering: 'crisp-edges' }}
-              />
-              <span>Jargon.</span>
+              /> */}
             </h2>
           </div>
 

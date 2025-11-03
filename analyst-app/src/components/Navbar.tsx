@@ -109,7 +109,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300 transition-colors active:outline-none"
               aria-label="Toggle mobile menu"
-              style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
             >
               <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {isMobileMenuOpen ? (
@@ -123,8 +123,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             {/* Logo - Next to toggle button */}
             <Link
                 href="/"
-                className="w-28 sm:w-32 h-7 sm:h-6 rounded flex items-center justify-center hover:opacity-80 transition-opacity outline-none focus:outline-none"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                className="w-28 sm:w-32 h-8 flex items-center justify-center hover:opacity-80 transition-opacity outline-none focus:outline-none ml-2"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '500' }}
             >
               <Image
                 src="/logo/navlogo-mob.svg"
@@ -137,37 +137,36 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             </Link>
           </div>
 
-          {/* CTA Button or Profile - Right */}
-          <div className="flex items-center gap-2">
+          {/* CTA Buttons - Right */}
+          <div className="flex items-center gap-3">
+            <a
+              href="/meetings"
+              className="bg-white text-[#0A0A0A] px-5 py-2.5 rounded-full text-sm font-bold hover:bg-gray-100 transition-colors whitespace-nowrap h-[38px] flex items-center justify-center w-[140px]"
+            >
+              Book Mentorship
+            </a>
             {isAuthenticated ? (
               <ProfileDropdown />
             ) : (
-              <>
-                <a
-                  href="/signin"
-                  className="text-white px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:opacity-80 transition-opacity whitespace-nowrap h-10 sm:h-8 flex items-center"
-                >
-                  Sign In
-                </a>
-                <a
-                  href="/meetings"
-                  className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center"
-                >
-                  Book Mentorship
-                </a>
-              </>
+              <a
+                href="/signin"
+                className="border border-white text-white px-4 py-3 rounded-full text-sm hover:bg-white/10 transition-colors whitespace-nowrap h-[38px] flex items-center justify-center w-[88px]"
+                style={{ fontWeight: '600' }}
+              >
+                Sign In
+              </a>
             )}
           </div>
         </div>
 
         {/* Desktop Layout - Original */}
         <div className="hidden lg:flex max-w-7xl mx-auto items-center justify-between">
-          {/* Logo with Vector.svg */}
+          {/* Logo */}
           <div className="flex items-center">
             <Link
                 href="/"
                 className="w-44 h-9 rounded flex items-center justify-center px-2 hover:opacity-80 transition-opacity outline-none focus:outline-none"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
             >
               <Image
                 src="/Vector.svg"
@@ -182,73 +181,91 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
 
           {/* Navigation - Desktop */}
           <nav className="flex items-center relative">
-            <div className="flex items-center space-x-4 xl:space-x-6">
+            <div className="flex items-center gap-6">
               <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                className="text-base font-normal text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
+                onClick={() => handleSectionClick('research')}
+              >
+                Research
+              </button>
+              <button
+                className="text-base font-normal text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
+                onClick={() => handleSectionClick('calculator')}
+              >
+                Calculator
+              </button>
+              <button
+                className="text-base font-normal text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
+                onClick={() => handleSectionClick('portfolio')}
+              >
+                Portfolio
+              </button>
+              <button
+                className="text-base font-normal text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
+                onClick={() => handleSectionClick('shariah')}
+              >
+                Shariah
+              </button>
+              <button
+                className="text-base font-normal text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
                 onClick={() => handleSectionClick('about')}
               >
-                About
-              </button>
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('social-stats')}
-              >
-                Community
-              </button>
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('latest-videos')}
-              >
-                Latest Video
-              </button>
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('partners')}
-              >
-                Our Partners
-              </button>
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('collaboration')}
-              >
-                Contact Us
+                About Us
               </button>
               <Link
                 href="/bootcamp"
-                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
+                className={`text-base font-normal transition-colors focus:outline-none active:outline-none gilroy-medium ${
                   isActive('/bootcamp') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
                 }`}
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
               >
                 Bootcamp
               </Link>
             </div>
           </nav>
 
-          {/* CTA Button or Profile */}
-          <div className="flex items-center gap-3">
+          {/* CTA Buttons */}
+          <div className="flex items-center gap-4">
+            <a
+              href="/meetings"
+              className="font-normal"
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                padding: '12px 16px',
+                gap: '10px',
+                width: '140px',
+                height: '38px',
+                background: '#FFFFFF',
+                borderRadius: '100px',
+                color: '#0A0A0A',
+                fontSize: '14px',
+                lineHeight: '100%',
+                textAlign: 'center',
+                fontFamily: 'inherit',
+                textDecoration: 'none',
+                whiteSpace: 'nowrap'
+              }}
+            >
+              Book Mentorship
+            </a>
             {isAuthenticated ? (
               <ProfileDropdown />
             ) : (
-              <>
-                <a
-                  href="/signin"
-                  className="text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:opacity-80 transition-opacity"
-                >
-                  Sign In
-                </a>
-                <a
-                  href="/meetings"
-                  className="bg-white text-[#0A0A0A] px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors"
-                >
-                  Book Mentorship
-                </a>
-              </>
+              <a
+                href="/signin"
+                className="border border-white text-white px-4 py-3 rounded-full text-sm font-normal hover:bg-white/10 transition-colors h-[38px] flex items-center justify-center w-[88px]"
+                style={{ fontWeight: '600' }}
+              >
+                Sign In
+              </a>
             )}
           </div>
         </div>
@@ -280,7 +297,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                 <Link
                     href="/"
                     className="hover:opacity-80 transition-opacity outline-none focus:outline-none"
-                    style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                    style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
                     onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Image
@@ -299,61 +316,61 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             <nav className="flex-1 px-4 py-6">
               <div className="flex flex-col gap-2">
                 <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                  className="flex items-center justify-start px-3 py-3 text-base font-normal text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleSectionClick('research');
+                  }}
+                >
+                  Research
+                </button>
+                <button
+                  className="flex items-center justify-start px-3 py-3 text-base font-normal text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleSectionClick('calculator');
+                  }}
+                >
+                  Calculator
+                </button>
+                <button
+                  className="flex items-center justify-start px-3 py-3 text-base font-normal text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleSectionClick('portfolio');
+                  }}
+                >
+                  Portfolio
+                </button>
+                <button
+                  className="flex items-center justify-start px-3 py-3 text-base font-normal text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    handleSectionClick('shariah');
+                  }}
+                >
+                  Shariah
+                </button>
+                <button
+                  className="flex items-center justify-start px-3 py-3 text-base font-normal text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none gilroy-medium"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                     handleSectionClick('about');
                   }}
                 >
-                  About
-                </button>
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleSectionClick('social-stats');
-                  }}
-                >
-                  Community
-                </button>
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleSectionClick('latest-videos');
-                  }}
-                >
-                  Latest Video
-                </button>
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleSectionClick('partners');
-                  }}
-                >
-                  Our Partners
-                </button>
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                    handleSectionClick('collaboration');
-                  }}
-                >
-                  Contact Us
+                  About Us
                 </button>
                 <Link
                   href="/bootcamp"
-                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
+                  className={`flex items-center justify-start px-3 py-3 text-base font-normal text-white rounded-lg transition-colors focus:outline-none active:outline-none gilroy-medium ${
                     isActive('/bootcamp') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
                   }`}
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent', fontWeight: '400', fontSize: '16px' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                   }}

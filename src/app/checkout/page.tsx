@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/contexts/AuthContext';
 
-export default function Checkout() {
+function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [plan, setPlan] = useState<'monthly' | 'annual'>('monthly');
@@ -430,6 +430,21 @@ export default function Checkout() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function Checkout() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+        <Navbar />
+        <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 80px)' }}>
+          <div className="text-white">Loading...</div>
+        </div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
 

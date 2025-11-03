@@ -141,7 +141,7 @@ export default function AboutPage() {
     <div className="bg-[#0A0A0A] min-h-screen text-white relative overflow-hidden">
       {/* Top Right Gradient Ellipse */}
       <div 
-        className="fixed pointer-events-none opacity-100 hidden md:block"
+        className="absolute pointer-events-none opacity-100 hidden md:block"
         style={{
           width: '400px',
           height: '400px',

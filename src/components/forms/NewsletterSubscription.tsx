@@ -2,7 +2,7 @@
 
 export default function NewsletterSubscription() {
   return (
-    <div className="w-full max-w-6xl mx-auto">
+    <div className="w-full max-w-6xl mx-auto" style={{ position: 'relative', zIndex: 4 }}>
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         
         

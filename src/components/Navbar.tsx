@@ -183,41 +183,51 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
           {/* Navigation - Desktop */}
           <nav className="flex items-center relative">
             <div className="flex items-center space-x-4 xl:space-x-6">
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+              <Link
+                href="/research"
+                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
+                  isActive('/research') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
+                }`}
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('about')}
               >
-                About
-              </button>
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+                Research
+              </Link>
+              <Link
+                href="/calculator"
+                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
+                  isActive('/calculator') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
+                }`}
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('social-stats')}
               >
-                Community
-              </button>
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+                Calculator
+              </Link>
+              <Link
+                href="/portfolio"
+                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
+                  isActive('/portfolio') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
+                }`}
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('latest-videos')}
               >
-                Latest Video
-              </button>
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+                Portfolio
+              </Link>
+              <Link
+                href="/shariah"
+                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
+                  isActive('/shariah') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
+                }`}
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('partners')}
               >
-                Our Partners
-              </button>
-              <button
-                className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors cursor-pointer focus:outline-none active:outline-none"
+                Shariah
+              </Link>
+              <Link
+                href="/about"
+                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
+                  isActive('/about') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
+                }`}
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                onClick={() => handleSectionClick('collaboration')}
               >
-                Contact Us
-              </button>
+                Our Team
+              </Link>
               <Link
                 href="/bootcamp"
                 className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
@@ -298,56 +308,66 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             {/* Navigation Links */}
             <nav className="flex-1 px-4 py-6">
               <div className="flex flex-col gap-2">
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                <Link
+                  href="/research"
+                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
+                    isActive('/research') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
+                  }`}
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    handleSectionClick('about');
                   }}
                 >
-                  About
-                </button>
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                  Research
+                </Link>
+                <Link
+                  href="/calculator"
+                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
+                    isActive('/calculator') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
+                  }`}
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    handleSectionClick('social-stats');
                   }}
                 >
-                  Community
-                </button>
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                  Calculator
+                </Link>
+                <Link
+                  href="/portfolio"
+                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
+                    isActive('/portfolio') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
+                  }`}
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    handleSectionClick('latest-videos');
                   }}
                 >
-                  Latest Video
-                </button>
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                  Portfolio
+                </Link>
+                <Link
+                  href="/shariah"
+                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
+                    isActive('/shariah') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
+                  }`}
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    handleSectionClick('partners');
                   }}
                 >
-                  Our Partners
-                </button>
-                <button
-                  className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors hover:bg-gray-700 focus:outline-none active:outline-none"
+                  Shariah
+                </Link>
+                <Link
+                  href="/about"
+                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
+                    isActive('/about') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
+                  }`}
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
-                    handleSectionClick('collaboration');
                   }}
                 >
-                  Contact Us
-                </button>
+                  Our Team
+                </Link>
                 <Link
                   href="/bootcamp"
                   className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${

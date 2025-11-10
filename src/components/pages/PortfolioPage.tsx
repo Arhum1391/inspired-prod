@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
@@ -10,8 +10,6 @@ import Image from 'next/image';
 import HoldingsTable from '@/components/HoldingsTable';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import PortfolioBalanceCard from '@/components/PortfolioBalanceCard';
-import { ResponsivePie } from '@nivo/pie';
-import type { ComputedDatum, PieCustomLayerProps, PieLayer } from '@nivo/pie';
 
 type AllocationSlice = {
   label: string;
@@ -21,10 +19,7 @@ type AllocationSlice = {
   color: string;
 };
 
-type AllocationDatum = AllocationSlice & {
-  id: string;
-  value: number;
-};
+type AllocationDatum = AllocationSlice & { id: string; value: number };
 
 const allocationSlices: AllocationSlice[] = [
   { label: 'BTC', percentage: '40.5%', amount: 24000, displayValue: '$24,000', color: '#EB72FF' },
@@ -117,9 +112,6 @@ export default function PortfolioPage() {
       []
     );
 
-    // Base dark color for all slices
-    const chartColors = useMemo(() => allocationSlices.map(() => '#141414'), []);
-    
     // Gradient angles based on Figma design (in degrees)
     const gradientAngles = useMemo(() => {
       // Map each datum to its gradient angle based on Figma design
@@ -155,7 +147,6 @@ export default function PortfolioPage() {
           // Making it slightly lighter to match Figma's beautiful gradient
           return {
             id: `allocation-gradient-${datum.id}`,
-            type: 'linearGradient' as const,
             colors: [
               { offset: 0, color: '#141414', opacity: 1 },
               { offset: 3.62, color: '#141414', opacity: 1 },
@@ -166,104 +157,99 @@ export default function PortfolioPage() {
             y1,
             x2,
             y2,
-            gradientUnits: 'objectBoundingBox' as const,
           };
         }),
       [chartData, gradientAngles]
     );
-    const gradientFill = useMemo(
-      () =>
-        chartData.map(datum => ({
-          match: { id: datum.id } as const,
-          id: `allocation-gradient-${datum.id}`,
-        })),
+    const totalValue = useMemo(
+      () => chartData.reduce((sum, datum) => sum + datum.value, 0),
       [chartData]
     );
 
-    const connectorLayer = useCallback(
-      ({ dataWithArc, centerX, centerY }: PieCustomLayerProps<AllocationDatum>) => {
-        // Create a map to ensure correct id-to-arc matching
-        const idToArcMap = new Map<string, typeof dataWithArc[0]>();
-        dataWithArc.forEach(item => {
-          idToArcMap.set(item.data.id, item);
-        });
+    const SVG_SIZE = 320;
+    const CENTER = SVG_SIZE / 2;
+    const OUTER_RADIUS = 115;
+    const INNER_RADIUS = OUTER_RADIUS * 0.62;
 
-        return (
-          <g>
-            {chartData.map(datum => {
-              const item = idToArcMap.get(datum.id);
-              if (!item) return null;
-              
-              const { arc, data } = item;
-              const midAngle = arc.startAngle + (arc.endAngle - arc.startAngle) / 2;
-              const cos = Math.cos(midAngle);
-              const sin = Math.sin(midAngle);
-              const startRadius = arc.outerRadius;
-              const elbowRadius = arc.outerRadius + 10;
-              const startX = centerX + cos * startRadius;
-              const startY = centerY + sin * startRadius;
-              const elbowX = centerX + cos * elbowRadius;
-              const elbowY = centerY + sin * elbowRadius;
-              const isRightSide = cos >= 0;
-              const horizontalOffset = isRightSide ? 20 : -20;
-              const endX = elbowX + horizontalOffset;
-              const endY = elbowY;
-              const textAnchor = isRightSide ? 'start' : 'end';
-              const textX = endX + (isRightSide ? 6 : -6);
-              const upperY = endY - 2;
-              const lowerY = endY + 10;
+    type SliceGeometry = {
+      datum: AllocationDatum;
+      path: string;
+      connector: {
+        startX: number;
+        startY: number;
+        elbowX: number;
+        elbowY: number;
+        endX: number;
+        endY: number;
+        textAnchor: 'start' | 'end';
+        labelX: number;
+        labelY: number;
+      };
+    };
 
-              return (
-                <g key={`connector-${data.id}`}>
-                  <path
-                    d={`M ${startX} ${startY} L ${elbowX} ${elbowY} L ${endX} ${endY}`}
-                    stroke="rgba(255,255,255,0.7)"
-                    strokeWidth={1.2}
-                    fill="none"
-                  />
-                  <circle cx={startX} cy={startY} r={3} fill="#EB72FF" />
-                  <text
-                    x={textX}
-                    y={upperY}
-                    textAnchor={textAnchor}
-                    dominantBaseline="middle"
-                    style={{
-                      fontFamily: 'Gilroy-Medium',
-                      fontSize: 13,
-                      fontWeight: 400,
-                      fill: '#FFFFFF',
-                    }}
-                  >
-                    {`${data.label}: ${data.percentage}`}
-                  </text>
-                  <text
-                    x={textX}
-                    y={lowerY}
-                    textAnchor={textAnchor}
-                    dominantBaseline="middle"
-                    style={{
-                      fontFamily: 'Gilroy-Medium',
-                      fontSize: 12,
-                      fontWeight: 400,
-                      fill: '#FFFFFF',
-                      opacity: 0.85,
-                    }}
-                  >
-                    {data.displayValue}
-                  </text>
-                </g>
-              );
-            })}
-          </g>
-        );
-      },
-      [chartData]
-    );
+    const polarToCartesian = (radius: number, angle: number) => ({
+      x: CENTER + radius * Math.cos(angle),
+      y: CENTER + radius * Math.sin(angle),
+    });
 
-    const pieLayers = useMemo<PieLayer<AllocationDatum>[]>(
-      () => ['arcs', connectorLayer, 'legends'],
-      [connectorLayer]
-    );
+    const slices = useMemo<SliceGeometry[]>(() => {
+      if (totalValue === 0) {
+        return [];
+      }
+
+      const TAU = Math.PI * 2;
+      let currentAngle = -Math.PI / 2; // Start at top
+
+      return chartData.map(datum => {
+        const sliceAngle = (datum.value / totalValue) * TAU;
+        const startAngle = currentAngle;
+        const endAngle = currentAngle + sliceAngle;
+        const largeArcFlag = sliceAngle > Math.PI ? 1 : 0;
+
+        const startOuter = polarToCartesian(OUTER_RADIUS, startAngle);
+        const endOuter = polarToCartesian(OUTER_RADIUS, endAngle);
+        const startInner = polarToCartesian(INNER_RADIUS, endAngle);
+        const endInner = polarToCartesian(INNER_RADIUS, startAngle);
+
+        const path = [
+          `M ${startOuter.x.toFixed(3)} ${startOuter.y.toFixed(3)}`,
+          `A ${OUTER_RADIUS} ${OUTER_RADIUS} 0 ${largeArcFlag} 1 ${endOuter.x.toFixed(3)} ${endOuter.y.toFixed(3)}`,
+          `L ${startInner.x.toFixed(3)} ${startInner.y.toFixed(3)}`,
+          `A ${INNER_RADIUS} ${INNER_RADIUS} 0 ${largeArcFlag} 0 ${endInner.x.toFixed(3)} ${endInner.y.toFixed(3)}`,
+          'Z',
+        ].join(' ');
+
+        const midAngle = startAngle + sliceAngle / 2;
+        const startConnector = polarToCartesian(OUTER_RADIUS, midAngle);
+        const elbowPoint = polarToCartesian(OUTER_RADIUS + 12, midAngle);
+        const isRightSide = Math.cos(midAngle) >= 0;
+        const horizontalOffset = isRightSide ? 32 : -32;
+        const endX = elbowPoint.x + horizontalOffset;
+        const endY = elbowPoint.y;
+        const labelX = endX + (isRightSide ? 8 : -8);
+        const labelY = endY;
+
+        currentAngle = endAngle;
+
+        return {
+          datum,
+          path,
+          connector: {
+            startX: startConnector.x,
+            startY: startConnector.y,
+            elbowX: elbowPoint.x,
+            elbowY: elbowPoint.y,
+            endX,
+            endY,
+            textAnchor: isRightSide ? 'start' : 'end',
+            labelX,
+            labelY,
+          },
+        };
+      });
+    }, [chartData, totalValue]);
+
+    const formatNumber = (value: number) => Number(value.toFixed(2));
 
     return (
       <div className="relative flex h-[344px] w-[413px] flex-col items-center gap-6 overflow-hidden rounded-2xl bg-[#1F1F1F] p-5">
@@ -299,45 +285,85 @@ export default function PortfolioPage() {
 
         <div className="flex w-full flex-1 flex-col items-center justify-center">
           <div className="h-[200px] w-full">
-            <ResponsivePie<AllocationDatum>
-              data={chartData}
-              margin={{ top: 24, right: 38, bottom: 24, left: 38 }}
-              innerRadius={0.62}
-              padAngle={0}
-              cornerRadius={0}
-              activeOuterRadiusOffset={0}
-              sortByValue={false}
-              enableArcLinkLabels={false}
-              enableArcLabels={false}
-              borderWidth={0}
-              colors={chartColors}
-              defs={gradientDefs}
-              fill={gradientFill}
-              layers={pieLayers}
-              theme={{
-                background: 'transparent',
-                labels: {
-                  text: {
-                    fontFamily: 'Gilroy-Medium',
-                    fontSize: 12,
-                    fill: '#FFFFFF',
-                  },
-                },
-                tooltip: {
-                  container: {
-                    background: '#1F1F1F',
-                    color: '#FFFFFF',
-                    fontFamily: 'Gilroy-Medium',
-                    fontSize: 12,
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    padding: '8px 12px',
-                  },
-                },
-              }}
-              tooltip={() => null}
-              legends={[]}
-            />
+            <svg viewBox={`0 0 ${SVG_SIZE} ${SVG_SIZE}`} className="h-full w-full">
+              <defs>
+                {gradientDefs.map(def => (
+                  <linearGradient
+                    key={def.id}
+                    id={def.id}
+                    x1={def.x1.toString()}
+                    y1={def.y1.toString()}
+                    x2={def.x2.toString()}
+                    y2={def.y2.toString()}
+                    gradientUnits="objectBoundingBox"
+                  >
+                    {def.colors.map(stop => (
+                      <stop
+                        key={`${def.id}-stop-${stop.offset}`}
+                        offset={`${stop.offset}%`}
+                        stopColor={stop.color}
+                        stopOpacity={stop.opacity}
+                      />
+                    ))}
+                  </linearGradient>
+                ))}
+              </defs>
+
+              {slices.map(slice => (
+                <path
+                  key={`slice-${slice.datum.id}`}
+                  d={slice.path}
+                  fill={`url(#allocation-gradient-${slice.datum.id})`}
+                  stroke="none"
+                />
+              ))}
+
+              {slices.map(slice => (
+                <g key={`connector-${slice.datum.id}`}>
+                  <path
+                    d={`M ${formatNumber(slice.connector.startX)} ${formatNumber(slice.connector.startY)} L ${formatNumber(slice.connector.elbowX)} ${formatNumber(slice.connector.elbowY)} L ${formatNumber(slice.connector.endX)} ${formatNumber(slice.connector.endY)}`}
+                    stroke="rgba(255,255,255,0.7)"
+                    strokeWidth={1.2}
+                    fill="none"
+                  />
+                  <circle
+                    cx={formatNumber(slice.connector.startX)}
+                    cy={formatNumber(slice.connector.startY)}
+                    r={3}
+                    fill="#EB72FF"
+                  />
+                  <text
+                    x={formatNumber(slice.connector.labelX)}
+                    y={formatNumber(slice.connector.labelY - 6)}
+                    textAnchor={slice.connector.textAnchor}
+                    dominantBaseline="middle"
+                    style={{
+                      fontFamily: 'Gilroy-Medium',
+                      fontSize: 13,
+                      fontWeight: 400,
+                      fill: '#FFFFFF',
+                    }}
+                  >
+                    {`${slice.datum.label}: ${slice.datum.percentage}`}
+                  </text>
+                  <text
+                    x={formatNumber(slice.connector.labelX)}
+                    y={formatNumber(slice.connector.labelY + 8)}
+                    textAnchor={slice.connector.textAnchor}
+                    dominantBaseline="middle"
+                    style={{
+                      fontFamily: 'Gilroy-Medium',
+                      fontSize: 12,
+                      fontWeight: 400,
+                      fill: '#FFFFFF',
+                      opacity: 0.85,
+                    }}
+                  >
+                    {slice.datum.displayValue}
+                  </text>
+                </g>
+              ))}
+            </svg>
           </div>
         </div>
       </div>

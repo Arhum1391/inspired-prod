@@ -226,7 +226,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                 }`}
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
               >
-                Our Team
+                About Us
               </Link>
               <Link
                 href="/bootcamp"
@@ -366,7 +366,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  Our Team
+                  About Us
                 </Link>
                 <Link
                   href="/bootcamp"

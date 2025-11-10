@@ -55,13 +55,13 @@ export default function CollaborationForm() {
   };
 
   return (
-    <section className="relative z-[1] bg-[#0A0A0A] px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
+    <section className="relative z-[1] bg-[#0A0A0A] px-4 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
       <div className="max-w-6xl mx-auto">
         <div
-          className="relative bg-[#1F1F1F] rounded-2xl p-6 sm:p-8 md:p-10 overflow-hidden flex flex-row justify-center items-center"
+          className="relative bg-[#1F1F1F] rounded-2xl overflow-hidden flex flex-col md:flex-row justify-center items-center max-w-[343px] md:max-w-none mx-auto gap-10 md:gap-16 p-5 sm:p-8 md:p-10"
           style={{
             width: '100%',
-            minHeight: '510px',
+            minHeight: '502px',
             margin: '0 auto',
             isolation: 'isolate'
           }}
@@ -88,8 +88,8 @@ export default function CollaborationForm() {
               position: 'absolute',
               width: '588px',
               height: '588px',
-              left: '-417px',
-              top: '-434px',
+              left: '-477px',
+              top: '-404px',
               background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
               filter: 'blur(100px)',
               transform: 'rotate(180deg)',
@@ -118,10 +118,10 @@ export default function CollaborationForm() {
             className="block md:hidden"
             style={{
               position: 'absolute',
-              width: '555.79px',
-              height: '555.79px',
-              left: '270.56px',
-              top: '356.91px',
+              width: '588px',
+              height: '588px',
+              left: '313px',
+              top: '244px',
               background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
               filter: 'blur(100px)',
               transform: 'rotate(-92.63deg)',
@@ -130,24 +130,42 @@ export default function CollaborationForm() {
           />
 
           {/* Main Content Frame */}
-          <div className="relative z-30 w-full max-w-[630px] mx-auto">
+          <div className="relative z-30 w-full max-w-[319px] md:max-w-[630px] mx-auto">
             {/* Header Frame */}
-            <div className="mb-6 sm:mb-8 md:mb-10">
-              <h2 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-[32px] font-semibold mb-3 sm:mb-4" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+            <div className="flex flex-col items-start gap-4 mb-8 md:mb-10">
+              <h2
+                className="text-white font-semibold"
+                style={{
+                  fontFamily: 'Gilroy, sans-serif',
+                  fontSize: '32px',
+                  lineHeight: '100%',
+                  width: '100%',
+                  maxWidth: '319px'
+                }}
+              >
                 Work with Inspired Analyst
               </h2>
-              <p className="text-white text-sm sm:text-base" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+              <p
+                className="text-white"
+                style={{
+                  fontFamily: 'Gilroy, sans-serif',
+                  fontSize: '16px',
+                  lineHeight: '100%',
+                  width: '100%',
+                  maxWidth: '319px'
+                }}
+              >
                 For collaboration, drop us a message.
               </p>
             </div>
 
             {/* Form Container */}
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5 md:space-y-6">
-              {/* Brand Name and Email - Stack on mobile, side by side on desktop */}
-              <div className="flex flex-col md:flex-row gap-4 sm:gap-5 md:gap-6">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-6 md:gap-6 w-full max-w-[319px] md:max-w-none">
+              {/* Brand Name and Email */}
+              <div className="flex flex-row gap-6">
                 {/* Brand Name Field */}
-                <div className="flex flex-col flex-1 gap-1 sm:gap-1.5">
-                  <label className="text-white text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+                <div className="flex flex-col gap-1 w-[147.5px] md:flex-1 md:w-auto">
+                  <label className="text-white text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                     Brand Name
                   </label>
                   <input
@@ -156,15 +174,15 @@ export default function CollaborationForm() {
                     value={formData.brandName}
                     onChange={handleInputChange}
                     placeholder="Enter Name"
-                    className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 w-full text-xs sm:text-sm focus:outline-none focus:ring-0 focus:border-white/30"
+                    className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-4 py-3 w-full text-sm focus:outline-none focus:ring-0 focus:border-white/30"
                     style={{ fontFamily: 'Gilroy, sans-serif', boxShadow: 'none', outline: 'none' }}
                     required
                   />
                 </div>
 
                 {/* Email Field */}
-                <div className="flex flex-col flex-1 gap-1 sm:gap-1.5">
-                  <label className="text-white text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+                <div className="flex flex-col gap-1 w-[147.5px] md:flex-1 md:w-auto">
+                  <label className="text-white text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                     Email Address
                   </label>
                   <input
@@ -173,7 +191,7 @@ export default function CollaborationForm() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="abc@example.com"
-                    className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 w-full text-xs sm:text-sm focus:outline-none focus:ring-0 focus:border-white/30"
+                    className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-4 py-3 w-full text-sm focus:outline-none focus:ring-0 focus:border-white/30"
                     style={{ fontFamily: 'Gilroy, sans-serif', boxShadow: 'none', outline: 'none' }}
                     required
                   />
@@ -181,8 +199,8 @@ export default function CollaborationForm() {
               </div>
 
               {/* Brand Website */}
-              <div className="flex flex-col gap-1 sm:gap-1.5">
-                <label className="text-white text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+              <div className="flex flex-col gap-1">
+                <label className="text-white text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                   Brand Website
                 </label>
                 <input
@@ -191,14 +209,14 @@ export default function CollaborationForm() {
                   value={formData.website}
                   onChange={handleInputChange}
                   placeholder="https://yourbrand.com"
-                  className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 w-full text-xs sm:text-sm focus:outline-none focus:ring-0 focus:border-white/30"
+                  className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-4 py-3 w-full text-sm focus:outline-none focus:ring-0 focus:border-white/30"
                   style={{ fontFamily: 'Gilroy, sans-serif', boxShadow: 'none', outline: 'none' }}
                 />
               </div>
 
               {/* Message */}
-              <div className="flex flex-col gap-1 sm:gap-1.5">
-                <label className="text-white text-xs sm:text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+              <div className="flex flex-col gap-1">
+                <label className="text-white text-sm" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                   Message
                 </label>
                 <textarea
@@ -206,8 +224,8 @@ export default function CollaborationForm() {
                   value={formData.message}
                   onChange={handleInputChange}
                   placeholder="Tell us about your collaboration idea..."
-                  className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 w-full resize-none text-xs sm:text-sm focus:outline-none focus:ring-0 focus:border-white/30"
-                  style={{ fontFamily: 'Gilroy, sans-serif', boxShadow: 'none', outline: 'none', minHeight: '60px' }}
+                  className="bg-transparent text-white placeholder-white/30 border border-white/30 rounded-lg px-4 py-3 w-full resize-none text-sm focus:outline-none focus:ring-0 focus:border-white/30"
+                  style={{ fontFamily: 'Gilroy, sans-serif', boxShadow: 'none', outline: 'none', minHeight: '72px' }}
                   rows={3}
                   required
                 />
@@ -217,7 +235,7 @@ export default function CollaborationForm() {
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="no-focus bg-white text-[#0A0A0A] rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 cursor-pointer px-6 sm:px-8 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:border-none"
+                className="no-focus bg-white text-[#0A0A0A] rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50 cursor-pointer px-6 sm:px-8 py-3 text-sm font-semibold focus:outline-none focus:ring-0 focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:border-none w-full md:w-auto md:max-w-[319px]"
                 style={{ 
                   fontFamily: 'Gilroy, sans-serif', 
                   outline: 'none !important', 

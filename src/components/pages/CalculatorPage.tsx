@@ -365,7 +365,7 @@ export default function CalculatorPage() {
   }, [isTradingPairDropdownOpen]);
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden calculator-page">
       <style dangerouslySetInnerHTML={{__html: `
         button:focus,
         button:active,
@@ -394,12 +394,354 @@ export default function CalculatorPage() {
         .trading-pair-dropdown::-webkit-scrollbar-thumb:hover {
           background: rgba(255, 255, 255, 0.3);
         }
+        @media (max-width: 768px) {
+          .calculator-page .calculator-hero-container {
+            padding-top: 94px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            padding-bottom: 24px !important;
+          }
+          .calculator-page .calculator-layout {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+          .calculator-page .calculator-hero-title {
+            width: 100% !important;
+            max-width: 343px !important;
+            height: auto !important;
+            font-size: 32px !important;
+            line-height: 120% !important;
+            margin-top: 0 !important;
+            min-height: 152px !important;
+            text-align: left !important;
+          }
+          .calculator-page .calculator-hero-description {
+            width: 100% !important;
+            max-width: 343px !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            margin-top: 0 !important;
+            min-height: 63px !important;
+            text-align: left !important;
+          }
+          .calculator-page .calculator-hero-bullets {
+            width: 100% !important;
+            max-width: 343px !important;
+            gap: 16px !important;
+            margin-top: 0 !important;
+          }
+          .calculator-page .calculator-hero-stack {
+            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            width: 343px !important;
+            gap: 24px !important;
+            z-index: 1 !important;
+            isolation: isolate !important;
+            margin: 0 !important;
+          }
+          .calculator-page .calculator-hero-stack .calculator-hero-bullets {
+            width: 343px !important;
+            max-width: 343px !important;
+            gap: 16px !important;
+            margin-top: 0 !important;
+            height: auto !important;
+            min-height: 112px !important;
+          }
+          .calculator-page .calculator-hero-stack .calculator-hero-bullet {
+            width: 343px !important;
+            gap: 8px !important;
+          }
+          .calculator-page .calculator-hero-stack .calculator-hero-bullet span {
+            width: calc(100% - 24px) !important;
+          }
+          .calculator-page .calculator-hero-stack .calculator-hero-cta {
+            width: 343px !important;
+            margin-top: 0 !important;
+          }
+          .calculator-page .calculator-hero-bullet {
+            width: 100% !important;
+            flex-wrap: wrap !important;
+          }
+          .calculator-page .calculator-hero-bullet span {
+            width: calc(100% - 24px) !important;
+          }
+            .calculator-page .calculator-tiles-container {
+            flex-direction: column !important;
+            gap: 24px !important;
+          }
+          .calculator-page .calculator-hero-cta {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            width: 343px !important;
+            height: 120px !important;
+            gap: 20px !important;
+            margin-top: 0 !important;
+          }
+          .calculator-page .calculator-hero-cta-primary,
+          .calculator-page .calculator-hero-cta-secondary {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 343px !important;
+            height: 50px !important;
+            padding: 18px 12px !important;
+            gap: 10px !important;
+            border-radius: 100px !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+          }
+          .calculator-page .calculator-hero-cta-primary {
+            background: #FFFFFF !important;
+            color: #0A0A0A !important;
+          }
+          .calculator-page .calculator-hero-cta-secondary {
+            border: 1px solid #FFFFFF !important;
+            color: #FFFFFF !important;
+            background: transparent !important;
+            box-sizing: border-box !important;
+          }
+          .calculator-page .calculator-section-wrapper {
+            position: relative !important;
+            width: 100% !important;
+            max-width: 375px !important;
+            margin: 0 auto !important;
+            padding: 24px 16px 0 !important;
+          }
+          .calculator-page .calculator-section-heading-block {
+            width: 343px !important;
+            height: 150px !important;
+            gap: 24px !important;
+            margin-top: 32px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding: 0 !important;
+            align-items: flex-start !important;
+          }
+          .calculator-page .calculator-section-title {
+            width: 343px !important;
+            height: 94px !important;
+            font-size: 36px !important;
+            line-height: 130% !important;
+            text-align: left !important;
+          }
+          .calculator-page .calculator-section-description {
+            width: 343px !important;
+            height: 32px !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            text-align: left !important;
+          }
+          .calculator-page .calculator-section-grid {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            width: 343px !important;
+            gap: 32px !important;
+            height: auto !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+          }
+          .calculator-page .calculator-tile {
+            width: 343px !important;
+            max-width: 343px !important;
+            margin: 0 !important;
+          }
+          .calculator-page .calculator-inputs-tile {
+            min-height: 520px !important;
+            height: 520px !important;
+            border-radius: 10px !important;
+          }
+          .calculator-page .calculator-inputs-content {
+            width: 319px !important;
+            max-width: 319px !important;
+            padding-top: 20px !important;
+            padding-bottom: 20px !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            gap: 24px !important;
+            margin: 0 !important;
+            margin-left: -12px !important;
+            box-sizing: border-box !important;
+          }
+          .calculator-page .calculator-asset-row {
+            width: 319px !important;
+            height: 34px !important;
+            gap: 24px !important;
+            justify-content: flex-start !important;
+            align-items: center !important;
+            margin-bottom: 0 !important;
+          }
+          .calculator-page .calculator-asset-label {
+            width: 160px !important;
+            height: 16px !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            flex-shrink: 0 !important;
+          }
+          .calculator-page .calculator-asset-dropdown {
+            width: 135px !important;
+          }
+          .calculator-page .calculator-asset-dropdown-button {
+            min-width: 135px !important;
+            width: 135px !important;
+            height: 34px !important;
+            padding: 4px 8px !important;
+            gap: 8px !important;
+            border-radius: 8px !important;
+          }
+          .calculator-page .calculator-asset-dropdown-button span {
+            font-size: 16px !important;
+            line-height: 130% !important;
+          }
+          .calculator-page .calculator-inputs-group {
+            width: 319px !important;
+            gap: 24px !important;
+            height: 480px !important;
+          }
+          .calculator-page .calculator-input-row {
+            width: 319px !important;
+            height: 58px !important;
+            gap: 24px !important;
+            flex-wrap: nowrap !important;
+          }
+          .calculator-page .calculator-input-field {
+            width: 319px !important;
+            height: 58px !important;
+            gap: 4px !important;
+            box-sizing: border-box !important;
+          }
+          .calculator-page .calculator-input-field-half {
+            width: 147.5px !important;
+          }
+          .calculator-page .calculator-input-field-half .calculator-input-control,
+          .calculator-page .calculator-input-field-half .calculator-input {
+            width: 147.5px !important;
+          }
+          .calculator-page .calculator-input-field-half input {
+            width: 147.5px !important;
+          }
+          .calculator-page .calculator-input-field-half label {
+            width: 147.5px !important;
+          }
+          .calculator-page .calculator-input-field:only-child {
+            width: 319px !important;
+          }
+          .calculator-page .calculator-input-label {
+            width: 100% !important;
+            height: 14px !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            font-family: 'Gilroy-Medium' !important;
+          }
+          .calculator-page .calculator-input-control {
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .calculator-page .calculator-input {
+            width: 100% !important;
+            height: 40px !important;
+            padding: 12px 16px !important;
+            gap: 10px !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+          }
+          .calculator-page .calculator-input-actions {
+            width: 319px !important;
+            flex-direction: column !important;
+            gap: 16px !important;
+            height: auto !important;
+            align-items: flex-start !important;
+          }
+          .calculator-page .calculator-input-actions button {
+            width: 319px !important;
+            height: 48px !important;
+            justify-content: center !important;
+            align-items: center !important;
+          }
+          .calculator-page .calculator-input-actions button span {
+            width: auto !important;
+          }
+          .calculator-page .calculator-results-tile {
+            min-height: 408px !important;
+            height: 408px !important;
+          }
+          .calculator-page .calculator-results-content {
+            width: 343px !important;
+            max-width: 343px !important;
+            padding: 24px !important;
+            gap: 32px !important;
+          }
+          .calculator-page .calculator-results-content > h3 {
+            width: 295px !important;
+            font-size: 20px !important;
+            line-height: 100% !important;
+          }
+          .calculator-page .calculator-results-content > div {
+            width: 295px !important;
+          }
+          .calculator-page .calculator-results-list {
+            width: 295px !important;
+            gap: 32px !important;
+          }
+          .calculator-page .calculator-results-list > div {
+            width: 295px !important;
+          }
+          .calculator-page .calculator-results-list span {
+            font-size: 16px !important;
+            line-height: 100% !important;
+          }
+          .calculator-page .calculator-tile {
+            width: 100% !important;
+            max-width: 343px !important;
+            margin: 0 auto !important;
+          }
+          .calculator-page .calculator-tile-content {
+            padding: 20px !important;
+          }
+          .calculator-page .calculator-section-heading {
+            align-items: flex-start !important;
+            width: 100% !important;
+            max-width: 343px !important;
+            margin: 0 !important;
+            gap: 16px !important;
+            padding: 0 !important;
+          }
+          .calculator-page .calculator-wide-tile {
+            width: 100% !important;
+            max-width: 343px !important;
+            margin: 32px auto 0 !important;
+          }
+          .calculator-page .calculator-saved-header,
+          .calculator-page .calculator-saved-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            width: 100% !important;
+            max-width: 343px !important;
+            gap: 16px !important;
+          }
+          .calculator-page .calculator-saved-header > div,
+          .calculator-page .calculator-saved-row > div {
+            width: 100% !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .calculator-background-svg {
+            left: -180px !important;
+            top: -60px !important;
+            width: 620px !important;
+            height: 500px !important;
+            transform: rotate(15deg) !important;
+          }
+        }
       `}} />
       <Navbar />
       
       {/* Background SVG Gradient */}
       <svg 
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none calculator-background-svg"
         style={{
           left: '-500px',
           top: '-80px',
@@ -434,8 +776,8 @@ export default function CalculatorPage() {
       
       {/* Main Content */}
       <div className="relative z-10">
-        <div className="min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 flex items-start">
-          <div className="max-w-7xl mx-auto w-full relative">
+        <div className="min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-start calculator-hero-container calculator-layout">
+          <div className="max-w-7xl mx-auto w-full relative calculator-section-wrapper">
             {/* Vector Logo */}
             <svg
               width="538"
@@ -468,8 +810,10 @@ export default function CalculatorPage() {
               </defs>
             </svg>
             
+            <div className="calculator-hero-stack">
             {/* Title - Left Middle */}
             <h1
+              className="calculator-hero-title"
               style={{
                 width: '630px',
                 height: '174px',
@@ -495,6 +839,7 @@ export default function CalculatorPage() {
             </h1>
             {/* Description */}
             <p
+              className="calculator-hero-description"
               style={{
                 width: '630px',
                 fontFamily: 'Gilroy-Medium',
@@ -514,6 +859,7 @@ export default function CalculatorPage() {
             {/* Bullet Points */}
             {!isAuthenticated && (
             <div
+              className="calculator-hero-bullets"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -531,6 +877,7 @@ export default function CalculatorPage() {
             >
               {/* Bullet 1 */}
               <div
+                className="calculator-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -577,6 +924,7 @@ export default function CalculatorPage() {
               
               {/* Bullet 2 */}
               <div
+                className="calculator-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -717,6 +1065,7 @@ export default function CalculatorPage() {
             {/* Buttons Container */}
             {!isAuthenticated && (
             <div
+              className="calculator-tiles-container calculator-hero-cta"
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -728,12 +1077,17 @@ export default function CalculatorPage() {
                 flex: 'none',
                 order: 3,
                 flexGrow: 0,
-                marginTop: '32px',
+                marginTop: '24px',
               }}
             >
               {/* Button 1 */}
               <button
+                className="calculator-hero-cta-primary"
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
                   padding: '12px 32px',
                   background: '#FFFFFF',
                   color: '#0A0A0A',
@@ -745,6 +1099,8 @@ export default function CalculatorPage() {
                   cursor: 'pointer',
                   flex: 'none',
                   minWidth: '180px',
+                  height: '50px',
+                  width: 'auto',
                   whiteSpace: 'nowrap',
                   outline: 'none',
                 }}
@@ -756,7 +1112,12 @@ export default function CalculatorPage() {
               </button>
               {/* Button 2 */}
               <button
+                className="calculator-hero-cta-secondary"
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
                   padding: '12px 32px',
                   background: '#000000',
                   color: '#FFFFFF',
@@ -768,6 +1129,8 @@ export default function CalculatorPage() {
                   cursor: 'pointer',
                   flex: 'none',
                   minWidth: '180px',
+                  height: '50px',
+                  width: 'auto',
                   whiteSpace: 'nowrap',
                   outline: 'none',
                 }}
@@ -787,9 +1150,11 @@ export default function CalculatorPage() {
               </button>
             </div>
             )}
+            </div>
             
             {/* Frame 1000012125 - Heading Section */}
             <div
+              className="calculator-section-heading-block"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -807,6 +1172,7 @@ export default function CalculatorPage() {
             >
               {/* Position Sizing Calculator */}
               <h2
+                className="calculator-section-title"
                 style={{
                   width: '1280px',
                   height: '47px',
@@ -828,6 +1194,7 @@ export default function CalculatorPage() {
               
               {/* Description - conditional based on authentication */}
               <p
+                className="calculator-section-description"
                 style={{
                   width: '1280px',
                   height: '16px',
@@ -852,6 +1219,7 @@ export default function CalculatorPage() {
             
             {/* Calculator Tiles Container */}
             <div
+              className="calculator-section-grid"
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -862,7 +1230,7 @@ export default function CalculatorPage() {
             >
               {/* Calculator Tile 1 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile calculator-inputs-tile"
                 style={{
                   width: '846px',
                   height: selectedAsset === 'Crypto (BTC, ETH, etc.)' ? '326px' : undefined,
@@ -887,7 +1255,7 @@ export default function CalculatorPage() {
                 
                 {/* Content */}
                 <div 
-                  className="relative z-10 w-full flex flex-col" 
+                  className="relative z-10 w-full flex flex-col calculator-tile-content calculator-inputs-content" 
                   style={{ 
                     padding: '24px', 
                     flex: '1 1 auto',
@@ -895,6 +1263,7 @@ export default function CalculatorPage() {
                 >
                   {/* Title and Dropdown Row */}
                   <div
+                    className="calculator-asset-row"
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -906,11 +1275,12 @@ export default function CalculatorPage() {
                   >
                     {/* Title */}
                     <h3
+                      className="calculator-asset-label"
                       style={{
                         fontFamily: 'Gilroy-SemiBold',
                         fontStyle: 'normal',
                         fontWeight: 400,
-                        fontSize: '20px',
+                        fontSize: '16px',
                         lineHeight: '100%',
                         letterSpacing: '0%',
                         color: '#FFFFFF',
@@ -922,6 +1292,7 @@ export default function CalculatorPage() {
                     
                     {/* Dropdown - Frame 1000004764 */}
                     <div
+                      className="calculator-asset-dropdown"
                       ref={dropdownRef}
                       style={{
                         position: 'relative',
@@ -932,6 +1303,7 @@ export default function CalculatorPage() {
                     >
                       {/* Dropdown Button */}
                       <div
+                        className="calculator-asset-dropdown-button"
                         onClick={() => {
                           if (!isAuthenticated) return;
                           setIsDropdownOpen(!isDropdownOpen);
@@ -942,19 +1314,17 @@ export default function CalculatorPage() {
                           boxSizing: 'border-box',
                           display: 'flex',
                           flexDirection: 'row',
-                          justifyContent: 'space-between',
+                          justifyContent: 'center',
                           alignItems: 'center',
-                          paddingTop: '8px',
-                          paddingRight: '12px',
-                          paddingBottom: '8px',
-                          paddingLeft: '12px',
+                          padding: '4px 8px',
                           gap: '8px',
-                          height: '42px',
+                          height: '34px',
                           background: 'rgba(255, 255, 255, 0.1)',
                           border: '1px solid rgba(255, 255, 255, 0.3)',
                           borderRadius: '8px',
-                          width: 'fit-content',
-                          minWidth: '173px',
+                          width: '135px',
+                          minWidth: '135px',
+                          overflow: 'hidden',
                         }}
                       >
                         {/* Selected Asset Text */}
@@ -963,7 +1333,7 @@ export default function CalculatorPage() {
                             fontFamily: 'Gilroy-SemiBold',
                             fontStyle: 'normal',
                             fontWeight: 400,
-                            fontSize: '20px',
+                            fontSize: '16px',
                             lineHeight: '130%',
                             color: selectedAsset ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)',
                             order: 0,
@@ -976,9 +1346,11 @@ export default function CalculatorPage() {
                         {/* Frame 1000004698 - Arrow Icon */}
                         <div
                           style={{
-                            width: '20px',
-                            height: '20px',
-                            position: 'relative',
+                            width: '16px',
+                            height: '16px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
                             flex: 'none',
                             order: 1,
                             flexGrow: 0,
@@ -987,19 +1359,14 @@ export default function CalculatorPage() {
                         >
                           {/* ep:arrow-up-bold */}
                           <svg
-                            width="20"
-                            height="20"
+                            width="16"
+                            height="16"
                             viewBox="0 0 20 20"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
                             style={{
-                              position: 'absolute',
-                              left: '50%',
-                              top: '50%',
-                              transform: isDropdownOpen 
-                                ? 'translate(-50%, -50%) rotate(180deg)' 
-                                : 'translate(-50%, -50%) rotate(0deg)',
                               transition: 'transform 0.3s ease',
+                              transform: isDropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                             }}
                           >
                             <path
@@ -1070,6 +1437,7 @@ export default function CalculatorPage() {
                   {/* Input Fields - Frame 101 (visible by default, disabled until asset selected) */}
                   {true && (
                     <div
+                      className="calculator-inputs-group"
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -1084,6 +1452,7 @@ export default function CalculatorPage() {
                     >
                       {/* Row 1 - Frame 1000004761 */}
                       <div
+                        className="calculator-input-row"
                         style={{
                           display: 'flex',
                           flexDirection: 'row',
@@ -1100,6 +1469,7 @@ export default function CalculatorPage() {
                       >
                         {/* Account Balance - Frame 1000004750 */}
                         <div
+                          className="calculator-input-field calculator-input-field-half"
                           style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -1115,6 +1485,7 @@ export default function CalculatorPage() {
                         >
                           {/* Label */}
                           <label
+                            className="calculator-input-label"
                             style={{
                               width: '387px',
                               height: '14px',
@@ -1136,6 +1507,7 @@ export default function CalculatorPage() {
                           
                           {/* Input - Frame 1000004673 */}
                           <div
+                            className="calculator-input-control"
                             style={{ position: 'relative', width: '387px' }}
                             onMouseDown={(e) => {
                               if (!selectedAsset) {
@@ -1150,6 +1522,7 @@ export default function CalculatorPage() {
                             }}
                           >
                             <input
+                              className="calculator-input"
                               type="text"
                               value={accountBalance}
                               disabled={!selectedAsset || !isAuthenticated}
@@ -1190,6 +1563,7 @@ export default function CalculatorPage() {
                         
                         {/* Risk Percentage - Frame 1000004751 */}
                         <div
+                          className="calculator-input-field calculator-input-field-half"
                           style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -1205,6 +1579,7 @@ export default function CalculatorPage() {
                         >
                           {/* Label */}
                           <label
+                            className="calculator-input-label"
                             style={{
                               width: '387px',
                               height: '14px',
@@ -1226,6 +1601,7 @@ export default function CalculatorPage() {
                           
                           {/* Input - Frame 1000004673 */}
                           <div
+                            className="calculator-input-control"
                             style={{ position: 'relative', width: '387px' }}
                             onMouseDown={(e) => {
                               if (!selectedAsset) {
@@ -1240,6 +1616,7 @@ export default function CalculatorPage() {
                             }}
                           >
                             <input
+                              className="calculator-input"
                               type="text"
                               value={riskPercentage}
                               disabled={!selectedAsset || !isAuthenticated}
@@ -1281,6 +1658,7 @@ export default function CalculatorPage() {
                       
                       {/* Row 2 - Frame 1000004762 */}
                       <div
+                        className="calculator-input-row"
                         style={{
                           display: 'flex',
                           flexDirection: 'row',
@@ -1297,6 +1675,7 @@ export default function CalculatorPage() {
                       >
                         {/* Stop Loss - Frame 1000004751 */}
                         <div
+                          className="calculator-input-field calculator-input-field-half"
                           style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -1312,6 +1691,7 @@ export default function CalculatorPage() {
                         >
                           {/* Label */}
                           <label
+                            className="calculator-input-label"
                             style={{
                               width: '387px',
                               height: '14px',
@@ -1333,6 +1713,7 @@ export default function CalculatorPage() {
                           
                           {/* Input - Frame 1000004673 */}
                           <div
+                            className="calculator-input-control"
                             style={{ position: 'relative', width: '387px' }}
                             onMouseDown={(e) => {
                               if (!selectedAsset) {
@@ -1347,6 +1728,7 @@ export default function CalculatorPage() {
                             }}
                           >
                             <input
+                              className="calculator-input"
                               type="text"
                               value={stopLoss}
                               disabled={!selectedAsset || !isAuthenticated}
@@ -1387,6 +1769,7 @@ export default function CalculatorPage() {
                         
                         {/* Pip Value (Gold/Forex) or Position Size (Crypto) - Frame 1000004750 */}
                         <div
+                          className="calculator-input-field calculator-input-field-half"
                           style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -1402,6 +1785,7 @@ export default function CalculatorPage() {
                         >
                           {/* Label */}
                           <label
+                            className="calculator-input-label"
                             style={{
                               width: '387px',
                               height: '14px',
@@ -1423,8 +1807,9 @@ export default function CalculatorPage() {
                           
                           {/* For Crypto: Position Size, For Gold: Read-only input, For Forex: Lot Type Dropdown */}
                           {!selectedAsset ? (
-                            <div
-                              style={{ position: 'relative', width: '387px' }}
+                          <div
+                            className="calculator-input-control"
+                            style={{ position: 'relative', width: '387px' }}
                               onMouseDown={(e) => {
                                 e.preventDefault();
                                 const rect = e.currentTarget.getBoundingClientRect();
@@ -1436,6 +1821,7 @@ export default function CalculatorPage() {
                               }}
                             >
                               <input
+                                className="calculator-input"
                                 type="text"
                                 value=""
                                 disabled
@@ -1470,6 +1856,7 @@ export default function CalculatorPage() {
                             </div>
                           ) : selectedAsset === 'Crypto (BTC, ETH, etc.)' ? (
                             <input
+                              className="calculator-input"
                               type="text"
                               value={lotSize}
                               readOnly
@@ -1687,6 +2074,7 @@ export default function CalculatorPage() {
                       {/* Row 3 - Frame 1000004763 (Only for Gold and Forex, hidden for Crypto) */}
                       {selectedAsset !== 'Crypto (BTC, ETH, etc.)' && (
                       <div
+                        className="calculator-input-row"
                         style={{
                           display: 'flex',
                           flexDirection: 'row',
@@ -1703,6 +2091,7 @@ export default function CalculatorPage() {
                       >
                         {/* Lot Size - Frame 1000004751 */}
                         <div
+                          className="calculator-input-field"
                           style={{
                             display: 'flex',
                             flexDirection: 'column',
@@ -1718,6 +2107,7 @@ export default function CalculatorPage() {
                         >
                           {/* Label */}
                           <label
+                            className="calculator-input-label"
                             style={{
                               width: '798px',
                               height: '14px',
@@ -1738,47 +2128,54 @@ export default function CalculatorPage() {
                           </label>
                           
                           {/* Input - Frame 1000004673 */}
-                          <input
-                            type="text"
-                            value={lotSize}
-                            readOnly
-                            style={{
-                              boxSizing: 'border-box',
-                              display: 'flex',
-                              flexDirection: 'row',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              padding: '12px 16px',
-                              gap: '10px',
-                              width: '798px',
-                              height: '40px',
-                              border: '1px solid rgba(255, 255, 255, 0.3)',
-                              borderRadius: '8px',
-                              background: (!isAuthenticated || selectedAsset) ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
-                              fontFamily: 'Gilroy-Medium',
-                              fontStyle: 'normal',
-                              fontWeight: 400,
-                              fontSize: '14px',
-                              lineHeight: '100%',
-                              color: !selectedAsset ? 'rgba(255, 255, 255, 0.5)' : '#FFFFFF',
-                              flex: 'none',
-                              order: 1,
-                              alignSelf: 'stretch',
-                              flexGrow: 0,
-                              outline: 'none',
-                              cursor: 'not-allowed',
-                            }}
-                          />
+                          <div
+                            className="calculator-input-control"
+                            style={{ position: 'relative', width: '798px' }}
+                          >
+                            <input
+                              className="calculator-input"
+                              type="text"
+                              value={lotSize}
+                              readOnly
+                              style={{
+                                boxSizing: 'border-box',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                padding: '12px 16px',
+                                gap: '10px',
+                                width: '798px',
+                                height: '40px',
+                                border: '1px solid rgba(255, 255, 255, 0.3)',
+                                borderRadius: '8px',
+                                background: (!isAuthenticated || selectedAsset) ? 'transparent' : 'rgba(255, 255, 255, 0.05)',
+                                fontFamily: 'Gilroy-Medium',
+                                fontStyle: 'normal',
+                                fontWeight: 400,
+                                fontSize: '14px',
+                                lineHeight: '100%',
+                                color: !selectedAsset ? 'rgba(255, 255, 255, 0.5)' : '#FFFFFF',
+                                flex: 'none',
+                                order: 1,
+                                alignSelf: 'stretch',
+                                flexGrow: 0,
+                                outline: 'none',
+                                cursor: 'not-allowed',
+                              }}
+                            />
+                          </div>
                         </div>
                       </div>
                       )}
                       
                       {/* Buttons Row - Frame 1000012140 */}
                       <div
+                        className="calculator-input-actions"
                         style={{
                           display: 'flex',
                           flexDirection: 'row',
-                          alignItems: 'flex-start',
+                          alignItems: 'center',
                           padding: '0px',
                           gap: '20px',
                           width: '798px',
@@ -1789,123 +2186,107 @@ export default function CalculatorPage() {
                           flexGrow: 0,
                         }}
                       >
-                        {/* Buttons Container - Frame 1000012178 */}
-                        <div
+                        {/* Save Scenario Button - Frame 23 */}
+                        <button
+                          disabled={!isAuthenticated}
+                          onClick={() => {
+                            if (!isAuthenticated) return;
+                            setEditingScenarioId(null);
+                            setScenarioName('');
+                            setTradingPair(null);
+                            setIsSaveScenarioPopupOpen(true);
+                          }}
                           style={{
                             display: 'flex',
                             flexDirection: 'row',
+                            justifyContent: 'center',
                             alignItems: 'center',
-                            padding: '0px',
-                            gap: '20px',
-                            width: '705px',
+                            padding: '12px 16px',
+                            gap: '10px',
+                            width: '184.5px',
                             height: '48px',
+                            background: '#FFFFFF',
+                            borderRadius: '100px',
+                            border: 'none',
+                            cursor: isAuthenticated ? 'pointer' : 'not-allowed',
                             flex: 'none',
                             order: 0,
-                            flexGrow: 1,
+                            flexGrow: 0,
+                            outline: 'none',
+                            opacity: isAuthenticated ? 1 : 0.6,
                           }}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onFocus={(e) => e.currentTarget.style.outline = 'none'}
                         >
-                          {/* Save Scenario Button - Frame 23 */}
-                          <button
-                            disabled={!isAuthenticated}
-                            onClick={() => {
-                              if (!isAuthenticated) return;
-                              setEditingScenarioId(null);
-                              setScenarioName('');
-                              setTradingPair(null);
-                              setIsSaveScenarioPopupOpen(true);
-                            }}
+                          <span
                             style={{
-                              display: 'flex',
-                              flexDirection: 'row',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              padding: '12px 16px',
-                              gap: '10px',
-                              width: '184.5px',
-                              height: '48px',
-                              background: '#FFFFFF',
-                              borderRadius: '100px',
-                              border: 'none',
-                              cursor: isAuthenticated ? 'pointer' : 'not-allowed',
+                              width: '107px',
+                              height: '16px',
+                              fontFamily: 'Gilroy-SemiBold',
+                              fontStyle: 'normal',
+                              fontWeight: 400,
+                              fontSize: '16px',
+                              lineHeight: '100%',
+                              textAlign: 'center',
+                              color: '#404040',
                               flex: 'none',
                               order: 0,
                               flexGrow: 0,
-                              outline: 'none',
-                              opacity: isAuthenticated ? 1 : 0.6,
                             }}
-                            onMouseDown={(e) => e.preventDefault()}
-                            onFocus={(e) => e.currentTarget.style.outline = 'none'}
                           >
-                            <span
-                              style={{
-                                width: '107px',
-                                height: '16px',
-                                fontFamily: 'Gilroy-SemiBold',
-                                fontStyle: 'normal',
-                                fontWeight: 400,
-                                fontSize: '16px',
-                                lineHeight: '100%',
-                                textAlign: 'center',
-                                color: '#404040',
-                                flex: 'none',
-                                order: 0,
-                                flexGrow: 0,
-                              }}
-                            >
-                              Save Scenario
-                            </span>
-                          </button>
-                          
-                          {/* Formula Button - Frame 1000012106 */}
-                          <button
-                            onClick={() => {
-                              if (!isAuthenticated || !selectedAsset) return;
-                              setIsFormulaPopupOpen(true);
-                            }}
-                            disabled={!selectedAsset || !isAuthenticated}
+                            Save Scenario
+                          </span>
+                        </button>
+                        
+                        {/* Formula Button - Frame 1000012106 */}
+                        <button
+                          onClick={() => {
+                            if (!isAuthenticated || !selectedAsset) return;
+                            setIsFormulaPopupOpen(true);
+                          }}
+                          disabled={!selectedAsset || !isAuthenticated}
+                          style={{
+                            boxSizing: 'border-box',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            padding: '12px 16px',
+                            gap: '10px',
+                            width: '184.5px',
+                            height: '48px',
+                            border: '1px solid #909090',
+                            borderRadius: '100px',
+                            background: 'transparent',
+                            cursor: !selectedAsset ? 'not-allowed' : 'pointer',
+                            opacity: !selectedAsset ? 0.5 : 1,
+                            flex: 'none',
+                            order: 1,
+                            flexGrow: 0,
+                            outline: 'none',
+                          }}
+                          onMouseDown={(e) => e.preventDefault()}
+                          onFocus={(e) => e.currentTarget.style.outline = 'none'}
+                        >
+                          <span
                             style={{
-                              boxSizing: 'border-box',
-                              display: 'flex',
-                              flexDirection: 'row',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              padding: '12px 16px',
-                              gap: '10px',
-                              width: '184.5px',
-                              height: '48px',
-                              border: '1px solid #909090',
-                              borderRadius: '100px',
-                              background: 'transparent',
-                              cursor: !selectedAsset ? 'not-allowed' : 'pointer',
-                              opacity: !selectedAsset ? 0.5 : 1,
+                              width: '60px',
+                              height: '16px',
+                              fontFamily: 'Gilroy-SemiBold',
+                              fontStyle: 'normal',
+                              fontWeight: 400,
+                              fontSize: '16px',
+                              lineHeight: '100%',
+                              textAlign: 'center',
+                              color: '#909090',
                               flex: 'none',
-                              order: 1,
+                              order: 0,
                               flexGrow: 0,
-                              outline: 'none',
                             }}
-                            onMouseDown={(e) => e.preventDefault()}
-                            onFocus={(e) => e.currentTarget.style.outline = 'none'}
                           >
-                            <span
-                              style={{
-                                width: '60px',
-                                height: '16px',
-                                fontFamily: 'Gilroy-SemiBold',
-                                fontStyle: 'normal',
-                                fontWeight: 400,
-                                fontSize: '16px',
-                                lineHeight: '100%',
-                                textAlign: 'center',
-                                color: '#909090',
-                                flex: 'none',
-                                order: 0,
-                                flexGrow: 0,
-                              }}
-                            >
-                              Formula
-                            </span>
-                          </button>
-                        </div>
+                            Formula
+                          </span>
+                        </button>
                         
                         {/* Reset Button - Frame 1000012107 */}
                         <button
@@ -1928,7 +2309,7 @@ export default function CalculatorPage() {
                             border: 'none',
                             cursor: isAuthenticated ? 'pointer' : 'not-allowed',
                             flex: 'none',
-                            order: 1,
+                            order: 2,
                             flexGrow: 0,
                             outline: 'none',
                             opacity: isAuthenticated ? 1 : 0.6,
@@ -1980,7 +2361,7 @@ export default function CalculatorPage() {
 
               {/* Calculator Tile 2 - Results */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile calculator-results-tile"
                 style={{
                   width: '394px',
                   minHeight: '326px',
@@ -2046,7 +2427,7 @@ export default function CalculatorPage() {
                 
                 {/* Content - Frame 104 */}
                 <div 
-                  className="relative z-10"
+                  className="relative z-10 calculator-results-content"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -2099,6 +2480,7 @@ export default function CalculatorPage() {
                   
                   {/* Results Content */}
                   <div
+                    className="calculator-results-list"
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -2432,6 +2814,7 @@ export default function CalculatorPage() {
                 
                 {/* Saved Scenarios Title and Description */}
                 <div
+                  className="calculator-section-heading"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -2447,6 +2830,7 @@ export default function CalculatorPage() {
                 >
                   {/* Saved Scenarios Title */}
                   <h2
+                    className="calculator-section-title"
                     style={{
                       width: '1280px',
                       fontFamily: 'Gilroy-SemiBold',
@@ -2467,6 +2851,7 @@ export default function CalculatorPage() {
                   
                   {/* Description */}
                   <p
+                    className="calculator-section-description"
                     style={{
                       width: '1280px',
                       fontFamily: 'Gilroy-Medium',
@@ -2489,7 +2874,7 @@ export default function CalculatorPage() {
                 {/* Saved Scenarios Tile */}
                 <div
                   ref={savedScenariosTileRef}
-                  className="relative"
+                  className="relative calculator-wide-tile"
                   style={{
                     width: '1280px',
                     minHeight: '164px',
@@ -2515,7 +2900,7 @@ export default function CalculatorPage() {
                   
                   {/* Content */}
                   <div 
-                    className="relative z-10 w-full flex flex-col" 
+                    className="relative z-10 w-full flex flex-col calculator-tile-content" 
                     style={{ 
                       padding: '24px', 
                       gap: '24px',
@@ -2524,6 +2909,7 @@ export default function CalculatorPage() {
                   >
                     {/* Header Row - Frame 1000004673 */}
                     <div
+                      className="calculator-saved-header"
                       style={{
                         boxSizing: 'border-box',
                         display: 'flex',
@@ -2876,6 +3262,7 @@ export default function CalculatorPage() {
 
                           return (
                             <div
+                              className="calculator-saved-row"
                               key={scenario.id}
                               style={{
                                 boxSizing: 'border-box',
@@ -3539,7 +3926,7 @@ export default function CalculatorPage() {
             {/* Ready to unlock full access Tile */}
             {!isAuthenticated && (
             <div
-              className="relative overflow-hidden"
+              className="relative overflow-hidden calculator-tile"
               style={{
                 width: '1064px',
                 height: '247px',
@@ -3816,7 +4203,7 @@ export default function CalculatorPage() {
             >
               {/* FAQ Tile 1 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[0] ? 'auto' : '68px',
@@ -3888,7 +4275,7 @@ export default function CalculatorPage() {
 
               {/* FAQ Tile 2 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[1] ? 'auto' : '68px',
@@ -3960,7 +4347,7 @@ export default function CalculatorPage() {
 
               {/* FAQ Tile 3 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[2] ? 'auto' : '68px',
@@ -4032,7 +4419,7 @@ export default function CalculatorPage() {
 
               {/* FAQ Tile 4 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[3] ? 'auto' : '68px',

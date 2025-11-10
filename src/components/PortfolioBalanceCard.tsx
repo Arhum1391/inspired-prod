@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Area, AreaChart as RechartsAreaChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart as RechartsAreaChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
 type TimeRange = '1Hr' | '1D' | '1W' | '1M' | '1Y';
 

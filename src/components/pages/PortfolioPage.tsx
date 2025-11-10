@@ -1,15 +1,77 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import type { ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
+import Image from 'next/image';
+import HoldingsTable from '@/components/HoldingsTable';
+import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
+import PortfolioBalanceCard from '@/components/PortfolioBalanceCard';
+import { ResponsivePie } from '@nivo/pie';
+import type { ComputedDatum, PieCustomLayerProps, PieLayer } from '@nivo/pie';
+
+type AllocationSlice = {
+  label: string;
+  percentage: string;
+  amount: number;
+  displayValue: string;
+  color: string;
+};
+
+type AllocationDatum = AllocationSlice & {
+  id: string;
+  value: number;
+};
+
+const allocationSlices: AllocationSlice[] = [
+  { label: 'BTC', percentage: '40.5%', amount: 24000, displayValue: '$24,000', color: '#EB72FF' },
+  { label: 'ETH', percentage: '43.1%', amount: 25600, displayValue: '$25,600', color: '#EB72FF' },
+  { label: 'GOLD', percentage: '16.4%', amount: 9750, displayValue: '$9,750', color: '#EB72FF' },
+];
+
+type HoldingRow = {
+  asset: string;
+  quantity: string;
+  avgPrice: string;
+  currentPrice: string;
+  value: string;
+  pnl: string;
+  pnlColor: string;
+};
+
+const holdingsColumns = [
+  'Asset',
+  'Quantity',
+  'AVG Price',
+  'Current Price',
+  'Value',
+  'P&L',
+  'Actions',
+] as const;
+
+const holdingsRows: HoldingRow[] = [
+  { asset: 'AAPL', quantity: '100', avgPrice: '$2,800', currentPrice: '$220', value: '$6,600', pnl: '+46.67%', pnlColor: '#05B353' },
+  { asset: 'MSFT', quantity: '150', avgPrice: '$30', currentPrice: '$35', value: '$5,250', pnl: '+7.50%', pnlColor: '#05B353' },
+  { asset: 'GOOGL', quantity: '200', avgPrice: '$40', currentPrice: '$45', value: '$9,000', pnl: '+12.50%', pnlColor: '#05B353' },
+  { asset: 'AAPL', quantity: '150', avgPrice: '$140', currentPrice: '$145', value: '$21,000', pnl: '+3.57%', pnlColor: '#05B353' },
+  { asset: 'AMZN', quantity: '300', avgPrice: '$120', currentPrice: '$125', value: '$36,000', pnl: '+4.17%', pnlColor: '#05B353' },
+  { asset: 'MSFT', quantity: '250', avgPrice: '$250', currentPrice: '$255', value: '$63,750', pnl: '+2.00%', pnlColor: '#05B353' },
+  { asset: 'TSLA', quantity: '180', avgPrice: '$600', currentPrice: '$610', value: '$108,000', pnl: '+1.67%', pnlColor: '#05B353' },
+  { asset: 'FB', quantity: '100', avgPrice: '$300', currentPrice: '$310', value: '$31,000', pnl: '+3.33%', pnlColor: '#05B353' },
+  { asset: 'NFLX', quantity: '90', avgPrice: '$500', currentPrice: '$510', value: '$45,900', pnl: '+2.00%', pnlColor: '#05B353' },
+  { asset: 'NVDA', quantity: '130', avgPrice: '$220', currentPrice: '$225', value: '$29,500', pnl: '+2.27%', pnlColor: '#05B353' },
+];
 
 export default function PortfolioPage() {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
+  const [isAddHoldingModalOpen, setAddHoldingModalOpen] = useState(false);
+  const [apiKeyValue, setApiKeyValue] = useState('');
+  const [hasConnectedApi, setHasConnectedApi] = useState(false);
 
   const toggleTile = (index: number) => {
     setExpandedTiles(prev => ({
@@ -18,6 +80,269 @@ export default function PortfolioPage() {
     }));
   };
 
+  const openAddHoldingModal = () => {
+    setAddHoldingModalOpen(true);
+  };
+
+  const closeAddHoldingModal = () => {
+    setAddHoldingModalOpen(false);
+    setApiKeyValue('');
+  };
+
+  const handleConfirmAddHolding = () => {
+    setHasConnectedApi(true);
+    closeAddHoldingModal();
+  };
+
+  const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setApiKeyValue(event.target.value);
+  };
+
+  const previewTimeRanges = ['1Hr', '1D', '1W', '1M', '1Y'] as const;
+  const previewChartLabels = ['16/6', '22/6', '28/6', '4/7', '10/7', '16/7', '22/7'];
+  const previewYAxisLabels = ['$3000', '$2000', '$1000', '$0'];
+
+  const AllocationDistributionCard = () => {
+    const chartData = useMemo<AllocationDatum[]>(
+      () =>
+        allocationSlices.map(slice => ({
+          id: slice.label,
+          label: slice.label,
+          value: slice.amount,
+          amount: slice.amount,
+          color: slice.color,
+          percentage: slice.percentage,
+          displayValue: slice.displayValue,
+        })),
+      []
+    );
+
+    // Base dark color for all slices
+    const chartColors = useMemo(() => allocationSlices.map(() => '#141414'), []);
+    
+    // Gradient angles based on Figma design (in degrees)
+    const gradientAngles = useMemo(() => {
+      // Map each datum to its gradient angle based on Figma design
+      // BTC: 35.87deg, ETH: 27.79deg, GOLD: 92.41deg
+      const angleMap: Record<string, number> = {
+        'BTC': 35.87,
+        'ETH': 27.79,
+        'GOLD': 92.41,
+      };
+      return chartData.map(datum => angleMap[datum.label] || 0);
+    }, [chartData]);
+
+    const gradientDefs = useMemo(
+      () =>
+        chartData.map((datum, index) => {
+          const angle = gradientAngles[index];
+          // Convert angle to radians for SVG gradient calculation
+          // SVG gradients: angle 0° = right, 90° = down, -90° = up
+          // CSS gradients: angle 0° = up, 90° = right
+          // Need to adjust: SVG_angle = CSS_angle - 90
+          const angleRad = ((angle - 90) * Math.PI) / 180;
+          
+          // Calculate gradient line endpoints (from center outward)
+          const length = 0.707; // Diagonal length for full coverage
+          const x1 = 0.5 - length * Math.cos(angleRad);
+          const y1 = 0.5 - length * Math.sin(angleRad);
+          const x2 = 0.5 + length * Math.cos(angleRad);
+          const y2 = 0.5 + length * Math.sin(angleRad);
+          
+          // Create gradient that simulates white overlay effect
+          // rgba(255, 255, 255, 0) over #141414 = #141414
+          // rgba(255, 255, 255, 0.12) over #141414 ≈ #303030
+          // Making it slightly lighter to match Figma's beautiful gradient
+          return {
+            id: `allocation-gradient-${datum.id}`,
+            type: 'linearGradient' as const,
+            colors: [
+              { offset: 0, color: '#141414', opacity: 1 },
+              { offset: 3.62, color: '#141414', opacity: 1 },
+              { offset: 96.98, color: '#3A3A3A', opacity: 1 },
+              { offset: 100, color: '#3A3A3A', opacity: 1 },
+            ],
+            x1,
+            y1,
+            x2,
+            y2,
+            gradientUnits: 'objectBoundingBox' as const,
+          };
+        }),
+      [chartData, gradientAngles]
+    );
+    const gradientFill = useMemo(
+      () =>
+        chartData.map(datum => ({
+          match: { id: datum.id } as const,
+          id: `allocation-gradient-${datum.id}`,
+        })),
+      [chartData]
+    );
+
+    const connectorLayer = useCallback(
+      ({ dataWithArc, centerX, centerY }: PieCustomLayerProps<AllocationDatum>) => {
+        // Create a map to ensure correct id-to-arc matching
+        const idToArcMap = new Map<string, typeof dataWithArc[0]>();
+        dataWithArc.forEach(item => {
+          idToArcMap.set(item.data.id, item);
+        });
+
+        return (
+          <g>
+            {chartData.map(datum => {
+              const item = idToArcMap.get(datum.id);
+              if (!item) return null;
+              
+              const { arc, data } = item;
+              const midAngle = arc.startAngle + (arc.endAngle - arc.startAngle) / 2;
+              const cos = Math.cos(midAngle);
+              const sin = Math.sin(midAngle);
+              const startRadius = arc.outerRadius;
+              const elbowRadius = arc.outerRadius + 10;
+              const startX = centerX + cos * startRadius;
+              const startY = centerY + sin * startRadius;
+              const elbowX = centerX + cos * elbowRadius;
+              const elbowY = centerY + sin * elbowRadius;
+              const isRightSide = cos >= 0;
+              const horizontalOffset = isRightSide ? 20 : -20;
+              const endX = elbowX + horizontalOffset;
+              const endY = elbowY;
+              const textAnchor = isRightSide ? 'start' : 'end';
+              const textX = endX + (isRightSide ? 6 : -6);
+              const upperY = endY - 2;
+              const lowerY = endY + 10;
+
+              return (
+                <g key={`connector-${data.id}`}>
+                  <path
+                    d={`M ${startX} ${startY} L ${elbowX} ${elbowY} L ${endX} ${endY}`}
+                    stroke="rgba(255,255,255,0.7)"
+                    strokeWidth={1.2}
+                    fill="none"
+                  />
+                  <circle cx={startX} cy={startY} r={3} fill="#EB72FF" />
+                  <text
+                    x={textX}
+                    y={upperY}
+                    textAnchor={textAnchor}
+                    dominantBaseline="middle"
+                    style={{
+                      fontFamily: 'Gilroy-Medium',
+                      fontSize: 13,
+                      fontWeight: 400,
+                      fill: '#FFFFFF',
+                    }}
+                  >
+                    {`${data.label}: ${data.percentage}`}
+                  </text>
+                  <text
+                    x={textX}
+                    y={lowerY}
+                    textAnchor={textAnchor}
+                    dominantBaseline="middle"
+                    style={{
+                      fontFamily: 'Gilroy-Medium',
+                      fontSize: 12,
+                      fontWeight: 400,
+                      fill: '#FFFFFF',
+                      opacity: 0.85,
+                    }}
+                  >
+                    {data.displayValue}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
+        );
+      },
+      [chartData]
+    );
+
+    const pieLayers = useMemo<PieLayer<AllocationDatum>[]>(
+      () => ['arcs', connectorLayer, 'legends'],
+      [connectorLayer]
+    );
+
+    return (
+      <div className="relative flex h-[344px] w-[413px] flex-col items-center gap-6 overflow-hidden rounded-2xl bg-[#1F1F1F] p-5">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            borderRadius: '16px',
+            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+            padding: '1px',
+          }}
+        >
+          <div
+            className="w-full h-full rounded-[15px]"
+            style={{
+              background: '#1F1F1F',
+            }}
+          ></div>
+        </div>
+        <div className="flex w-full items-center">
+          <span
+            style={{
+              fontFamily: 'Gilroy-SemiBold',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '20px',
+              lineHeight: '130%',
+              color: '#FFFFFF',
+            }}
+          >
+            Allocation
+          </span>
+        </div>
+
+        <div className="flex w-full flex-1 flex-col items-center justify-center">
+          <div className="h-[200px] w-full">
+            <ResponsivePie<AllocationDatum>
+              data={chartData}
+              margin={{ top: 24, right: 38, bottom: 24, left: 38 }}
+              innerRadius={0.62}
+              padAngle={0}
+              cornerRadius={0}
+              activeOuterRadiusOffset={0}
+              sortByValue={false}
+              enableArcLinkLabels={false}
+              enableArcLabels={false}
+              borderWidth={0}
+              colors={chartColors}
+              defs={gradientDefs}
+              fill={gradientFill}
+              layers={pieLayers}
+              theme={{
+                background: 'transparent',
+                labels: {
+                  text: {
+                    fontFamily: 'Gilroy-Medium',
+                    fontSize: 12,
+                    fill: '#FFFFFF',
+                  },
+                },
+                tooltip: {
+                  container: {
+                    background: '#1F1F1F',
+                    color: '#FFFFFF',
+                    fontFamily: 'Gilroy-Medium',
+                    fontSize: 12,
+                    borderRadius: '10px',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    padding: '8px 12px',
+                  },
+                },
+              }}
+              tooltip={() => null}
+              legends={[]}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
       <style dangerouslySetInnerHTML={{__html: `
@@ -127,7 +452,7 @@ export default function PortfolioPage() {
               }}
             >
               {isAuthenticated 
-                ? 'Position Sizing Calculator - Optimize Your Risk, Maximize Your Returns'
+                ? 'Your Portfolio - Track Allocation, P/L, and Performance in One View'
                 : 'Unlock the full experience with Inspired Analyst Premium'
               }
             </h1>
@@ -145,7 +470,7 @@ export default function PortfolioPage() {
               }}
             >
               {isAuthenticated
-                ? 'Calculate optimal position sizes based on your risk tolerance, account size, and trading strategy. Save scenarios and track your portfolio performance.'
+                ? 'Analyze your holdings, visualize profit & loss, and monitor diversification over time. Built for clarity and accountability.'
                 : 'Full research library, Position Sizing Calculator (save scenarios), portfolio analytics, and Shariah project details. Cancel anytime.'
               }
             </p>
@@ -425,9 +750,844 @@ export default function PortfolioPage() {
               </button>
             </div>
             )}
+
+            {isAuthenticated && (
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                gap: '64px',
+                width: '100%',
+                maxWidth: '1280px',
+                margin: '300px auto 0 auto',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: '24px',
+                  width: '100%',
+                }}
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '24px',
+                    width: '100%',
+                  }}
+                >
+                  <h2
+                    style={{
+                      fontFamily: 'Gilroy-SemiBold',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '36px',
+                      lineHeight: '130%',
+                      color: '#FFFFFF',
+                      margin: 0,
+                      flex: 1,
+                    }}
+                  >
+                    Your Portfolio
+                  </h2>
+                  <button
+                    type="button"
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      gap: '4px',
+                      width: '180px',
+                      height: '48px',
+                      background: '#FFFFFF',
+                      borderRadius: '100px',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontFamily: 'Gilroy-SemiBold',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '100%',
+                      color: '#404040',
+                    }}
+                    onClick={openAddHoldingModal}
+                  >
+                    <span
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        width: '16px',
+                        height: '16px',
+                      }}
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 16 16"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M8 3.33337V12.6667"
+                          stroke="#404040"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M3.33398 8H12.6673"
+                          stroke="#404040"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+                    Add Holding
+                  </button>
+                </div>
+                <p
+                  style={{
+                    fontFamily: 'Gilroy-Medium',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '100%',
+                    color: '#FFFFFF',
+                    margin: 0,
+                  }}
+                >
+                  Track allocation, P/L, and trends - all in one place.
+                </p>
+              </div>
+
+              <div style={{ width: '100%' }}>
+                {hasConnectedApi ? (
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'stretch',
+                      gap: '20px',
+                      width: '100%',
+                      maxWidth: '1280px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        position: 'relative',
+                        width: '847px',
+                        height: '344px',
+                        borderRadius: '16px',
+                        background: '#1F1F1F',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{
+                          borderRadius: '16px',
+                          background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                          padding: '1px',
+                        }}
+                      >
+                        <div
+                          className="w-full h-full rounded-[15px]"
+                          style={{
+                            background: '#1F1F1F',
+                          }}
+                        ></div>
+                      </div>
+                      <div
+                        style={{
+                          position: 'relative',
+                          zIndex: 1,
+                          width: '100%',
+                          height: '100%',
+                          borderRadius: '15px',
+                        }}
+                      >
+                        <PortfolioBalanceCard />
+                      </div>
+                    </div>
+                    <AllocationDistributionCard />
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      boxSizing: 'border-box',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      padding: '100px',
+                      gap: '40px',
+                      width: '100%',
+                      background: '#1F1F1F',
+                      borderRadius: '16px',
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px',
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F',
+                        }}
+                      ></div>
+                    </div>
+                    <div
+                      style={{
+                        position: 'relative',
+                        zIndex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        gap: '24px',
+                        width: '100%',
+                        maxWidth: '1240px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          gap: '24px',
+                          width: '100%',
+                        }}
+                      >
+                        <h3
+                          style={{
+                            width: '100%',
+                            fontFamily: 'Gilroy-SemiBold',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '24px',
+                            lineHeight: '100%',
+                            textAlign: 'center',
+                            color: '#FFFFFF',
+                            margin: 0,
+                          }}
+                        >
+                          Add Your First Holding
+                        </h3>
+                        <p
+                          style={{
+                            width: '100%',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '16px',
+                            lineHeight: '100%',
+                            textAlign: 'center',
+                            color: '#FFFFFF',
+                            margin: 0,
+                          }}
+                        >
+                          Start with the asset you track most - see allocation and P/L instantly
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '12px 16px',
+                          gap: '10px',
+                          width: '180px',
+                          height: '48px',
+                          background: '#FFFFFF',
+                          borderRadius: '100px',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontFamily: 'Gilroy-SemiBold',
+                          fontStyle: 'normal',
+                          fontWeight: 400,
+                          fontSize: '16px',
+                          lineHeight: '100%',
+                          color: '#404040',
+                        }}
+                        onClick={openAddHoldingModal}
+                      >
+                        Add Holding
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {hasConnectedApi && (
+                <div style={{ width: '100%' }}>
+                  <div
+                    style={{
+                      boxSizing: 'border-box',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      padding: '24px',
+                      gap: '32px',
+                      width: '100%',
+                      maxWidth: '1280px',
+                      margin: '116px auto 0',
+                      background: '#1F1F1F',
+                      borderRadius: '16px',
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        borderRadius: '16px',
+                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px',
+                      }}
+                    >
+                      <div
+                        className="w-full h-full rounded-[15px]"
+                        style={{
+                          background: '#1F1F1F',
+                        }}
+                      ></div>
+                    </div>
+                    <div
+                      style={{
+                        position: 'relative',
+                        zIndex: 1,
+                        width: '100%',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'flex-start',
+                          gap: '40px',
+                          width: '100%',
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            gap: '16px',
+                            width: '100%',
+                          }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: '24px',
+                              width: '100%',
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '12px',
+                                flex: 1,
+                              }}
+                            >
+                              <h3
+                                style={{
+                                  fontFamily: 'Gilroy-SemiBold',
+                                  fontStyle: 'normal',
+                                  fontWeight: 400,
+                                  fontSize: '36px',
+                                  lineHeight: '100%',
+                                  color: '#FFFFFF',
+                                  margin: 0,
+                                }}
+                              >
+                                Holdings
+                              </h3>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            gap: '12px',
+                            width: '100%',
+                          }}
+                        >
+                          <div
+                            style={{
+                              boxSizing: 'border-box',
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              padding: '16px',
+                              gap: '24px',
+                              width: '100%',
+                              border: '1px solid rgba(255, 255, 255, 0.3)',
+                              borderRadius: '8px',
+                            }}
+                          >
+                            {holdingsColumns.map(column => (
+                              <span
+                                key={column}
+                                style={{
+                                  width: '150.86px',
+                                  fontFamily: 'Gilroy-Medium',
+                                  fontStyle: 'normal',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  lineHeight: '100%',
+                                  textAlign: 'center',
+                                  color: '#FFFFFF',
+                                }}
+                              >
+                                {column}
+                              </span>
+                            ))}
+                          </div>
+
+                          {holdingsRows.map((row, index) => (
+                            <div
+                              key={`${row.asset}-${index}`}
+                              style={{
+                                boxSizing: 'border-box',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                padding: '16px',
+                                gap: '24px',
+                                width: '100%',
+                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                borderRadius: '8px',
+                              }}
+                            >
+                              <span
+                                style={{
+                                  width: '150.86px',
+                                  fontFamily: 'Gilroy-Medium',
+                                  fontStyle: 'normal',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  lineHeight: '100%',
+                                  textAlign: 'center',
+                                  color: '#909090',
+                                }}
+                              >
+                                {row.asset}
+                              </span>
+                              <span
+                                style={{
+                                  width: '150.86px',
+                                  fontFamily: 'Gilroy-Medium',
+                                  fontStyle: 'normal',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  lineHeight: '100%',
+                                  textAlign: 'center',
+                                  color: '#909090',
+                                }}
+                              >
+                                {row.quantity}
+                              </span>
+                              <span
+                                style={{
+                                  width: '150.86px',
+                                  fontFamily: 'Gilroy-Medium',
+                                  fontStyle: 'normal',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  lineHeight: '100%',
+                                  textAlign: 'center',
+                                  color: '#909090',
+                                }}
+                              >
+                                {row.avgPrice}
+                              </span>
+                              <span
+                                style={{
+                                  width: '150.86px',
+                                  fontFamily: 'Gilroy-Medium',
+                                  fontStyle: 'normal',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  lineHeight: '100%',
+                                  textAlign: 'center',
+                                  color: '#909090',
+                                }}
+                              >
+                                {row.currentPrice}
+                              </span>
+                              <span
+                                style={{
+                                  width: '150.86px',
+                                  fontFamily: 'Gilroy-Medium',
+                                  fontStyle: 'normal',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  lineHeight: '100%',
+                                  textAlign: 'center',
+                                  color: '#909090',
+                                }}
+                              >
+                                {row.value}
+                              </span>
+                              <span
+                                style={{
+                                  width: '150.86px',
+                                  fontFamily: 'Gilroy-Medium',
+                                  fontStyle: 'normal',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  lineHeight: '100%',
+                                  textAlign: 'center',
+                                  color: row.pnlColor,
+                                }}
+                              >
+                                {row.pnl}
+                              </span>
+                              <span
+                                style={{
+                                  width: '150.86px',
+                                  display: 'flex',
+                                  flexDirection: 'row',
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                }}
+                              >
+                                <button
+                                  type="button"
+                                  style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '8px',
+                                    border: 'none',
+                                    background: 'rgba(255, 255, 255, 0.08)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                  }}
+                                  aria-label={`Edit ${row.asset}`}
+                                >
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 16 16"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M3 12.9998L5.6 12.5998C5.82091 12.5668 6.01777 12.4552 6.16 12.2898L12.6 5.69984C12.9186 5.36585 13.1004 4.92125 13.1061 4.45553C13.1118 3.98982 12.941 3.54056 12.63 3.19984C12.4776 3.03707 12.2902 2.90963 12.0811 2.82671C11.872 2.74379 11.6467 2.70743 11.42 2.71984C10.9933 2.72156 10.5862 2.89754 10.28 3.20984L3.84 9.79984C3.6839 9.95507 3.57208 10.1508 3.52 10.3648L3 12.9998Z"
+                                      fill="#909090"
+                                    />
+                                    <path
+                                      d="M2 14.6665H14"
+                                      stroke="#909090"
+                                      strokeWidth="1.2"
+                                      strokeLinecap="round"
+                                    />
+                                  </svg>
+                                </button>
+                                <button
+                                  type="button"
+                                  style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    borderRadius: '8px',
+                                    border: 'none',
+                                    background: 'rgba(255, 0, 0, 0.08)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    cursor: 'pointer',
+                                  }}
+                                  aria-label={`Delete ${row.asset}`}
+                                >
+                                  <svg
+                                    width="16"
+                                    height="16"
+                                    viewBox="0 0 16 16"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      d="M6 3.33333L6.27333 2.55333C6.39174 2.22287 6.62305 1.94347 6.92592 1.76489C7.22878 1.58631 7.58558 1.51953 7.93333 1.57333H8.06667C8.41442 1.51953 8.77122 1.58631 9.07408 1.76489C9.37695 1.94347 9.60826 2.22287 9.72667 2.55333L10 3.33333"
+                                      stroke="#BB0404"
+                                      strokeWidth="1.2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                    <path
+                                      d="M12.6667 3.3335H3.33333"
+                                      stroke="#BB0404"
+                                      strokeWidth="1.2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                    <path
+                                      d="M5.33398 3.3335V12.0002C5.33398 12.3538 5.47445 12.693 5.72449 12.9431C5.97454 13.1931 6.3137 13.3335 6.66732 13.3335H9.33398C9.6876 13.3335 10.0268 13.1931 10.2768 12.9431C10.5269 12.693 10.6673 12.3538 10.6673 12.0002V3.3335"
+                                      stroke="#BB0404"
+                                      strokeWidth="1.2"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    />
+                                  </svg>
+                                </button>
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            width: '100%',
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontFamily: 'Gilroy-Medium',
+                              fontStyle: 'normal',
+                              fontWeight: 400,
+                              fontSize: '14px',
+                              lineHeight: '100%',
+                              color: '#909090',
+                            }}
+                          >
+                            10 of 100
+                          </span>
+                          <div
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              gap: '8px',
+                            }}
+                          >
+                            {[1, 2, 3, 4].map(page => {
+                              const isActive = page === 1;
+                              return (
+                                <button
+                                  key={page}
+                                  type="button"
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    width: '32px',
+                                    height: '30px',
+                                    borderRadius: '8px',
+                                    border: isActive ? '1px solid #667EEA' : '1px solid #909090',
+                                    background: isActive ? '#667EEA' : 'transparent',
+                                    color: isActive ? '#FFFFFF' : '#909090',
+                                    fontFamily: 'Gilroy-Medium',
+                                    fontStyle: 'normal',
+                                    fontWeight: 400,
+                                    fontSize: '14px',
+                                    lineHeight: '100%',
+                                    cursor: 'pointer',
+                                  }}
+                                >
+                                  {page}
+                                </button>
+                              );
+                            })}
+                            <button
+                              type="button"
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '32px',
+                                height: '30px',
+                                borderRadius: '8px',
+                                border: '1px solid #909090',
+                                background: 'transparent',
+                                cursor: 'pointer',
+                              }}
+                              aria-label="Next page"
+                            >
+                              <svg
+                                width="10"
+                                height="10"
+                                viewBox="0 0 10 10"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                style={{ transform: 'rotate(-90deg)' }}
+                              >
+                                <path
+                                  d="M3 2.5L5 4.5L7 2.5"
+                                  stroke="#909090"
+                                  strokeWidth="1.2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                                <path
+                                  d="M5 4.5V7.5"
+                                  stroke="#909090"
+                                  strokeWidth="1.2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+            )}
+
+            {!isAuthenticated && (
+            <>
+            <div
+              style={{
+                position: 'relative',
+                width: '1280px',
+                maxWidth: '100%',
+                margin: '120px auto 0',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: '0px',
+                gap: '64px',
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  padding: '0px',
+                  gap: '24px',
+                  width: '100%',
+                }}
+              >
+                <h2
+                  style={{
+                    width: '100%',
+                    maxWidth: '1280px',
+                    fontFamily: 'Gilroy-SemiBold',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    fontSize: '36px',
+                    lineHeight: '130%',
+                    color: '#FFFFFF',
+                    margin: 0,
+                  }}
+                >
+                  Your Portfolio
+                </h2>
+                <p
+                  style={{
+                    fontFamily: 'Gilroy-Medium',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    fontSize: '16px',
+                    lineHeight: '100%',
+                    color: '#FFFFFF',
+                    margin: 0,
+                  }}
+                >
+                  Sample view—subscribe to add holdings and track P/L.
+                </p>
+              </div>
+
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  padding: '0px',
+                  gap: '20px',
+                  width: '100%',
+                  maxWidth: '1280px',
+                }}
+              >
+                <div
+                  className="relative overflow-hidden"
+                  style={{
+                    width: '847px',
+                    height: '344px',
+                    borderRadius: '16px',
+                    background: '#1F1F1F',
+                    position: 'relative',
+                  }}
+                >
+                  <Image
+                    src="/graph.svg"
+                    alt="Portfolio preview chart"
+                    width={847}
+                    height={344}
+                    priority
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                </div>
+
+                <div className="relative">
+                  <AllocationDistributionCard />
+                <div
+                    className="pointer-events-none absolute inset-0 rounded-2xl"
+                  style={{
+                      background: 'linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, #0A0A0A 100%)',
+                        }}
+                      ></div>
+                    </div>
+                          </div>
+            </div>
+            <div
+              style={{
+                marginTop: '150px',
+                display: 'flex',
+                justifyContent: 'center',
+              }}
+            >
+              <HoldingsTable />
+            </div>
+            </>
+            )}
             
             {/* Big Gap */}
-            <div style={{ marginTop: '220px' }}></div>
+            <div style={{ marginTop: isAuthenticated ? '220px' : '160px' }}></div>
             
             {/* Ready to unlock full access Tile */}
             {!isAuthenticated && (
@@ -995,10 +2155,157 @@ export default function PortfolioPage() {
                 )}
               </div>
             </div>
+
+            {/* Newsletter Subscription */}
+            {isAuthenticated && (
+            <div className="w-full" style={{ marginTop: '220px' }}>
+              <NewsletterSubscription />
+            </div>
+            )}
           </div>
         </div>
       </div>
-      
+
+    {isAddHoldingModalOpen && (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="add-holding-modal-title"
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(10, 10, 10, 0.85)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        zIndex: 1000,
+        padding: '24px',
+      }}
+      onClick={closeAddHoldingModal}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '480px',
+          background: '#1F1F1F',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
+          boxShadow: '0px 24px 80px rgba(0, 0, 0, 0.6)',
+          padding: '32px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+        }}
+        onClick={event => event.stopPropagation()}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <h2
+            id="add-holding-modal-title"
+            style={{
+              fontFamily: 'Gilroy-SemiBold',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '24px',
+              lineHeight: '130%',
+              color: '#FFFFFF',
+              margin: 0,
+            }}
+          >
+            Add Holding
+          </h2>
+          <p
+            style={{
+              fontFamily: 'Gilroy-Medium',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '16px',
+              lineHeight: '130%',
+              color: '#9D9D9D',
+              margin: 0,
+            }}
+          >
+            Enter your brokerage API key to securely sync holdings and monitor portfolio performance.
+          </p>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label
+            htmlFor="portfolio-api-key-input"
+            style={{
+              fontFamily: 'Gilroy-SemiBold',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '130%',
+              color: '#FFFFFF',
+            }}
+          >
+            API Key
+          </label>
+          <input
+            id="portfolio-api-key-input"
+            type="text"
+            value={apiKeyValue}
+            onChange={handleApiKeyChange}
+            placeholder="Enter your API key"
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              background: '#0A0A0A',
+              color: '#FFFFFF',
+              fontFamily: 'Gilroy-Medium',
+              fontSize: '14px',
+              lineHeight: '130%',
+              outline: 'none',
+            }}
+          />
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-end',
+            gap: '12px',
+          }}
+        >
+          <button
+            type="button"
+            style={{
+              padding: '12px 24px',
+              background: 'transparent',
+              color: '#FFFFFF',
+              borderRadius: '100px',
+              border: '1px solid rgba(255, 255, 255, 0.24)',
+              fontFamily: 'Gilroy-SemiBold',
+              fontSize: '14px',
+              cursor: 'pointer',
+            }}
+            onClick={closeAddHoldingModal}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            style={{
+              padding: '12px 24px',
+              background: '#FFFFFF',
+              color: '#0A0A0A',
+              borderRadius: '100px',
+              border: 'none',
+              fontFamily: 'Gilroy-SemiBold',
+              fontSize: '14px',
+              cursor: 'pointer',
+            }}
+            onClick={handleConfirmAddHolding}
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+    )}
+
       <Footer />
     </div>
   );

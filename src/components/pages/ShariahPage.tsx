@@ -13,6 +13,10 @@ export default function ShariahPage() {
   const router = useRouter();
   const isPaidUser = !!user?.isPaid;
   const isAuthenticated = isSignedIn && isPaidUser;
+  const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
+  const [showMethodologyPopup, setShowMethodologyPopup] = useState(false);
+  const popupContentRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isLoading && !isSignedIn) {
@@ -31,11 +35,6 @@ export default function ShariahPage() {
   if (!isSignedIn) {
     return null;
   }
-
-  const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
-  const [showMethodologyPopup, setShowMethodologyPopup] = useState(false);
-  const popupContentRef = useRef<HTMLDivElement>(null);
-  const backdropRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (showMethodologyPopup && popupContentRef.current && backdropRef.current) {

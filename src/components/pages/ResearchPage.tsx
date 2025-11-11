@@ -18,6 +18,10 @@ export default function ResearchPage() {
   const router = useRouter();
   const isPaidUser = !!user?.isPaid;
   const isAuthenticated = isSignedIn && isPaidUser;
+  const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
+  const [shariahOnly, setShariahOnly] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<FilterOption>('All');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (!isLoading && !isSignedIn) {
@@ -36,11 +40,6 @@ export default function ResearchPage() {
   if (!isSignedIn) {
     return null;
   }
-
-  const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
-  const [shariahOnly, setShariahOnly] = useState(false);
-  const [activeFilter, setActiveFilter] = useState<FilterOption>('All');
-  const [searchQuery, setSearchQuery] = useState('');
 
   const previewCards = researchReports.slice(0, 3);
   const researchCards = researchReports;

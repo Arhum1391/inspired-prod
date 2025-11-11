@@ -11,25 +11,6 @@ export default function CalculatorPage() {
   const router = useRouter();
   const isPaidUser = !!user?.isPaid;
   const isAuthenticated = isSignedIn && isPaidUser;
-
-  useEffect(() => {
-    if (!isLoading && !isSignedIn) {
-      router.replace('/signin?next=/calculator');
-    }
-  }, [isLoading, isSignedIn, router]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
-  }
-
-  if (!isSignedIn) {
-    return null;
-  }
-
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
@@ -52,7 +33,21 @@ export default function CalculatorPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const scenariosPerPage = 10;
   const savedScenariosTileRef = useRef<HTMLDivElement>(null);
-  
+  const [accountBalance, setAccountBalance] = useState('');
+  const [riskPercentage, setRiskPercentage] = useState('');
+  const [stopLoss, setStopLoss] = useState('');
+  const [pipValue, setPipValue] = useState('');
+  const [lotSize, setLotSize] = useState('');
+  const [forexLotType, setForexLotType] = useState('Standard Lot');
+  const [isForexLotTypeDropdownOpen, setIsForexLotTypeDropdownOpen] = useState(false);
+  const forexLotTypeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isLoading && !isSignedIn) {
+      router.replace('/signin?next=/calculator');
+    }
+  }, [isLoading, isSignedIn, router]);
+
   // Trading pair options
   const tradingPairs = [
     'BTC/USD',
@@ -70,26 +65,14 @@ export default function CalculatorPage() {
     'ADA/USD',
     'SOL/USD',
   ];
-  
-  // Input fields state (shared for Gold and Forex)
-  const [accountBalance, setAccountBalance] = useState('');
-  const [riskPercentage, setRiskPercentage] = useState('');
-  const [stopLoss, setStopLoss] = useState('');
-  const [pipValue, setPipValue] = useState('');
-  const [lotSize, setLotSize] = useState('');
-  
-  // Forex lot type state
-  const [forexLotType, setForexLotType] = useState('Standard Lot');
-  const [isForexLotTypeDropdownOpen, setIsForexLotTypeDropdownOpen] = useState(false);
-  const forexLotTypeRef = useRef<HTMLDivElement>(null);
-  
+
   const forexLotTypes = ['Standard Lot', 'Mini Lot', 'Micro Lot'];
   const forexLotTypePipValues: { [key: string]: number } = {
     'Standard Lot': 10,
     'Mini Lot': 1,
-    'Micro Lot': 0.10
+    'Micro Lot': 0.10,
   };
-
+  
   // Set default values for non-authenticated users
   useEffect(() => {
     if (!isAuthenticated) {
@@ -384,6 +367,18 @@ export default function CalculatorPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isTradingPairDropdownOpen]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">

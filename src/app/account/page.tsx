@@ -204,17 +204,17 @@ const AccountPage = () => {
                   <div className={`flex flex-row justify-center items-center px-6 py-1.5 gap-2.5 rounded-full ${planStatusClasses}`}>
                     <span className={`${planStatusTextClasses} text-xs font-normal gilroy-medium text-center`}>
                       {planStatusLabel}
-                    </span>
-                  </div>
+                      </span>
+                    </div>
                 </div>
 
                 <div className="w-full flex flex-row items-start justify-between gap-3">
                   <span className="text-white text-xl font-normal gilroy-semibold flex-1">
                     {planName}
                   </span>
-                  <span className="text-[#D4D737] text-2xl font-normal gilroy-semibold">
+                    <span className="text-[#D4D737] text-2xl font-normal gilroy-semibold">
                     {planPrice}
-                  </span>
+                    </span>
                 </div>
               </div>
 
@@ -234,19 +234,19 @@ const AccountPage = () => {
 
                 {hasActiveSubscription ? (
                   <>
-                    <button 
-                      onClick={() => router.push('/account/payment-method')}
-                      className="hover:opacity-80 transition-opacity bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
-                    >
-                      Update Payment
-                    </button>
+                <button 
+                  onClick={() => router.push('/account/payment-method')}
+                  className="hover:opacity-80 transition-opacity bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
+                >
+                  Update Payment
+                </button>
 
-                    <button 
-                      onClick={() => router.push('/account/cancel-plan')}
-                      className="hover:opacity-80 transition-opacity bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
-                    >
-                      Cancel Plan
-                    </button>
+                <button 
+                  onClick={() => router.push('/account/cancel-plan')}
+                  className="hover:opacity-80 transition-opacity bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
+                >
+                  Cancel Plan
+                </button>
                   </>
                 ) : (
                   <button 
@@ -392,39 +392,39 @@ const AccountPage = () => {
 
                     return (
                       <div key={invoiceId || invoice.id} className="w-full border border-white/30 rounded-lg p-4 flex flex-row items-center gap-6">
-                        <div className="w-[134px] flex flex-col justify-center items-center">
-                          <span className="text-white text-sm font-normal gilroy-medium text-center">
+                      <div className="w-[134px] flex flex-col justify-center items-center">
+                        <span className="text-white text-sm font-normal gilroy-medium text-center">
                             <span title={invoiceId}>{displayInvoiceId}</span>
-                          </span>
-                        </div>
-                        <div className="w-[134px] flex flex-col justify-center items-start">
-                          <span className="text-white text-sm font-normal gilroy-medium">
-                            {new Date(invoice.paidAt || invoice.createdAt).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <div className="w-[134px] flex flex-col justify-center items-start">
-                          <span className="text-white text-sm font-normal gilroy-medium">
-                            {invoice.amount} {invoice.currency?.toUpperCase() || 'USD'}
-                          </span>
-                        </div>
-                        <div className="w-[134px] flex flex-col justify-center items-center">
-                          <span className="text-[#05B0B3] text-xs font-normal gilroy-medium text-center px-2.5 py-1.5 bg-[rgba(5,176,179,0.12)] border border-[#05B0B3] rounded-full">
-                            {invoice.status === 'paid' ? 'Paid' : invoice.status}
-                          </span>
-                        </div>
-                        <div className="w-[134px] flex flex-col justify-center items-center">
-                          {invoice.invoiceUrl && (
-                            <a
-                              href={invoice.invoiceUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-white text-sm font-normal gilroy-medium hover:opacity-80 underline"
-                            >
-                              PDF
-                            </a>
-                          )}
-                        </div>
+                        </span>
                       </div>
+                      <div className="w-[134px] flex flex-col justify-center items-start">
+                        <span className="text-white text-sm font-normal gilroy-medium">
+                          {new Date(invoice.paidAt || invoice.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="w-[134px] flex flex-col justify-center items-start">
+                        <span className="text-white text-sm font-normal gilroy-medium">
+                            {invoice.amount} {invoice.currency?.toUpperCase() || 'USD'}
+                        </span>
+                      </div>
+                      <div className="w-[134px] flex flex-col justify-center items-center">
+                        <span className="text-[#05B0B3] text-xs font-normal gilroy-medium text-center px-2.5 py-1.5 bg-[rgba(5,176,179,0.12)] border border-[#05B0B3] rounded-full">
+                          {invoice.status === 'paid' ? 'Paid' : invoice.status}
+                        </span>
+                      </div>
+                      <div className="w-[134px] flex flex-col justify-center items-center">
+                        {invoice.invoiceUrl && (
+                          <a
+                            href={invoice.invoiceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-white text-sm font-normal gilroy-medium hover:opacity-80 underline"
+                          >
+                            PDF
+                          </a>
+                        )}
+                      </div>
+                    </div>
                     );
                   })
                 ) : (

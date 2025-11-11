@@ -67,29 +67,16 @@ export default function PortfolioPage() {
   const router = useRouter();
   const isPaidUser = !!user?.isPaid;
   const isAuthenticated = isSignedIn && isPaidUser;
+  const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
+  const [isAddHoldingModalOpen, setAddHoldingModalOpen] = useState(false);
+  const [apiKeyValue, setApiKeyValue] = useState('');
+  const [hasConnectedApi, setHasConnectedApi] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !isSignedIn) {
       router.replace('/signin?next=/portfolio');
     }
   }, [isLoading, isSignedIn, router]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
-  }
-
-  if (!isSignedIn) {
-    return null;
-  }
-
-  const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
-  const [isAddHoldingModalOpen, setAddHoldingModalOpen] = useState(false);
-  const [apiKeyValue, setApiKeyValue] = useState('');
-  const [hasConnectedApi, setHasConnectedApi] = useState(false);
 
   const toggleTile = (index: number) => {
     setExpandedTiles(prev => ({
@@ -111,6 +98,18 @@ export default function PortfolioPage() {
     setHasConnectedApi(true);
     closeAddHoldingModal();
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return null;
+  }
 
   const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
     setApiKeyValue(event.target.value);

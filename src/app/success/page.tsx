@@ -195,11 +195,14 @@ function SuccessPageContent() {
                     Access in-depth reports and analysis.
                   </p>
                 </div>
-                <button className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center">
+                <a
+                  href="/research"
+                  className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
                   <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">
                     Explore
                   </span>
-                </button>
+                </a>
               </div>
             </div>
 
@@ -237,11 +240,14 @@ function SuccessPageContent() {
                     Size positions based on your risk tolerance.
                   </p>
                 </div>
-                <button className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center">
+                <a
+                  href="/calculator"
+                  className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
                   <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">
                     Get Started
                   </span>
-                </button>
+                </a>
               </div>
             </div>
 
@@ -279,11 +285,14 @@ function SuccessPageContent() {
                     Track your investments and performance.
                   </p>
                 </div>
-                <button className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center">
+                <a
+                  href="/portfolio"
+                  className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
                   <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">
                     Start Tracking
                   </span>
-                </button>
+                </a>
               </div>
             </div>
           </div>

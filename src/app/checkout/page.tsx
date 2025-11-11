@@ -17,12 +17,13 @@ function CheckoutContent() {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
+  const [isFinalizing, setIsFinalizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
   const [customerEmail, setCustomerEmail] = useState<string | null>(null);
   const [customerName, setCustomerName] = useState<string | null>(null);
   const [hasCheckedCustomer, setHasCheckedCustomer] = useState(false);
-  const { user } = useAuth();
+  const { user, login } = useAuth();
 
   useEffect(() => {
     const planParam = searchParams.get('plan');
@@ -127,21 +128,59 @@ function CheckoutContent() {
   };
 
   const handlePaymentSuccess = useCallback(
-    (subscription: string, paymentIntentId?: string | null) => {
-      const params = new URLSearchParams();
-      if (subscription) {
-        params.set('subscription_id', subscription);
+    async (subscription: string, paymentIntentId?: string | null) => {
+      setIsFinalizing(true);
+      setFormError(null);
+      setError(null);
+      try {
+        const activateRes = await fetch('/api/subscription/activate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ subscriptionId: subscription }),
+        });
+
+        if (!activateRes.ok) {
+          const activateData = await activateRes.json().catch(() => ({}));
+          throw new Error(activateData.error || 'Failed to finalize subscription. Please contact support.');
+        }
+
+        const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+        if (meRes.ok) {
+          const meData = await meRes.json();
+          if (meData.user) {
+            await login({
+              id: meData.user.id,
+              email: meData.user.email,
+              name: meData.user.name || undefined,
+              isPaid: meData.user.isPaid ?? false,
+              subscriptionStatus: meData.user.subscriptionStatus,
+            });
+          }
+        }
+
+        const params = new URLSearchParams();
+        if (subscription) {
+          params.set('subscription_id', subscription);
+        }
+        if (paymentIntentId) {
+          params.set('payment_intent', paymentIntentId);
+        }
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('signupEmail');
+        }
+        const search = params.toString();
+        router.push(`/success${search ? `?${search}` : ''}`);
+      } catch (err: any) {
+        console.error('Finalization error:', err);
+        const message = err?.message || 'Failed to finalize subscription. Please contact support.';
+        setFormError(message);
+        throw err;
+      } finally {
+        setIsFinalizing(false);
       }
-      if (paymentIntentId) {
-        params.set('payment_intent', paymentIntentId);
-      }
-      if (typeof window !== 'undefined') {
-        sessionStorage.removeItem('signupEmail');
-      }
-      const search = params.toString();
-      router.push(`/success${search ? `?${search}` : ''}`);
     },
-    [router],
+    [router, login],
   );
 
   const handlePaymentError = useCallback((message: string | null) => {
@@ -198,6 +237,18 @@ function CheckoutContent() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+      {isFinalizing && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="rounded-2xl border border-white/10 bg-[#1F1F1F] px-6 py-8 text-center shadow-lg">
+            <p className="text-lg font-semibold text-white mb-2" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+              Finalizing your subscription…
+            </p>
+            <p className="text-sm text-white/70" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+              Please wait while we activate your premium access.
+            </p>
+          </div>
+        </div>
+      )}
       <Navbar />
 
       <div
@@ -394,7 +445,7 @@ interface CheckoutPaymentFormProps {
   customerEmail: string;
   customerName?: string | null;
   subscriptionId: string;
-  onSuccess: (subscriptionId: string, paymentIntentId?: string | null) => void;
+  onSuccess: (subscriptionId: string, paymentIntentId?: string | null) => Promise<void>;
   onError: (message: string | null) => void;
 }
 
@@ -455,13 +506,24 @@ function CheckoutPaymentForm({
         status === 'processing' ||
         status === 'requires_action'
       ) {
-        onSuccess(subscriptionId, paymentIntent?.id ?? null);
+        try {
+          await onSuccess(subscriptionId, paymentIntent?.id ?? null);
+        } catch (err: any) {
+          const message = err?.message || 'Unable to finalize subscription. Please contact support.';
+          setLocalError(message);
+          onError(message);
+          setIsProcessing(false);
+          return;
+        }
       } else {
         const message = 'Unable to confirm payment. Please try again.';
         setLocalError(message);
         onError(message);
         setIsProcessing(false);
+        return;
       }
+
+      setIsProcessing(false);
     },
     [stripe, elements, billingName, customerEmail, onError, onSuccess, subscriptionId],
   );

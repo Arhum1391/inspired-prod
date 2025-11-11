@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
@@ -63,8 +63,29 @@ const holdingsRows: HoldingRow[] = [
 ];
 
 export default function PortfolioPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated: isSignedIn, user, isLoading } = useAuth();
   const router = useRouter();
+  const isPaidUser = !!user?.isPaid;
+  const isAuthenticated = isSignedIn && isPaidUser;
+
+  useEffect(() => {
+    if (!isLoading && !isSignedIn) {
+      router.replace('/signin?next=/portfolio');
+    }
+  }, [isLoading, isSignedIn, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return null;
+  }
+
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [isAddHoldingModalOpen, setAddHoldingModalOpen] = useState(false);
   const [apiKeyValue, setApiKeyValue] = useState('');

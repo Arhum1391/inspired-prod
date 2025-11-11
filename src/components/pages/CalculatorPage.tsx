@@ -7,8 +7,29 @@ import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function CalculatorPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated: isSignedIn, user, isLoading } = useAuth();
   const router = useRouter();
+  const isPaidUser = !!user?.isPaid;
+  const isAuthenticated = isSignedIn && isPaidUser;
+
+  useEffect(() => {
+    if (!isLoading && !isSignedIn) {
+      router.replace('/signin?next=/calculator');
+    }
+  }, [isLoading, isSignedIn, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return null;
+  }
+
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);

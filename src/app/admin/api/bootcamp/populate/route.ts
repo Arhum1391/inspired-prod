@@ -12,7 +12,7 @@ export async function POST() {
         id: 'crypto-trading',
         title: 'Crypto Trading Bootcamp',
         description: 'Gain the skills to analyze crypto markets with confidence, manage risks like a pro, and apply proven trading strategies.',
-        price: '30 BNB',
+        price: '$30 USD',
         duration: '6 Weeks',
         format: 'Online',
         mentors: [
@@ -35,7 +35,7 @@ export async function POST() {
         id: 'ai-data-finance',
         title: 'AI & Data for Finance',
         description: 'Explore the power of AI-driven trading, master data analysis techniques, and learn how to build automated systems that uncover market opportunities and enhance decision-making.',
-        price: '30 BNB',
+        price: '$30 USD',
         duration: '4 Weeks',
         format: 'Online',
         mentors: [
@@ -59,7 +59,7 @@ export async function POST() {
         id: 'forex-mastery',
         title: 'Forex Mastery Mentorship',
         description: 'Learn the fundamentals of forex trading, develop the skills to read live charts with accuracy, and apply advanced strategies to navigate global currency markets with confidence.',
-        price: '30 BNB',
+        price: '$30 USD',
         duration: '8 Weeks',
         format: 'Online',
         mentors: [
@@ -82,7 +82,7 @@ export async function POST() {
         id: 'stock-market-investing',
         title: 'Stock Market Investing Bootcamp',
         description: 'Learn how to build and manage a strong investment portfolio, accurately value companies, and apply long-term wealth-building strategies that stand the test of time.',
-        price: '30 BNB',
+        price: '$30 USD',
         duration: '6 Weeks',
         format: 'Online',
         mentors: [
@@ -105,7 +105,7 @@ export async function POST() {
         id: 'web3-blockchain',
         title: 'Web3 & Blockchain Mentorship',
         description: 'Take a deep dive into blockchain technology, understand the mechanics of smart contracts, and explore the world of decentralized finance (DeFi) to unlcok real-world applications of Web3.',
-        price: '30 BNB',
+        price: '$30 USD',
         duration: '5 Weeks',
         format: 'Online',
         mentors: [
@@ -128,7 +128,7 @@ export async function POST() {
         id: 'career-growth-finance-tech',
         title: 'Career Growth in Finance & Tech',
         description: 'Receive personalized career guidance, professional resume reviews, and interview preparation directly from industry mentors to help you stand out and achieve your career goals in finance and technology.',
-        price: '30 BNB',
+        price: '$30 USD',
         duration: '4 Weeks',
         format: 'Online',
         mentors: [

@@ -158,7 +158,7 @@ export default function Pricing() {
                       color: '#D4D737'
                     }}
                   >
-                    30 BNB per month
+                    $30 USD per month
                   </p>
                 </div>
 
@@ -380,7 +380,7 @@ export default function Pricing() {
                       color: '#05B0B3'
                     }}
                   >
-                    120 BNB per year
+                    $120 USD per year
                   </p>
                   <p 
                     className="text-white"
@@ -393,7 +393,7 @@ export default function Pricing() {
                       color: '#FFFFFF'
                     }}
                   >
-                    (10 BNB /month)
+                    ($10 USD /month)
                   </p>
                 </div>
 

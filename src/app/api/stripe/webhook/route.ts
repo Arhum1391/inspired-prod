@@ -110,7 +110,7 @@ async function processWebhookAsync(event: any) {
             // Determine plan type and price
             const planType = metadata.plan === 'annual' ? 'annual' : 'monthly';
             const planName = planType === 'annual' ? 'Premium Annual' : 'Premium Monthly';
-            const price = planType === 'annual' ? '120 BNB' : '30 BNB';
+            const price = planType === 'annual' ? '$120 USD' : '$30 USD';
 
             // Create subscription record
             const subscription = {
@@ -130,6 +130,19 @@ async function processWebhookAsync(event: any) {
 
             await db.collection('subscriptions').insertOne(subscription);
             console.log(`✅ Subscription created for user ${userId}`);
+
+            await db.collection('public_users').updateOne(
+              { _id: userId },
+              {
+                $set: {
+                  isPaid: true,
+                  subscriptionStatus: stripeSubscription.status ?? 'active',
+                  lastPaymentAt: new Date(),
+                  updatedAt: new Date(),
+                },
+              }
+            );
+            console.log(`✅ Updated user ${userId} to paid status`);
 
             // Save payment method from subscription
             try {
@@ -267,9 +280,40 @@ async function processWebhookAsync(event: any) {
         }
       );
 
+      const updatedSubscription = await db.collection('subscriptions').findOne({
+        stripeSubscriptionId: subscription.id,
+      });
+
+      if (updatedSubscription?.userId) {
+        const userId =
+          updatedSubscription.userId instanceof ObjectId
+            ? updatedSubscription.userId
+            : new ObjectId(updatedSubscription.userId);
+
+        const isSubscriptionActive = ['active', 'trialing', 'past_due'].includes(subscription.status);
+
+        const userUpdate: Record<string, any> = {
+          isPaid: isSubscriptionActive,
+          subscriptionStatus: subscription.status ?? 'canceled',
+          updatedAt: new Date(),
+        };
+
+        if (isSubscriptionActive) {
+          userUpdate.lastPaymentAt = new Date();
+        }
+
+        await db.collection('public_users').updateOne(
+          { _id: userId },
+          {
+            $set: userUpdate,
+          }
+        );
+        console.log(`✅ Synced user ${userId} subscription status to ${subscription.status}`);
+      }
+
       await client.close();
     } else if (event.type === 'customer.subscription.deleted') {
-      // Handle subscription cancellation and delete user account
+      // Handle subscription cancellation and keep user account for free access
       const subscription = event.data.object;
       console.log(`✅ Subscription canceled: ${subscription.id}`);
 
@@ -278,60 +322,44 @@ async function processWebhookAsync(event: any) {
         stripeSubscriptionId: subscription.id
       });
 
-      if (dbSubscription && dbSubscription.userId) {
-        // Ensure userId is an ObjectId
+      if (dbSubscription?.userId) {
         const userId = dbSubscription.userId instanceof ObjectId 
           ? dbSubscription.userId 
           : new ObjectId(dbSubscription.userId);
-        const userIdString = userId.toString();
 
-        console.log(`Deleting account and all data for user ${userIdString}`);
+        await db.collection('subscriptions').updateMany(
+          { userId },
+          {
+            $set: {
+              status: 'canceled',
+              cancelAtPeriodEnd: false,
+              canceledAt: new Date(),
+              updatedAt: new Date(),
+            },
+          }
+        );
 
-        // Delete user subscriptions
-        const subscriptionsResult = await db.collection('subscriptions').deleteMany({
-          userId: userId
-        });
-        console.log(`Deleted ${subscriptionsResult.deletedCount} subscription(s) for user ${userIdString}`);
+        await db.collection('public_users').updateOne(
+          { _id: userId },
+          {
+            $set: {
+              isPaid: false,
+              subscriptionStatus: 'canceled',
+              updatedAt: new Date(),
+            },
+          }
+        );
 
-        // Delete payment methods
-        const paymentMethodsResult = await db.collection('payment_methods').deleteMany({
-          userId: userId
-        });
-        console.log(`Deleted ${paymentMethodsResult.deletedCount} payment method(s) for user ${userIdString}`);
-
-        // Delete billing history
-        const billingHistoryResult = await db.collection('billing_history').deleteMany({
-          userId: userId
-        });
-        console.log(`Deleted ${billingHistoryResult.deletedCount} billing record(s) for user ${userIdString}`);
-
-        // Delete bookings (Calendly) - uses string userId
-        const bookingsResult = await db.collection('bookings').deleteMany({
-          userId: userIdString
-        });
-        console.log(`Deleted ${bookingsResult.deletedCount} booking(s) for user ${userIdString}`);
-
-        // Delete bootcamp registrations - uses string userId
-        const bootcampRegistrationsResult = await db.collection('bootcamp_registrations').deleteMany({
-          userId: userIdString
-        });
-        console.log(`Deleted ${bootcampRegistrationsResult.deletedCount} bootcamp registration(s) for user ${userIdString}`);
-
-        // Finally, delete the user account
-        const userResult = await db.collection('public_users').deleteOne({
-          _id: userId
-        });
-        console.log(`Deleted user account: ${userIdString}`);
+        console.log(`✅ Updated user ${userId} to unpaid status after cancellation`);
       } else {
-        // Update subscription status even if we can't find user (edge case)
         await db.collection('subscriptions').updateOne(
           { stripeSubscriptionId: subscription.id },
           {
             $set: {
               status: 'canceled',
               canceledAt: new Date(),
-              updatedAt: new Date()
-            }
+              updatedAt: new Date(),
+            },
           }
         );
       }
@@ -371,6 +399,24 @@ async function processWebhookAsync(event: any) {
           
           await db.collection('billing_history').insertOne(billingRecord);
           console.log(`✅ Billing record created for subscription ${invoice.subscription}`);
+
+          const userId =
+            subscription.userId instanceof ObjectId
+              ? subscription.userId
+              : new ObjectId(subscription.userId);
+
+          await db.collection('public_users').updateOne(
+            { _id: userId },
+            {
+              $set: {
+                isPaid: true,
+                subscriptionStatus: subscription.status ?? 'active',
+                lastPaymentAt: new Date(),
+                updatedAt: new Date(),
+              },
+            }
+          );
+          console.log(`✅ Updated user ${userId} payment timestamp from invoice`);
         }
       }
 

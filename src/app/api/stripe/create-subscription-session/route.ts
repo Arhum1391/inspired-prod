@@ -1,34 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { verifyToken } from '@/lib/auth';
-
-const getBaseUrl = () => {
-  if (process.env.NEXT_PUBLIC_BASE_URL) {
-    return process.env.NEXT_PUBLIC_BASE_URL.replace(/\/$/, '');
-  }
-  if (process.env.VERCEL_ENV === 'production') {
-    return 'https://inspired-analyst.vercel.app';
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
-  return 'http://localhost:3000';
-};
+import Stripe from 'stripe';
 
 const planConfig = {
   monthly: {
-    priceId: process.env.STRIPE_PRICE_ID_MONTHLY || 'price_monthly',
-    amount: 30, // BNB amount
+    priceEnvKey: 'STRIPE_PRICE_ID_MONTHLY',
+    amount: 30,
     currency: 'usd',
     name: 'Premium Monthly',
   },
   annual: {
-    priceId: process.env.STRIPE_PRICE_ID_ANNUAL || 'price_annual',
-    amount: 120, // BNB amount
+    priceEnvKey: 'STRIPE_PRICE_ID_ANNUAL',
+    amount: 120,
     currency: 'usd',
     name: 'Premium Annual',
   },
-};
+} as const;
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,21 +26,20 @@ export async function POST(request: NextRequest) {
     if (!plan || !customerEmail) {
       return NextResponse.json(
         { error: 'Missing required fields' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (plan !== 'monthly' && plan !== 'annual') {
       return NextResponse.json(
         { error: 'Invalid plan type' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // Get user from token if available
     const token = request.cookies.get('user-auth-token')?.value;
     let userId: string | null = null;
-    
+
     if (token) {
       const decoded = verifyToken(token);
       if (decoded) {
@@ -61,50 +48,102 @@ export async function POST(request: NextRequest) {
     }
 
     const config = planConfig[plan];
-    const baseUrl = getBaseUrl();
+    const priceId = process.env[config.priceEnvKey];
 
-    // Create Stripe checkout session for subscription
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [
+    if (!priceId) {
+      return NextResponse.json(
         {
-          price_data: {
-            currency: config.currency,
-            product_data: {
-              name: config.name,
-              description: `Premium subscription - ${plan === 'monthly' ? 'Monthly' : 'Annual'} billing`,
-            },
-            unit_amount: config.amount * 100, // Convert to cents (assuming 1 BNB = $1 for now)
-            recurring: {
-              interval: plan === 'monthly' ? 'month' : 'year',
-            },
+          error: `Stripe price ID not configured for ${plan} plan. Set ${config.priceEnvKey} in your environment.`,
+        },
+        { status: 500 },
+      );
+    }
+
+    // Find or create customer
+    let customer: Stripe.Customer | Stripe.DeletedCustomer | null = null;
+    const existingCustomers = await stripe.customers.list({
+      email: customerEmail,
+      limit: 1,
+    });
+
+    if (existingCustomers.data.length > 0) {
+      customer = existingCustomers.data[0];
+      if (!customer.deleted && customerName && !customer.name) {
+        await stripe.customers.update(customer.id, { name: customerName });
+      }
+    } else {
+      customer = await stripe.customers.create({
+        email: customerEmail,
+        name: customerName || undefined,
+      });
+    }
+
+    if (!customer || customer.deleted) {
+      return NextResponse.json(
+        { error: 'Unable to create customer' },
+        { status: 400 },
+      );
+    }
+
+    // Create subscription in incomplete state to obtain PaymentIntent client secret
+    const subscription = await stripe.subscriptions.create({
+      customer: customer.id,
+      items: [
+        {
+          price: priceId,
+          metadata: {
+            plan,
           },
-          quantity: 1,
         },
       ],
-      customer_email: customerEmail,
+      payment_behavior: 'default_incomplete',
+      payment_settings: {
+        save_default_payment_method: 'on_subscription',
+      },
+      expand: ['latest_invoice.payment_intent'],
       metadata: {
-        plan: plan,
+        plan,
         userId: userId || '',
-        customerEmail: customerEmail,
+        customerEmail,
         customerName: customerName || '',
       },
-      success_url: `${baseUrl}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${baseUrl}/pricing`,
-      expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // 30 minutes
     });
 
+    const paymentIntent = subscription.latest_invoice &&
+      typeof subscription.latest_invoice !== 'string'
+      ? subscription.latest_invoice.payment_intent
+      : null;
+
+    const clientSecret =
+      paymentIntent &&
+      typeof paymentIntent !== 'string' &&
+      paymentIntent.client_secret
+        ? paymentIntent.client_secret
+        : null;
+
+    if (!clientSecret) {
+      return NextResponse.json(
+        { error: 'Unable to initialize payment intent' },
+        { status: 400 },
+      );
+    }
+
     return NextResponse.json({
-      success: true,
-      url: session.url,
-      sessionId: session.id,
+      clientSecret,
+      subscriptionId: subscription.id,
+      customerId: customer.id,
+      plan: {
+        name: config.name,
+        amount: config.amount,
+        currency: config.currency,
+        interval: plan === 'monthly' ? 'month' : 'year',
+      },
     });
   } catch (error: any) {
-    console.error('Error creating subscription session:', error);
+    console.error('Error creating subscription intent:', error);
     return NextResponse.json(
-      { error: error.message || 'Failed to create checkout session' },
-      { status: 500 }
+      { error: error.message || 'Failed to initialize subscription' },
+      { status: 500 },
     );
   }
 }

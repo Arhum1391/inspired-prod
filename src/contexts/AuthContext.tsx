@@ -6,6 +6,8 @@ interface User {
   id: string;
   email: string;
   name?: string;
+  isPaid: boolean;
+  subscriptionStatus?: string | null;
 }
 
 interface AuthContextType {
@@ -34,6 +36,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const normalizeUser = (rawUser: any): User => ({
+    id: rawUser.id,
+    email: rawUser.email,
+    name: rawUser.name ?? undefined,
+    isPaid: rawUser.isPaid ?? false,
+    subscriptionStatus: rawUser.subscriptionStatus ?? (rawUser.isPaid ? 'active' : 'none'),
+  });
+
   useEffect(() => {
     // Fetch user from server to sync with server-side auth
     const fetchUser = async () => {
@@ -46,8 +56,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (response.ok) {
           const data = await response.json();
           if (data.user) {
-            setUser(data.user);
-            localStorage.setItem('user', JSON.stringify(data.user));
+            const normalized = normalizeUser(data.user);
+            setUser(normalized);
+            localStorage.setItem('user', JSON.stringify(normalized));
           } else {
             // No user data, clear local storage
             localStorage.removeItem('user');
@@ -65,7 +76,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         if (savedUser) {
           try {
             const parsedUser = JSON.parse(savedUser);
-            setUser(parsedUser);
+            const normalized = normalizeUser(parsedUser);
+            setUser(normalized);
           } catch (e) {
             localStorage.removeItem('user');
             setUser(null);
@@ -87,8 +99,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const login = async (userData: User) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    const normalized = normalizeUser(userData);
+    setUser(normalized);
+    localStorage.setItem('user', JSON.stringify(normalized));
     
     // Verify with server to ensure token is valid
     try {
@@ -99,8 +112,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const data = await response.json();
         if (data.user) {
           // Update with server data (may have more complete info)
-          setUser(data.user);
-          localStorage.setItem('user', JSON.stringify(data.user));
+          const refreshed = normalizeUser(data.user);
+          setUser(refreshed);
+          localStorage.setItem('user', JSON.stringify(refreshed));
         }
       }
     } catch (error) {

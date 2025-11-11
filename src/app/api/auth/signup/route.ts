@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createPublicUser, getPublicUserByEmail } from '@/lib/auth';
+import { createPublicUser, getPublicUserByEmail, generateToken } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -46,12 +46,26 @@ export async function POST(request: NextRequest) {
       id: user._id!,
       email: user.email,
       name: user.name,
+      isPaid: user.isPaid,
+      subscriptionStatus: user.subscriptionStatus,
     };
 
-    return NextResponse.json(
+    const response = NextResponse.json(
       { message: 'User created successfully', user: userResponse },
       { status: 201 }
     );
+
+    // Generate auth token and set cookie so new users stay signed in
+    const token = generateToken(user._id!);
+    response.cookies.set('user-auth-token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+    });
+
+    return response;
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(

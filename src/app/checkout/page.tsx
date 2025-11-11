@@ -1,19 +1,27 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/contexts/AuthContext';
+
+const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
+const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
 function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [plan, setPlan] = useState<'monthly' | 'annual'>('monthly');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvc, setCvc] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
+  const [isInitializingPayment, setIsInitializingPayment] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
+  const [customerName, setCustomerName] = useState<string | null>(null);
+  const [hasCheckedCustomer, setHasCheckedCustomer] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -23,67 +31,170 @@ function CheckoutContent() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    const storedEmail =
+      typeof window !== 'undefined' ? sessionStorage.getItem('signupEmail') : null;
+    const email = user?.email || storedEmail;
+    const name = user?.name || email;
+    setCustomerEmail(email);
+    setCustomerName(name);
+    setHasCheckedCustomer(true);
+  }, [user]);
+
+  useEffect(() => {
+    if (!hasCheckedCustomer) return;
+    if (!customerEmail) {
+      router.push('/signin');
+    }
+  }, [hasCheckedCustomer, customerEmail, router]);
+
+  useEffect(() => {
+    if (!customerEmail) {
+      return;
+    }
+
+    if (!stripePromise) {
+      setError('Stripe is not configured. Please contact support.');
+      return;
+    }
+
+    let isMounted = true;
+
+    const createSubscriptionIntent = async () => {
+      try {
+        setIsInitializingPayment(true);
+        setError(null);
+        setFormError(null);
+        setClientSecret(null);
+        setSubscriptionId(null);
+
+        const response = await fetch('/api/stripe/create-subscription-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            plan,
+            customerEmail,
+            customerName,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to initialize payment');
+        }
+
+        if (!isMounted) return;
+
+        setClientSecret(data.clientSecret);
+        setSubscriptionId(data.subscriptionId);
+      } catch (err: any) {
+        if (!isMounted) return;
+        console.error('Error initializing subscription:', err);
+        setError(err.message || 'Failed to initialize payment. Please try again.');
+      } finally {
+        if (isMounted) {
+          setIsInitializingPayment(false);
+        }
+      }
+    };
+
+    createSubscriptionIntent();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [plan, customerEmail, customerName]);
+
   const planDetails = {
     monthly: {
       name: 'Premium Monthly',
-      price: '30 BNB',
+      price: '$30 USD',
       priceAmount: 30,
       billingFrequency: 'Monthly',
       interval: 'month'
     },
     annual: {
       name: 'Premium Annual',
-      price: '120 BNB',
+      price: '$120 USD',
       priceAmount: 120,
       billingFrequency: 'Yearly',
       interval: 'year'
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Get email from auth context or sessionStorage (from signup)
-    const customerEmail = user?.email || sessionStorage.getItem('signupEmail');
-    
-    if (!customerEmail) {
-      router.push('/signin');
-      return;
-    }
+  const handlePaymentSuccess = useCallback(
+    (subscription: string, paymentIntentId?: string | null) => {
+      const params = new URLSearchParams();
+      if (subscription) {
+        params.set('subscription_id', subscription);
+      }
+      if (paymentIntentId) {
+        params.set('payment_intent', paymentIntentId);
+      }
+      if (typeof window !== 'undefined') {
+        sessionStorage.removeItem('signupEmail');
+      }
+      const search = params.toString();
+      router.push(`/success${search ? `?${search}` : ''}`);
+    },
+    [router],
+  );
 
-    setIsProcessing(true);
-    setError(null);
+  const handlePaymentError = useCallback((message: string | null) => {
+    setFormError(message);
+  }, []);
 
-    try {
-      const response = await fetch('/api/stripe/create-subscription-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+  const appearance = useMemo(
+    () => ({
+      theme: 'night' as const,
+      variables: {
+        colorPrimary: '#FFFFFF',
+        colorBackground: '#0A0A0A',
+        colorText: '#FFFFFF',
+        colorDanger: '#FF7070',
+        fontFamily: 'Gilroy, sans-serif',
+        fontSizeBase: '14px',
+      },
+      rules: {
+        '.Input': {
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          backgroundColor: 'transparent',
+          color: '#FFFFFF',
         },
-        body: JSON.stringify({
-          plan: plan,
-          customerEmail: customerEmail,
-          customerName: user?.name || customerEmail,
-        }),
-      });
+        '.Input:focus': {
+          borderColor: '#FFFFFF',
+        },
+        '.Label': {
+          color: '#FFFFFF',
+          fontFamily: 'Gilroy, sans-serif',
+        },
+      },
+    }),
+    [],
+  );
 
-      const data = await response.json();
+  const elementsOptions = useMemo(
+    () =>
+      clientSecret
+        ? {
+            clientSecret,
+            appearance,
+          }
+        : undefined,
+    [clientSecret, appearance],
+  );
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
-    } catch (err: any) {
-      console.error('Checkout error:', err);
-      setError(err.message || 'An error occurred. Please try again.');
-      setIsProcessing(false);
-    }
-  };
+  if (!hasCheckedCustomer || !customerEmail) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
@@ -136,9 +247,9 @@ function CheckoutContent() {
             </h1>
           </div>
 
-          {error && (
+          {(error || formError) && (
             <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg">
-              <p className="text-red-400 text-sm">{error}</p>
+              <p className="text-red-400 text-sm">{error || formError}</p>
             </div>
           )}
 
@@ -158,179 +269,25 @@ function CheckoutContent() {
                   Payment Details
                 </h3>
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                  {/* Card Information Label */}
-                  <p
-                    style={{
-                      fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 600,
-                      fontSize: '16px',
-                      lineHeight: '100%',
-                      color: '#FFFFFF'
-                    }}
-                  >
-                    Card information
-                  </p>
-
-                  {/* Card Number */}
-                  <div className="flex flex-col gap-1">
-                    <label
-                      style={{
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 500,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        color: '#FFFFFF'
-                      }}
-                    >
-                      Card Number
-                    </label>
-                    <input
-                      type="text"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      placeholder="1234 1234 1234 1234"
-                      className="w-full h-10 bg-transparent focus:outline-none"
-                      style={{
-                        boxSizing: 'border-box',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        padding: '12px 16px',
-                        gap: '10px',
-                        border: '1px solid rgba(255, 255, 255, 0.3)',
-                        borderRadius: '8px',
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 500,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        color: '#FFFFFF',
-                        outline: 'none'
-                      }}
+                {isInitializingPayment || !elementsOptions || !subscriptionId ? (
+                  <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-white/20 bg-white/5 px-4 py-10 text-sm text-white/70">
+                    Preparing secure payment form...
+                  </div>
+                ) : !stripePromise ? (
+                  <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-red-400/40 bg-red-500/10 px-4 py-10 text-sm text-red-300">
+                    Stripe is not configured. Please contact support.
+                  </div>
+                ) : (
+                  <Elements stripe={stripePromise} options={elementsOptions} key={clientSecret}>
+                    <CheckoutPaymentForm
+                      customerEmail={customerEmail as string}
+                      customerName={customerName}
+                      subscriptionId={subscriptionId}
+                      onSuccess={handlePaymentSuccess}
+                      onError={handlePaymentError}
                     />
-                  </div>
-
-                  {/* Expiry Date and CVC Row */}
-                  <div className="flex flex-row gap-6">
-                    {/* Expiry Date */}
-                    <div className="flex-1 flex flex-col gap-1">
-                      <label
-                        style={{
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF'
-                        }}
-                      >
-                        Expiry Date
-                      </label>
-                      <input
-                        type="text"
-                        value={expiryDate}
-                        onChange={(e) => setExpiryDate(e.target.value)}
-                        placeholder="MM/YY"
-                        className="w-full h-10 bg-transparent focus:outline-none"
-                        style={{
-                          boxSizing: 'border-box',
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          padding: '12px 16px',
-                          gap: '10px',
-                          border: '1px solid rgba(255, 255, 255, 0.3)',
-                          borderRadius: '8px',
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF',
-                          outline: 'none'
-                        }}
-                      />
-                    </div>
-
-                    {/* CVC */}
-                    <div className="flex-1 flex flex-col gap-1">
-                      <label
-                        style={{
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF'
-                        }}
-                      >
-                        CVC
-                      </label>
-                      <input
-                        type="text"
-                        value={cvc}
-                        onChange={(e) => setCvc(e.target.value)}
-                        placeholder="123"
-                        className="w-full h-10 bg-transparent focus:outline-none"
-                        style={{
-                          boxSizing: 'border-box',
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          padding: '12px 16px',
-                          gap: '10px',
-                          border: '1px solid rgba(255, 255, 255, 0.3)',
-                          borderRadius: '8px',
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF',
-                          outline: 'none'
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <div className="flex flex-col gap-4">
-                    <button
-                      type="submit"
-                      disabled={isProcessing}
-                      className="flex flex-row justify-center items-center px-4 py-3 gap-2"
-                      style={{
-                        width: '195px',
-                        height: '48px',
-                        background: isProcessing ? '#666' : '#FFFFFF',
-                        borderRadius: '100px',
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 600,
-                        fontSize: '16px',
-                        lineHeight: '100%',
-                        textAlign: 'center',
-                        color: '#404040',
-                        border: 'none',
-                        cursor: isProcessing ? 'not-allowed' : 'pointer',
-                        opacity: isProcessing ? 0.6 : 1
-                      }}
-                    >
-                      {isProcessing ? 'Processing...' : 'Pay & Start Premium'}
-                    </button>
-
-                    <p
-                      style={{
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 500,
-                        fontSize: '12px',
-                        lineHeight: '130%',
-                        color: '#FFFFFF',
-                        maxWidth: '501px'
-                      }}
-                    >
-                      By clicking "Pay & Start Premium", you agree to our Terms of Service and Privacy Policy. Your subscription will automatically renew unless cancelled. You can cancel anytime from your account settings.
-                    </p>
-                  </div>
-                </form>
+                  </Elements>
+                )}
               </div>
             </div>
 
@@ -430,6 +387,175 @@ function CheckoutContent() {
         </div>
       </section>
     </div>
+  );
+}
+
+interface CheckoutPaymentFormProps {
+  customerEmail: string;
+  customerName?: string | null;
+  subscriptionId: string;
+  onSuccess: (subscriptionId: string, paymentIntentId?: string | null) => void;
+  onError: (message: string | null) => void;
+}
+
+function CheckoutPaymentForm({
+  customerEmail,
+  customerName,
+  subscriptionId,
+  onSuccess,
+  onError,
+}: CheckoutPaymentFormProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [billingName, setBillingName] = useState(customerName ?? '');
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setBillingName(customerName ?? '');
+  }, [customerName]);
+
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      if (!stripe || !elements) {
+        return;
+      }
+
+      setIsProcessing(true);
+      setLocalError(null);
+      onError(null);
+
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          payment_method_data: {
+            billing_details: {
+              name: billingName || undefined,
+              email: customerEmail,
+            },
+          },
+        },
+        redirect: 'if_required',
+      });
+
+      if (error) {
+        const message = error.message || 'Payment failed. Please try again.';
+        setLocalError(message);
+        onError(message);
+        setIsProcessing(false);
+        return;
+      }
+
+      const status = paymentIntent?.status;
+
+      if (
+        status === 'succeeded' ||
+        status === 'processing' ||
+        status === 'requires_action'
+      ) {
+        onSuccess(subscriptionId, paymentIntent?.id ?? null);
+      } else {
+        const message = 'Unable to confirm payment. Please try again.';
+        setLocalError(message);
+        onError(message);
+        setIsProcessing(false);
+      }
+    },
+    [stripe, elements, billingName, customerEmail, onError, onSuccess, subscriptionId],
+  );
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <label
+          style={{
+            fontFamily: 'Gilroy, sans-serif',
+            fontWeight: 500,
+            fontSize: '14px',
+            lineHeight: '100%',
+            color: '#FFFFFF',
+          }}
+        >
+          Name on card
+        </label>
+        <input
+          type="text"
+          value={billingName}
+          onChange={(event) => setBillingName(event.target.value)}
+          placeholder="John Doe"
+          className="w-full h-10 bg-transparent focus:outline-none"
+          style={{
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '12px 16px',
+            gap: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            borderRadius: '8px',
+            fontFamily: 'Gilroy, sans-serif',
+            fontWeight: 500,
+            fontSize: '14px',
+            lineHeight: '100%',
+            color: '#FFFFFF',
+            outline: 'none',
+          }}
+        />
+      </div>
+
+      <div className="rounded-lg border border-white/10 bg-[#151515] p-4">
+        <PaymentElement options={{ layout: 'tabs' }} />
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <button
+          type="submit"
+          disabled={isProcessing || !stripe || !elements}
+          className="flex flex-row justify-center items-center px-4 py-3 gap-2 disabled:cursor-not-allowed"
+          style={{
+            width: '195px',
+            height: '48px',
+            background: isProcessing ? '#666' : '#FFFFFF',
+            borderRadius: '100px',
+            fontFamily: 'Gilroy, sans-serif',
+            fontWeight: 600,
+            fontSize: '16px',
+            lineHeight: '100%',
+            textAlign: 'center',
+            color: '#404040',
+            border: 'none',
+            cursor: isProcessing ? 'not-allowed' : 'pointer',
+            opacity: isProcessing ? 0.6 : 1,
+          }}
+        >
+          {isProcessing ? 'Processing...' : `Pay & Start Premium`}
+        </button>
+
+        <p
+          style={{
+            fontFamily: 'Gilroy, sans-serif',
+            fontWeight: 500,
+            fontSize: '12px',
+            lineHeight: '130%',
+            color: '#FFFFFF',
+            maxWidth: '501px',
+          }}
+        >
+          By clicking "Pay & Start Premium", you agree to our Terms of Service and Privacy Policy.
+          Your subscription will automatically renew unless cancelled. You can cancel anytime from
+          your account settings.
+        </p>
+
+        {localError && (
+          <p className="text-sm text-red-400" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+            {localError}
+          </p>
+        )}
+      </div>
+    </form>
   );
 }
 

@@ -11,12 +11,45 @@ interface NavbarProps {
   variant?: 'default' | 'hero';
 }
 
+type GuestNavItem =
+  | { label: string; sectionId: string }
+  | { label: string; href: string };
+
+interface AuthNavItem {
+  label: string;
+  href: string;
+}
+
 const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+
+  const guestNavItems: GuestNavItem[] = [
+    { label: 'About', sectionId: 'about' },
+    { label: 'Community', sectionId: 'social-stats' },
+    { label: 'Latest Video', sectionId: 'latest-videos' },
+    { label: 'Our Partners', sectionId: 'partners' },
+    { label: 'Contact Us', sectionId: 'collaboration' },
+    { label: 'Bootcamp', href: '/bootcamp' },
+  ];
+
+  const authNavItems: AuthNavItem[] = [
+    { label: 'Research', href: '/research' },
+    { label: 'Calculator', href: '/calculator' },
+    { label: 'Portfolio', href: '/portfolio' },
+    { label: 'Shariah', href: '/shariah' },
+    { label: 'Our Team', href: '/about' },
+    { label: 'Bootcamp', href: '/bootcamp' },
+  ];
+
+  const handleGuestNavClick = (item: GuestNavItem) => {
+    if ('sectionId' in item) {
+      handleSectionClick(item.sectionId);
+    }
+  };
 
   const isActive = (path: string) => {
     if (path === '/') return pathname === '/';
@@ -102,12 +135,13 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
         }}
       >
         {/* Mobile Layout - Toggle and Logo left, Button right */}
-        <div className="lg:hidden max-w-7xl mx-auto flex items-center justify-between">
+        <div className="lg:hidden max-w-7xl mx-auto flex flex-col">
+          <div className="flex items-center justify-between">
           {/* Mobile Hamburger Menu & Logo - Left */}
           <div className="flex items-center gap-0">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300 transition-colors active:outline-none"
+                className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300 transition-colors active:outline-none cursor-pointer"
               aria-label="Toggle mobile menu"
               style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
             >
@@ -123,7 +157,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             {/* Logo - Next to toggle button */}
             <Link
                 href="/"
-                className="w-28 sm:w-32 h-7 sm:h-6 rounded flex items-center justify-center hover:opacity-80 transition-opacity outline-none focus:outline-none"
+                  className="w-28 sm:w-32 h-7 sm:h-6 rounded flex items-center justify-center hover:opacity-80 transition-opacity outline-none focus:outline-none cursor-pointer"
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
             >
               <Image
@@ -145,28 +179,31 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
               <>
                 <a
                   href="/signin"
-                  className="text-white px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:opacity-80 transition-opacity whitespace-nowrap h-10 sm:h-8 flex items-center"
+                    className="text-white px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:opacity-80 transition-opacity whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
                 >
                   Sign In
                 </a>
                 <a
                   href="/meetings"
-                  className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center"
+                    className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
                 >
                   Book Mentorship
                 </a>
               </>
             )}
           </div>
+          </div>
+
+          
         </div>
 
         {/* Desktop Layout - Original */}
-        <div className="hidden lg:flex max-w-7xl mx-auto items-center justify-between">
+        <div className="hidden lg:flex max-w-7xl mx-auto items-center justify-between gap-8">
           {/* Logo with Vector.svg */}
-          <div className="flex items-center">
+          <div className="flex items-center flex-shrink-0">
             <Link
                 href="/"
-                className="w-44 h-9 rounded flex items-center justify-center px-2 hover:opacity-80 transition-opacity outline-none focus:outline-none"
+                className="w-44 h-9 rounded flex items-center justify-center px-2 hover:opacity-80 transition-opacity outline-none focus:outline-none cursor-pointer"
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
             >
               <Image
@@ -180,81 +217,65 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             </Link>
           </div>
 
-          {/* Navigation - Desktop */}
-          <nav className="flex items-center relative">
-            <div className="flex items-center space-x-4 xl:space-x-6">
+          {isAuthenticated ? (
+            <nav className="flex items-center justify-center flex-1 space-x-4 xl:space-x-6">
+              {authNavItems.map((item) => (
               <Link
-                href="/research"
-                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
-                  isActive('/research') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
+                  key={item.label}
+                  href={item.href}
+                  className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none cursor-pointer ${
+                    isActive(item.href) ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
                 }`}
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
               >
-                Research
+                  {item.label}
               </Link>
+              ))}
+            </nav>
+          ) : (
+            <nav className="flex flex-wrap items-center justify-center flex-1 gap-5 px-10">
+              {guestNavItems.map((item) =>
+                'sectionId' in item ? (
+                  <button
+                    key={item.label}
+                    type="button"
+                    onClick={() => handleGuestNavClick(item)}
+                    className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors focus:outline-none active:outline-none cursor-pointer"
+                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+              >
+                    {item.label}
+                  </button>
+                ) : (
               <Link
-                href="/calculator"
-                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
-                  isActive('/calculator') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
+                    key={item.label}
+                    href={item.href}
+                    className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none cursor-pointer ${
+                      isActive(item.href) ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
                 }`}
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
               >
-                Calculator
+                    {item.label}
               </Link>
-              <Link
-                href="/portfolio"
-                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
-                  isActive('/portfolio') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
-                }`}
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-              >
-                Portfolio
-              </Link>
-              <Link
-                href="/shariah"
-                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
-                  isActive('/shariah') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
-                }`}
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-              >
-                Shariah
-              </Link>
-              <Link
-                href="/about"
-                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
-                  isActive('/about') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
-                }`}
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-              >
-                Our Team
-              </Link>
-              <Link
-                href="/bootcamp"
-                className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none ${
-                  isActive('/bootcamp') ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
-                }`}
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-              >
-                Bootcamp
-              </Link>
-            </div>
+                )
+              )}
           </nav>
+          )}
 
           {/* CTA Button or Profile */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             {isAuthenticated ? (
               <ProfileDropdown />
             ) : (
               <>
                 <a
                   href="/signin"
-                  className="text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:opacity-80 transition-opacity"
+                  className="text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer"
                 >
                   Sign In
                 </a>
                 <a
                   href="/meetings"
-                  className="bg-white text-[#0A0A0A] px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors"
+                  className="bg-white text-[#0A0A0A] px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer"
                 >
                   Book Mentorship
                 </a>
@@ -289,7 +310,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
               <div className="flex items-center">
                 <Link
                     href="/"
-                    className="hover:opacity-80 transition-opacity outline-none focus:outline-none"
+                    className="hover:opacity-80 transition-opacity outline-none focus:outline-none cursor-pointer"
                     style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                     onClick={() => setIsMobileMenuOpen(false)}
                 >
@@ -308,78 +329,52 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             {/* Navigation Links */}
             <nav className="flex-1 px-4 py-6">
               <div className="flex flex-col gap-2">
+                {isAuthenticated
+                  ? authNavItems.map((item) => (
                 <Link
-                  href="/research"
-                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
-                    isActive('/research') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
+                        key={item.label}
+                        href={item.href}
+                        className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none cursor-pointer ${
+                          isActive(item.href) ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
                   }`}
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  Research
+                        {item.label}
                 </Link>
+                    ))
+                  : guestNavItems.map((item) =>
+                      'sectionId' in item ? (
+                        <button
+                          key={item.label}
+                          type="button"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                            handleGuestNavClick(item);
+                          }}
+                          className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none hover:bg-gray-700 text-left cursor-pointer"
+                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                >
+                          {item.label}
+                        </button>
+                      ) : (
                 <Link
-                  href="/calculator"
-                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
-                    isActive('/calculator') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
+                          key={item.label}
+                          href={item.href}
+                          className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none cursor-pointer ${
+                            isActive(item.href) ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
                   }`}
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                   onClick={() => {
                     setIsMobileMenuOpen(false);
                   }}
                 >
-                  Calculator
+                          {item.label}
                 </Link>
-                <Link
-                  href="/portfolio"
-                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
-                    isActive('/portfolio') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                  }`}
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Portfolio
-                </Link>
-                <Link
-                  href="/shariah"
-                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
-                    isActive('/shariah') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                  }`}
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Shariah
-                </Link>
-                <Link
-                  href="/about"
-                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
-                    isActive('/about') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                  }`}
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Our Team
-                </Link>
-                <Link
-                  href="/bootcamp"
-                  className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none ${
-                    isActive('/bootcamp') ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                  }`}
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Bootcamp
-                </Link>
+                      )
+                    )}
               </div>
             </nav>
           </div>

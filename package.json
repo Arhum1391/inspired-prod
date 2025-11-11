@@ -12,6 +12,8 @@
     "migrate-bootcamp-ids": "node scripts/migrate-bootcamp-ids.js"
   },
   "dependencies": {
+    "@nivo/core": "^0.85.0",
+    "@nivo/pie": "^0.85.0",
     "axios": "^1.12.2",
     "bcryptjs": "^2.4.3",
     "express-rate-limit": "^8.1.0",

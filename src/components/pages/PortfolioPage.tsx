@@ -1,66 +1,114 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import Image from 'next/image';
-import HoldingsTable from '@/components/HoldingsTable';
+import HoldingsTable, { HoldingRow } from '@/components/HoldingsTable';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
-import PortfolioBalanceCard from '@/components/PortfolioBalanceCard';
-import { ResponsivePie } from '@nivo/pie';
+import PortfolioBalanceCard, { TimeRange, ChartDatum } from '@/components/PortfolioBalanceCard';
 import type { ComputedDatum, PieCustomLayerProps, PieLayer } from '@nivo/pie';
 
+type CredentialsStatus = {
+  connected: boolean;
+  hasPassphrase: boolean;
+  useTestnet: boolean;
+  label: string | null;
+  createdAt: string | null;
+  updatedAt: string | null;
+};
+
+type PortfolioSummaryResponse = {
+  totalValue: number;
+  totalValueComputedAssets: number;
+  missingPriceAssets: string[];
+  computedAt: string;
+};
+
+type PortfolioApiResponse = {
+  holdings: HoldingRow[];
+  summary: PortfolioSummaryResponse;
+  credentialsMetadata?: {
+    useTestnet: boolean;
+    label?: string | null;
+    updatedAt?: string | null;
+  };
+  rateLimit?: {
+    account?: Record<string, unknown>;
+    prices?: Record<string, unknown>;
+  };
+};
+
 type AllocationSlice = {
+  id: string;
   label: string;
-  percentage: string;
-  amount: number;
+  value: number;
+  percentage: number;
   displayValue: string;
   color: string;
 };
 
-type AllocationDatum = AllocationSlice & { id: string; value: number };
+type AllocationDatum = AllocationSlice;
 
-const allocationSlices: AllocationSlice[] = [
-  { label: 'BTC', percentage: '40.5%', amount: 24000, displayValue: '$24,000', color: '#EB72FF' },
-  { label: 'ETH', percentage: '43.1%', amount: 25600, displayValue: '$25,600', color: '#EB72FF' },
-  { label: 'GOLD', percentage: '16.4%', amount: 9750, displayValue: '$9,750', color: '#EB72FF' },
+const COLOR_PALETTE = ['#DE50EC', '#05B0B3', '#3813F3', '#B9B9E9', '#4B25FD', '#EB72FF'];
+
+const formatUSD = (value: number): string =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: value >= 100000 ? 0 : 2,
+  }).format(value);
+
+const formatPercentValue = (value: number): string =>
+  `${value.toFixed(value >= 10 ? 1 : 2)}%`;
+
+const PREVIEW_HOLDINGS: HoldingRow[] = [
+  {
+    asset: 'BTC',
+    free: 0.5,
+    locked: 0,
+    total: 0.5,
+    unitPrice: 48000,
+    unitPriceSymbol: 'BTC/USDT',
+    value: 24000,
+  },
+  {
+    asset: 'ETH',
+    free: 3.2,
+    locked: 0,
+    total: 3.2,
+    unitPrice: 2800,
+    unitPriceSymbol: 'ETH/USDT',
+    value: 8960,
+  },
+  {
+    asset: 'BNB',
+    free: 10,
+    locked: 0,
+    total: 10,
+    unitPrice: 330,
+    unitPriceSymbol: 'BNB/USDT',
+    value: 3300,
+  },
 ];
 
-type HoldingRow = {
-  asset: string;
-  quantity: string;
-  avgPrice: string;
-  currentPrice: string;
-  value: string;
-  pnl: string;
-  pnlColor: string;
-};
+const PREVIEW_TOTAL_VALUE = PREVIEW_HOLDINGS.reduce((sum, holding) => sum + (holding.value ?? 0), 0);
 
-const holdingsColumns = [
-  'Asset',
-  'Quantity',
-  'AVG Price',
-  'Current Price',
-  'Value',
-  'P&L',
-  'Actions',
-] as const;
-
-const holdingsRows: HoldingRow[] = [
-  { asset: 'AAPL', quantity: '100', avgPrice: '$2,800', currentPrice: '$220', value: '$6,600', pnl: '+46.67%', pnlColor: '#05B353' },
-  { asset: 'MSFT', quantity: '150', avgPrice: '$30', currentPrice: '$35', value: '$5,250', pnl: '+7.50%', pnlColor: '#05B353' },
-  { asset: 'GOOGL', quantity: '200', avgPrice: '$40', currentPrice: '$45', value: '$9,000', pnl: '+12.50%', pnlColor: '#05B353' },
-  { asset: 'AAPL', quantity: '150', avgPrice: '$140', currentPrice: '$145', value: '$21,000', pnl: '+3.57%', pnlColor: '#05B353' },
-  { asset: 'AMZN', quantity: '300', avgPrice: '$120', currentPrice: '$125', value: '$36,000', pnl: '+4.17%', pnlColor: '#05B353' },
-  { asset: 'MSFT', quantity: '250', avgPrice: '$250', currentPrice: '$255', value: '$63,750', pnl: '+2.00%', pnlColor: '#05B353' },
-  { asset: 'TSLA', quantity: '180', avgPrice: '$600', currentPrice: '$610', value: '$108,000', pnl: '+1.67%', pnlColor: '#05B353' },
-  { asset: 'FB', quantity: '100', avgPrice: '$300', currentPrice: '$310', value: '$31,000', pnl: '+3.33%', pnlColor: '#05B353' },
-  { asset: 'NFLX', quantity: '90', avgPrice: '$500', currentPrice: '$510', value: '$45,900', pnl: '+2.00%', pnlColor: '#05B353' },
-  { asset: 'NVDA', quantity: '130', avgPrice: '$220', currentPrice: '$225', value: '$29,500', pnl: '+2.27%', pnlColor: '#05B353' },
-];
+const PREVIEW_ALLOCATION: AllocationSlice[] = PREVIEW_HOLDINGS.map((holding, index) => {
+  const value = holding.value ?? 0;
+  const percentage = PREVIEW_TOTAL_VALUE ? (value / PREVIEW_TOTAL_VALUE) * 100 : 0;
+  return {
+    id: holding.asset,
+    label: holding.asset,
+    value,
+    percentage,
+    displayValue: formatUSD(value),
+    color: COLOR_PALETTE[index % COLOR_PALETTE.length],
+  };
+});
 
 export default function PortfolioPage() {
   const { isAuthenticated: isSignedIn, user, isLoading } = useAuth();
@@ -69,8 +117,46 @@ export default function PortfolioPage() {
   const isAuthenticated = isSignedIn && isPaidUser;
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [isAddHoldingModalOpen, setAddHoldingModalOpen] = useState(false);
+  const [nivoComponents, setNivoComponents] = useState<typeof import('@nivo/pie') | null>(null);
   const [apiKeyValue, setApiKeyValue] = useState('');
-  const [hasConnectedApi, setHasConnectedApi] = useState(false);
+  const [apiSecretValue, setApiSecretValue] = useState('');
+  const [passphraseValue, setPassphraseValue] = useState('');
+  const [labelValue, setLabelValue] = useState('');
+  const [useTestnetValue, setUseTestnetValue] = useState(false);
+  const [credentialsStatus, setCredentialsStatus] = useState<CredentialsStatus | null>(null);
+  const [isFetchingCredentials, setIsFetchingCredentials] = useState(false);
+  const [credentialError, setCredentialError] = useState<string | null>(null);
+  const [isSavingCredentials, setIsSavingCredentials] = useState(false);
+  const [isRemovingCredentials, setIsRemovingCredentials] = useState(false);
+  const [portfolioData, setPortfolioData] = useState<PortfolioApiResponse | null>(null);
+  const [portfolioError, setPortfolioError] = useState<string | null>(null);
+  const [isFetchingPortfolio, setIsFetchingPortfolio] = useState(false);
+  const [selectedChartRange, setSelectedChartRange] = useState<TimeRange>('1W');
+  const [chartDataByRange, setChartDataByRange] = useState<Partial<Record<TimeRange, ChartDatum[]>>>({});
+  const [chartLoadingRange, setChartLoadingRange] = useState<TimeRange | null>(null);
+  const [chartError, setChartError] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Only load @nivo/pie when we actually need it (when user is authenticated and has data)
+    if (!isAuthenticated) {
+      return;
+    }
+
+    let mounted = true;
+    import('@nivo/pie')
+      .then(mod => {
+        if (mounted) {
+          setNivoComponents(mod);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to load @nivo/pie', error);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isLoading && !isSignedIn) {
@@ -85,19 +171,401 @@ export default function PortfolioPage() {
     }));
   };
 
+  const hasConnectedApi = credentialsStatus?.connected ?? false;
+
+  const allocationData = useMemo<AllocationSlice[]>(() => {
+    if (!portfolioData?.holdings?.length) {
+      return [];
+    }
+
+    const total = portfolioData.summary?.totalValueComputedAssets ?? 0;
+    if (!total) {
+      return [];
+    }
+
+    // Filter holdings with value > 0 and minimum threshold to avoid dust
+    const validHoldings = portfolioData.holdings
+      .filter(holding => {
+        const value = holding.value ?? 0;
+        return typeof value === 'number' && value > 0.01; // Minimum $0.01 threshold
+      })
+      .sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+
+    console.log('Portfolio allocation data:', {
+      totalHoldings: portfolioData.holdings.length,
+      validHoldings: validHoldings.length,
+      total,
+      holdings: validHoldings.map(h => ({ asset: h.asset, value: h.value }))
+    });
+
+    return validHoldings.map((holding, index) => {
+      const value = holding.value ?? 0;
+      const percentage = (value / total) * 100;
+      return {
+        id: holding.asset,
+        label: holding.asset,
+        value,
+        percentage,
+        displayValue: formatUSD(value),
+        color: COLOR_PALETTE[index % COLOR_PALETTE.length],
+      };
+    });
+  }, [portfolioData]);
+
+  const totalPortfolioValue = portfolioData?.summary?.totalValueComputedAssets ?? 0;
+  const displayedTotalValue =
+    totalPortfolioValue > 0 ? totalPortfolioValue : portfolioData?.summary?.totalValue ?? null;
+  const activeChartData = chartDataByRange[selectedChartRange];
+  const chartChangePercent = useMemo(() => {
+    if (!activeChartData || activeChartData.length < 2) {
+      return null;
+    }
+    const first = activeChartData[0].value;
+    const last = activeChartData[activeChartData.length - 1].value;
+    if (!first || first <= 0) {
+      return null;
+    }
+    return ((last - first) / first) * 100;
+  }, [activeChartData, selectedChartRange]);
+
+  const fetchCredentialsStatus = useCallback(async () => {
+    if (!isAuthenticated) {
+      return;
+    }
+    setIsFetchingCredentials(true);
+    try {
+      const response = await fetch('/api/portfolio/credentials', { method: 'GET', cache: 'no-store' });
+      if (!response.ok) {
+        if (response.status === 401) {
+          setCredentialsStatus(null);
+          return;
+        }
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.error ?? 'Failed to load credential status');
+      }
+      const data = (await response.json()) as CredentialsStatus;
+      setCredentialsStatus({
+        connected: !!data.connected,
+        hasPassphrase: !!data.hasPassphrase,
+        useTestnet: data.useTestnet ?? false,
+        label: data.label ?? null,
+        createdAt: data.createdAt ?? null,
+        updatedAt: data.updatedAt ?? null,
+      });
+      if (!data.connected) {
+        setPortfolioData(null);
+      }
+    } catch (error) {
+      console.error('Failed to fetch Binance credential status', error);
+      setCredentialsStatus(null);
+    } finally {
+      setIsFetchingCredentials(false);
+    }
+  }, [isAuthenticated]);
+
+  const fetchPortfolioBalances = useCallback(async (forceRefresh = false) => {
+    if (!isAuthenticated || !hasConnectedApi) {
+      return;
+    }
+    
+    // Prevent too frequent requests (minimum 30 seconds between calls)
+    const now = Date.now();
+    const lastFetch = localStorage.getItem('lastPortfolioFetch');
+    if (!forceRefresh && lastFetch && (now - parseInt(lastFetch)) < 30000) {
+      console.log('Skipping portfolio fetch - too recent');
+      return;
+    }
+    
+    setIsFetchingPortfolio(true);
+    setPortfolioError(null);
+    try {
+      const response = await fetch('/api/portfolio/balances', { method: 'GET', cache: 'no-store' });
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        
+        // Handle timestamp errors specifically
+        if (errorPayload?.isTimestampError) {
+          console.log('Timestamp error in portfolio balances, will retry in 5 seconds...');
+          setTimeout(() => {
+            if (hasConnectedApi && !portfolioData) {
+              console.log('Retrying portfolio balances fetch after timestamp error...');
+              fetchPortfolioBalances();
+            }
+          }, 5000);
+          setPortfolioError('Time synchronization issue. Retrying automatically...');
+          return;
+        }
+        
+        // Handle timeout errors specifically
+        if (errorPayload?.isTimeoutError) {
+          const retryDelay = errorPayload.retryAfterMs || 10000;
+          console.log(`Connection timeout in portfolio balances, will retry in ${retryDelay}ms...`);
+          setTimeout(() => {
+            if (hasConnectedApi && !portfolioData) {
+              console.log('Retrying portfolio balances fetch after timeout...');
+              fetchPortfolioBalances();
+            }
+          }, retryDelay);
+          setPortfolioError('Connection timeout. Retrying automatically...');
+          return;
+        }
+        
+        const message = errorPayload?.error ?? 'Failed to load portfolio data';
+        throw new Error(message);
+      }
+      const data = (await response.json()) as PortfolioApiResponse;
+      setPortfolioData(data);
+      
+      // Cache successful fetch timestamp
+      localStorage.setItem('lastPortfolioFetch', now.toString());
+    } catch (error) {
+      console.error('Failed to fetch Binance balances', error);
+      setPortfolioError(error instanceof Error ? error.message : 'Failed to load portfolio data');
+      setPortfolioData(null);
+    } finally {
+      setIsFetchingPortfolio(false);
+    }
+  }, [hasConnectedApi, isAuthenticated]);
+
+  useEffect(() => {
+    fetchCredentialsStatus();
+  }, [fetchCredentialsStatus]);
+
+  useEffect(() => {
+    if (hasConnectedApi) {
+      fetchPortfolioBalances();
+    }
+  }, [fetchPortfolioBalances, hasConnectedApi]);
+
+  const fetchChartData = useCallback(
+    async (range: TimeRange, forceRefresh = false) => {
+      if (!hasConnectedApi || (!forceRefresh && chartDataByRange[range]) || chartLoadingRange === range) {
+        return;
+      }
+      
+      // Prevent too frequent chart requests (minimum 60 seconds for same range)
+      const now = Date.now();
+      const cacheKey = `lastChartFetch_${range}`;
+      const lastFetch = localStorage.getItem(cacheKey);
+      if (!forceRefresh && lastFetch && (now - parseInt(lastFetch)) < 60000) {
+        console.log(`Skipping chart fetch for ${range} - too recent`);
+        return;
+      }
+
+      setChartLoadingRange(range);
+      setChartError(null);
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+        // Pass current portfolio value for alignment
+        const currentValue = displayedTotalValue && displayedTotalValue > 0 ? displayedTotalValue : '';
+        const url = `/api/portfolio/history?range=${range}${currentValue ? `&currentValue=${currentValue}` : ''}`;
+        
+        const response = await fetch(url, {
+          method: 'GET',
+          cache: 'no-store',
+          signal: controller.signal,
+        });
+        
+        clearTimeout(timeoutId);
+        
+        const payload = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+          if (response.status === 429) {
+            // Rate limit error - show specific message
+            throw new Error(payload?.error ?? 'Rate limit exceeded. Please wait a moment and try again.');
+          }
+          if (payload?.isTimestampError) {
+            // Timestamp synchronization error - show specific message
+            throw new Error('Time synchronization issue with Binance API. Please try again in a moment.');
+          }
+          throw new Error(payload?.error ?? 'Failed to load portfolio chart data');
+        }
+
+        const data = Array.isArray(payload?.data)
+          ? (payload.data as Array<{ label: string; value: number }>).map(point => ({
+              label: String(point.label ?? ''),
+              value: Number(point.value ?? 0),
+            }))
+          : [];
+        
+        // Handle case where API returns empty data but with an error message
+        if (data.length === 0 && payload?.error) {
+          console.warn('API returned empty data with message:', payload.error);
+          setChartError(payload.error);
+        } else {
+          // Validate chart data alignment with current portfolio value
+          if (data.length > 0 && displayedTotalValue && displayedTotalValue > 0) {
+            const lastChartValue = data[data.length - 1]?.value ?? 0;
+            const discrepancy = Math.abs(lastChartValue - displayedTotalValue) / displayedTotalValue;
+            
+            if (discrepancy > 0.1) { // More than 10% difference
+              console.warn(`Chart data misalignment detected: Chart end value ${lastChartValue}, Portfolio value ${displayedTotalValue}`);
+            }
+          }
+        }
+        
+        setChartDataByRange(prev => ({ ...prev, [range]: data }));
+        
+        // Cache successful chart fetch timestamp
+        localStorage.setItem(cacheKey, now.toString());
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          console.warn('Chart data request timed out');
+          setChartError('Request timed out. Please try again.');
+        } else {
+        console.error('Failed to fetch portfolio history', error);
+          const errorMessage = error instanceof Error ? error.message : 'Failed to load portfolio chart data';
+          
+          // Auto-retry for timestamp errors after a short delay
+          if (errorMessage.includes('Time synchronization issue')) {
+            console.log('Timestamp error detected, will retry in 5 seconds...');
+            setTimeout(() => {
+              if (!chartDataByRange[range]) {
+                console.log('Retrying chart data fetch after timestamp error...');
+                fetchChartData(range);
+              }
+            }, 5000);
+            setChartError('Time synchronization issue. Retrying automatically...');
+          } else if (errorMessage.includes('Connection timeout') || errorMessage.includes('Request timeout')) {
+            console.log('Timeout error detected, will retry in 10 seconds...');
+            setTimeout(() => {
+              if (!chartDataByRange[range]) {
+                console.log('Retrying chart data fetch after timeout...');
+                fetchChartData(range);
+              }
+            }, 10000);
+            setChartError('Connection timeout. Retrying automatically...');
+          } else {
+            setChartError(errorMessage);
+          }
+        }
+        setChartDataByRange(prev => {
+          if (prev[range]) {
+            return prev;
+          }
+          return { ...prev, [range]: [] };
+        });
+      } finally {
+        setChartLoadingRange(prev => (prev === range ? null : prev));
+      }
+    },
+    [hasConnectedApi, chartDataByRange, chartLoadingRange]
+  );
+
+  useEffect(() => {
+    if (!hasConnectedApi) {
+      setChartDataByRange({});
+      setChartLoadingRange(null);
+      setChartError(null);
+      setSelectedChartRange('1W');
+    }
+  }, [hasConnectedApi]);
+
+  useEffect(() => {
+    if (!hasConnectedApi) {
+      return;
+    }
+    if (chartDataByRange['1W'] || chartLoadingRange === '1W') {
+      return;
+    }
+    fetchChartData('1W');
+  }, [hasConnectedApi, chartDataByRange, chartLoadingRange, fetchChartData]);
+
+  useEffect(() => {
+    if (!hasConnectedApi) {
+      return;
+    }
+    if (chartDataByRange[selectedChartRange] || chartLoadingRange === selectedChartRange) {
+      return;
+    }
+    fetchChartData(selectedChartRange);
+  }, [hasConnectedApi, selectedChartRange, chartDataByRange, chartLoadingRange, fetchChartData]);
+
   const openAddHoldingModal = () => {
+    setCredentialError(null);
+    setApiKeyValue('');
+    setApiSecretValue('');
+    setPassphraseValue('');
+    setLabelValue(credentialsStatus?.label ?? '');
+    setUseTestnetValue(credentialsStatus?.useTestnet ?? false);
     setAddHoldingModalOpen(true);
   };
 
   const closeAddHoldingModal = () => {
     setAddHoldingModalOpen(false);
     setApiKeyValue('');
+    setApiSecretValue('');
+    setPassphraseValue('');
+    setLabelValue('');
+    setUseTestnetValue(false);
+    setCredentialError(null);
   };
 
-  const handleConfirmAddHolding = () => {
-    setHasConnectedApi(true);
-    closeAddHoldingModal();
+  const handleConfirmAddHolding = async () => {
+    if (!apiKeyValue.trim() || !apiSecretValue.trim()) {
+      setCredentialError('API key and secret are required.');
+      return;
+    }
+
+    setCredentialError(null);
+    setIsSavingCredentials(true);
+
+    try {
+      const response = await fetch('/api/portfolio/credentials', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          apiKey: apiKeyValue.trim(),
+          apiSecret: apiSecretValue.trim(),
+          passphrase: passphraseValue.trim() || undefined,
+          label: labelValue.trim() || undefined,
+          useTestnet: useTestnetValue,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.error ?? 'Failed to store credentials');
+      }
+
+      closeAddHoldingModal();
+      await fetchCredentialsStatus();
+      await fetchPortfolioBalances();
+    } catch (error) {
+      console.error('Failed to store Binance credentials', error);
+      setCredentialError(error instanceof Error ? error.message : 'Failed to store credentials');
+    } finally {
+      setIsSavingCredentials(false);
+    }
   };
+
+  const handleDisconnect = async () => {
+    setIsRemovingCredentials(true);
+    try {
+      const response = await fetch('/api/portfolio/credentials', { method: 'DELETE' });
+      if (!response.ok) {
+        const errorPayload = await response.json().catch(() => null);
+        throw new Error(errorPayload?.error ?? 'Failed to remove credentials');
+      }
+      setPortfolioData(null);
+      await fetchCredentialsStatus();
+    } catch (error) {
+      console.error('Failed to delete Binance credentials', error);
+      setCredentialError(error instanceof Error ? error.message : 'Failed to delete credentials');
+    } finally {
+      setIsRemovingCredentials(false);
+    }
+  };
+
+  const handleChartRangeChange = useCallback((range: TimeRange) => {
+    setSelectedChartRange(range);
+  }, []);
 
   if (isLoading) {
     return (
@@ -115,43 +583,51 @@ export default function PortfolioPage() {
     setApiKeyValue(event.target.value);
   };
 
-  const previewTimeRanges = ['1Hr', '1D', '1W', '1M', '1Y'] as const;
-  const previewChartLabels = ['16/6', '22/6', '28/6', '4/7', '10/7', '16/7', '22/7'];
-  const previewYAxisLabels = ['$3000', '$2000', '$1000', '$0'];
+  const handleApiSecretChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setApiSecretValue(event.target.value);
+  };
 
-  const AllocationDistributionCard = () => {
+  const handlePassphraseChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setPassphraseValue(event.target.value);
+  };
+
+  const handleLabelChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setLabelValue(event.target.value);
+  };
+
+  const handleUseTestnetToggle = (event: ChangeEvent<HTMLInputElement>) => {
+    setUseTestnetValue(event.target.checked);
+  };
+
+  const AllocationDistributionCard = ({
+    slices,
+    isLoading,
+  }: {
+    slices: AllocationSlice[];
+    isLoading: boolean;
+  }) => {
+    const ResponsivePie = nivoComponents?.ResponsivePie;
+    const isChartReady = ResponsivePie && !isLoading && slices.length > 0;
     const chartData = useMemo<AllocationDatum[]>(
       () =>
-        allocationSlices.map(slice => ({
-          id: slice.label,
+        slices.map(slice => ({
+          id: slice.id,
           label: slice.label,
-          value: slice.amount,
-          amount: slice.amount,
-          color: slice.color,
+          value: slice.value,
           percentage: slice.percentage,
           displayValue: slice.displayValue,
+          color: slice.color,
         })),
-      []
+      [slices]
     );
 
-    // Gradient angles based on Figma design (in degrees)
-    const gradientAngles = useMemo(() => {
-      // Map each datum to its gradient angle based on Figma design
-      // BTC: 35.87deg, ETH: 27.79deg, GOLD: 92.41deg
-      const angleMap: Record<string, number> = {
-        'BTC': 35.87,
-        'ETH': 27.79,
-        'GOLD': 92.41,
-      };
-      return chartData.map(datum => angleMap[datum.label] || 0);
-    }, [chartData]);
-
-    const chartColors = useMemo(() => allocationSlices.map(() => '#141414'), []);
-
-    const gradientDefs = useMemo(
-      () =>
-        chartData.map((datum, index) => {
-          const angle = gradientAngles[index];
+    const { gradientAngles, chartColors, gradientDefs, gradientFill } = useMemo(() => {
+      const presetAngles = [35.87, 27.79, 92.41, 140, 185, 225];
+      const angles = chartData.map((datum, index) => presetAngles[index % presetAngles.length]);
+      const colors = chartData.map(() => '#141414');
+      
+      const defs = chartData.map((datum, index) => {
+        const angle = angles[index];
           const angleRad = ((angle - 90) * Math.PI) / 180;
           const length = 0.707;
           const x1 = 0.5 - length * Math.cos(angleRad);
@@ -174,104 +650,53 @@ export default function PortfolioPage() {
             y2,
             gradientUnits: 'objectBoundingBox' as const,
           };
-        }),
-      [chartData, gradientAngles]
-    );
-    const gradientFill = useMemo(
-      () =>
-        chartData.map(datum => ({
+      });
+
+      const fill = chartData.map(datum => ({
           match: { id: datum.id } as const,
           id: `allocation-gradient-${datum.id}`,
-        })),
-      [chartData]
-    );
+      }));
 
-    const connectorLayer = useCallback(
-      ({ dataWithArc, centerX, centerY }: PieCustomLayerProps<AllocationDatum>) => {
-        const idToArcMap = new Map<string, ComputedDatum<AllocationDatum>>();
-        dataWithArc.forEach((item: ComputedDatum<AllocationDatum>) => {
-          idToArcMap.set(item.data.id, item);
-        });
+      return {
+        gradientAngles: angles,
+        chartColors: colors,
+        gradientDefs: defs,
+        gradientFill: fill,
+      };
+    }, [chartData]);
 
-        return (
-          <g>
-            {chartData.map(datum => {
-              const item = idToArcMap.get(datum.id);
-              if (!item) return null;
 
-              const { arc, data } = item;
-              const midAngle = arc.startAngle + (arc.endAngle - arc.startAngle) / 2;
-              const cos = Math.cos(midAngle);
-              const sin = Math.sin(midAngle);
-              const startRadius = arc.outerRadius;
-              const elbowRadius = arc.outerRadius + 10;
-              const startX = centerX + cos * startRadius;
-              const startY = centerY + sin * startRadius;
-              const elbowX = centerX + cos * elbowRadius;
-              const elbowY = centerY + sin * elbowRadius;
-              const isRightSide = cos >= 0;
-              const horizontalOffset = isRightSide ? 20 : -20;
-              const endX = elbowX + horizontalOffset;
-              const endY = elbowY;
-              const textAnchor = isRightSide ? 'start' : 'end';
-              const textX = endX + (isRightSide ? 6 : -6);
-              const upperY = endY - 2;
-              const lowerY = endY + 10;
-
-              return (
-                <g key={`connector-${data.id}`}>
-                  <path
-                    d={`M ${startX} ${startY} L ${elbowX} ${elbowY} L ${endX} ${endY}`}
-                    stroke="rgba(255,255,255,0.7)"
-                    strokeWidth={1.2}
-                    fill="none"
-                  />
-                  <circle cx={startX} cy={startY} r={3} fill="#EB72FF" />
-                  <text
-                    x={textX}
-                    y={upperY}
-                    textAnchor={textAnchor}
-                    dominantBaseline="middle"
-                    style={{
-                      fontFamily: 'Gilroy-Medium',
-                      fontSize: 13,
-                      fontWeight: 400,
-                      fill: '#FFFFFF',
-                    }}
-                  >
-                    {`${data.label}: ${data.percentage}`}
-                  </text>
-                  <text
-                    x={textX}
-                    y={lowerY}
-                    textAnchor={textAnchor}
-                    dominantBaseline="middle"
-                    style={{
-                      fontFamily: 'Gilroy-Medium',
-                      fontSize: 12,
-                      fontWeight: 400,
-                      fill: '#FFFFFF',
-                      opacity: 0.85,
-                    }}
-                  >
-                    {data.displayValue}
-                  </text>
-                </g>
-              );
-            })}
-          </g>
-        );
-      },
-      [chartData]
-    );
-
+    // Simplified pie chart without complex connectors
     const pieLayers = useMemo<PieLayer<AllocationDatum>[]>(
-      () => ['arcs', connectorLayer, 'legends'],
-      [connectorLayer]
+      () => ['arcs'],
+      []
     );
+
+    if (isLoading || !nivoComponents) {
+      return (
+        <div className="relative flex h-[344px] w-[413px] flex-col gap-6 overflow-hidden rounded-2xl bg-[#1F1F1F] p-5">
+          <div className="absolute inset-0 pointer-events-none rounded-2xl border border-white/10" />
+          <div className="flex flex-col gap-4">
+            <div className="h-6 w-40 animate-pulse rounded bg-white/15" />
+            <div className="h-[200px] w-full animate-pulse rounded-full bg-white/5" />
+            <div className="h-4 w-32 animate-pulse rounded bg-white/10" />
+            <div className="h-4 w-24 animate-pulse rounded bg-white/10" />
+          </div>
+        </div>
+      );
+    }
+
+    if (!chartData.length) {
+      return (
+        <div className="relative flex h-[344px] w-[413px] flex-col items-center justify-center gap-3 overflow-hidden rounded-2xl bg-[#1F1F1F] p-5 text-center text-sm text-white/70">
+          <div className="absolute inset-0 pointer-events-none rounded-2xl border border-white/10" />
+          <span>No allocation data available. Add holdings to see distribution.</span>
+        </div>
+      );
+    }
 
     return (
-      <div className="relative flex h-[344px] w-[413px] flex-col items-center gap-6 overflow-hidden rounded-2xl bg-[#1F1F1F] p-5">
+      <div className="relative flex h-[344px] w-[413px] flex-col overflow-hidden rounded-2xl bg-[#1F1F1F] p-4">
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -287,55 +712,97 @@ export default function PortfolioPage() {
             }}
           ></div>
         </div>
-        <div className="relative z-10 flex w-full items-center">
+        
+        {/* Header */}
+        <div className="relative z-10 flex w-full items-center mb-3">
           <span className="text-[20px] font-[400] leading-[1.3] text-white" style={{ fontFamily: 'Gilroy-SemiBold' }}>
             Allocation
           </span>
         </div>
 
-        <div className="flex w-full flex-1 flex-col items-center justify-center">
-          <div className="h-[200px] w-full">
-            <ResponsivePie<AllocationDatum>
-              data={chartData}
-              margin={{ top: 24, right: 38, bottom: 24, left: 38 }}
-              innerRadius={0.62}
-              padAngle={0}
-              cornerRadius={0}
-              activeOuterRadiusOffset={0}
-              sortByValue={false}
-              enableArcLinkLabels={false}
-              enableArcLabels={false}
-              borderWidth={0}
-              colors={chartColors}
-              defs={gradientDefs}
-              fill={gradientFill}
-              layers={pieLayers}
-              theme={{
-                background: 'transparent',
-                labels: {
-                  text: {
-                    fontFamily: 'Gilroy-Medium',
-                    fontSize: 12,
-                    fill: '#FFFFFF',
+        {/* Chart and Legend Side by Side */}
+        <div className="relative z-10 flex w-full flex-1 gap-4">
+          {/* Pie Chart */}
+          <div className="flex-shrink-0 w-[180px] h-[180px]">
+            {isChartReady ? (
+              React.createElement(ResponsivePie as any, {
+                data: chartData,
+                margin: { top: 10, right: 10, bottom: 10, left: 10 },
+                innerRadius: 0.35,
+                padAngle: 0.5,
+                cornerRadius: 1,
+                activeOuterRadiusOffset: 4,
+                sortByValue: false, // Keep original order to maintain consistency
+                enableArcLinkLabels: false,
+                enableArcLabels: false,
+                borderWidth: 2,
+                borderColor: '#1F1F1F',
+                colors: (datum: any) => datum.data.color,
+                startAngle: 0,
+                endAngle: 360,
+                fit: true,
+                theme: {
+                  background: 'transparent',
+                  tooltip: {
+                    container: {
+                      background: '#1F1F1F',
+                      color: '#FFFFFF',
+                      fontFamily: 'Gilroy-Medium',
+                      fontSize: 12,
+                      borderRadius: '8px',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      padding: '8px 12px',
+                    },
                   },
                 },
-                tooltip: {
-                  container: {
-                    background: '#1F1F1F',
-                    color: '#FFFFFF',
-                    fontFamily: 'Gilroy-Medium',
-                    fontSize: 12,
-                    borderRadius: '10px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    padding: '8px 12px',
-                  },
-                },
-              }}
-              tooltip={() => null}
-              legends={[]}
-            />
+                tooltip: ({ datum }: any) => (
+                  <div style={{ padding: '4px 8px' }}>
+                    <strong>{datum.data.label}</strong>
+                    <br />
+                    {datum.data.displayValue} ({formatPercentValue(datum.data.percentage)})
+                  </div>
+                ),
+                legends: [],
+              })
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-sm text-white/60">
+                {ResponsivePie ? 'No data available' : 'Loading chart...'}
+              </div>
+            )}
           </div>
+          
+          {/* Legend */}
+          {isChartReady && chartData.length > 0 && (
+            <div className="flex-1 flex flex-col justify-center">
+              <div className="space-y-2 max-h-[180px] overflow-y-auto pr-2">
+                {chartData.map((datum) => (
+                  <div key={datum.id} className="flex items-center justify-between text-xs py-1">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                      <div 
+                        className="w-3 h-3 rounded-full flex-shrink-0" 
+                        style={{ backgroundColor: datum.color }}
+                      />
+                      <span className="text-white font-medium truncate">{datum.label}</span>
+                    </div>
+                    <div className="flex flex-col items-end text-right ml-2 flex-shrink-0">
+                      <span className="text-white text-xs font-medium">{formatPercentValue(datum.percentage)}</span>
+                      <span className="text-white/60 text-xs">{datum.displayValue}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+        
+        {/* Total Assets Count */}
+        {isChartReady && chartData.length > 0 && (
+          <div className="relative z-10 mt-3 pt-2 border-t border-white/10">
+            <div className="text-xs text-white/60 text-center">
+              {chartData.length} Asset{chartData.length !== 1 ? 's' : ''} • Total Portfolio
+            </div>
+          </div>
+        )}
       </div>
     );
   };
@@ -848,8 +1315,37 @@ export default function PortfolioPage() {
                         />
                       </svg>
                     </span>
-                    Add Holding
+                    {hasConnectedApi ? 'Manage API Key' : 'Connect Binance'}
                   </button>
+                  {hasConnectedApi ? (
+                    <button
+                      type="button"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '12px 16px',
+                        gap: '4px',
+                        width: '180px',
+                        height: '48px',
+                        background: 'transparent',
+                        borderRadius: '100px',
+                        border: '1px solid rgba(255,255,255,0.4)',
+                        cursor: 'pointer',
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '16px',
+                        lineHeight: '100%',
+                        color: '#FFFFFF',
+                      }}
+                      onClick={handleDisconnect}
+                      disabled={isRemovingCredentials}
+                    >
+                      {isRemovingCredentials ? 'Disconnecting…' : 'Disconnect'}
+                    </button>
+                  ) : null}
                 </div>
                 <p
                   style={{
@@ -864,6 +1360,30 @@ export default function PortfolioPage() {
                 >
                   Track allocation, P/L, and trends - all in one place.
                 </p>
+                {hasConnectedApi && (
+                  <div
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '8px 14px',
+                      borderRadius: '9999px',
+                      border: '1px solid rgba(255, 255, 255, 0.2)',
+                      background: 'rgba(255, 255, 255, 0.04)',
+                      color: '#FFFFFF',
+                      fontFamily: 'Gilroy-Medium',
+                      fontSize: '14px',
+                    }}
+                  >
+                    <span>Connected to Binance</span>
+                    <span style={{ color: '#DE50EC' }}>
+                      {credentialsStatus?.useTestnet ? 'Testnet' : 'Mainnet'}
+                    </span>
+                    {credentialsStatus?.label ? (
+                      <span style={{ color: '#9D9D9D' }}>· {credentialsStatus.label}</span>
+                    ) : null}
+                  </div>
+                )}
               </div>
 
               <div style={{ width: '100%' }}>
@@ -903,19 +1423,36 @@ export default function PortfolioPage() {
                           }}
                         ></div>
                       </div>
-                      <div
-                        style={{
-                          position: 'relative',
-                          zIndex: 1,
-                          width: '100%',
-                          height: '100%',
-                          borderRadius: '15px',
-                        }}
-                      >
-                        <PortfolioBalanceCard />
-                      </div>
+                    <div
+                      style={{
+                        position: 'relative',
+                        zIndex: 1,
+                        width: '100%',
+                        height: '100%',
+                        borderRadius: '15px',
+                      }}
+                    >
+                      <PortfolioBalanceCard
+                        totalValue={displayedTotalValue}
+                        changePercent={chartChangePercent ?? undefined}
+                        chartData={activeChartData}
+                        isLoading={isFetchingPortfolio}
+                        isChartLoading={chartLoadingRange === selectedChartRange}
+                        lastUpdated={portfolioData?.summary?.computedAt ?? null}
+                        selectedRange={selectedChartRange}
+                        onRangeChange={handleChartRangeChange}
+                      />
                     </div>
-                    <AllocationDistributionCard />
+                    </div>
+                  {chartError && (
+                    <div className="mt-4 w-full rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                      {chartError}
+                    </div>
+                  )}
+                    <AllocationDistributionCard
+                      slices={allocationData}
+                      isLoading={isFetchingPortfolio}
+                    />
                   </div>
                 ) : (
                   <div
@@ -985,7 +1522,7 @@ export default function PortfolioPage() {
                             margin: 0,
                           }}
                         >
-                          Add Your First Holding
+                          Connect Your Binance Account
                         </h3>
                         <p
                           style={{
@@ -1000,7 +1537,7 @@ export default function PortfolioPage() {
                             margin: 0,
                           }}
                         >
-                          Start with the asset you track most - see allocation and P/L instantly
+                          Securely connect your Binance API key to load balances, allocation, and performance in real-time.
                         </p>
                       </div>
                       <button
@@ -1027,7 +1564,7 @@ export default function PortfolioPage() {
                         }}
                         onClick={openAddHoldingModal}
                       >
-                        Add Holding
+                        Connect Binance
                       </button>
                     </div>
                   </div>
@@ -1035,435 +1572,14 @@ export default function PortfolioPage() {
               </div>
 
               {hasConnectedApi && (
-                <div style={{ width: '100%' }}>
-                  <div
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      padding: '24px',
-                      gap: '32px',
-                      width: '100%',
-                      maxWidth: '1280px',
-                      margin: '116px auto 0',
-                      background: '#1F1F1F',
-                      borderRadius: '16px',
-                      position: 'relative',
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <div
-                      className="absolute inset-0 pointer-events-none"
-                      style={{
-                        borderRadius: '16px',
-                        background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                        padding: '1px',
-                      }}
-                    >
-                      <div
-                        className="w-full h-full rounded-[15px]"
-                        style={{
-                          background: '#1F1F1F',
-                        }}
-                      ></div>
-                    </div>
-                    <div
-                      style={{
-                        position: 'relative',
-                        zIndex: 1,
-                        width: '100%',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'column',
-                          alignItems: 'flex-start',
-                          gap: '40px',
-                          width: '100%',
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'flex-start',
-                            gap: '16px',
-                            width: '100%',
-                          }}
-                        >
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              gap: '24px',
-                              width: '100%',
-                            }}
-                          >
-                            <div
-                              style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '12px',
-                                flex: 1,
-                              }}
-                            >
-                              <h3
-                                style={{
-                                  fontFamily: 'Gilroy-SemiBold',
-                                  fontStyle: 'normal',
-                                  fontWeight: 400,
-                                  fontSize: '36px',
-                                  lineHeight: '100%',
-                                  color: '#FFFFFF',
-                                  margin: 0,
-                                }}
-                              >
-                                Holdings
-                              </h3>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'flex-start',
-                            gap: '12px',
-                            width: '100%',
-                          }}
-                        >
-                          <div
-                            style={{
-                              boxSizing: 'border-box',
-                              display: 'flex',
-                              flexDirection: 'row',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              padding: '16px',
-                              gap: '24px',
-                              width: '100%',
-                              border: '1px solid rgba(255, 255, 255, 0.3)',
-                              borderRadius: '8px',
-                            }}
-                          >
-                            {holdingsColumns.map(column => (
-                              <span
-                                key={column}
-                                style={{
-                                  width: '150.86px',
-                                  fontFamily: 'Gilroy-Medium',
-                                  fontStyle: 'normal',
-                                  fontWeight: 400,
-                                  fontSize: '14px',
-                                  lineHeight: '100%',
-                                  textAlign: 'center',
-                                  color: '#FFFFFF',
-                                }}
-                              >
-                                {column}
-                              </span>
-                            ))}
-                          </div>
-
-                          {holdingsRows.map((row, index) => (
-                            <div
-                              key={`${row.asset}-${index}`}
-                              style={{
-                                boxSizing: 'border-box',
-                                display: 'flex',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                padding: '16px',
-                                gap: '24px',
-                                width: '100%',
-                                border: '1px solid rgba(255, 255, 255, 0.1)',
-                                borderRadius: '8px',
-                              }}
-                            >
-                              <span
-                                style={{
-                                  width: '150.86px',
-                                  fontFamily: 'Gilroy-Medium',
-                                  fontStyle: 'normal',
-                                  fontWeight: 400,
-                                  fontSize: '14px',
-                                  lineHeight: '100%',
-                                  textAlign: 'center',
-                                  color: '#909090',
-                                }}
-                              >
-                                {row.asset}
-                              </span>
-                              <span
-                                style={{
-                                  width: '150.86px',
-                                  fontFamily: 'Gilroy-Medium',
-                                  fontStyle: 'normal',
-                                  fontWeight: 400,
-                                  fontSize: '14px',
-                                  lineHeight: '100%',
-                                  textAlign: 'center',
-                                  color: '#909090',
-                                }}
-                              >
-                                {row.quantity}
-                              </span>
-                              <span
-                                style={{
-                                  width: '150.86px',
-                                  fontFamily: 'Gilroy-Medium',
-                                  fontStyle: 'normal',
-                                  fontWeight: 400,
-                                  fontSize: '14px',
-                                  lineHeight: '100%',
-                                  textAlign: 'center',
-                                  color: '#909090',
-                                }}
-                              >
-                                {row.avgPrice}
-                              </span>
-                              <span
-                                style={{
-                                  width: '150.86px',
-                                  fontFamily: 'Gilroy-Medium',
-                                  fontStyle: 'normal',
-                                  fontWeight: 400,
-                                  fontSize: '14px',
-                                  lineHeight: '100%',
-                                  textAlign: 'center',
-                                  color: '#909090',
-                                }}
-                              >
-                                {row.currentPrice}
-                              </span>
-                              <span
-                                style={{
-                                  width: '150.86px',
-                                  fontFamily: 'Gilroy-Medium',
-                                  fontStyle: 'normal',
-                                  fontWeight: 400,
-                                  fontSize: '14px',
-                                  lineHeight: '100%',
-                                  textAlign: 'center',
-                                  color: '#909090',
-                                }}
-                              >
-                                {row.value}
-                              </span>
-                              <span
-                                style={{
-                                  width: '150.86px',
-                                  fontFamily: 'Gilroy-Medium',
-                                  fontStyle: 'normal',
-                                  fontWeight: 400,
-                                  fontSize: '14px',
-                                  lineHeight: '100%',
-                                  textAlign: 'center',
-                                  color: row.pnlColor,
-                                }}
-                              >
-                                {row.pnl}
-                              </span>
-                              <span
-                                style={{
-                                  width: '150.86px',
-                                  display: 'flex',
-                                  flexDirection: 'row',
-                                  justifyContent: 'center',
-                                  alignItems: 'center',
-                                  gap: '4px',
-                                }}
-                              >
-                                <button
-                                  type="button"
-                                  style={{
-                                    width: '32px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    border: 'none',
-                                    background: 'rgba(255, 255, 255, 0.08)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer',
-                                  }}
-                                  aria-label={`Edit ${row.asset}`}
-                                >
-                                  <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 16 16"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M3 12.9998L5.6 12.5998C5.82091 12.5668 6.01777 12.4552 6.16 12.2898L12.6 5.69984C12.9186 5.36585 13.1004 4.92125 13.1061 4.45553C13.1118 3.98982 12.941 3.54056 12.63 3.19984C12.4776 3.03707 12.2902 2.90963 12.0811 2.82671C11.872 2.74379 11.6467 2.70743 11.42 2.71984C10.9933 2.72156 10.5862 2.89754 10.28 3.20984L3.84 9.79984C3.6839 9.95507 3.57208 10.1508 3.52 10.3648L3 12.9998Z"
-                                      fill="#909090"
-                                    />
-                                    <path
-                                      d="M2 14.6665H14"
-                                      stroke="#909090"
-                                      strokeWidth="1.2"
-                                      strokeLinecap="round"
-                                    />
-                                  </svg>
-                                </button>
-                                <button
-                                  type="button"
-                                  style={{
-                                    width: '32px',
-                                    height: '32px',
-                                    borderRadius: '8px',
-                                    border: 'none',
-                                    background: 'rgba(255, 0, 0, 0.08)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer',
-                                  }}
-                                  aria-label={`Delete ${row.asset}`}
-                                >
-                                  <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 16 16"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                  >
-                                    <path
-                                      d="M6 3.33333L6.27333 2.55333C6.39174 2.22287 6.62305 1.94347 6.92592 1.76489C7.22878 1.58631 7.58558 1.51953 7.93333 1.57333H8.06667C8.41442 1.51953 8.77122 1.58631 9.07408 1.76489C9.37695 1.94347 9.60826 2.22287 9.72667 2.55333L10 3.33333"
-                                      stroke="#BB0404"
-                                      strokeWidth="1.2"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    />
-                                    <path
-                                      d="M12.6667 3.3335H3.33333"
-                                      stroke="#BB0404"
-                                      strokeWidth="1.2"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    />
-                                    <path
-                                      d="M5.33398 3.3335V12.0002C5.33398 12.3538 5.47445 12.693 5.72449 12.9431C5.97454 13.1931 6.3137 13.3335 6.66732 13.3335H9.33398C9.6876 13.3335 10.0268 13.1931 10.2768 12.9431C10.5269 12.693 10.6673 12.3538 10.6673 12.0002V3.3335"
-                                      stroke="#BB0404"
-                                      strokeWidth="1.2"
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                    />
-                                  </svg>
-                                </button>
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-
-                        <div
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            width: '100%',
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontFamily: 'Gilroy-Medium',
-                              fontStyle: 'normal',
-                              fontWeight: 400,
-                              fontSize: '14px',
-                              lineHeight: '100%',
-                              color: '#909090',
-                            }}
-                          >
-                            10 of 100
-                          </span>
-                          <div
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              gap: '8px',
-                            }}
-                          >
-                            {[1, 2, 3, 4].map(page => {
-                              const isActive = page === 1;
-                              return (
-                                <button
-                                  key={page}
-                                  type="button"
-                                  style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    width: '32px',
-                                    height: '30px',
-                                    borderRadius: '8px',
-                                    border: isActive ? '1px solid #667EEA' : '1px solid #909090',
-                                    background: isActive ? '#667EEA' : 'transparent',
-                                    color: isActive ? '#FFFFFF' : '#909090',
-                                    fontFamily: 'Gilroy-Medium',
-                                    fontStyle: 'normal',
-                                    fontWeight: 400,
-                                    fontSize: '14px',
-                                    lineHeight: '100%',
-                                    cursor: 'pointer',
-                                  }}
-                                >
-                                  {page}
-                                </button>
-                              );
-                            })}
-                            <button
-                              type="button"
-                              style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: '32px',
-                                height: '30px',
-                                borderRadius: '8px',
-                                border: '1px solid #909090',
-                                background: 'transparent',
-                                cursor: 'pointer',
-                              }}
-                              aria-label="Next page"
-                            >
-                              <svg
-                                width="10"
-                                height="10"
-                                viewBox="0 0 10 10"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                                style={{ transform: 'rotate(-90deg)' }}
-                              >
-                                <path
-                                  d="M3 2.5L5 4.5L7 2.5"
-                                  stroke="#909090"
-                                  strokeWidth="1.2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                                <path
-                                  d="M5 4.5V7.5"
-                                  stroke="#909090"
-                                  strokeWidth="1.2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div className="mt-[116px] w-full">
+                  <HoldingsTable
+                    holdings={portfolioData?.holdings ?? []}
+                    totalValue={totalPortfolioValue}
+                    isLoading={isFetchingPortfolio}
+                    error={portfolioError}
+                    missingPriceAssets={portfolioData?.summary?.missingPriceAssets}
+                  />
                 </div>
               )}
             </div>
@@ -1560,7 +1676,10 @@ export default function PortfolioPage() {
                 </div>
 
                 <div className="relative">
-                  <AllocationDistributionCard />
+                  <AllocationDistributionCard
+                    slices={allocationData.length ? allocationData : PREVIEW_ALLOCATION}
+                    isLoading={false}
+                  />
                 <div
                     className="pointer-events-none absolute inset-0 rounded-2xl"
                   style={{
@@ -1577,7 +1696,11 @@ export default function PortfolioPage() {
                 justifyContent: 'center',
               }}
             >
-              <HoldingsTable />
+              <HoldingsTable
+                holdings={PREVIEW_HOLDINGS}
+                totalValue={PREVIEW_TOTAL_VALUE}
+                isLoading={false}
+              />
             </div>
             </>
             )}
@@ -2207,7 +2330,7 @@ export default function PortfolioPage() {
               margin: 0,
             }}
           >
-            Add Holding
+            Connect Binance API
           </h2>
           <p
             style={{
@@ -2220,9 +2343,24 @@ export default function PortfolioPage() {
               margin: 0,
             }}
           >
-            Enter your brokerage API key to securely sync holdings and monitor portfolio performance.
+            Your credentials are encrypted with AES-256 and stored in MongoDB. Use read-only keys restricted to balance endpoints whenever possible.
           </p>
         </div>
+        {credentialError ? (
+          <div
+            style={{
+              padding: '12px 16px',
+              borderRadius: '12px',
+              background: 'rgba(255, 0, 0, 0.12)',
+              border: '1px solid rgba(255, 0, 0, 0.4)',
+              color: '#FFB3B3',
+              fontFamily: 'Gilroy-Medium',
+              fontSize: '14px',
+            }}
+          >
+            {credentialError}
+          </div>
+        ) : null}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <label
             htmlFor="portfolio-api-key-input"
@@ -2257,6 +2395,132 @@ export default function PortfolioPage() {
             }}
           />
         </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label
+            htmlFor="portfolio-api-secret-input"
+            style={{
+              fontFamily: 'Gilroy-SemiBold',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '130%',
+              color: '#FFFFFF',
+            }}
+          >
+            API Secret
+          </label>
+          <input
+            id="portfolio-api-secret-input"
+            type="password"
+            value={apiSecretValue}
+            onChange={handleApiSecretChange}
+            placeholder="Enter your API secret"
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              background: '#0A0A0A',
+              color: '#FFFFFF',
+              fontFamily: 'Gilroy-Medium',
+              fontSize: '14px',
+              lineHeight: '130%',
+              outline: 'none',
+            }}
+            autoComplete="off"
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label
+            htmlFor="portfolio-passphrase-input"
+            style={{
+              fontFamily: 'Gilroy-SemiBold',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '130%',
+              color: '#FFFFFF',
+            }}
+          >
+            Passphrase (optional)
+          </label>
+          <input
+            id="portfolio-passphrase-input"
+            type="password"
+            value={passphraseValue}
+            onChange={handlePassphraseChange}
+            placeholder="Enter if your key requires a passphrase"
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              background: '#0A0A0A',
+              color: '#FFFFFF',
+              fontFamily: 'Gilroy-Medium',
+              fontSize: '14px',
+              lineHeight: '130%',
+              outline: 'none',
+            }}
+            autoComplete="off"
+          />
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <label
+            htmlFor="portfolio-label-input"
+            style={{
+              fontFamily: 'Gilroy-SemiBold',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '130%',
+              color: '#FFFFFF',
+            }}
+          >
+            Label (optional)
+          </label>
+          <input
+            id="portfolio-label-input"
+            type="text"
+            value={labelValue}
+            onChange={handleLabelChange}
+            placeholder="e.g. Personal account"
+            style={{
+              width: '100%',
+              padding: '14px 16px',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 255, 255, 0.12)',
+              background: '#0A0A0A',
+              color: '#FFFFFF',
+              fontFamily: 'Gilroy-Medium',
+              fontSize: '14px',
+              lineHeight: '130%',
+              outline: 'none',
+            }}
+            autoComplete="off"
+          />
+        </div>
+        <label
+          htmlFor="portfolio-use-testnet-toggle"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginTop: '4px',
+            fontFamily: 'Gilroy-Medium',
+            fontSize: '14px',
+            color: '#FFFFFF',
+          }}
+        >
+          <input
+            id="portfolio-use-testnet-toggle"
+            type="checkbox"
+            checked={useTestnetValue}
+            onChange={handleUseTestnetToggle}
+            style={{ width: '16px', height: '16px' }}
+          />
+          Use Binance testnet
+        </label>
         <div
           style={{
             display: 'flex',
@@ -2278,6 +2542,7 @@ export default function PortfolioPage() {
               cursor: 'pointer',
             }}
             onClick={closeAddHoldingModal}
+            disabled={isSavingCredentials}
           >
             Cancel
           </button>
@@ -2294,8 +2559,9 @@ export default function PortfolioPage() {
               cursor: 'pointer',
             }}
             onClick={handleConfirmAddHolding}
+            disabled={isSavingCredentials}
           >
-            Confirm
+            {isSavingCredentials ? 'Saving...' : 'Confirm'}
           </button>
         </div>
       </div>

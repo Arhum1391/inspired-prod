@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,6 +10,7 @@ const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
 const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
 
 function CheckoutContent() {
+  const [stripeModule, setStripeModule] = useState<typeof import('@stripe/react-stripe-js') | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [plan, setPlan] = useState<'monthly' | 'annual'>('monthly');
@@ -31,6 +31,24 @@ function CheckoutContent() {
       setPlan(planParam);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    let isMounted = true;
+    import('@stripe/react-stripe-js')
+      .then(mod => {
+        if (isMounted) {
+          setStripeModule(mod);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to load Stripe React bindings', error);
+        setError('Unable to load payment form. Please refresh the page or contact support.');
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     const storedEmail =
@@ -328,16 +346,21 @@ function CheckoutContent() {
                   <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-red-400/40 bg-red-500/10 px-4 py-10 text-sm text-red-300">
                     Stripe is not configured. Please contact support.
                   </div>
+                ) : !stripeModule ? (
+                  <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-white/20 bg-white/5 px-4 py-10 text-sm text-white/70">
+                    Loading payment interface...
+                  </div>
                 ) : (
-                  <Elements stripe={stripePromise} options={elementsOptions} key={clientSecret}>
+                  <stripeModule.Elements stripe={stripePromise} options={elementsOptions} key={clientSecret}>
                     <CheckoutPaymentForm
+                      stripeModule={stripeModule}
                       customerEmail={customerEmail as string}
                       customerName={customerName}
                       subscriptionId={subscriptionId}
                       onSuccess={handlePaymentSuccess}
                       onError={handlePaymentError}
                     />
-                  </Elements>
+                  </stripeModule.Elements>
                 )}
               </div>
             </div>
@@ -442,6 +465,7 @@ function CheckoutContent() {
 }
 
 interface CheckoutPaymentFormProps {
+  stripeModule: typeof import('@stripe/react-stripe-js');
   customerEmail: string;
   customerName?: string | null;
   subscriptionId: string;
@@ -450,12 +474,14 @@ interface CheckoutPaymentFormProps {
 }
 
 function CheckoutPaymentForm({
+  stripeModule,
   customerEmail,
   customerName,
   subscriptionId,
   onSuccess,
   onError,
 }: CheckoutPaymentFormProps) {
+  const { PaymentElement, useElements, useStripe } = stripeModule;
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);

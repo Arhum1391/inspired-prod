@@ -48,9 +48,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Fetch user from server to sync with server-side auth
     const fetchUser = async () => {
       try {
+        if (typeof window !== 'undefined' && !navigator.onLine) {
+          const savedUser = window.localStorage.getItem('user');
+          if (savedUser) {
+            try {
+              const parsedUser = JSON.parse(savedUser);
+              const normalized = normalizeUser(parsedUser);
+              setUser(normalized);
+            } catch (e) {
+              window.localStorage.removeItem('user');
+              setUser(null);
+            }
+          }
+          return;
+        }
+
         setIsLoading(true);
         const response = await fetch('/api/auth/me', {
           credentials: 'include', // Include cookies
+          cache: 'no-store',
         });
         
         if (response.ok) {
@@ -58,28 +74,34 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           if (data.user) {
             const normalized = normalizeUser(data.user);
             setUser(normalized);
-            localStorage.setItem('user', JSON.stringify(normalized));
+            if (typeof window !== 'undefined') {
+              window.localStorage.setItem('user', JSON.stringify(normalized));
+            }
           } else {
-            // No user data, clear local storage
-            localStorage.removeItem('user');
+            if (typeof window !== 'undefined') {
+              window.localStorage.removeItem('user');
+            }
             setUser(null);
           }
         } else {
-          // Not authenticated on server, clear local storage
-          localStorage.removeItem('user');
+          if (typeof window !== 'undefined') {
+            window.localStorage.removeItem('user');
+          }
           setUser(null);
         }
       } catch (error) {
-        console.error('Error fetching user:', error);
-        // On error, try to use local storage as fallback
-        const savedUser = localStorage.getItem('user');
+        console.warn('Unable to reach /api/auth/me:', error);
+        const savedUser =
+          typeof window !== 'undefined' ? window.localStorage.getItem('user') : null;
         if (savedUser) {
           try {
             const parsedUser = JSON.parse(savedUser);
             const normalized = normalizeUser(parsedUser);
             setUser(normalized);
           } catch (e) {
-            localStorage.removeItem('user');
+            if (typeof window !== 'undefined') {
+              window.localStorage.removeItem('user');
+            }
             setUser(null);
           }
         }

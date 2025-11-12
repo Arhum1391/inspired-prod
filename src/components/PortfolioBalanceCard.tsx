@@ -1,140 +1,258 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import * as Recharts from 'recharts';
+import { useEffect, useMemo, useState } from 'react';
 
-const { Area, AreaChart: RechartsAreaChart, ResponsiveContainer, XAxis, YAxis } = Recharts;
+export type TimeRange = '1Hr' | '1D' | '1W' | '1M' | '1Y';
 
-type TimeRange = '1Hr' | '1D' | '1W' | '1M' | '1Y';
-
-type ChartDatum = {
+export type ChartDatum = {
   label: string;
   value: number;
 };
 
-const chartSeries: Record<TimeRange, ChartDatum[]> = {
-  '1Hr': [
-    { label: '10:05', value: 1400 },
-    { label: '10:15', value: 1820 },
-    { label: '10:25', value: 1680 },
-    { label: '10:35', value: 2100 },
-    { label: '10:45', value: 2350 },
-    { label: '10:55', value: 2480 },
-    { label: '11:05', value: 2320 },
-  ],
-  '1D': [
-    { label: '6 AM', value: 1200 },
-    { label: '9 AM', value: 1560 },
-    { label: '12 PM', value: 1710 },
-    { label: '3 PM', value: 1890 },
-    { label: '6 PM', value: 2200 },
-    { label: '9 PM', value: 2460 },
-    { label: '12 AM', value: 2380 },
-  ],
-  '1W': [
-    { label: 'Mon', value: 1180 },
-    { label: 'Tue', value: 1420 },
-    { label: 'Wed', value: 1670 },
-    { label: 'Thu', value: 1980 },
-    { label: 'Fri', value: 2260 },
-    { label: 'Sat', value: 2390 },
-    { label: 'Sun', value: 2230 },
-  ],
-  '1M': [
-    { label: '16/6', value: 980 },
-    { label: '22/6', value: 1360 },
-    { label: '28/6', value: 1680 },
-    { label: '4/7', value: 2140 },
-    { label: '10/7', value: 2420 },
-    { label: '16/7', value: 2760 },
-    { label: '22/7', value: 2610 },
-  ],
-  '1Y': [
-    { label: 'Jan', value: 760 },
-    { label: 'Mar', value: 1040 },
-    { label: 'May', value: 1380 },
-    { label: 'Jul', value: 1760 },
-    { label: 'Sep', value: 2120 },
-    { label: 'Nov', value: 2470 },
-    { label: 'Dec', value: 2680 },
-  ],
+const GRID_POSITIONS = {
+  monthLines: [12.5, 37.5, 62.5, 87.5],
+  midLines: [25, 50, 75],
 };
 
-export default function PortfolioBalanceCard() {
-  const [selectedRange, setSelectedRange] = useState<TimeRange>('1M');
+const formatCurrency = (value: number): string =>
+  new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: value >= 100000 ? 0 : 2,
+  }).format(value);
 
-  const data = useMemo(() => chartSeries[selectedRange], [selectedRange]);
-  const dataWithPosition = useMemo(
-    () => data.map((point, index) => ({ ...point, position: index })),
-    [data]
+const RANGES: TimeRange[] = ['1Hr', '1D', '1W'];
+
+export type PortfolioBalanceCardProps = {
+  totalValue?: number | null;
+  changePercent?: number | null;
+  comparisonLabel?: string | null;
+  chartData?: ChartDatum[];
+  isLoading?: boolean;
+  isChartLoading?: boolean;
+  lastUpdated?: string | null;
+  selectedRange?: TimeRange;
+  onRangeChange?: (range: TimeRange) => void;
+};
+
+export default function PortfolioBalanceCard({
+  totalValue,
+  changePercent,
+  comparisonLabel = 'Portfolio Value',
+  chartData,
+  isLoading = false,
+  isChartLoading = false,
+  selectedRange,
+  onRangeChange,
+}: PortfolioBalanceCardProps) {
+  const [internalRange, setInternalRange] = useState<TimeRange>('1W');
+  const activeRange = selectedRange ?? internalRange;
+  const [recharts, setRecharts] = useState<typeof import('recharts') | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    import('recharts')
+      .then(mod => {
+        if (mounted) {
+          setRecharts(mod);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to load Recharts', error);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const series = useMemo<ChartDatum[]>(() => {
+    if (!Array.isArray(chartData)) {
+      return [];
+    }
+    return chartData
+      .map(point => ({
+        label: String(point?.label ?? ''),
+        value: Number(point?.value ?? 0),
+      }))
+      .filter(point => Number.isFinite(point.value));
+  }, [chartData]);
+
+  const dataWithIndex = useMemo(
+    () => series.map((point, index) => ({ ...point, index })),
+    [series]
   );
 
-  const xPositionPercentages = useMemo(() => {
-    if (data.length === 0) {
-      return { monthLines: [] as number[], midLines: [] as number[], labelPositions: [] as number[] };
+  const hasData = dataWithIndex.length > 0;
+
+  const yAxisLabels = useMemo(() => {
+    if (!hasData) {
+      return ['$0'];
     }
-
-    if (data.length === 1) {
-      return { monthLines: [50], midLines: [], labelPositions: [50] };
+    
+    // Get the range of values in the chart data
+    const values = dataWithIndex.map(point => point.value).filter(v => Number.isFinite(v) && v > 0);
+    if (values.length === 0) {
+      return ['$0'];
     }
+    
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    
+    // If all values are the same or very close, show a range around that value
+    if (maxValue - minValue < maxValue * 0.01) {
+      const baseValue = maxValue;
+      const padding = Math.max(baseValue * 0.05, 100); // 5% padding or $100 minimum
+      return [
+        formatCurrency(baseValue + padding),
+        formatCurrency(baseValue + padding * 0.33),
+        formatCurrency(baseValue - padding * 0.33),
+        formatCurrency(Math.max(0, baseValue - padding)),
+      ];
+    }
+    
+    // Normal case: show range from min to max with proper spacing
+    const range = maxValue - minValue;
+    const padding = range * 0.1; // 10% padding
+    const adjustedMax = maxValue + padding;
+    const adjustedMin = Math.max(0, minValue - padding);
+    const step = (adjustedMax - adjustedMin) / 3;
+    
+    return [
+      formatCurrency(adjustedMax),
+      formatCurrency(adjustedMax - step),
+      formatCurrency(adjustedMax - step * 2),
+      formatCurrency(adjustedMin),
+    ];
+  }, [dataWithIndex, hasData]);
 
-    const step = 100 / data.length;
-    const monthLines = Array.from({ length: data.length }, (_, index) =>
-      Number(((index + 0.5) * step).toFixed(3))
-    );
-
-    const midLines = Array.from({ length: data.length - 1 }, (_, index) =>
-      Number(((monthLines[index] + monthLines[index + 1]) / 2).toFixed(3))
-    );
-
+  const { yDomainMin, yDomainMax } = useMemo(() => {
+    if (!hasData) {
+      return { yDomainMin: 0, yDomainMax: 1 };
+    }
+    
+    const values = dataWithIndex.map(point => point.value).filter(v => Number.isFinite(v) && v > 0);
+    if (values.length === 0) {
+      return { yDomainMin: 0, yDomainMax: 1 };
+    }
+    
+    const minValue = Math.min(...values);
+    const maxValue = Math.max(...values);
+    
+    // If all values are the same or very close, use padding around that value
+    if (maxValue - minValue < maxValue * 0.01) {
+      const baseValue = maxValue;
+      const padding = Math.max(baseValue * 0.05, 100);
+      return {
+        yDomainMin: Math.max(0, baseValue - padding),
+        yDomainMax: baseValue + padding,
+      };
+    }
+    
+    // Normal case: use range with padding
+    const range = maxValue - minValue;
+    const padding = range * 0.1;
     return {
-      monthLines,
-      midLines,
-      labelPositions: monthLines,
+      yDomainMin: Math.max(0, minValue - padding),
+      yDomainMax: maxValue + padding,
     };
-  }, [data]);
+  }, [dataWithIndex, hasData]);
 
-  const xDomain = useMemo<[number, number]>(() => {
-    if (data.length === 0) return [0, 1];
-    if (data.length === 1) return [-0.5, 0.5];
-    const maxIndex = data.length - 1;
-    return [-0.5, maxIndex + 0.5];
-  }, [data.length]);
+  const sampledXAxisLabels = useMemo(() => {
+    if (!hasData) {
+      return [] as { percent: number; label: string }[];
+    }
 
-  const getTranslate = (position: number) => {
-    if (position <= 0) return '0%';
-    if (position >= 100) return '-100%';
-    return '-50%';
+    const total = dataWithIndex.length;
+    const maxLabels = Math.min(6, total);
+    const step = Math.max(1, Math.floor(total / maxLabels));
+    const indices: number[] = [];
+    for (let i = 0; i < total; i += step) {
+      indices.push(i);
+    }
+    if (indices[indices.length - 1] !== total - 1) {
+      indices.push(total - 1);
+    }
+
+    return indices.map(idx => {
+      const percent = total === 1 ? 50 : (idx / (total - 1)) * 100;
+      return {
+        percent,
+        label: dataWithIndex[idx]?.label ?? '',
+      };
+    });
+  }, [dataWithIndex, hasData]);
+
+  const formattedValue =
+    typeof totalValue === 'number' ? formatCurrency(totalValue) : '\u2014';
+  const formattedChange =
+    typeof changePercent === 'number'
+      ? `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`
+      : null;
+
+
+
+  const handleRangeClick = (range: TimeRange) => {
+    if (!selectedRange) {
+      setInternalRange(range);
+    }
+    onRangeChange?.(range);
   };
+
+  const chartContainerState = useMemo(() => {
+    if (isChartLoading) {
+      return 'loading';
+    }
+    if (!hasData) {
+      return 'empty';
+    }
+    return 'ready';
+  }, [isChartLoading, hasData]);
 
   return (
     <div className="flex h-full min-h-[344px] w-full flex-col justify-between overflow-hidden rounded-2xl bg-[#1F1F1F] p-5 text-white shadow-[0_24px_48px_rgba(0,0,0,0.35)]">
-      <div className="flex flex-col gap-6">
-        <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-wrap items-start justify-between gap-6">
             <div className="flex flex-col gap-3">
-              <span className="text-[20px] font-semibold leading-[1.3]">Portfolio Value</span>
+              <span className="text-[20px] font-semibold leading-[1.3]">{comparisonLabel}</span>
               <div className="flex items-center gap-3 text-sm font-medium text-white/80">
-                <span>BTC: $24,000</span>
-                <div className="rounded-full border border-[#05B353] bg-[rgba(5,179,83,0.12)] px-3 py-1 text-xs font-medium text-[#05B353]">
-                  +14.29%
-                </div>
+                <span className="text-2xl font-semibold text-white">
+                  {isLoading ? (
+                    <span className="inline-block h-6 w-24 animate-pulse rounded bg-white/20" />
+                  ) : (
+                    formattedValue
+                  )}
+                </span>
+                {formattedChange ? (
+                  <div
+                    className={`rounded-full border px-3 py-1 text-xs font-medium ${
+                      changePercent && changePercent < 0
+                        ? 'border-[#BB0404] bg-[rgba(187,4,4,0.12)] text-[#FF7A7A]'
+                        : 'border-[#05B353] bg-[rgba(5,179,83,0.12)] text-[#05B353]'
+                    }`}
+                  >
+                    {formattedChange}
+                  </div>
+                ) : null}
               </div>
+              
             </div>
 
             <div className="flex items-center gap-2 rounded-full border border-[#DE50EC] bg-[rgba(222,80,236,0.1)] px-2 py-1">
-              {(['1Hr', '1D', '1W', '1M', '1Y'] as TimeRange[]).map(range => {
-                const isActive = range === selectedRange;
+              {RANGES.map(range => {
+                const isActive = range === activeRange;
                 return (
                   <button
                     key={range}
                     type="button"
-                    onClick={() => setSelectedRange(range)}
+                    onClick={() => handleRangeClick(range)}
                     className={`rounded-full px-3 py-1 text-[14px] font-medium transition-colors ${
                       isActive
                         ? 'bg-[#1F1F1F] text-[#DE50EC] shadow-[0_0_0_1px_rgba(222,80,236,0.6)]'
                         : 'text-[#DE50EC]'
                     }`}
+                    disabled={isChartLoading && isActive}
                   >
                     {range}
                   </button>
@@ -152,78 +270,94 @@ export default function PortfolioBalanceCard() {
           <div className="flex h-full w-full gap-4 pl-6 pr-6">
             <div
               className="flex h-full flex-col justify-between text-right text-xs font-medium tracking-[0.02em] text-white"
-              style={{ paddingTop: '16px', paddingBottom: '30px' }}
+              style={{ paddingTop: '8px', paddingBottom: '24px' }}
             >
-              {['$3000', '$2000', '$1000', '$0'].map(label => (
+              {yAxisLabels.map(label => (
                 <span key={label}>{label}</span>
               ))}
             </div>
 
             <div className="relative h-full w-full">
-              <div className="pointer-events-none absolute inset-x-0 top-0 bottom-[32px] z-0">
-                {xPositionPercentages.monthLines.map((position, index) => (
+              <div className="pointer-events-none absolute inset-x-0 top-2 bottom-[24px] z-0">
+                {GRID_POSITIONS.monthLines.map((position, index) => (
                   <span
                     key={`month-line-${index}`}
-                    className="absolute top-0 bottom-0 border-l border-dashed border-[#909090]/50"
-                    style={{ left: `${position}%`, transform: `translateX(${getTranslate(position)})` }}
+                    className="absolute top-0 bottom-0 border-l border-dashed border-[#909090]/45"
+                    style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
                     aria-hidden
                   />
                 ))}
 
-                {xPositionPercentages.midLines.map((position, index) => (
+                {GRID_POSITIONS.midLines.map((position, index) => (
                   <span
                     key={`mid-line-${index}`}
-                    className="absolute top-0 bottom-0 border-l border-dashed border-[#909090]/35"
-                    style={{ left: `${position}%`, transform: `translateX(${getTranslate(position)})` }}
+                    className="absolute top-0 bottom-0 border-l border-dashed border-[#909090]/25"
+                    style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
                     aria-hidden
                   />
                 ))}
               </div>
 
-              <ResponsiveContainer width="100%" height="100%">
-                <RechartsAreaChart data={dataWithPosition} margin={{ top: 16, right: 0, bottom: 30, left: 0 }}>
-                  <XAxis
-                    dataKey="position"
-                    type="number"
-                    domain={xDomain}
-                    allowDecimals={false}
-                    tickLine={false}
-                    axisLine={false}
-                    tick={false}
-                  />
-                  <YAxis
-                    domain={[0, 3000]}
-                    hide
-                    axisLine={false}
-                    tickLine={false}
-                    tickMargin={16}
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="value"
-                    stroke="#DE50EC"
-                    strokeWidth={4}
-                    fill="none"
-                    dot={false}
-                    activeDot={false}
-                  />
-                </RechartsAreaChart>
-              </ResponsiveContainer>
+              {recharts && chartContainerState === 'ready' ? (
+                <recharts.ResponsiveContainer width="100%" height="100%">
+                  <recharts.AreaChart data={dataWithIndex} margin={{ top: 16, right: 0, bottom: 16, left: 0 }}>
+                    <recharts.XAxis
+                      dataKey="index"
+                      type="number"
+                      domain={dataWithIndex.length > 1 ? [0, dataWithIndex.length - 1] : [0, 1]}
+                      allowDecimals={false}
+                      tickLine={false}
+                      axisLine={false}
+                      tick={false}
+                    />
+                    <recharts.YAxis
+                      domain={[yDomainMin, yDomainMax]}
+                      hide
+                      axisLine={false}
+                      tickLine={false}
+                      tickMargin={16}
+                    />
+                    <recharts.Area
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#DE50EC"
+                      strokeWidth={4}
+                      fill="none"
+                      dot={false}
+                      activeDot={false}
+                      isAnimationActive={false}
+                    />
+                  </recharts.AreaChart>
+                </recharts.ResponsiveContainer>
+              ) : (
+                <div className="flex h-full w-full items-center justify-center rounded-xl border border-white/10 bg-[#151515] text-sm text-white/60">
+                  {chartContainerState === 'loading' ? 'Loading chart…' : 'No chart data available yet.'}
+                </div>
+              )}
 
-              <div className="pointer-events-none absolute bottom-6 left-0 right-0 text-xs font-medium tracking-[0.02em] text-white">
-                {xPositionPercentages.labelPositions.map((position, index) => (
-                  <span
-                    key={`label-${position}-${index}`}
-                    className="absolute whitespace-nowrap"
-                    style={{
-                      left: `${position}%`,
-                      transform: `translateX(${getTranslate(position)})`,
-                    }}
-                  >
-                    {data[index]?.label}
-                  </span>
-                ))}
-              </div>
+              {chartContainerState === 'loading' && hasData && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-[#1F1F1F]/40">
+                  <span className="h-4 w-2/3 animate-pulse rounded bg-white/10" />
+                </div>
+              )}
+
+              {chartContainerState === 'ready' && (
+                <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 flex items-start pt-1 text-xs font-medium tracking-[0.02em] text-white">
+                  {sampledXAxisLabels.map(({ percent, label }) => (
+                    <span
+                      key={`${percent}-${label}`}
+                      className="absolute whitespace-nowrap"
+                      style={{
+                        left: `${percent}%`,
+                        transform:
+                          percent <= 0 ? 'translateX(0)' : percent >= 100 ? 'translateX(-100%)' : 'translateX(-50%)',
+                      }}
+                    >
+                      {label}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

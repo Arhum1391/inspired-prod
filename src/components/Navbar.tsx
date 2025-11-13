@@ -141,7 +141,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
           <div className="flex items-center gap-0">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300 transition-colors active:outline-none cursor-pointer"
+              className="text-white hover:text-gray-300 focus:outline-none focus:text-gray-300 transition-colors active:outline-none cursor-pointer"
               aria-label="Toggle mobile menu"
               style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
             >
@@ -156,9 +156,9 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
 
             {/* Logo - Next to toggle button */}
             <Link
-                href="/"
-                  className="w-28 sm:w-32 h-7 sm:h-6 rounded flex items-center justify-center hover:opacity-80 transition-opacity outline-none focus:outline-none cursor-pointer"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+              href="/"
+              className="w-28 sm:w-32 h-7 sm:h-6 rounded flex items-center justify-center hover:opacity-80 transition-opacity outline-none focus:outline-none cursor-pointer"
+              style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
             >
               <Image
                 src="/logo/navlogo-mob.svg"
@@ -174,18 +174,23 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
           {/* CTA Button or Profile - Right */}
           <div className="flex items-center gap-2">
             {isAuthenticated ? (
-              <ProfileDropdown />
+              <a
+                href="/meetings"
+                className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
+              >
+                Book Mentorship
+              </a>
             ) : (
               <>
                 <a
                   href="/signin"
-                    className="text-white px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:opacity-80 transition-opacity whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
+                  className="text-white px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:opacity-80 transition-opacity whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
                 >
                   Sign In
                 </a>
                 <a
                   href="/meetings"
-                    className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
+                  className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
                 >
                   Book Mentorship
                 </a>
@@ -264,7 +269,15 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
           {/* CTA Button or Profile */}
           <div className="flex items-center gap-3 flex-shrink-0">
             {isAuthenticated ? (
-              <ProfileDropdown />
+              <>
+                <a
+                  href="/meetings"
+                  className="bg-white text-[#0A0A0A] px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer"
+                >
+                  Book Mentorship
+                </a>
+                <ProfileDropdown />
+              </>
             ) : (
               <>
                 <a
@@ -307,12 +320,12 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
           }}>
             {/* Logo Section */}
             <div className="px-6 pt-8 pb-6">
-              <div className="flex items-center">
+              <div className="flex items-center justify-between">
                 <Link
-                    href="/"
-                    className="hover:opacity-80 transition-opacity outline-none focus:outline-none cursor-pointer"
-                    style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                    onClick={() => setIsMobileMenuOpen(false)}
+                  href="/"
+                  className="hover:opacity-80 transition-opacity outline-none focus:outline-none cursor-pointer"
+                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <Image
                     src="/sidebar logo.svg"
@@ -323,6 +336,10 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                     priority
                   />
                 </Link>
+
+                {isAuthenticated && (
+                  <ProfileDropdown />
+                )}
               </div>
             </div>
 
@@ -331,48 +348,48 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
               <div className="flex flex-col gap-2">
                 {isAuthenticated
                   ? authNavItems.map((item) => (
-                <Link
+                      <Link
                         key={item.label}
                         href={item.href}
                         className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none cursor-pointer ${
                           isActive(item.href) ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                  }`}
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
+                        }`}
+                        style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                        onClick={() => {
+                          setIsMobileMenuOpen(false);
+                        }}
+                      >
                         {item.label}
-                </Link>
+                      </Link>
                     ))
                   : guestNavItems.map((item) =>
                       'sectionId' in item ? (
                         <button
                           key={item.label}
                           type="button"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
                             handleGuestNavClick(item);
                           }}
                           className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none hover:bg-gray-700 text-left cursor-pointer"
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                >
+                          style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                        >
                           {item.label}
                         </button>
                       ) : (
-                <Link
+                        <Link
                           key={item.label}
                           href={item.href}
                           className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none cursor-pointer ${
                             isActive(item.href) ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                  }`}
-                  style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
+                          }`}
+                          style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                          }}
+                        >
                           {item.label}
-                </Link>
+                        </Link>
                       )
                     )}
               </div>

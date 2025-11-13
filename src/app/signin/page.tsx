@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
@@ -117,8 +118,9 @@ export default function SignIn() {
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
       <Navbar />
 
-      {/* Gradient Ellipse - Bottom Left */}
+      {/* Desktop Gradients */}
       <div
+        className="hidden md:block fixed bottom-0 left-0 w-[500px] h-[500px] pointer-events-none opacity-100"
         style={{
           position: 'absolute',
           width: '588px',
@@ -128,13 +130,11 @@ export default function SignIn() {
           background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
           filter: 'blur(100px)',
           transform: 'rotate(15deg)',
-          pointerEvents: 'none',
           zIndex: 0
         }}
       ></div>
-
-      {/* Gradient Ellipse - Bottom Right */}
       <div
+        className="hidden md:block fixed bottom-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-100"
         style={{
           position: 'absolute',
           width: '588px',
@@ -144,7 +144,34 @@ export default function SignIn() {
           background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
           filter: 'blur(100px)',
           transform: 'rotate(-60deg)',
-          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      ></div>
+
+      {/* Mobile Gradients */}
+      <div
+        className="md:hidden absolute top-0 left-0 w-[588px] h-[588px] pointer-events-none opacity-100"
+        style={{
+          transform: 'rotate(0deg) translate(-280px, -330px)',
+          transformOrigin: 'top left',
+          background: 'linear-gradient(107.68deg, rgba(110, 77, 136, 1) 9.35%, rgba(110, 77, 136, 0.9) 34.7%, rgba(110, 77, 136, 0.8) 60.06%, rgba(110, 77, 136, 0.7) 72.73%, rgba(110, 77, 136, 0.6) 88.58%)',
+          filter: 'blur(120px)',
+          maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+          zIndex: 0
+        }}
+      ></div>
+      <div
+        className="md:hidden absolute bottom-0 right-0 w-[500px] h-[500px] pointer-events-none opacity-100"
+        style={{
+          background: 'linear-gradient(107.68deg, rgba(23, 64, 136, 1) 9.35%, rgba(23, 64, 136, 1) 34.7%, rgba(23, 64, 136, 1) 60.06%, rgba(23, 64, 136, 0.9) 72.73%, rgba(23, 64, 136, 0.8) 88.58%)',
+          transform: 'rotate(-45deg) translate(250px, 250px)',
+          transformOrigin: 'bottom right',
+          borderRadius: '50%',
+          maskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
+          filter: 'blur(150px)',
+          WebkitFilter: 'blur(150px)',
           zIndex: 0
         }}
       ></div>
@@ -246,7 +273,6 @@ export default function SignIn() {
                     className="w-full"
                     style={{
                       fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 500,
                       fontWeight: 400,
                       fontSize: '14px',
                       lineHeight: '100%',
@@ -273,7 +299,6 @@ export default function SignIn() {
                       border: '1px solid rgba(255, 255, 255, 0.3)',
                       borderRadius: '8px',
                       fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 500,
                       fontWeight: 400,
                       fontSize: '14px',
                       lineHeight: '100%',
@@ -291,7 +316,6 @@ export default function SignIn() {
                     className="w-full"
                     style={{
                       fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 500,
                       fontWeight: 400,
                       fontSize: '14px',
                       lineHeight: '100%',
@@ -348,6 +372,26 @@ export default function SignIn() {
                 </div>
               </div>
 
+              {/* Forget Password */}
+              {!isSignUp && (
+                <div className="w-full flex justify-end -mt-9">
+                  <Link
+                    href="/forgot-password"
+                    className="hover:opacity-80"
+                    style={{
+                      fontFamily: 'Gilroy, sans-serif',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      color: '#FFFFFF',
+                      textAlign: 'right'
+                    }}
+                  >
+                    Forget Password ?
+                  </Link>
+                </div>
+              )}
+
               {/* Button Section */}
               <div className="flex flex-col items-center gap-6 w-full">
                 <button
@@ -380,7 +424,6 @@ export default function SignIn() {
                   className="w-full text-center"
                   style={{
                     fontFamily: 'Gilroy, sans-serif',
-                    fontWeight: 500,
                     fontWeight: 400,
                     fontSize: '14px',
                     lineHeight: '130%',

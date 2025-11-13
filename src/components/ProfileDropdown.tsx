@@ -7,8 +7,26 @@ import { useRouter } from 'next/navigation';
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isDesktop, setIsDesktop] = useState<boolean>(false);
   const { user, logout } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    const updateViewport = () => {
+      if (typeof window !== 'undefined') {
+        setIsDesktop(window.innerWidth >= 1024);
+      }
+    };
+
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+    window.addEventListener('orientationchange', updateViewport);
+
+    return () => {
+      window.removeEventListener('resize', updateViewport);
+      window.removeEventListener('orientationchange', updateViewport);
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: Event) => {
@@ -42,6 +60,17 @@ const ProfileDropdown = () => {
     router.push('/account');
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    const handleBodyScroll = () => {
+      document.body.style.overflow = isOpen ? 'hidden' : 'unset';
+    };
+
+    handleBodyScroll();
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   if (!user) {
     return null;
@@ -95,248 +124,259 @@ const ProfileDropdown = () => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div 
-          className="absolute right-0 top-full mt-2 bg-[#1F1F1F] rounded-3xl z-50"
-          style={{
-            width: '301px',
-            height: '206px',
-            padding: '20px',
-            isolation: 'isolate'
-          }}
-        >
-          {/* Main Content */}
+        <>
+          <div
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+            style={{ zIndex: 11000 }}
+            onClick={() => setIsOpen(false)}
+          ></div>
           <div 
-            className="flex flex-col items-center"
+            className="absolute top-full mt-2 bg-[#1F1F1F] rounded-3xl"
             style={{
-              width: '261px',
-              height: '166px',
-              gap: '12px',
-              zIndex: 0
+              zIndex: 11001,
+              width: '301px',
+              height: '206px',
+              padding: '20px',
+              isolation: 'isolate',
+              right: isDesktop ? 0 : '50%',
+              left: isDesktop ? 'auto' : '50%',
+              transform: isDesktop ? 'none' : 'translateX(-50%)'
             }}
           >
-            {/* User Info Section */}
+            {/* Main Content */}
             <div 
-              className="flex flex-col items-start"
+              className="flex flex-col items-center"
               style={{
                 width: '261px',
                 height: '166px',
-                gap: '24px'
+                gap: '12px',
+                zIndex: 0
               }}
             >
-              {/* User Details Row */}
-              <div 
-                className="flex flex-row items-center"
-                style={{
-                  width: '261px',
-                  height: '48px',
-                  gap: '3px'
-                }}
-              >
-                {/* User Info */}
-                <div 
-                  className="flex flex-col items-start"
-                  style={{
-                    width: '210px',
-                    height: '44px',
-                    gap: '2px'
-                  }}
-                >
-                  <div 
-                    className="text-white"
-                    style={{
-                      width: '210px',
-                      height: '25px',
-                      fontSize: '18px',
-                      fontWeight: '400',
-                      lineHeight: '140%',
-                      letterSpacing: '0.01em'
-                    }}
-                  >
-                    {displayName}
-                  </div>
-                  <div 
-                    className="text-[#656565]"
-                    style={{
-                      width: '210px',
-                      height: '17px',
-                      fontSize: '12px',
-                      fontWeight: '400',
-                      lineHeight: '140%',
-                      letterSpacing: '0.01em'
-                    }}
-                  >
-                    {user.email}
-                  </div>
-                </div>
-
-                {/* Profile Avatar */}
-                <div 
-                  className="rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    background: 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
-                  }}
-                >
-                  <span className="text-white font-semibold text-lg">
-                    {initials[0]}
-                  </span>
-                </div>
-              </div>
-            
-              {/* Menu Items */}
+              {/* User Info Section */}
               <div 
                 className="flex flex-col items-start"
                 style={{
                   width: '261px',
-                  height: '94px'
+                  height: '166px',
+                  gap: '24px'
                 }}
               >
-                {/* Profile Button */}
-                <button
-                  onClick={handleProfileClick}
-                  className="flex flex-row items-center hover:opacity-80 transition-opacity"
-                  style={{
-                    width: '261px',
-                    height: '46px',
-                    padding: '12px 0px',
-                    gap: '12px',
-                    borderRadius: '64px'
-                  }}
-                >
-                  <div 
-                    className="flex flex-row items-center"
-                    style={{
-                      width: '168px',
-                      height: '22px',
-                      gap: '12px'
-                    }}
-                  >
-                    {/* User Icon */}
-                    <div 
-                      className="relative"
-                      style={{
-                        width: '19.25px',
-                        height: '22px'
-                      }}
-                    >
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        className="absolute"
-                        style={{
-                          left: '-10.39%',
-                          right: '-14.29%',
-                          top: '-4.55%',
-                          bottom: '-4.55%'
-                        }}
-                      >
-                        <path
-                          d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
-                          fill="white"
-                        />
-                        <path
-                          d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26 15 3.41 18.13 3.41 22"
-                          fill="white"
-                        />
-                      </svg>
-                    </div>
-                    <span 
-                      className="text-white"
-                      style={{
-                        width: '40px',
-                        height: '20px',
-                        fontSize: '14px',
-                        fontWeight: '400',
-                        lineHeight: '140%',
-                        letterSpacing: '0.01em'
-                      }}
-                    >
-                      Profile
-                    </span>
-                  </div>
-                </button>
-            
-                {/* Sign Out Button */}
-                <button
-                  onClick={handleLogout}
-                  className="flex flex-row items-center hover:opacity-80 transition-opacity"
+                {/* User Details Row */}
+                <div 
+                  className="flex flex-row items-center"
                   style={{
                     width: '261px',
                     height: '48px',
-                    padding: '12px 0px',
-                    gap: '12px',
-                    borderRadius: '64px'
+                    gap: '3px'
                   }}
                 >
+                  {/* User Info */}
                   <div 
-                    className="flex flex-row items-center"
+                    className="flex flex-col items-start"
                     style={{
-                      width: '166px',
-                      height: '24px',
-                      gap: '12px'
+                      width: '210px',
+                      height: '44px',
+                      gap: '2px'
                     }}
                   >
-                    {/* Logout Icon */}
                     <div 
-                      className="relative"
-                      style={{
-                        width: '24px',
-                        height: '24px'
-                      }}
-                    >
-                      <svg
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        className="absolute"
-                      >
-                        <path
-                          d="M17 7L7 17"
-                          stroke="white"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M7 7H17V17"
-                          stroke="white"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M17 3H21V21H17"
-                          stroke="white"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </div>
-                    <span 
                       className="text-white"
                       style={{
-                        width: '58px',
-                        height: '20px',
-                        fontSize: '14px',
+                        width: '210px',
+                        height: '25px',
+                        fontSize: '18px',
                         fontWeight: '400',
                         lineHeight: '140%',
                         letterSpacing: '0.01em'
                       }}
                     >
-                      Sign Out
+                      {displayName}
+                    </div>
+                    <div 
+                      className="text-[#656565]"
+                      style={{
+                        width: '210px',
+                        height: '17px',
+                        fontSize: '12px',
+                        fontWeight: '400',
+                        lineHeight: '140%',
+                        letterSpacing: '0.01em'
+                      }}
+                    >
+                      {user.email}
+                    </div>
+                  </div>
+
+                  {/* Profile Avatar */}
+                  <div 
+                    className="rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
+                    style={{
+                      width: '48px',
+                      height: '48px',
+                      background: 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
+                    }}
+                  >
+                    <span className="text-white font-semibold text-lg">
+                      {initials[0]}
                     </span>
                   </div>
-                </button>
+                </div>
+              
+                {/* Menu Items */}
+                <div 
+                  className="flex flex-col items-start"
+                  style={{
+                    width: '261px',
+                    height: '94px'
+                  }}
+                >
+                  {/* Profile Button */}
+                  <button
+                    onClick={handleProfileClick}
+                    className="flex flex-row items-center hover:opacity-80 transition-opacity"
+                    style={{
+                      width: '261px',
+                      height: '46px',
+                      padding: '12px 0px',
+                      gap: '12px',
+                      borderRadius: '64px'
+                    }}
+                  >
+                    <div 
+                      className="flex flex-row items-center"
+                      style={{
+                        width: '168px',
+                        height: '22px',
+                        gap: '12px'
+                      }}
+                    >
+                      {/* User Icon */}
+                      <div 
+                        className="relative"
+                        style={{
+                          width: '19.25px',
+                          height: '22px'
+                        }}
+                      >
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="absolute"
+                          style={{
+                            left: '-10.39%',
+                            right: '-14.29%',
+                            top: '-4.55%',
+                            bottom: '-4.55%'
+                          }}
+                        >
+                          <path
+                            d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
+                            fill="white"
+                          />
+                          <path
+                            d="M20.59 22C20.59 18.13 16.74 15 12 15C7.26 15 3.41 18.13 3.41 22"
+                            fill="white"
+                          />
+                        </svg>
+                      </div>
+                      <span 
+                        className="text-white"
+                        style={{
+                          width: '40px',
+                          height: '20px',
+                          fontSize: '14px',
+                          fontWeight: '400',
+                          lineHeight: '140%',
+                          letterSpacing: '0.01em'
+                        }}
+                      >
+                        Profile
+                      </span>
+                    </div>
+                  </button>
+              
+                  {/* Sign Out Button */}
+                  <button
+                    onClick={handleLogout}
+                    className="flex flex-row items-center hover:opacity-80 transition-opacity"
+                    style={{
+                      width: '261px',
+                      height: '48px',
+                      padding: '12px 0px',
+                      gap: '12px',
+                      borderRadius: '64px'
+                    }}
+                  >
+                    <div 
+                      className="flex flex-row items-center"
+                      style={{
+                        width: '166px',
+                        height: '24px',
+                        gap: '12px'
+                      }}
+                    >
+                      {/* Logout Icon */}
+                      <div 
+                        className="relative"
+                        style={{
+                          width: '24px',
+                          height: '24px'
+                        }}
+                      >
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          className="absolute"
+                        >
+                          <path
+                            d="M17 7L7 17"
+                            stroke="white"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M7 7H17V17"
+                            stroke="white"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M17 3H21V21H17"
+                            stroke="white"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </div>
+                      <span 
+                        className="text-white"
+                        style={{
+                          width: '58px',
+                          height: '20px',
+                          fontSize: '14px',
+                          fontWeight: '400',
+                          lineHeight: '140%',
+                          letterSpacing: '0.01em'
+                        }}
+                      >
+                        Sign Out
+                      </span>
+                    </div>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        </>
+       )}
     </div>
   );
 };

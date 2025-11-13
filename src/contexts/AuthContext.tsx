@@ -45,6 +45,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   });
 
   useEffect(() => {
+    const loadUserFromStorage = () => {
+      if (typeof window === 'undefined') {
+        return;
+      }
+      const savedUser = localStorage.getItem('user');
+      if (savedUser) {
+        try {
+          const parsedUser = JSON.parse(savedUser) as User;
+          setUser(parsedUser);
+        } catch (error) {
+          console.error('Failed to parse stored user data:', error);
+          localStorage.removeItem('user');
+        }
+      }
+    };
+
     // Fetch user from server to sync with server-side auth
     const fetchUser = async () => {
       try {
@@ -64,6 +80,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
 
         setIsLoading(true);
+
         const response = await fetch('/api/auth/me', {
           credentials: 'include', // Include cookies
           cache: 'no-store',
@@ -109,6 +126,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setIsLoading(false);
       }
     };
+
+    // Hydrate from storage immediately on mount
+    loadUserFromStorage();
 
     fetchUser();
 

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+ import { useState, useEffect, useRef, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function CalculatorPage() {
@@ -31,6 +32,45 @@ export default function CalculatorPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const scenariosPerPage = 10;
   const savedScenariosTileRef = useRef<HTMLDivElement>(null);
+  const previousAuthStatus = useRef<boolean | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMobileScenariosModalOpen, setIsMobileScenariosModalOpen] = useState(false);
+  const previousPage = useRef<number>(1);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        setIsMobile(window.innerWidth <= 768);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile && isMobileScenariosModalOpen) {
+      setIsMobileScenariosModalOpen(false);
+    }
+  }, [isMobile, isMobileScenariosModalOpen]);
+
+  useEffect(() => {
+    if (!isMobileScenariosModalOpen) {
+      return;
+    }
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isMobileScenariosModalOpen]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
   
   // Trading pair options
   const tradingPairs = [
@@ -68,17 +108,107 @@ export default function CalculatorPage() {
     'Mini Lot': 1,
     'Micro Lot': 0.10
   };
+  const isCryptoAsset = selectedAsset === 'Crypto (BTC, ETH, etc.)';
+
+  const formatCompactCurrency = (value: number) => {
+    if (!Number.isFinite(value)) {
+      return '$0.00';
+    }
+    const absValue = Math.abs(value);
+    if (absValue >= 1000000) {
+      return `$${new Intl.NumberFormat('en-US', {
+        notation: 'compact',
+        compactDisplay: 'short',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(value)}`;
+    }
+    return `$${value.toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  const buildScenarioDisplayData = (scenario: any) => {
+    let stopLossInDollars = 0;
+    if (scenario.stopLoss && scenario.accountBalance && scenario.riskPercentage) {
+      const balance = parseFloat(scenario.accountBalance) || 0;
+      const riskPercent = parseFloat(scenario.riskPercentage) || 0;
+      const stopLoss = parseFloat(scenario.stopLoss) || 0;
+      const lotSize = parseFloat(scenario.lotSize) || 0;
+
+      if (scenario.selectedAsset === 'Crypto (BTC, ETH, etc.)') {
+        stopLossInDollars = (balance * riskPercent) / 100;
+      } else if (scenario.selectedAsset === 'Currency (Forex Pairs)') {
+        const pipValuePerLot = scenario.forexLotType
+          ? (forexLotTypePipValues[scenario.forexLotType] || 10)
+          : 10;
+        stopLossInDollars = stopLoss * pipValuePerLot * lotSize;
+      } else if (scenario.selectedAsset === 'Gold (XAUUSD)') {
+        stopLossInDollars = stopLoss;
+      }
+    }
+
+    const stopLossDisplay = stopLossInDollars > 0
+      ? `$${stopLossInDollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : '-';
+
+    const scenarioNameDisplay = scenario.scenarioName || '-';
+    const entryValue = scenario.accountBalance
+      ? parseFloat(scenario.accountBalance).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
+      : null;
+    const entryText = entryValue
+      ? `Entry: $${entryValue} | SL: ${stopLossDisplay}`
+      : '-';
+    const pairDisplay = scenario.tradingPair || '-';
+    const riskDisplay = scenario.riskPercentage ? `${scenario.riskPercentage}%` : '-';
+    const positionSizeDisplay = scenario.lotSize
+      ? parseFloat(scenario.lotSize).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : '-';
+    const positionValueDisplay = scenario.positionValue
+      ? `$${parseFloat(scenario.positionValue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+      : '-';
+    const dateDisplay = scenario.createdAt
+      ? new Date(scenario.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })
+      : '-';
+
+    return {
+      scenarioNameDisplay,
+      entryText,
+      pairDisplay,
+      riskDisplay,
+      positionSizeDisplay,
+      positionValueDisplay,
+      stopLossDisplay,
+      dateDisplay,
+    };
+  };
 
   // Set default values for non-authenticated users
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isAuthenticated === false) {
       setSelectedAsset('Gold (XAUUSD)');
       setAccountBalance('80000');
       setRiskPercentage('10');
       setStopLoss('45');
       setPipValue('1');
       setLotSize('160');
+      previousAuthStatus.current = false;
+      return;
     }
+
+    if (isAuthenticated === true && previousAuthStatus.current !== true) {
+      setSelectedAsset(null);
+      setAccountBalance('');
+      setRiskPercentage('');
+      setStopLoss('');
+      setPipValue('');
+      setLotSize('');
+      previousAuthStatus.current = true;
+      return;
+    }
+
+    previousAuthStatus.current = isAuthenticated ?? null;
   }, [isAuthenticated]);
 
   // Fetch saved scenarios for authenticated users
@@ -109,9 +239,10 @@ export default function CalculatorPage() {
 
   // Scroll to tile on page change
   useEffect(() => {
-    if (savedScenariosTileRef.current) {
+    if (currentPage > 1 && savedScenariosTileRef.current) {
       savedScenariosTileRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+    previousPage.current = currentPage;
   }, [currentPage]);
 
   // Calculate Lot Size in real-time for Gold and Forex
@@ -394,6 +525,10 @@ export default function CalculatorPage() {
         .trading-pair-dropdown::-webkit-scrollbar-thumb:hover {
           background: rgba(255, 255, 255, 0.3);
         }
+        .calculator-page .calculator-saved-mobile-section,
+        .calculator-page .calculator-saved-card {
+          display: none;
+        }
         @media (max-width: 768px) {
           .calculator-page .calculator-hero-container {
             padding-top: 94px !important;
@@ -420,7 +555,7 @@ export default function CalculatorPage() {
             max-width: 343px !important;
             font-size: 16px !important;
             line-height: 130% !important;
-            margin-top: 0 !important;
+            margin-top: -30px !important;
             min-height: 63px !important;
             text-align: left !important;
           }
@@ -553,6 +688,17 @@ export default function CalculatorPage() {
             height: 520px !important;
             border-radius: 10px !important;
           }
+          .calculator-page .calculator-inputs-tile.is-crypto {
+            min-height: 380px !important;
+            height: 380px !important;
+          }
+          .calculator-page .calculator-inputs-tile .calculator-input-field-half .calculator-input-control span {
+            font-size: 13px !important;
+          }
+          .calculator-page .calculator-inputs-tile .calculator-input-field-half .calculator-input-control > div,
+          .calculator-page .calculator-inputs-tile .calculator-input-field-half .calculator-input-control input {
+            width: 100% !important;
+          }
           .calculator-page .calculator-inputs-content {
             width: 319px !important;
             max-width: 319px !important;
@@ -582,19 +728,42 @@ export default function CalculatorPage() {
             flex-shrink: 0 !important;
           }
           .calculator-page .calculator-asset-dropdown {
-            width: 135px !important;
+            width: 120px !important;
           }
           .calculator-page .calculator-asset-dropdown-button {
-            min-width: 135px !important;
-            width: 135px !important;
+            min-width: 120px !important;
+            width: 120px !important;
             height: 34px !important;
             padding: 4px 8px !important;
             gap: 8px !important;
             border-radius: 8px !important;
+            overflow: hidden !important;
           }
           .calculator-page .calculator-asset-dropdown-button span {
-            font-size: 16px !important;
+            font-size: 14px !important;
             line-height: 130% !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+          }
+          .calculator-page .calculator-forex-dropdown {
+            width: 147.5px !important;
+          }
+          .calculator-page .calculator-forex-dropdown-button {
+            box-sizing: border-box !important;
+            width: 147.5px !important;
+            padding: 12px 12px !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+          }
+          .calculator-page .calculator-forex-dropdown-button span {
+            font-size: 13px !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+          }
+          .calculator-page .calculator-forex-dropdown-menu {
+            width: 147.5px !important;
           }
           .calculator-page .calculator-inputs-group {
             width: 319px !important;
@@ -616,15 +785,12 @@ export default function CalculatorPage() {
           .calculator-page .calculator-input-field-half {
             width: 147.5px !important;
           }
-          .calculator-page .calculator-input-field-half .calculator-input-control,
+          .calculator-page .calculator-input-field-half .calculator-input-control {
+            width: 147.5px !important;
+          }
           .calculator-page .calculator-input-field-half .calculator-input {
             width: 147.5px !important;
-          }
-          .calculator-page .calculator-input-field-half input {
-            width: 147.5px !important;
-          }
-          .calculator-page .calculator-input-field-half label {
-            width: 147.5px !important;
+            max-width: 147.5px !important;
           }
           .calculator-page .calculator-input-field:only-child {
             width: 319px !important;
@@ -663,6 +829,152 @@ export default function CalculatorPage() {
           }
           .calculator-page .calculator-input-actions button span {
             width: auto !important;
+          }
+          .calculator-page .calculator-save-popup {
+            width: 343px !important;
+            height: 504px !important;
+            padding: 24px !important;
+            border-radius: 10px !important;
+            gap: 24px !important;
+            align-items: flex-start !important;
+            justify-content: center !important;
+          }
+          .calculator-page .calculator-save-header {
+            width: 295px !important;
+            height: 20px !important;
+            padding: 0 !important;
+            gap: 63px !important;
+            align-self: center !important;
+            justify-content: flex-start !important;
+          }
+          .calculator-page .calculator-save-header-inner {
+            width: 295px !important;
+            height: 20px !important;
+            gap: 63px !important;
+            align-items: flex-start !important;
+          }
+          .calculator-page .calculator-save-heading {
+            width: 133px !important;
+            height: 20px !important;
+            font-size: 20px !important;
+            line-height: 100% !important;
+            color: #F3F8FF !important;
+          }
+          .calculator-page .calculator-save-close {
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 20px !important;
+            border: 1px solid #AFB9BF !important;
+          }
+          .calculator-page .calculator-save-content {
+            width: 295px !important;
+            gap: 24px !important;
+            align-self: center !important;
+          }
+          .calculator-page .calculator-save-field {
+            width: 295px !important;
+            gap: 4px !important;
+          }
+          .calculator-page .calculator-save-field span {
+            width: 295px !important;
+            height: 14px !important;
+          }
+          .calculator-page .calculator-save-field input {
+            width: 295px !important;
+            height: 40px !important;
+            border-radius: 8px !important;
+          }
+          .calculator-page .calculator-save-dropdown {
+            width: 295px !important;
+            height: 40px !important;
+            border-radius: 8px !important;
+            padding: 12px 16px !important;
+          }
+          .calculator-page .calculator-save-dropdown-button {
+            width: 263px !important;
+            gap: 10px !important;
+          }
+          .calculator-page .calculator-save-dropdown-button span {
+            width: 233px !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+          }
+          .calculator-page .calculator-save-dropdown-button span.has-value {
+            color: #FFFFFF !important;
+          }
+          .calculator-page .calculator-save-dropdown .trading-pair-dropdown {
+            width: 295px !important;
+          }
+          .calculator-page .calculator-save-preview {
+            width: 295px !important;
+            min-height: 108px !important;
+            padding: 12px 16px !important;
+            border-radius: 8px !important;
+          }
+      .calculator-page .calculator-save-preview > span,
+      .calculator-page .calculator-save-preview-list,
+      .calculator-page .calculator-save-preview-list > div,
+      .calculator-page .calculator-save-preview-list > div > div,
+      .calculator-page .calculator-save-preview-row {
+        width: 100% !important;
+        max-width: 295px !important;
+        margin: 0 auto !important;
+      }
+      .calculator-page .calculator-save-preview-row {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+      }
+      .calculator-page .calculator-save-preview-label {
+        color: #909090 !important;
+        text-align: left !important;
+        flex: 1 1 auto !important;
+        display: block !important;
+        min-width: 0 !important;
+        max-width: 175px !important;
+        white-space: nowrap !important;
+      }
+      .calculator-page .calculator-save-preview-value {
+        color: #FFFFFF !important;
+        text-align: right !important;
+        flex: 0 0 auto !important;
+        min-width: 0 !important;
+        max-width: 115px !important;
+        overflow: hidden !important;
+        white-space: nowrap !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
+      }
+          .calculator-page .calculator-save-actions {
+            width: 295px !important;
+            height: 116px !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            align-items: stretch !important;
+          }
+          .calculator-page .calculator-save-actions button {
+            width: 295px !important;
+            height: 48px !important;
+            border-radius: 100px !important;
+          }
+          .calculator-page .calculator-save-actions button:first-child {
+            background: #FFFFFF !important;
+            color: #404040 !important;
+          }
+          .calculator-page .calculator-save-actions button:last-child {
+            border: 1px solid #909090 !important;
+            color: #909090 !important;
+            background: transparent !important;
+          }
+          .calculator-page .calculator-save-actions button span {
+            font-size: 16px !important;
+            line-height: 100% !important;
           }
           .calculator-page .calculator-results-tile {
             min-height: 408px !important;
@@ -713,6 +1025,487 @@ export default function CalculatorPage() {
             width: 100% !important;
             max-width: 343px !important;
             margin: 32px auto 0 !important;
+          }
+          .calculator-page .calculator-saved-gap {
+            display: none !important;
+          }
+          .calculator-page .calculator-saved-heading {
+            display: none !important;
+          }
+          .calculator-page .calculator-saved-content {
+            padding: 20px 12px !important;
+            gap: 16px !important;
+          }
+          .calculator-page .calculator-saved-content {
+            padding: 20px 12px !important;
+            gap: 16px !important;
+          }
+          .calculator-page .calculator-saved-mobile-section {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 12px !important;
+            width: 319px !important;
+            margin: 0 auto !important;
+          }
+          .calculator-page .calculator-saved-mobile-title-row {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 0 !important;
+            gap: 24px !important;
+            width: 319px !important;
+            height: 20px !important;
+          }
+          .calculator-page .calculator-saved-mobile-title-block {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 12px !important;
+            width: 232px !important;
+            height: 20px !important;
+            flex-grow: 1 !important;
+          }
+          .calculator-page .calculator-saved-mobile-title-block h3 {
+            font-family: 'Gilroy-SemiBold' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 20px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            width: 155px !important;
+            height: 20px !important;
+            margin: 0 !important;
+          }
+          .calculator-page .calculator-saved-mobile-actions {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 0 !important;
+            gap: 4px !important;
+            width: 63px !important;
+            height: 17px !important;
+          }
+          .calculator-page .calculator-saved-mobile-viewall {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            gap: 4px !important;
+            width: 63px !important;
+            height: 17px !important;
+            background: transparent !important;
+            border: none !important;
+            cursor: pointer !important;
+          }
+          .calculator-page .calculator-saved-mobile-viewall span:first-child {
+            font-family: 'Gilroy-SemiBold' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 12px !important;
+            line-height: 145% !important;
+            color: #FFFFFF !important;
+            width: 43px !important;
+            height: 17px !important;
+            text-align: center !important;
+          }
+          .calculator-page .calculator-saved-mobile-viewall-icon {
+            width: 16px !important;
+            height: 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transform: rotate(-90deg) !important;
+          }
+          .calculator-page .calculator-saved-mobile-description {
+            font-family: 'Gilroy-Medium' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            width: 319px !important;
+            height: auto !important;
+            margin: 0 !important;
+          }
+          .calculator-page .calculator-saved-mobile-modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.6) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 1000 !important;
+            padding: 16px !important;
+          }
+          .calculator-page .calculator-saved-mobile-modal-content {
+            width: 343px !important;
+            max-height: calc(100vh - 64px) !important;
+            background: #1F1F1F !important;
+            border-radius: 16px !important;
+            padding: 24px 12px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            box-sizing: border-box !important;
+          }
+          .calculator-page .calculator-saved-mobile-modal-close {
+            width: 24px !important;
+            height: 24px !important;
+            border-radius: 12px !important;
+            border: 1px solid #AFB9BF !important;
+            background: transparent !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            padding: 0 !important;
+            align-self: flex-end !important;
+          }
+          .calculator-page .calculator-saved-mobile-modal-list {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 16px !important;
+            width: 100% !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            padding-right: 4px !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
+            padding-left: 4px !important;
+          }
+          .calculator-page .calculator-newsletter-section {
+            width: 100% !important;
+            margin: 48px 0 !important;
+            padding: 0 0 !important;
+          }
+          .calculator-page .calculator-newsletter-section > div {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .calculator-page .calculator-saved-header {
+            display: none !important;
+          }
+          .calculator-page .calculator-saved-list {
+            display: flex !important;
+            flex-direction: column !important;
+            width: 319px !important;
+            margin: 0 auto !important;
+            gap: 16px !important;
+            max-height: 520px !important;
+            overflow-y: auto !important;
+            padding-right: 4px !important;
+            overflow-x: hidden !important;
+          }
+          .calculator-page .calculator-saved-list.is-empty {
+            max-height: none !important;
+            overflow: visible !important;
+            padding-right: 0 !important;
+          }
+          .calculator-page .calculator-saved-empty {
+            width: 100% !important;
+            padding: 32px 0 !important;
+          }
+          .calculator-page .calculator-saved-row {
+            display: none !important;
+          }
+          .calculator-page .calculator-saved-card {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+            align-items: stretch !important;
+            padding: 24px 16px 36px !important;
+            gap: 20px !important;
+            width: 319px !important;
+            min-height: 272px !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 8px !important;
+            background: #1F1F1F !important;
+            box-sizing: border-box !important;
+            height: auto !important;
+            overflow: visible !important;
+            margin-bottom: 16px !important;
+          }
+          .calculator-page .calculator-saved-card-inner {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 16px !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+          }
+          .calculator-page .calculator-saved-card-header {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0 !important;
+            gap: 16px !important;
+            width: 100% !important;
+            height: 20px !important;
+          }
+          .calculator-page .calculator-saved-card-title {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            width: 100% !important;
+          }
+          .calculator-page .calculator-saved-card-title-text {
+            font-size: 16px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+          }
+          .calculator-page .calculator-saved-card-subtitle {
+            font-size: 10px !important;
+            line-height: 100% !important;
+            color: #909090 !important;
+            text-align: right !important;
+          }
+          .calculator-page .calculator-saved-card-actions {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            padding: 0 !important;
+            gap: 16px !important;
+            width: 100% !important;
+          }
+          .calculator-page .calculator-saved-card-actions-label {
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+            text-align: left !important;
+          }
+          .calculator-page .calculator-saved-card-action-buttons {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 4px !important;
+          }
+          .calculator-page .calculator-saved-card-action {
+            width: 20px !important;
+            height: 20px !important;
+            border-radius: 12px !important;
+            border: none !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 4px !important;
+            position: relative !important;
+          }
+          .calculator-page .calculator-saved-card-action--edit {
+            background: #FFFFFF !important;
+          }
+          .calculator-page .calculator-saved-card-action--delete {
+            background: rgba(187, 4, 4, 0.12) !important;
+            border: 1px solid #BB0404 !important;
+          }
+          .calculator-page .calculator-saved-card-divider {
+            width: 100% !important;
+            height: 0 !important;
+            border: 1px solid #404040 !important;
+          }
+          .calculator-page .calculator-saved-card-grid {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+            width: 100% !important;
+            padding-bottom: 12px !important;
+            box-sizing: border-box !important;
+          }
+          .calculator-page .calculator-saved-card-row {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: flex-start !important;
+            flex-wrap: nowrap !important;
+            padding: 0 !important;
+            gap: 16px !important;
+            width: 100% !important;
+            min-height: 14px !important;
+            box-sizing: border-box !important;
+          }
+          .calculator-page .calculator-saved-card-grid .calculator-saved-card-row:last-child {
+            padding-bottom: 0 !important;
+          }
+          .calculator-page .calculator-saved-card-row:not(.calculator-saved-card-row--scenario) {
+            align-items: center !important;
+          }
+          .calculator-page .calculator-saved-card-label {
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            flex: 0 0 auto !important;
+          }
+          .calculator-page .calculator-saved-card-value {
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: #909090 !important;
+            text-align: right !important;
+            flex: 1 1 auto !important;
+            min-width: 0 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            padding-right: 2px !important;
+          }
+          .calculator-page .calculator-saved-card-row--scenario {
+            align-items: flex-start !important;
+            height: auto !important;
+          }
+          .calculator-page .calculator-saved-card-value--scenario {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+            gap: 4px !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            text-overflow: initial !important;
+          }
+          .calculator-page .calculator-saved-card-value--scenario span:first-child {
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: #909090 !important;
+          }
+          .calculator-page .calculator-saved-card-value--scenario span:last-child {
+            font-size: 10px !important;
+            line-height: 100% !important;
+            color: #909090 !important;
+          }
+          .calculator-page .calculator-ready-tile {
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            padding: 20px 16px !important;
+            gap: 10px !important;
+            isolation: isolate !important;
+            width: 343px !important;
+            height: 330px !important;
+            border-radius: 10px !important;
+            margin: 0 auto 120px !important;
+          }
+          .calculator-page .calculator-ready-ellipse-left {
+            width: 588px !important;
+            height: 588px !important;
+            left: -492px !important;
+            top: -508px !important;
+            filter: blur(200px) !important;
+            transform: rotate(90deg) !important;
+          }
+          .calculator-page .calculator-ready-ellipse-right {
+            width: 588px !important;
+            height: 588px !important;
+            left: 330px !important;
+            bottom: -370px !important;
+            filter: blur(200px) !important;
+            transform: rotate(90deg) !important;
+          }
+          .calculator-page .calculator-ready-content {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            width: 311px !important;
+            height: 290px !important;
+            margin: 0 auto !important;
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
+          }
+          .calculator-page .calculator-ready-header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 24px !important;
+            width: 311px !important;
+            height: 130px !important;
+          }
+          .calculator-page .calculator-ready-header h2 {
+            width: 311px !important;
+            height: 64px !important;
+            font-size: 32px !important;
+            line-height: 100% !important;
+            text-align: center !important;
+          }
+          .calculator-page .calculator-ready-header p {
+            width: 311px !important;
+            height: 42px !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            text-align: center !important;
+          }
+          .calculator-page .calculator-ready-buttons {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 20px !important;
+            width: 311px !important;
+            height: 120px !important;
+            margin-bottom: 12px !important;
+          }
+          .calculator-page .calculator-ready-buttons button {
+            width: 311px !important;
+            height: 50px !important;
+            padding: 18px 12px !important;
+            gap: 10px !important;
+            border-radius: 100px !important;
+          }
+          .calculator-page .calculator-ready-buttons button:first-child {
+            background: #FFFFFF !important;
+            color: #0A0A0A !important;
+          }
+          .calculator-page .calculator-ready-buttons button:last-child {
+            border: 1px solid #FFFFFF !important;
+            color: #FFFFFF !important;
+            background: transparent !important;
+          }
+          .calculator-page .calculator-faq-tile {
+            width: 343px !important;
+            padding: 24px !important;
+          }
+          .calculator-page .calculator-faq-header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 24px !important;
+            width: 343px !important;
+            height: 140px !important;
+            margin: 48px auto 0 !important;
+          }
+          .calculator-page .calculator-faq-header h2 {
+            width: 343px !important;
+            height: 84px !important;
+            font-size: 32px !important;
+            line-height: 130% !important;
+            text-align: center !important;
+          }
+          .calculator-page .calculator-faq-header p {
+            width: 343px !important;
+            height: 32px !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            text-align: center !important;
+          }
+          .calculator-page .calculator-faq-list {
+            width: 343px !important;
+            margin: 24px auto 0 !important;
+            gap: 16px !important;
+          }
+          .calculator-page .calculator-faq-answer {
+            margin-top: 8px !important;
+            padding-top: 8px !important;
           }
           .calculator-page .calculator-saved-header,
           .calculator-page .calculator-saved-row {
@@ -971,6 +1764,7 @@ export default function CalculatorPage() {
               
               {/* Bullet 3 */}
               <div
+                className="calculator-save-header-inner"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -1106,9 +1900,9 @@ export default function CalculatorPage() {
                 }}
                 onMouseDown={(e) => e.preventDefault()}
                 onFocus={(e) => e.currentTarget.style.outline = 'none'}
-                onClick={() => router.push('/pricing')}
+                onClick={() => router.push('/signin')}
               >
-                Start Subscription
+                Sign In to Use
               </button>
               {/* Button 2 */}
               <button
@@ -1145,6 +1939,7 @@ export default function CalculatorPage() {
                 onBlur={(e) => {
                   e.currentTarget.style.border = '1px solid #FFFFFF';
                 }}
+                onClick={() => router.push('/signup')}
               >
                 Watch Free Videos
               </button>
@@ -1213,7 +2008,7 @@ export default function CalculatorPage() {
               >
                 {isAuthenticated 
                   ? 'Enter your numbers, analyze your positions and freely save your scenarios.'
-                  : 'Demo mode - subscribe to enter your numbers and save scenarios.'}
+                  : 'Demo mode - sign in to enter your numbers and save scenarios.'}
               </p>
             </div>
             
@@ -1230,11 +2025,10 @@ export default function CalculatorPage() {
             >
               {/* Calculator Tile 1 */}
               <div
-                className="relative overflow-hidden calculator-tile calculator-inputs-tile"
+                className={`relative overflow-hidden calculator-tile calculator-inputs-tile ${isCryptoAsset ? 'is-crypto' : ''}`}
                 style={{
                   width: '846px',
-                  height: selectedAsset === 'Crypto (BTC, ETH, etc.)' ? '326px' : undefined,
-                  minHeight: selectedAsset !== 'Crypto (BTC, ETH, etc.)' ? '326px' : undefined,
+                  minHeight: '326px',
                   borderRadius: '16px',
                   background: '#1F1F1F',
                   boxSizing: 'border-box',
@@ -1290,7 +2084,6 @@ export default function CalculatorPage() {
                       Asset Type
                     </h3>
                     
-                    {/* Dropdown - Frame 1000004764 */}
                     <div
                       className="calculator-asset-dropdown"
                       ref={dropdownRef}
@@ -1333,11 +2126,13 @@ export default function CalculatorPage() {
                             fontFamily: 'Gilroy-SemiBold',
                             fontStyle: 'normal',
                             fontWeight: 400,
-                            fontSize: '16px',
+                            fontSize: '14px',
                             lineHeight: '130%',
                             color: selectedAsset ? '#FFFFFF' : 'rgba(255, 255, 255, 0.5)',
                             order: 0,
                             whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
                           }}
                         >
                           {selectedAsset || 'Choose Asset Type'}
@@ -1407,7 +2202,7 @@ export default function CalculatorPage() {
                                 fontFamily: 'Gilroy-SemiBold',
                                 fontStyle: 'normal',
                                 fontWeight: 400,
-                                fontSize: '20px',
+                                fontSize: '16px',
                                 lineHeight: '130%',
                                 color: '#FFFFFF',
                                 backgroundColor: selectedAsset === option 
@@ -1889,6 +2684,7 @@ export default function CalculatorPage() {
                             />
                           ) : selectedAsset === 'Gold (XAUUSD)' ? (
                             <input
+                              className="calculator-input"
                               type="text"
                               value={pipValue}
                               readOnly
@@ -1922,6 +2718,7 @@ export default function CalculatorPage() {
                           ) : (
                             <div
                               ref={forexLotTypeRef}
+                              className="calculator-forex-dropdown"
                               style={{
                                 position: 'relative',
                                 width: '387px',
@@ -1933,6 +2730,7 @@ export default function CalculatorPage() {
                             >
                               {/* Dropdown Button */}
                               <div
+                                className="calculator-forex-dropdown-button"
                                 onClick={() => {
                                   if (!isAuthenticated) return;
                                   setIsForexLotTypeDropdownOpen(!isForexLotTypeDropdownOpen);
@@ -2015,6 +2813,7 @@ export default function CalculatorPage() {
                               {/* Dropdown Menu */}
                               {isForexLotTypeDropdownOpen && (
                                 <div
+                                  className="calculator-forex-dropdown-menu"
                                   style={{
                                     position: 'absolute',
                                     top: '100%',
@@ -2410,7 +3209,7 @@ export default function CalculatorPage() {
                         whiteSpace: 'nowrap',
                       }}
                     >
-                      Subscribe to access full calculator
+                      Sign in to access the full calculator
                     </p>
                   </div>
                 )}
@@ -2496,6 +3295,7 @@ export default function CalculatorPage() {
                   >
                     {/* Account Balance Row */}
                     <div
+                      className="calculator-save-preview-row"
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -2511,6 +3311,7 @@ export default function CalculatorPage() {
                       }}
                     >
                       <span
+                        className="calculator-save-preview-label"
                         style={{
                           width: 'auto',
                           height: '16px',
@@ -2530,6 +3331,7 @@ export default function CalculatorPage() {
                         Account Balance
                       </span>
                       <span
+                        className="calculator-save-preview-value"
                         style={{
                           width: 'auto',
                           height: '16px',
@@ -2668,6 +3470,7 @@ export default function CalculatorPage() {
                     {/* Pip Value Row (Only for Gold and Forex) */}
                     {(selectedAsset === 'Gold (XAUUSD)' || selectedAsset === 'Currency (Forex Pairs)') && (
                       <div
+                        className="calculator-save-preview-row"
                         style={{
                           display: 'flex',
                           flexDirection: 'row',
@@ -2683,6 +3486,7 @@ export default function CalculatorPage() {
                         }}
                       >
                         <span
+                          className="calculator-save-preview-label"
                           style={{
                             width: 'auto',
                             height: '16px',
@@ -2702,6 +3506,7 @@ export default function CalculatorPage() {
                           Pip Value
                         </span>
                         <span
+                          className="calculator-save-preview-value"
                           style={{
                             width: 'auto',
                             height: '16px',
@@ -2810,11 +3615,11 @@ export default function CalculatorPage() {
             {isAuthenticated && (
               <>
                 {/* Big Gap */}
-                <div style={{ marginTop: '250px' }}></div>
+                <div className="calculator-saved-gap" style={{ marginTop: '250px' }}></div>
                 
                 {/* Saved Scenarios Title and Description */}
                 <div
-                  className="calculator-section-heading"
+                  className="calculator-section-heading calculator-saved-heading"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -2900,13 +3705,47 @@ export default function CalculatorPage() {
                   
                   {/* Content */}
                   <div 
-                    className="relative z-10 w-full flex flex-col calculator-tile-content" 
+                  className="relative z-10 w-full flex flex-col calculator-tile-content calculator-saved-content" 
                     style={{ 
                       padding: '24px', 
                       gap: '24px',
                       minHeight: '100%',
                     }}
                   >
+                    <div className="calculator-saved-mobile-section">
+                      <div className="calculator-saved-mobile-title-row">
+                        <div className="calculator-saved-mobile-title-block">
+                          <h3>Saved Scenarios</h3>
+                        </div>
+                        <button
+                          type="button"
+                          className="calculator-saved-mobile-viewall"
+                          onClick={() => setIsMobileScenariosModalOpen(true)}
+                        >
+                          <span>View All</span>
+                          <span className="calculator-saved-mobile-viewall-icon">
+                            <svg
+                              width="10"
+                              height="6"
+                              viewBox="0 0 10 6"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M1 1L5 5L9 1"
+                                stroke="#FFFFFF"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </span>
+                        </button>
+                      </div>
+                      <p className="calculator-saved-mobile-description">
+                        Manage or modify your previously saved position setups.
+                      </p>
+                    </div>
                     {/* Header Row - Frame 1000004673 */}
                     <div
                       className="calculator-saved-header"
@@ -3189,26 +4028,31 @@ export default function CalculatorPage() {
 
                     {/* Scenarios Rows */}
                     <div
+                      className={`calculator-saved-list${savedScenarios.length === 0 ? ' is-empty' : ''}`}
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '12px',
                         width: '100%',
-                        overflowY: 'auto',
-                        maxHeight: '580px',
-                        flex: 1,
+                        overflowY: savedScenarios.length === 0 ? 'visible' : 'auto',
+                        overflowX: 'hidden',
+                        maxHeight: savedScenarios.length === 0 ? 'none' : '580px',
+                        flex: savedScenarios.length === 0 ? 'none' : 1,
+                        paddingRight: savedScenarios.length === 0 ? 0 : '4px',
                       }}
                     >
                       {savedScenarios.length === 0 ? (
                         <div
+                          className="calculator-saved-empty"
                           style={{
                             display: 'flex',
                             justifyContent: 'center',
                             alignItems: 'center',
-                            padding: '40px',
+                            padding: '40px 24px',
                             color: 'rgba(255, 255, 255, 0.5)',
                             fontFamily: 'Gilroy-Medium',
                             fontSize: '14px',
+                            textAlign: 'center',
                           }}
                         >
                           No saved scenarios yet. Save your first scenario to see it here.
@@ -3224,46 +4068,22 @@ export default function CalculatorPage() {
 
                         return (
                           <>
-                            {currentScenarios.map((scenario) => {
-                          // Calculate entry price (using account balance as reference, or position value)
-                          const entryPrice = scenario.positionValue 
-                            ? parseFloat(scenario.positionValue) / (scenario.lotSize ? parseFloat(scenario.lotSize) : 1)
-                            : scenario.accountBalance || 0;
-                          
-                          // Calculate Stop Loss in dollars for all asset types
-                          let stopLossInDollars = 0;
-                          if (scenario.stopLoss && scenario.accountBalance && scenario.riskPercentage) {
-                            const balance = parseFloat(scenario.accountBalance) || 0;
-                            const riskPercent = parseFloat(scenario.riskPercentage) || 0;
-                            const stopLoss = parseFloat(scenario.stopLoss) || 0;
-                            const lotSize = parseFloat(scenario.lotSize) || 0;
-
-                            if (scenario.selectedAsset === 'Crypto (BTC, ETH, etc.)') {
-                              // For Crypto: SL in $ = Risk Amount = (Account Balance × Risk%) / 100
-                              stopLossInDollars = (balance * riskPercent) / 100;
-                            } else if (scenario.selectedAsset === 'Currency (Forex Pairs)') {
-                              // For Forex: SL in $ = Stop Loss (pips) × Pip Value per lot × Lot Size
-                              // Pip Value depends on lot type
-                              const pipValuePerLot = scenario.forexLotType 
-                                ? (forexLotTypePipValues[scenario.forexLotType] || 10)
-                                : 10; // Default to Standard Lot
-                              stopLossInDollars = stopLoss * pipValuePerLot * lotSize;
-                            } else if (scenario.selectedAsset === 'Gold (XAUUSD)') {
-                              // For Gold: 1 pip = $1 USD
-                              // So if stop loss is 45 pips, it should show $45
-                              stopLossInDollars = stopLoss;
-                            }
-                          }
-                          
-                          // Format stop loss for display (always in $)
-                          const stopLossDisplay = stopLossInDollars > 0
-                            ? `$${stopLossInDollars.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                            : '-';
+                            {currentScenarios.map((scenario, scenarioIndex) => {
+                          const {
+                            scenarioNameDisplay,
+                            entryText,
+                            pairDisplay,
+                            riskDisplay,
+                            positionSizeDisplay,
+                            positionValueDisplay,
+                            stopLossDisplay,
+                            dateDisplay,
+                          } = buildScenarioDisplayData(scenario);
 
                           return (
+                            <Fragment key={scenario.id}>
                             <div
                               className="calculator-saved-row"
-                              key={scenario.id}
                               style={{
                                 boxSizing: 'border-box',
                                 display: 'flex',
@@ -3315,7 +4135,7 @@ export default function CalculatorPage() {
                                     flexGrow: 0,
                                   }}
                                 >
-                                  {scenario.scenarioName}
+                                  {scenarioNameDisplay}
                                 </span>
                                 
                                 {/* Entry: $50 | SL: $45 */}
@@ -3335,9 +4155,7 @@ export default function CalculatorPage() {
                                     flexGrow: 0,
                                   }}
                                 >
-                                  {scenario.accountBalance && scenario.stopLoss
-                                    ? `Entry: $${parseFloat(scenario.accountBalance).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} | SL: ${stopLossDisplay}`
-                                    : '-'}
+                                  {entryText}
                                 </span>
                               </div>
 
@@ -3374,7 +4192,7 @@ export default function CalculatorPage() {
                                     flexGrow: 0,
                                   }}
                                 >
-                                  {scenario.tradingPair}
+                                  {pairDisplay}
                                 </span>
                               </div>
 
@@ -3411,7 +4229,7 @@ export default function CalculatorPage() {
                                     flexGrow: 0,
                                   }}
                                 >
-                                  {scenario.riskPercentage ? `${scenario.riskPercentage}%` : '-'}
+                                  {riskDisplay}
                                 </span>
                               </div>
 
@@ -3448,11 +4266,7 @@ export default function CalculatorPage() {
                                     flexGrow: 0,
                                   }}
                                 >
-                                  {scenario.lotSize 
-                                    ? (scenario.selectedAsset === 'Crypto (BTC, ETH, etc.)'
-                                        ? parseFloat(scenario.lotSize).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                                        : parseFloat(scenario.lotSize).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
-                                    : '-'}
+                                  {positionSizeDisplay}
                                 </span>
                               </div>
 
@@ -3489,9 +4303,7 @@ export default function CalculatorPage() {
                                     flexGrow: 0,
                                   }}
                                 >
-                                  {scenario.positionValue 
-                                    ? `$${parseFloat(scenario.positionValue).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                                    : '-'}
+                                  {positionValueDisplay}
                                 </span>
                               </div>
 
@@ -3528,13 +4340,7 @@ export default function CalculatorPage() {
                                     flexGrow: 0,
                                   }}
                                 >
-                                  {scenario.createdAt 
-                                    ? new Date(scenario.createdAt).toLocaleDateString('en-US', { 
-                                        month: '2-digit', 
-                                        day: '2-digit', 
-                                        year: 'numeric' 
-                                      })
-                                    : '-'}
+                                  {dateDisplay}
                                 </span>
                               </div>
 
@@ -3668,6 +4474,92 @@ export default function CalculatorPage() {
                                 </button>
                               </div>
                             </div>
+                              {(!isMobile || scenarioIndex < 5) && (
+                                <div className="calculator-saved-card">
+                                  <div className="calculator-saved-card-inner">
+                                    <div className="calculator-saved-card-header">
+                                      <div className="calculator-saved-card-actions">
+                                        <span className="calculator-saved-card-actions-label">Actions</span>
+                                        <div className="calculator-saved-card-action-buttons">
+                                          <button
+                                            type="button"
+                                            className="calculator-saved-card-action calculator-saved-card-action--edit"
+                                            onClick={() => {
+                                              setEditingScenarioId(scenario.id);
+                                              setScenarioName(scenario.scenarioName);
+                                              setTradingPair(scenario.tradingPair);
+                                              setSelectedAsset(scenario.selectedAsset);
+                                              setAccountBalance(scenario.accountBalance?.toString() || '');
+                                              setRiskPercentage(scenario.riskPercentage?.toString() || '');
+                                              setStopLoss(scenario.stopLoss?.toString() || '');
+                                              setPipValue(scenario.pipValue?.toString() || '');
+                                              setLotSize(scenario.lotSize?.toString() || '');
+                                              if (scenario.forexLotType) {
+                                                setForexLotType(scenario.forexLotType);
+                                              }
+                                              setIsSaveScenarioPopupOpen(true);
+                                            }}
+                                          >
+                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M1.5 9.75H10.5V10.5H1.5V9.75Z" fill="#0A0A0A"/>
+                                              <path d="M8.64375 4.03125C8.86875 3.80625 8.86875 3.44375 8.64375 3.21875L7.38125 1.95625C7.15625 1.73125 6.79375 1.73125 6.56875 1.95625L2.25 6.275V8.625H4.6L8.91875 4.30625L8.64375 4.03125ZM6.75 2.275L8.0125 3.5375L7.19375 4.35625L5.93125 3.09375L6.75 2.275ZM3 7.875V6.6125L5.56875 4.04375L6.83125 5.30625L4.2625 7.875H3Z" fill="#0A0A0A"/>
+                                            </svg>
+                                          </button>
+                                          <button
+                                            type="button"
+                                            className="calculator-saved-card-action calculator-saved-card-action--delete"
+                                            onClick={() => {
+                                              setScenarioToDelete(scenario.id);
+                                              setIsDeleteConfirmOpen(true);
+                                            }}
+                                          >
+                                            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M4.5 4.5H5.25V9H4.5V4.5Z" fill="#BB0404"/>
+                                              <path d="M6.75 4.5H7.5V9H6.75V4.5Z" fill="#BB0404"/>
+                                              <path d="M1.5 3.1875V3.9375H2.25V10.5C2.25 10.6989 2.32902 10.8897 2.46967 11.0303C2.61032 11.171 2.80109 11.25 3 11.25H9C9.19891 11.25 9.38968 11.171 9.53033 11.0303C9.67098 10.8897 9.75 10.6989 9.75 10.5V3.9375H10.5V3.1875H1.5ZM3 10.5V3.9375H9V10.5H3Z" fill="#BB0404"/>
+                                            </svg>
+                                          </button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="calculator-saved-card-divider"></div>
+                                    <div className="calculator-saved-card-grid">
+                                      <div className="calculator-saved-card-row calculator-saved-card-row--scenario">
+                                        <span className="calculator-saved-card-label">Scenario Name</span>
+                                        <span className="calculator-saved-card-value calculator-saved-card-value--scenario">
+                                          <span>{scenarioNameDisplay}</span>
+                                          <span>{entryText}</span>
+                                        </span>
+                                      </div>
+                                      <div className="calculator-saved-card-row">
+                                        <span className="calculator-saved-card-label">Pair</span>
+                                        <span className="calculator-saved-card-value">{pairDisplay}</span>
+                                      </div>
+                                      <div className="calculator-saved-card-row">
+                                        <span className="calculator-saved-card-label">Risk %</span>
+                                        <span className="calculator-saved-card-value">{riskDisplay}</span>
+                                      </div>
+                                      <div className="calculator-saved-card-row">
+                                        <span className="calculator-saved-card-label">Position Size</span>
+                                        <span className="calculator-saved-card-value">{positionSizeDisplay}</span>
+                                      </div>
+                                      <div className="calculator-saved-card-row">
+                                        <span className="calculator-saved-card-label">Position Value</span>
+                                        <span className="calculator-saved-card-value">{positionValueDisplay}</span>
+                                      </div>
+                                      <div className="calculator-saved-card-row">
+                                        <span className="calculator-saved-card-label">Stop Loss</span>
+                                        <span className="calculator-saved-card-value">{stopLossDisplay}</span>
+                                      </div>
+                                      <div className="calculator-saved-card-row">
+                                        <span className="calculator-saved-card-label">Date</span>
+                                        <span className="calculator-saved-card-value calculator-saved-card-value--date">{dateDisplay}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </Fragment>
                           );
                         })}
                       </>
@@ -3917,6 +4809,136 @@ export default function CalculatorPage() {
                 </div>
               </>
             )}
+            {isMobile && isMobileScenariosModalOpen && (
+              <div
+                className="calculator-saved-mobile-modal"
+                onClick={() => setIsMobileScenariosModalOpen(false)}
+              >
+                <div
+                  className="calculator-saved-mobile-modal-content"
+                  onClick={(event) => event.stopPropagation()}
+                >
+              <button
+                type="button"
+                className="calculator-saved-mobile-modal-close"
+                onClick={() => setIsMobileScenariosModalOpen(false)}
+              >
+                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L7 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round"/>
+                  <path d="M7 1L1 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round"/>
+                </svg>
+              </button>
+                  <div className="calculator-saved-mobile-modal-list">
+                    {savedScenarios.length === 0 ? (
+                      <div className="calculator-saved-empty">
+                        No saved scenarios yet. Save your first scenario to see it here.
+                      </div>
+                    ) : (
+                      savedScenarios.map((scenario) => {
+                        const {
+                          scenarioNameDisplay,
+                          entryText,
+                          pairDisplay,
+                          riskDisplay,
+                          positionSizeDisplay,
+                          positionValueDisplay,
+                          stopLossDisplay,
+                          dateDisplay,
+                        } = buildScenarioDisplayData(scenario);
+
+                        return (
+                          <div key={`mobile-modal-${scenario.id}`} className="calculator-saved-card">
+                            <div className="calculator-saved-card-inner">
+                              <div className="calculator-saved-card-header">
+                                <div className="calculator-saved-card-actions">
+                                  <span className="calculator-saved-card-actions-label">Actions</span>
+                                  <div className="calculator-saved-card-action-buttons">
+                                    <button
+                                      type="button"
+                                      className="calculator-saved-card-action calculator-saved-card-action--edit"
+                                      onClick={() => {
+                                        setEditingScenarioId(scenario.id);
+                                        setScenarioName(scenario.scenarioName);
+                                        setTradingPair(scenario.tradingPair);
+                                        setSelectedAsset(scenario.selectedAsset);
+                                        setAccountBalance(scenario.accountBalance?.toString() || '');
+                                        setRiskPercentage(scenario.riskPercentage?.toString() || '');
+                                        setStopLoss(scenario.stopLoss?.toString() || '');
+                                        setPipValue(scenario.pipValue?.toString() || '');
+                                        setLotSize(scenario.lotSize?.toString() || '');
+                                        if (scenario.forexLotType) {
+                                          setForexLotType(scenario.forexLotType);
+                                        }
+                                        setIsSaveScenarioPopupOpen(true);
+                                        setIsMobileScenariosModalOpen(false);
+                                      }}
+                                    >
+                                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1.5 9.75H10.5V10.5H1.5V9.75Z" fill="#0A0A0A"/>
+                                        <path d="M8.64375 4.03125C8.86875 3.80625 8.86875 3.44375 8.64375 3.21875L7.38125 1.95625C7.15625 1.73125 6.79375 1.73125 6.56875 1.95625L2.25 6.275V8.625H4.6L8.91875 4.30625L8.64375 4.03125ZM6.75 2.275L8.0125 3.5375L7.19375 4.35625L5.93125 3.09375L6.75 2.275ZM3 7.875V6.6125L5.56875 4.04375L6.83125 5.30625L4.2625 7.875H3Z" fill="#0A0A0A"/>
+                                      </svg>
+                                    </button>
+                                    <button
+                                      type="button"
+                                      className="calculator-saved-card-action calculator-saved-card-action--delete"
+                                      onClick={() => {
+                                        setScenarioToDelete(scenario.id);
+                                        setIsDeleteConfirmOpen(true);
+                                        setIsMobileScenariosModalOpen(false);
+                                      }}
+                                    >
+                                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M4.5 4.5H5.25V9H4.5V4.5Z" fill="#BB0404"/>
+                                        <path d="M6.75 4.5H7.5V9H6.75V4.5Z" fill="#BB0404"/>
+                                        <path d="M1.5 3.1875V3.9375H2.25V10.5C2.25 10.6989 2.32902 10.8897 2.46967 11.0303C2.61032 11.171 2.80109 11.25 3 11.25H9C9.19891 11.25 9.38968 11.171 9.53033 11.0303C9.67098 10.8897 9.75 10.6989 9.75 10.5V3.9375H10.5V3.1875H1.5ZM3 10.5V3.9375H9V10.5H3Z" fill="#BB0404"/>
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="calculator-saved-card-divider"></div>
+                              <div className="calculator-saved-card-grid">
+                                <div className="calculator-saved-card-row calculator-saved-card-row--scenario">
+                                  <span className="calculator-saved-card-label">Scenario Name</span>
+                                  <span className="calculator-saved-card-value calculator-saved-card-value--scenario">
+                                    <span>{scenarioNameDisplay}</span>
+                                    <span>{entryText}</span>
+                                  </span>
+                                </div>
+                                <div className="calculator-saved-card-row">
+                                  <span className="calculator-saved-card-label">Pair</span>
+                                  <span className="calculator-saved-card-value">{pairDisplay}</span>
+                                </div>
+                                <div className="calculator-saved-card-row">
+                                  <span className="calculator-saved-card-label">Risk %</span>
+                                  <span className="calculator-saved-card-value">{riskDisplay}</span>
+                                </div>
+                                <div className="calculator-saved-card-row">
+                                  <span className="calculator-saved-card-label">Position Size</span>
+                                  <span className="calculator-saved-card-value">{positionSizeDisplay}</span>
+                                </div>
+                                <div className="calculator-saved-card-row">
+                                  <span className="calculator-saved-card-label">Position Value</span>
+                                  <span className="calculator-saved-card-value">{positionValueDisplay}</span>
+                                </div>
+                                <div className="calculator-saved-card-row">
+                                  <span className="calculator-saved-card-label">Stop Loss</span>
+                                  <span className="calculator-saved-card-value">{stopLossDisplay}</span>
+                                </div>
+                                <div className="calculator-saved-card-row">
+                                  <span className="calculator-saved-card-label">Date</span>
+                                  <span className="calculator-saved-card-value calculator-saved-card-value--date">{dateDisplay}</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
             
             {/* Big Gap - For non-authenticated users */}
             {!isAuthenticated && (
@@ -3926,7 +4948,7 @@ export default function CalculatorPage() {
             {/* Ready to unlock full access Tile */}
             {!isAuthenticated && (
             <div
-              className="relative overflow-hidden calculator-tile"
+              className="relative overflow-hidden calculator-tile calculator-ready-tile"
               style={{
                 width: '1064px',
                 height: '247px',
@@ -3954,7 +4976,7 @@ export default function CalculatorPage() {
 
               {/* Gradient Ellipse - Top Left */}
               <div 
-                className="absolute pointer-events-none"
+                className="absolute pointer-events-none calculator-ready-ellipse-left"
                 style={{
                   width: '588px',
                   height: '588px',
@@ -3972,7 +4994,7 @@ export default function CalculatorPage() {
 
               {/* Gradient Ellipse - Bottom Right */}
               <div 
-                className="absolute pointer-events-none"
+                className="absolute pointer-events-none calculator-ready-ellipse-right"
                 style={{
                   width: '588px',
                   height: '588px',
@@ -3989,9 +5011,10 @@ export default function CalculatorPage() {
               ></div>
               
               {/* Content */}
-              <div className="relative z-10 w-full h-full flex flex-col items-center justify-center" style={{ gap: '10px' }}>
+              <div className="relative z-10 w-full h-full flex flex-col items-center justify-center calculator-ready-content" style={{ gap: '10px' }}>
                 {/* Frame 81 */}
                 <div
+                  className="calculator-ready-header"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -4052,6 +5075,7 @@ export default function CalculatorPage() {
                 
                 {/* Buttons Container */}
                 <div
+                  className="calculator-ready-buttons"
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -4128,6 +5152,7 @@ export default function CalculatorPage() {
             
             {/* Frequently Asked Questions Section */}
             <div
+              className="calculator-faq-header"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -4191,6 +5216,7 @@ export default function CalculatorPage() {
             
             {/* FAQ Tiles Container */}
             <div
+              className="calculator-faq-list"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -4203,7 +5229,7 @@ export default function CalculatorPage() {
             >
               {/* FAQ Tile 1 */}
               <div
-                className="relative overflow-hidden calculator-tile"
+                className="relative overflow-hidden calculator-tile calculator-faq-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[0] ? 'auto' : '68px',
@@ -4265,7 +5291,7 @@ export default function CalculatorPage() {
                   </svg>
                 </div>
                 {expandedTiles[0] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
+                  <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
                       Yes - your access continues until your period ends.
                     </p>
@@ -4275,7 +5301,7 @@ export default function CalculatorPage() {
 
               {/* FAQ Tile 2 */}
               <div
-                className="relative overflow-hidden calculator-tile"
+                className="relative overflow-hidden calculator-tile calculator-faq-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[1] ? 'auto' : '68px',
@@ -4337,7 +5363,7 @@ export default function CalculatorPage() {
                   </svg>
                 </div>
                 {expandedTiles[1] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
+                  <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
                       We offer a 7-day money-back guarantee for all new subscribers.
                     </p>
@@ -4347,7 +5373,7 @@ export default function CalculatorPage() {
 
               {/* FAQ Tile 3 */}
               <div
-                className="relative overflow-hidden calculator-tile"
+                className="relative overflow-hidden calculator-tile calculator-faq-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[2] ? 'auto' : '68px',
@@ -4409,7 +5435,7 @@ export default function CalculatorPage() {
                   </svg>
                 </div>
                 {expandedTiles[2] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
+                  <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
                       Full research library, position sizing calculator, portfolio analytics, and Shariah project details & screens.
                     </p>
@@ -4419,7 +5445,7 @@ export default function CalculatorPage() {
 
               {/* FAQ Tile 4 */}
               <div
-                className="relative overflow-hidden calculator-tile"
+                className="relative overflow-hidden calculator-tile calculator-faq-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[3] ? 'auto' : '68px',
@@ -4481,7 +5507,7 @@ export default function CalculatorPage() {
                   </svg>
                 </div>
                 {expandedTiles[3] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
+                  <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
                       Yes! We continuously improve our platform and add new features based on user feedback.
                     </p>
@@ -4492,6 +5518,20 @@ export default function CalculatorPage() {
           </div>
         </div>
       </div>
+      
+      {isAuthenticated && (
+        <div
+          className="calculator-newsletter-section"
+          style={{
+            width: '100%',
+            maxWidth: '1064px',
+            margin: '64px auto',
+            padding: '0',
+          }}
+        >
+          <NewsletterSubscription />
+        </div>
+      )}
       
       {/* Formula Popup Overlay */}
       {isFormulaPopupOpen && (
@@ -4796,6 +5836,7 @@ export default function CalculatorPage() {
         >
           <div
             ref={saveScenarioPopupRef}
+            className="calculator-save-popup"
             onClick={(e) => e.stopPropagation()}
             style={{
               display: 'flex',
@@ -4812,6 +5853,7 @@ export default function CalculatorPage() {
           >
             {/* Header Section */}
             <div
+              className="calculator-save-header"
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -4833,12 +5875,14 @@ export default function CalculatorPage() {
                 }}
               >
                 <h2
+                  className="calculator-save-heading"
                   style={{
                     fontFamily: 'Gilroy-SemiBold',
                     fontSize: '24px',
                     fontWeight: 400,
                     color: '#FFFFFF',
                     margin: 0,
+                    whiteSpace: 'nowrap',
                   }}
                 >
                   {editingScenarioId ? 'Update Scenario' : 'Save Scenario'}
@@ -4846,6 +5890,7 @@ export default function CalculatorPage() {
                 
                 {/* Close Button */}
                 <button
+                  className="calculator-save-close"
                   onClick={() => {
                     setIsSaveScenarioPopupOpen(false);
                     setEditingScenarioId(null);
@@ -4907,7 +5952,8 @@ export default function CalculatorPage() {
             </div>
             
             {/* Content Area */}
-            <div 
+              <div 
+                className="calculator-save-content"
               style={{ 
                 width: '100%',
                 display: 'flex',
@@ -4917,7 +5963,8 @@ export default function CalculatorPage() {
               }}
             >
               {/* Scenario Name Field - Frame 1000004751 */}
-              <div
+               <div
+                className="calculator-save-field"
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -4991,6 +6038,7 @@ export default function CalculatorPage() {
               
               {/* Trading Pair Dropdown - Frame 1000012141 */}
               <div
+                className="calculator-save-field"
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -5028,6 +6076,7 @@ export default function CalculatorPage() {
                 {/* Dropdown Container - Frame 1000004673 */}
                 <div
                   ref={tradingPairDropdownRef}
+                  className="calculator-save-dropdown"
                   style={{
                     position: 'relative',
                     boxSizing: 'border-box',
@@ -5049,6 +6098,7 @@ export default function CalculatorPage() {
                 >
                   {/* Dropdown Button */}
                   <div
+                    className="calculator-save-dropdown-button"
                     onClick={() => setIsTradingPairDropdownOpen(!isTradingPairDropdownOpen)}
                     style={{
                       display: 'flex',
@@ -5061,6 +6111,7 @@ export default function CalculatorPage() {
                   >
                     {/* Selected Trading Pair Text */}
                     <span
+                      className={tradingPair ? 'has-value' : ''}
                       style={{
                         width: '418px',
                         height: '14px',
@@ -5165,6 +6216,7 @@ export default function CalculatorPage() {
               
               {/* Preview Section - Frame 1000004673 */}
               <div
+                className="calculator-save-preview"
                 style={{
                   boxSizing: 'border-box',
                   display: 'flex',
@@ -5205,6 +6257,7 @@ export default function CalculatorPage() {
                 
                 {/* Preview Content - Frame 1000012143 */}
                 <div
+                  className="calculator-save-preview-list"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -5253,6 +6306,7 @@ export default function CalculatorPage() {
                     >
                       {/* Position Size (units) Label */}
                       <span
+                        className="calculator-save-preview-label"
                         style={{
                           width: 'auto',
                           height: '14px',
@@ -5274,6 +6328,7 @@ export default function CalculatorPage() {
                       
                       {/* Position Size Value */}
                       <span
+                        className="calculator-save-preview-value"
                         style={{
                           width: 'auto',
                           height: '14px',
@@ -5291,8 +6346,8 @@ export default function CalculatorPage() {
                         }}
                       >
                         {lotSize ? (selectedAsset === 'Crypto (BTC, ETH, etc.)' 
-                          ? `$${parseFloat(lotSize).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-                          : lotSize) : '-'}
+                          ? formatCompactCurrency(parseFloat(lotSize))
+                          : parseFloat(lotSize).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })) : '-'}
                       </span>
                     </div>
                   </div>
@@ -5331,6 +6386,7 @@ export default function CalculatorPage() {
                     >
                       {/* Frame 1000004758 */}
                       <div
+                        className="calculator-save-preview-row"
                         style={{
                           display: 'flex',
                           flexDirection: 'row',
@@ -5348,6 +6404,7 @@ export default function CalculatorPage() {
                       >
                         {/* Risk Amount ($) Label */}
                         <span
+                          className="calculator-save-preview-label"
                           style={{
                             width: 'auto',
                             height: '14px',
@@ -5369,6 +6426,7 @@ export default function CalculatorPage() {
                         
                         {/* Risk Amount Value */}
                         <span
+                          className="calculator-save-preview-value"
                           style={{
                             width: 'auto',
                             height: '14px',
@@ -5427,13 +6485,13 @@ export default function CalculatorPage() {
                     >
                       {/* Frame 1000004758 */}
                       <div
+                        className="calculator-save-preview-row"
                         style={{
                           display: 'flex',
                           flexDirection: 'row',
                           justifyContent: 'space-between',
                           alignItems: 'center',
                           padding: '0px',
-                          gap: '192px',
                           width: '448px',
                           height: '14px',
                           flex: 'none',
@@ -5442,8 +6500,8 @@ export default function CalculatorPage() {
                           flexGrow: 0,
                         }}
                       >
-                        {/* Position Value ($) Label */}
                         <span
+                          className="calculator-save-preview-label"
                           style={{
                             width: 'auto',
                             height: '14px',
@@ -5452,19 +6510,13 @@ export default function CalculatorPage() {
                             fontWeight: 400,
                             fontSize: '14px',
                             lineHeight: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
                             color: '#909090',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
                           }}
                         >
                           Position Value ($)
                         </span>
-                        
-                        {/* Position Value */}
                         <span
+                          className="calculator-save-preview-value"
                           style={{
                             width: 'auto',
                             height: '14px',
@@ -5473,25 +6525,19 @@ export default function CalculatorPage() {
                             fontWeight: 400,
                             fontSize: '14px',
                             lineHeight: '100%',
-                            display: 'flex',
-                            alignItems: 'center',
                             color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
                           }}
                         >
-                          {accountBalance && lotSize 
+                          {accountBalance && lotSize
                             ? (() => {
-                                const balance = parseFloat(accountBalance);
                                 const lot = parseFloat(lotSize);
-                                if (selectedAsset === 'Crypto (BTC, ETH, etc.)') {
-                                  return `$${lot.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                                } else {
-                                  // For Gold/Forex, position value would be lot size * contract size
-                                  // This is a simplified calculation - adjust based on your needs
-                                  return `$${(lot * 100000).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                if (!Number.isFinite(lot)) {
+                                  return '-';
                                 }
+                                if (selectedAsset === 'Crypto (BTC, ETH, etc.)') {
+                                  return formatCompactCurrency(lot);
+                                }
+                                return formatCompactCurrency(lot * 100000);
                               })()
                             : '-'}
                         </span>
@@ -5503,6 +6549,7 @@ export default function CalculatorPage() {
               
               {/* Buttons Container - Frame 1000012140 */}
               <div
+                className="calculator-save-actions"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',

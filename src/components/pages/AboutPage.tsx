@@ -1204,7 +1204,15 @@ export default function AboutPage() {
           </div>
 
           {/* Newsletter Subscription Form Tile */}
-          <div className="mt-16 mb-16 w-full px-4 sm:px-6 lg:px-0 box-border">
+          <div
+            className="mt-16 mb-16 w-full box-border about-newsletter-section"
+            style={{
+              width: '100%',
+              maxWidth: '1064px',
+              margin: '64px auto',
+              padding: 0,
+            }}
+          >
             <NewsletterSubscription />
           </div>
 
@@ -1217,6 +1225,20 @@ export default function AboutPage() {
 
       {/* Footer */}
       <Footer />
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .about-newsletter-section {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 48px 0 !important;
+            padding: 0 !important;
+          }
+          .about-newsletter-section > div {
+            width: 100% !important;
+            margin: 0 !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }

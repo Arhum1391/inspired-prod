@@ -7,7 +7,9 @@ import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function CalculatorPage() {
-  const { isAuthenticated: isSignedIn, user, isLoading } = useAuth();
+  const auth = useAuth();
+  const { user, isLoading } = auth;
+  const isSignedIn = auth.isAuthenticated;
   const router = useRouter();
   const isPaidUser = !!user?.isPaid;
   const isAuthenticated = isSignedIn && isPaidUser;

@@ -31,33 +31,29 @@ const AccountPage = () => {
 
         if (subRes.ok) {
           const subData = await subRes.json();
-          setSubscription(subData.subscription);
-          
-          // If no active subscription, redirect to pricing page
-          if (!subData.subscription || !subData.subscription.status || 
-              !['active', 'trialing', 'past_due'].includes(subData.subscription.status)) {
-            router.push('/pricing');
-            return;
-          }
+          setSubscription(subData.subscription || null);
         } else {
-          // If subscription fetch fails, redirect to pricing
-          router.push('/pricing');
-          return;
+          setSubscription(null);
         }
 
         if (pmRes.ok) {
           const pmData = await pmRes.json();
-          setPaymentMethod(pmData.paymentMethod);
+          setPaymentMethod(pmData.paymentMethod || null);
+        } else {
+          setPaymentMethod(null);
         }
 
         if (billingRes.ok) {
           const billingData = await billingRes.json();
           setBillingHistory(billingData.invoices || []);
+        } else {
+          setBillingHistory([]);
         }
       } catch (error) {
         console.error('Error fetching account data:', error);
-        // On error, redirect to pricing
-        router.push('/pricing');
+        setSubscription(null);
+        setPaymentMethod(null);
+        setBillingHistory([]);
       } finally {
         setLoading(false);
       }
@@ -78,14 +74,23 @@ const AccountPage = () => {
     );
   }
 
-  // Redirect if no subscription (will be handled in useEffect, but add safety check here too)
-  if (!subscription || !subscription.status || !['active', 'trialing', 'past_due'].includes(subscription.status)) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Redirecting...</div>
-      </div>
-    );
-  }
+  const hasActiveSubscription = !!(
+    subscription &&
+    subscription.status &&
+    ['active', 'trialing', 'past_due'].includes(subscription.status)
+  );
+
+  const planName = hasActiveSubscription ? subscription.planName : 'Free Plan';
+  const planPrice = hasActiveSubscription
+    ? subscription.displayPrice || subscription.price
+    : 'Free';
+  const planStatusClasses = hasActiveSubscription
+    ? 'bg-[rgba(222,80,236,0.12)] border border-[#DE50EC]'
+    : 'bg-[rgba(5,176,179,0.12)] border border-[#05B0B3]';
+  const planStatusTextClasses = hasActiveSubscription
+    ? 'text-[#DE50EC]'
+    : 'text-[#05B0B3]';
+  const planStatusLabel = hasActiveSubscription ? 'Active' : 'Free Access';
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
@@ -196,26 +201,28 @@ const AccountPage = () => {
                     </h2>
                   </div>
 
-                  {subscription?.status === 'active' && (
-                    <div className="flex flex-row justify-center items-center px-6 py-1.5 gap-2.5 bg-[rgba(222,80,236,0.12)] border border-[#DE50EC] rounded-full">
-                      <span className="text-[#DE50EC] text-xs font-normal gilroy-medium text-center">
-                        Active
+                  <div className={`flex flex-row justify-center items-center px-6 py-1.5 gap-2.5 rounded-full ${planStatusClasses}`}>
+                    <span className={`${planStatusTextClasses} text-xs font-normal gilroy-medium text-center`}>
+                      {planStatusLabel}
                       </span>
                     </div>
-                  )}
                 </div>
 
                 <div className="w-full flex flex-row items-start justify-between gap-3">
                   <span className="text-white text-xl font-normal gilroy-semibold flex-1">
-                    {subscription?.planName || 'No Active Plan'}
+                    {planName}
                   </span>
-                  {subscription && (
                     <span className="text-[#D4D737] text-2xl font-normal gilroy-semibold">
-                      {subscription.displayPrice || subscription.price}
+                    {planPrice}
                     </span>
-                  )}
                 </div>
               </div>
+
+              {!hasActiveSubscription && (
+                <p className="text-white/60 text-sm font-normal gilroy-medium">
+                  You have access to the free experience. Upgrade anytime to unlock premium research, tools, and community benefits.
+                </p>
+              )}
 
               <div className="w-full flex flex-row items-start gap-6">
                 <button 
@@ -225,6 +232,8 @@ const AccountPage = () => {
                   Change Plan
                 </button>
 
+                {hasActiveSubscription ? (
+                  <>
                 <button 
                   onClick={() => router.push('/account/payment-method')}
                   className="hover:opacity-80 transition-opacity bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
@@ -238,6 +247,15 @@ const AccountPage = () => {
                 >
                   Cancel Plan
                 </button>
+                  </>
+                ) : (
+                  <button 
+                    onClick={() => router.push('/pricing')}
+                    className="hover:opacity-80 transition-opacity bg-white text-[#1F1F1F] px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
+                  >
+                    Upgrade to Premium
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -271,10 +289,10 @@ const AccountPage = () => {
                   </div>
 
                   <button 
-                    onClick={() => router.push('/account/payment-method')}
+                    onClick={() => hasActiveSubscription ? router.push('/account/payment-method') : router.push('/pricing')}
                     className="hover:opacity-80 transition-opacity bg-white text-[#1F1F1F] px-4 py-2.5 rounded-full text-sm font-normal gilroy-semibold text-center"
                   >
-                    Update Payment
+                    {hasActiveSubscription ? 'Update Payment' : 'Add Payment Method'}
                   </button>
                 </div>
 
@@ -365,11 +383,18 @@ const AccountPage = () => {
                 </div>
 
                 {billingHistory.length > 0 ? (
-                  billingHistory.map((invoice: any) => (
-                    <div key={invoice.id} className="w-full border border-white/30 rounded-lg p-4 flex flex-row items-center gap-6">
+                  billingHistory.map((invoice: any) => {
+                    const invoiceId = invoice.invoiceId || invoice.id || '';
+                    const displayInvoiceId =
+                      invoiceId && invoiceId.length > 12
+                        ? `${invoiceId.slice(0, 10)}…`
+                        : invoiceId || '—';
+
+                    return (
+                      <div key={invoiceId || invoice.id} className="w-full border border-white/30 rounded-lg p-4 flex flex-row items-center gap-6">
                       <div className="w-[134px] flex flex-col justify-center items-center">
                         <span className="text-white text-sm font-normal gilroy-medium text-center">
-                          {invoice.invoiceId || invoice.id}
+                            <span title={invoiceId}>{displayInvoiceId}</span>
                         </span>
                       </div>
                       <div className="w-[134px] flex flex-col justify-center items-start">
@@ -379,7 +404,7 @@ const AccountPage = () => {
                       </div>
                       <div className="w-[134px] flex flex-col justify-center items-start">
                         <span className="text-white text-sm font-normal gilroy-medium">
-                          {invoice.amount} {invoice.currency?.toUpperCase() || 'BNB'}
+                            {invoice.amount} {invoice.currency?.toUpperCase() || 'USD'}
                         </span>
                       </div>
                       <div className="w-[134px] flex flex-col justify-center items-center">
@@ -400,7 +425,8 @@ const AccountPage = () => {
                         )}
                       </div>
                     </div>
-                  ))
+                    );
+                  })
                 ) : (
                   <div className="w-full">
                     <p className="text-white/50 text-sm text-center py-8">

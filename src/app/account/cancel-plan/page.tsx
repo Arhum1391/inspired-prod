@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 
 const CancelPlanPage = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, login } = useAuth();
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState<number>(1);
   const [selectedReason, setSelectedReason] = useState<string>('');
@@ -100,11 +100,17 @@ const CancelPlanPage = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Account has been deleted, log out and redirect to homepage
-        await logout();
+        if (data.user) {
+          await login({
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name || undefined,
+            isPaid: data.user.isPaid ?? false,
+            subscriptionStatus: data.user.subscriptionStatus,
+          });
+        }
         
-        // Redirect to homepage
-        router.push('/');
+        router.push('/account?canceled=1');
       } else {
         alert(data.error || 'Failed to cancel subscription');
         setIsSubmitting(false);

@@ -1,80 +1,52 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 
 function SuccessPageContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [showSuccess, setShowSuccess] = useState(false);
   const { login, user } = useAuth();
+  const sessionId = searchParams.get('session_id');
+  const subscriptionId = searchParams.get('subscription_id');
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSuccess(true), 300);
-    
-    // After successful payment, authenticate the user
-    const sessionId = searchParams.get('session_id');
-    
-    if (sessionId && !user) {
-      // First check if already authenticated
-      fetch('/api/auth/me', { credentials: 'include' })
-        .then(res => {
-          if (res.ok) {
-            return res.json();
-          }
-          // If not authenticated, authenticate using the payment session
-          return fetch('/api/auth/authenticate-after-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ sessionId }),
-          }).then(r => r.json());
-        })
-        .then(authData => {
-          if (authData.user) {
-            login({
-              id: authData.user.id,
-              email: authData.user.email,
-              name: authData.user.name || undefined,
-            });
-            // Clear signup email from sessionStorage
-            sessionStorage.removeItem('signupEmail');
-            
-            // Wait a bit for webhook to process, then verify subscription exists
-            // This helps ensure subscription is saved before user tries to access account
-            setTimeout(async () => {
-              try {
-                const subRes = await fetch('/api/subscription/current', { credentials: 'include' });
-                if (subRes.ok) {
-                  const subData = await subRes.json();
-                  if (!subData.subscription) {
-                    console.log('Subscription not found yet, webhook may still be processing...');
-                    // Wait a bit more and retry once
-                    setTimeout(async () => {
-                      const retryRes = await fetch('/api/subscription/current', { credentials: 'include' });
-                      if (retryRes.ok) {
-                        const retryData = await retryRes.json();
-                        console.log('Subscription check retry:', retryData.subscription ? 'Found' : 'Still not found');
-                      }
-                    }, 3000);
+
+    const pollSubscription = () => {
+      setTimeout(async () => {
+        try {
+          const subRes = await fetch('/api/subscription/current', { credentials: 'include' });
+          if (subRes.ok) {
+            const subData = await subRes.json();
+            if (!subData.subscription) {
+              setTimeout(async () => {
+                try {
+                  const retryRes = await fetch('/api/subscription/current', { credentials: 'include' });
+                  if (retryRes.ok) {
+                    await retryRes.json();
                   }
+                } catch (err) {
+                  console.error('Error checking subscription after auth:', err);
                 }
-              } catch (err) {
-                console.error('Error checking subscription after auth:', err);
-              }
-            }, 2000);
+              }, 3000);
+            }
           }
-        })
-        .catch(console.error);
-    } else if (!user) {
-      // Try to fetch current user if already authenticated via cookie
-      fetch('/api/auth/me', { credentials: 'include' })
-        .then(res => res.json())
-        .then(data => {
+        } catch (err) {
+          console.error('Error checking subscription after auth:', err);
+        }
+      }, 2000);
+    };
+
+    const ensureAuthenticated = async () => {
+      try {
+        const res = await fetch('/api/auth/me', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
           if (data.user) {
             login({
               id: data.user.id,
@@ -82,12 +54,74 @@ function SuccessPageContent() {
               name: data.user.name || undefined,
             });
           }
-        })
-        .catch(console.error);
+        }
+      } catch (err) {
+        console.error('Error fetching user after payment:', err);
+      }
+    };
+
+    const authenticateWithSession = async () => {
+      try {
+        const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+        if (meRes.ok) {
+          const meData = await meRes.json();
+          if (meData.user) {
+            login({
+              id: meData.user.id,
+              email: meData.user.email,
+              name: meData.user.name || undefined,
+            });
+            if (typeof window !== 'undefined') {
+              sessionStorage.removeItem('signupEmail');
+            }
+            pollSubscription();
+            return;
+          }
+        }
+
+        const authRes = await fetch('/api/auth/authenticate-after-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ sessionId }),
+        });
+
+        const authData = await authRes.json();
+
+        if (authRes.ok && authData.user) {
+          login({
+            id: authData.user.id,
+            email: authData.user.email,
+            name: authData.user.name || undefined,
+          });
+          if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('signupEmail');
+          }
+          pollSubscription();
+        }
+      } catch (err) {
+        console.error('Error authenticating after payment:', err);
+      }
+    };
+
+    if (sessionId && !user) {
+      authenticateWithSession();
+    } else {
+      if (!user) {
+        ensureAuthenticated().then(() => {
+          if (subscriptionId) {
+            pollSubscription();
+          }
+        });
+      } else if (subscriptionId) {
+        pollSubscription();
+      } else if (sessionId) {
+        pollSubscription();
+      }
     }
-    
+
     return () => clearTimeout(timer);
-  }, [login, user, searchParams]);
+  }, [login, user, sessionId, subscriptionId]);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
@@ -161,11 +195,14 @@ function SuccessPageContent() {
                     Access in-depth reports and analysis.
                   </p>
                 </div>
-                <button className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center">
+                <a
+                  href="/research"
+                  className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
                   <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">
                     Explore
                   </span>
-                </button>
+                </a>
               </div>
             </div>
 
@@ -203,11 +240,14 @@ function SuccessPageContent() {
                     Size positions based on your risk tolerance.
                   </p>
                 </div>
-                <button className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center">
+                <a
+                  href="/calculator"
+                  className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
                   <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">
                     Get Started
                   </span>
-                </button>
+                </a>
               </div>
             </div>
 
@@ -245,11 +285,14 @@ function SuccessPageContent() {
                     Track your investments and performance.
                   </p>
                 </div>
-                <button className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center">
+                <a
+                  href="/portfolio"
+                  className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity"
+                >
                   <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">
                     Start Tracking
                   </span>
-                </button>
+                </a>
               </div>
             </div>
           </div>

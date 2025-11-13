@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+This project is built with [Next.js](https://nextjs.org) and integrates multiple third-party services (Stripe, Calendly, Binance).
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+2. Create an `.env.local` file in the project root and configure the required environment variables (see below).
+
+3. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Required Environment Variables
+
+| Variable | Description |
+| --- | --- |
+| `MONGODB_URI` | Connection string for the primary MongoDB database. |
+| `JWT_SECRET` | Secret used to sign user JWTs. |
+
+### Binance Portfolio Integration
+
+Binance API credentials are stored encrypted at rest. Configure the following before enabling the portfolio sync flow:
+
+| Variable | Description |
+| --- | --- |
+| `BINANCE_CREDENTIALS_ENCRYPTION_KEY` | 32-byte key (base64, hex, or 32-char UTF-8) used for AES-256-GCM encryption of Binance API keys. |
+| `BINANCE_API_BASE_URL` (optional) | Overrides the default Binance REST base (e.g. `https://testnet.binance.vision`). |
+| `BINANCE_USE_TESTNET_DEFAULT` (optional) | When set to `true`, new credential entries default to the Binance testnet. |
+
+You can generate a secure base64 key with:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Store API keys server-side only; they should never be exposed to the browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development Notes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- The app uses the Next.js App Router (`src/app`).
+- MongoDB helpers live in `src/lib/mongodb.ts`.
+- Binance credential encryption utilities live in `src/lib/crypto.ts` and `src/lib/binanceCredentials.ts`.
+- Run `npm run lint` to check for linting errors.

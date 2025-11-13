@@ -40,6 +40,8 @@ export async function POST(request: NextRequest) {
       id: user._id!,
       email: user.email,
       name: user.name || null,
+      isPaid: user.isPaid,
+      subscriptionStatus: user.subscriptionStatus,
     };
 
     // Prepare cookie options

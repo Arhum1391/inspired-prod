@@ -9,8 +9,9 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function CalculatorPage() {
 
-  const { isAuthenticated: contextIsAuthenticated, isLoading } = useAuth();
-  const isAuthenticated = !isLoading && contextIsAuthenticated;
+  const auth = useAuth();
+  const { user, isLoading } = auth;
+  const isSignedIn = auth.isAuthenticated;
 
   const router = useRouter();
   const isPaidUser = !!user?.isPaid;

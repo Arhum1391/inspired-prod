@@ -10,8 +10,9 @@ import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 
 export default function ShariahPage() {
 
-  const { isAuthenticated: contextIsAuthenticated, isLoading } = useAuth();
-  const isAuthenticated = !isLoading && contextIsAuthenticated;
+  const auth = useAuth();
+  const { user, isLoading } = auth;
+  const isSignedIn = auth.isAuthenticated;
 
   const router = useRouter();
   const isPaidUser = !!user?.isPaid;

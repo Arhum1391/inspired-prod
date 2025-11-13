@@ -270,6 +270,7 @@ function CheckoutContent() {
       <Navbar />
 
       <div
+        className="hidden md:block"
         style={{
           position: 'absolute',
           width: '588px',
@@ -285,6 +286,7 @@ function CheckoutContent() {
       ></div>
 
       <div
+        className="hidden md:block"
         style={{
           position: 'absolute',
           width: '588px',
@@ -294,6 +296,44 @@ function CheckoutContent() {
           background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
           filter: 'blur(80px)',
           transform: 'rotate(-55deg)',
+          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      ></div>
+
+      {/* Mobile Gradients */}
+      <div
+        className="md:hidden"
+        style={{
+          position: 'absolute',
+          width: '588px',
+          height: '588px',
+          transform: 'rotate(0deg) translate(-280px, -330px)',
+          transformOrigin: 'top left',
+          background:
+            'linear-gradient(107.68deg, rgba(110, 77, 136, 1) 9.35%, rgba(110, 77, 136, 0.9) 34.7%, rgba(110, 77, 136, 0.8) 60.06%, rgba(110, 77, 136, 0.7) 72.73%, rgba(110, 77, 136, 0.6) 88.58%)',
+          filter: 'blur(120px)',
+          maskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 10%, transparent 50%)',
+          pointerEvents: 'none',
+          zIndex: 0
+        }}
+      ></div>
+      <div
+        className="md:hidden"
+        style={{
+          position: 'absolute',
+          width: '500px',
+          height: '500px',
+          right: 0,
+          bottom: 0,
+          transform: 'rotate(-45deg) translate(250px, 250px)',
+          transformOrigin: 'bottom right',
+          background:
+            'linear-gradient(107.68deg, rgba(23, 64, 136, 1) 9.35%, rgba(23, 64, 136, 1) 34.7%, rgba(23, 64, 136, 1) 60.06%, rgba(23, 64, 136, 0.9) 72.73%, rgba(23, 64, 136, 0.8) 88.58%)',
+          filter: 'blur(150px)',
+          maskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
+          WebkitMaskImage: 'radial-gradient(circle at center, black 5%, transparent 70%)',
           pointerEvents: 'none',
           zIndex: 0
         }}

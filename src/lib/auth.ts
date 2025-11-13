@@ -37,6 +37,9 @@ export interface PublicUser {
   email: string;
   password: string;
   name?: string | null;
+  isPaid: boolean;
+  subscriptionStatus: string;
+  lastPaymentAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -99,6 +102,9 @@ export async function createPublicUser(email: string, password: string, name?: s
     email,
     password: hashedPassword,
     name: name || null,
+    isPaid: false,
+    subscriptionStatus: 'none',
+    lastPaymentAt: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -115,6 +121,9 @@ export async function getPublicUserByEmail(email: string): Promise<PublicUser | 
     email: user.email,
     password: user.password,
     name: user.name || null,
+    isPaid: user.isPaid ?? false,
+    subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
+    lastPaymentAt: user.lastPaymentAt ?? null,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   } : null;
@@ -128,12 +137,24 @@ export async function getPublicUserById(id: string): Promise<PublicUser | null> 
     email: user.email,
     password: user.password,
     name: user.name || null,
+    isPaid: user.isPaid ?? false,
+    subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
+    lastPaymentAt: user.lastPaymentAt ?? null,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   } : null;
 }
 
-export async function updatePublicUser(id: string, updates: { name?: string; email?: string }): Promise<PublicUser | null> {
+export async function updatePublicUser(
+  id: string,
+  updates: {
+    name?: string | null;
+    email?: string;
+    isPaid?: boolean;
+    subscriptionStatus?: string;
+    lastPaymentAt?: Date | null;
+  }
+): Promise<PublicUser | null> {
   const db = await getDatabase();
   const updateData: any = {
     ...updates,
@@ -155,6 +176,9 @@ export async function updatePublicUser(id: string, updates: { name?: string; ema
     email: result.email,
     password: result.password,
     name: result.name || null,
+    isPaid: result.isPaid ?? false,
+    subscriptionStatus: result.subscriptionStatus ?? (result.isPaid ? 'active' : 'none'),
+    lastPaymentAt: result.lastPaymentAt ?? null,
     createdAt: result.createdAt,
     updatedAt: result.updatedAt
   };

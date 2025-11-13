@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,7 +12,7 @@ export default function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { login } = useAuth();
+  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +53,19 @@ export default function SignIn() {
         if (data.user && data.user.email) {
           sessionStorage.setItem('signupEmail', data.user.email);
         }
-        router.push('/pricing');
+
+        if (data.user) {
+          await login({
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.name || undefined,
+            isPaid: data.user.isPaid ?? false,
+            subscriptionStatus: data.user.subscriptionStatus,
+          });
+        }
+
+        setIsLoading(false);
+        router.push('/account?welcome=1');
       } else {
         // Handle sign in
         const response = await fetch('/api/auth/signin', {
@@ -72,10 +84,12 @@ export default function SignIn() {
         }
 
         // Update AuthContext with user data
-        login({
+        await login({
           id: data.user.id,
           email: data.user.email,
           name: data.user.name || undefined,
+          isPaid: data.user.isPaid ?? false,
+          subscriptionStatus: data.user.subscriptionStatus,
         });
 
         // Redirect to account page or home
@@ -83,8 +97,8 @@ export default function SignIn() {
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
-      setIsLoading(false);
     }
+    setIsLoading(false);
   };
 
   const handleToggle = (value: boolean) => {
@@ -92,6 +106,12 @@ export default function SignIn() {
     setError(null);
     setFormKey(prev => prev + 1);
   };
+
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.replace('/account');
+    }
+  }, [authLoading, isAuthenticated, router]);
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">

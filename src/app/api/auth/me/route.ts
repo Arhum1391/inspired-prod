@@ -37,6 +37,8 @@ export async function GET(request: NextRequest) {
       id: user._id!,
       email: user.email,
       name: user.name || null,
+      isPaid: user.isPaid,
+      subscriptionStatus: user.subscriptionStatus,
     };
 
     return NextResponse.json(

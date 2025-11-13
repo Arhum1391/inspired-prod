@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
               // Determine plan type from subscription
               const planType = stripeSubscription.items.data[0]?.price?.recurring?.interval === 'year' ? 'annual' : 'monthly';
               const planName = planType === 'annual' ? 'Premium Annual' : 'Premium Monthly';
-              const price = planType === 'annual' ? '120 BNB' : '30 BNB';
+              const price = planType === 'annual' ? '$120 USD' : '$30 USD';
 
               // Save subscription to database
               subscription = {
@@ -134,10 +134,10 @@ export async function GET(request: NextRequest) {
     // Format price for display - extract numeric value and add /month or /year
     let displayPrice = subscription.price;
     if (subscription.planType === 'annual') {
-      // Annual: show as 120 BNB /year or (10 BNB /month)
+      // Annual: show as $120 USD /year or ($10 USD /month)
       displayPrice = subscription.price + ' /year';
     } else {
-      // Monthly: show as 30 BNB /month
+      // Monthly: show as $30 USD /month
       displayPrice = subscription.price + ' /month';
     }
 

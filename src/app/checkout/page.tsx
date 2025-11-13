@@ -1,20 +1,29 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { loadStripe } from '@stripe/stripe-js';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/contexts/AuthContext';
 
+const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
+const stripePromise = publishableKey ? loadStripe(publishableKey) : null;
+
 function CheckoutContent() {
+  const [stripeModule, setStripeModule] = useState<typeof import('@stripe/react-stripe-js') | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const [plan, setPlan] = useState<'monthly' | 'annual'>('monthly');
-  const [cardNumber, setCardNumber] = useState('');
-  const [expiryDate, setExpiryDate] = useState('');
-  const [cvc, setCvc] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
+  const [isInitializingPayment, setIsInitializingPayment] = useState(false);
+  const [isFinalizing, setIsFinalizing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
+  const [formError, setFormError] = useState<string | null>(null);
+  const [customerEmail, setCustomerEmail] = useState<string | null>(null);
+  const [customerName, setCustomerName] = useState<string | null>(null);
+  const [hasCheckedCustomer, setHasCheckedCustomer] = useState(false);
+  const { user, login } = useAuth();
 
   useEffect(() => {
     const planParam = searchParams.get('plan');
@@ -23,70 +32,241 @@ function CheckoutContent() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    let isMounted = true;
+    import('@stripe/react-stripe-js')
+      .then(mod => {
+        if (isMounted) {
+          setStripeModule(mod);
+        }
+      })
+      .catch(error => {
+        console.error('Failed to load Stripe React bindings', error);
+        setError('Unable to load payment form. Please refresh the page or contact support.');
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const storedEmail =
+      typeof window !== 'undefined' ? sessionStorage.getItem('signupEmail') : null;
+    const email = user?.email || storedEmail;
+    const name = user?.name || email;
+    setCustomerEmail(email);
+    setCustomerName(name);
+    setHasCheckedCustomer(true);
+  }, [user]);
+
+  useEffect(() => {
+    if (!hasCheckedCustomer) return;
+    if (!customerEmail) {
+      router.push('/signin');
+    }
+  }, [hasCheckedCustomer, customerEmail, router]);
+
+  useEffect(() => {
+    if (!customerEmail) {
+      return;
+    }
+
+    if (!stripePromise) {
+      setError('Stripe is not configured. Please contact support.');
+      return;
+    }
+
+    let isMounted = true;
+
+    const createSubscriptionIntent = async () => {
+      try {
+        setIsInitializingPayment(true);
+        setError(null);
+        setFormError(null);
+        setClientSecret(null);
+        setSubscriptionId(null);
+
+        const response = await fetch('/api/stripe/create-subscription-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            plan,
+            customerEmail,
+            customerName,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to initialize payment');
+        }
+
+        if (!isMounted) return;
+
+        setClientSecret(data.clientSecret);
+        setSubscriptionId(data.subscriptionId);
+      } catch (err: any) {
+        if (!isMounted) return;
+        console.error('Error initializing subscription:', err);
+        setError(err.message || 'Failed to initialize payment. Please try again.');
+      } finally {
+        if (isMounted) {
+          setIsInitializingPayment(false);
+        }
+      }
+    };
+
+    createSubscriptionIntent();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [plan, customerEmail, customerName]);
+
   const planDetails = {
     monthly: {
       name: 'Premium Monthly',
-      price: '30 BNB',
+      price: '$30 USD',
       priceAmount: 30,
       billingFrequency: 'Monthly',
       interval: 'month'
     },
     annual: {
       name: 'Premium Annual',
-      price: '120 BNB',
+      price: '$120 USD',
       priceAmount: 120,
       billingFrequency: 'Yearly',
       interval: 'year'
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Get email from auth context or sessionStorage (from signup)
-    const customerEmail = user?.email || sessionStorage.getItem('signupEmail');
-    
-    if (!customerEmail) {
-      router.push('/signin');
-      return;
-    }
+  const handlePaymentSuccess = useCallback(
+    async (subscription: string, paymentIntentId?: string | null) => {
+      setIsFinalizing(true);
+      setFormError(null);
+      setError(null);
+      try {
+        const activateRes = await fetch('/api/subscription/activate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ subscriptionId: subscription }),
+        });
 
-    setIsProcessing(true);
-    setError(null);
+        if (!activateRes.ok) {
+          const activateData = await activateRes.json().catch(() => ({}));
+          throw new Error(activateData.error || 'Failed to finalize subscription. Please contact support.');
+        }
 
-    try {
-      const response = await fetch('/api/stripe/create-subscription-session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+        const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+        if (meRes.ok) {
+          const meData = await meRes.json();
+          if (meData.user) {
+            await login({
+              id: meData.user.id,
+              email: meData.user.email,
+              name: meData.user.name || undefined,
+              isPaid: meData.user.isPaid ?? false,
+              subscriptionStatus: meData.user.subscriptionStatus,
+            });
+          }
+        }
+
+        const params = new URLSearchParams();
+        if (subscription) {
+          params.set('subscription_id', subscription);
+        }
+        if (paymentIntentId) {
+          params.set('payment_intent', paymentIntentId);
+        }
+        if (typeof window !== 'undefined') {
+          sessionStorage.removeItem('signupEmail');
+        }
+        const search = params.toString();
+        router.push(`/success${search ? `?${search}` : ''}`);
+      } catch (err: any) {
+        console.error('Finalization error:', err);
+        const message = err?.message || 'Failed to finalize subscription. Please contact support.';
+        setFormError(message);
+        throw err;
+      } finally {
+        setIsFinalizing(false);
+      }
+    },
+    [router, login],
+  );
+
+  const handlePaymentError = useCallback((message: string | null) => {
+    setFormError(message);
+  }, []);
+
+  const appearance = useMemo(
+    () => ({
+      theme: 'night' as const,
+      variables: {
+        colorPrimary: '#FFFFFF',
+        colorBackground: '#0A0A0A',
+        colorText: '#FFFFFF',
+        colorDanger: '#FF7070',
+        fontFamily: 'Gilroy, sans-serif',
+        fontSizeBase: '14px',
+      },
+      rules: {
+        '.Input': {
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          backgroundColor: 'transparent',
+          color: '#FFFFFF',
         },
-        body: JSON.stringify({
-          plan: plan,
-          customerEmail: customerEmail,
-          customerName: user?.name || customerEmail,
-        }),
-      });
+        '.Input:focus': {
+          borderColor: '#FFFFFF',
+        },
+        '.Label': {
+          color: '#FFFFFF',
+          fontFamily: 'Gilroy, sans-serif',
+        },
+      },
+    }),
+    [],
+  );
 
-      const data = await response.json();
+  const elementsOptions = useMemo(
+    () =>
+      clientSecret
+        ? {
+            clientSecret,
+            appearance,
+          }
+        : undefined,
+    [clientSecret, appearance],
+  );
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create checkout session');
-      }
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
-    } catch (err: any) {
-      console.error('Checkout error:', err);
-      setError(err.message || 'An error occurred. Please try again.');
-      setIsProcessing(false);
-    }
-  };
+  if (!hasCheckedCustomer || !customerEmail) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+      {isFinalizing && (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="rounded-2xl border border-white/10 bg-[#1F1F1F] px-6 py-8 text-center shadow-lg">
+            <p className="text-lg font-semibold text-white mb-2" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+              Finalizing your subscription…
+            </p>
+            <p className="text-sm text-white/70" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+              Please wait while we activate your premium access.
+            </p>
+          </div>
+        </div>
+      )}
       <Navbar />
 
       <div
@@ -136,9 +316,9 @@ function CheckoutContent() {
             </h1>
           </div>
 
-          {error && (
+          {(error || formError) && (
             <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg">
-              <p className="text-red-400 text-sm">{error}</p>
+              <p className="text-red-400 text-sm">{error || formError}</p>
             </div>
           )}
 
@@ -158,179 +338,30 @@ function CheckoutContent() {
                   Payment Details
                 </h3>
 
-                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-                  {/* Card Information Label */}
-                  <p
-                    style={{
-                      fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 600,
-                      fontSize: '16px',
-                      lineHeight: '100%',
-                      color: '#FFFFFF'
-                    }}
-                  >
-                    Card information
-                  </p>
-
-                  {/* Card Number */}
-                  <div className="flex flex-col gap-1">
-                    <label
-                      style={{
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 500,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        color: '#FFFFFF'
-                      }}
-                    >
-                      Card Number
-                    </label>
-                    <input
-                      type="text"
-                      value={cardNumber}
-                      onChange={(e) => setCardNumber(e.target.value)}
-                      placeholder="1234 1234 1234 1234"
-                      className="w-full h-10 bg-transparent focus:outline-none"
-                      style={{
-                        boxSizing: 'border-box',
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        padding: '12px 16px',
-                        gap: '10px',
-                        border: '1px solid rgba(255, 255, 255, 0.3)',
-                        borderRadius: '8px',
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 500,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        color: '#FFFFFF',
-                        outline: 'none'
-                      }}
+                {isInitializingPayment || !elementsOptions || !subscriptionId ? (
+                  <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-white/20 bg-white/5 px-4 py-10 text-sm text-white/70">
+                    Preparing secure payment form...
+                  </div>
+                ) : !stripePromise ? (
+                  <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-red-400/40 bg-red-500/10 px-4 py-10 text-sm text-red-300">
+                    Stripe is not configured. Please contact support.
+                  </div>
+                ) : !stripeModule ? (
+                  <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-white/20 bg-white/5 px-4 py-10 text-sm text-white/70">
+                    Loading payment interface...
+                  </div>
+                ) : (
+                  <stripeModule.Elements stripe={stripePromise} options={elementsOptions} key={clientSecret}>
+                    <CheckoutPaymentForm
+                      stripeModule={stripeModule}
+                      customerEmail={customerEmail as string}
+                      customerName={customerName}
+                      subscriptionId={subscriptionId}
+                      onSuccess={handlePaymentSuccess}
+                      onError={handlePaymentError}
                     />
-                  </div>
-
-                  {/* Expiry Date and CVC Row */}
-                  <div className="flex flex-row gap-6">
-                    {/* Expiry Date */}
-                    <div className="flex-1 flex flex-col gap-1">
-                      <label
-                        style={{
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF'
-                        }}
-                      >
-                        Expiry Date
-                      </label>
-                      <input
-                        type="text"
-                        value={expiryDate}
-                        onChange={(e) => setExpiryDate(e.target.value)}
-                        placeholder="MM/YY"
-                        className="w-full h-10 bg-transparent focus:outline-none"
-                        style={{
-                          boxSizing: 'border-box',
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          padding: '12px 16px',
-                          gap: '10px',
-                          border: '1px solid rgba(255, 255, 255, 0.3)',
-                          borderRadius: '8px',
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF',
-                          outline: 'none'
-                        }}
-                      />
-                    </div>
-
-                    {/* CVC */}
-                    <div className="flex-1 flex flex-col gap-1">
-                      <label
-                        style={{
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF'
-                        }}
-                      >
-                        CVC
-                      </label>
-                      <input
-                        type="text"
-                        value={cvc}
-                        onChange={(e) => setCvc(e.target.value)}
-                        placeholder="123"
-                        className="w-full h-10 bg-transparent focus:outline-none"
-                        style={{
-                          boxSizing: 'border-box',
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          padding: '12px 16px',
-                          gap: '10px',
-                          border: '1px solid rgba(255, 255, 255, 0.3)',
-                          borderRadius: '8px',
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 500,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF',
-                          outline: 'none'
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <div className="flex flex-col gap-4">
-                    <button
-                      type="submit"
-                      disabled={isProcessing}
-                      className="flex flex-row justify-center items-center px-4 py-3 gap-2"
-                      style={{
-                        width: '195px',
-                        height: '48px',
-                        background: isProcessing ? '#666' : '#FFFFFF',
-                        borderRadius: '100px',
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 600,
-                        fontSize: '16px',
-                        lineHeight: '100%',
-                        textAlign: 'center',
-                        color: '#404040',
-                        border: 'none',
-                        cursor: isProcessing ? 'not-allowed' : 'pointer',
-                        opacity: isProcessing ? 0.6 : 1
-                      }}
-                    >
-                      {isProcessing ? 'Processing...' : 'Pay & Start Premium'}
-                    </button>
-
-                    <p
-                      style={{
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 500,
-                        fontSize: '12px',
-                        lineHeight: '130%',
-                        color: '#FFFFFF',
-                        maxWidth: '501px'
-                      }}
-                    >
-                      By clicking "Pay & Start Premium", you agree to our Terms of Service and Privacy Policy. Your subscription will automatically renew unless cancelled. You can cancel anytime from your account settings.
-                    </p>
-                  </div>
-                </form>
+                  </stripeModule.Elements>
+                )}
               </div>
             </div>
 
@@ -430,6 +461,189 @@ function CheckoutContent() {
         </div>
       </section>
     </div>
+  );
+}
+
+interface CheckoutPaymentFormProps {
+  stripeModule: typeof import('@stripe/react-stripe-js');
+  customerEmail: string;
+  customerName?: string | null;
+  subscriptionId: string;
+  onSuccess: (subscriptionId: string, paymentIntentId?: string | null) => Promise<void>;
+  onError: (message: string | null) => void;
+}
+
+function CheckoutPaymentForm({
+  stripeModule,
+  customerEmail,
+  customerName,
+  subscriptionId,
+  onSuccess,
+  onError,
+}: CheckoutPaymentFormProps) {
+  const { PaymentElement, useElements, useStripe } = stripeModule;
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [billingName, setBillingName] = useState(customerName ?? '');
+  const [localError, setLocalError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setBillingName(customerName ?? '');
+  }, [customerName]);
+
+  const handleSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+
+      if (!stripe || !elements) {
+        return;
+      }
+
+      setIsProcessing(true);
+      setLocalError(null);
+      onError(null);
+
+      const { error, paymentIntent } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          payment_method_data: {
+            billing_details: {
+              name: billingName || undefined,
+              email: customerEmail,
+            },
+          },
+        },
+        redirect: 'if_required',
+      });
+
+      if (error) {
+        const message = error.message || 'Payment failed. Please try again.';
+        setLocalError(message);
+        onError(message);
+        setIsProcessing(false);
+        return;
+      }
+
+      const status = paymentIntent?.status;
+
+      if (
+        status === 'succeeded' ||
+        status === 'processing' ||
+        status === 'requires_action'
+      ) {
+        try {
+          await onSuccess(subscriptionId, paymentIntent?.id ?? null);
+        } catch (err: any) {
+          const message = err?.message || 'Unable to finalize subscription. Please contact support.';
+          setLocalError(message);
+          onError(message);
+          setIsProcessing(false);
+          return;
+        }
+      } else {
+        const message = 'Unable to confirm payment. Please try again.';
+        setLocalError(message);
+        onError(message);
+        setIsProcessing(false);
+        return;
+      }
+
+      setIsProcessing(false);
+    },
+    [stripe, elements, billingName, customerEmail, onError, onSuccess, subscriptionId],
+  );
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <label
+          style={{
+            fontFamily: 'Gilroy, sans-serif',
+            fontWeight: 500,
+            fontSize: '14px',
+            lineHeight: '100%',
+            color: '#FFFFFF',
+          }}
+        >
+          Name on card
+        </label>
+        <input
+          type="text"
+          value={billingName}
+          onChange={(event) => setBillingName(event.target.value)}
+          placeholder="John Doe"
+          className="w-full h-10 bg-transparent focus:outline-none"
+          style={{
+            boxSizing: 'border-box',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '12px 16px',
+            gap: '10px',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            borderRadius: '8px',
+            fontFamily: 'Gilroy, sans-serif',
+            fontWeight: 500,
+            fontSize: '14px',
+            lineHeight: '100%',
+            color: '#FFFFFF',
+            outline: 'none',
+          }}
+        />
+      </div>
+
+      <div className="rounded-lg border border-white/10 bg-[#151515] p-4">
+        <PaymentElement options={{ layout: 'tabs' }} />
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <button
+          type="submit"
+          disabled={isProcessing || !stripe || !elements}
+          className="flex flex-row justify-center items-center px-4 py-3 gap-2 disabled:cursor-not-allowed"
+          style={{
+            width: '195px',
+            height: '48px',
+            background: isProcessing ? '#666' : '#FFFFFF',
+            borderRadius: '100px',
+            fontFamily: 'Gilroy, sans-serif',
+            fontWeight: 600,
+            fontSize: '16px',
+            lineHeight: '100%',
+            textAlign: 'center',
+            color: '#404040',
+            border: 'none',
+            cursor: isProcessing ? 'not-allowed' : 'pointer',
+            opacity: isProcessing ? 0.6 : 1,
+          }}
+        >
+          {isProcessing ? 'Processing...' : `Pay & Start Premium`}
+        </button>
+
+        <p
+          style={{
+            fontFamily: 'Gilroy, sans-serif',
+            fontWeight: 500,
+            fontSize: '12px',
+            lineHeight: '130%',
+            color: '#FFFFFF',
+            maxWidth: '501px',
+          }}
+        >
+          By clicking "Pay & Start Premium", you agree to our Terms of Service and Privacy Policy.
+          Your subscription will automatically renew unless cancelled. You can cancel anytime from
+          your account settings.
+        </p>
+
+        {localError && (
+          <p className="text-sm text-red-400" style={{ fontFamily: 'Gilroy, sans-serif' }}>
+            {localError}
+          </p>
+        )}
+      </div>
+    </form>
   );
 }
 

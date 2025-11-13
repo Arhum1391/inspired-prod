@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPublicUserByEmail, generateToken } from '@/lib/auth';
+import { getPublicUserByEmail, generateToken, updatePublicUser } from '@/lib/auth';
 import { stripe } from '@/lib/stripe';
 
 /**
@@ -66,6 +66,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Ensure user record reflects paid status
+    const isSubscriptionActive = session.mode === 'subscription' || session.payment_status === 'paid';
+    if (isSubscriptionActive) {
+      try {
+        await updatePublicUser(user._id!, {
+          isPaid: true,
+          subscriptionStatus: 'active',
+          lastPaymentAt: new Date(),
+        });
+      } catch (updateError) {
+        console.error('Error updating user payment status:', updateError);
+      }
+    }
+
     // Generate JWT token
     const token = generateToken(user._id!);
 
@@ -74,6 +88,8 @@ export async function POST(request: NextRequest) {
       id: user._id!,
       email: user.email,
       name: user.name || null,
+      isPaid: isSubscriptionActive ? true : user.isPaid,
+      subscriptionStatus: isSubscriptionActive ? 'active' : user.subscriptionStatus,
     };
 
     const response = NextResponse.json(

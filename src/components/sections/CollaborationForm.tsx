@@ -55,7 +55,12 @@ export default function CollaborationForm() {
   };
 
   return (
-    <section className="relative z-[1] bg-[#0A0A0A] px-4 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16">
+
+    <section
+      id="collaboration"
+      className="relative z-[1] bg-[#0A0A0A] px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16"
+    >
+
       <div className="max-w-6xl mx-auto">
         <div
           className="relative bg-[#1F1F1F] rounded-2xl overflow-hidden flex flex-col md:flex-row justify-center items-center max-w-[343px] md:max-w-none mx-auto gap-10 md:gap-16 p-5 sm:p-8 md:p-10"

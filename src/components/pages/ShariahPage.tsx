@@ -9,12 +9,32 @@ import { useAuth } from '@/contexts/AuthContext';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 
 export default function ShariahPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated: isSignedIn, user, isLoading } = useAuth();
   const router = useRouter();
+  const isPaidUser = !!user?.isPaid;
+  const isAuthenticated = isSignedIn && isPaidUser;
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [showMethodologyPopup, setShowMethodologyPopup] = useState(false);
   const popupContentRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isLoading && !isSignedIn) {
+      router.replace('/signin?next=/shariah');
+    }
+  }, [isLoading, isSignedIn, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return null;
+  }
 
   useEffect(() => {
     if (showMethodologyPopup && popupContentRef.current && backdropRef.current) {

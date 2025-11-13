@@ -42,6 +42,18 @@ export async function POST(request: NextRequest) {
       name: user.name || null,
     };
 
+    // Prepare cookie options
+    const cookieOptions = {
+      httpOnly: true as const,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict' as const,
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+      ...(process.env.AUTH_COOKIE_DOMAIN
+        ? { domain: process.env.AUTH_COOKIE_DOMAIN }
+        : {}),
+    };
+
     // Create response with user data
     const response = NextResponse.json(
       { message: 'Login successful', user: userResponse },
@@ -49,13 +61,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Set HTTP-only cookie with token
-    response.cookies.set('user-auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-      path: '/',
-    });
+    response.cookies.set('user-auth-token', token, cookieOptions);
 
     return response;
   } catch (error) {

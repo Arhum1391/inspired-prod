@@ -220,7 +220,9 @@ export default function CalculatorPage() {
       }
 
       try {
-        const response = await fetch('/api/scenarios');
+        const response = await fetch('/api/scenarios', {
+          credentials: 'include',
+        });
         if (response.ok) {
           const data = await response.json();
           setSavedScenarios(data.scenarios || []);
@@ -6600,6 +6602,7 @@ export default function CalculatorPage() {
                         headers: {
                           'Content-Type': 'application/json',
                         },
+                        credentials: 'include',
                         body: JSON.stringify({
                           scenarioName,
                           tradingPair,
@@ -6624,7 +6627,9 @@ export default function CalculatorPage() {
                         setEditingScenarioId(null);
                         setIsSaveScenarioPopupOpen(false);
                         // Refresh scenarios list
-                        const fetchResponse = await fetch('/api/scenarios');
+                        const fetchResponse = await fetch('/api/scenarios', {
+                          credentials: 'include',
+                        });
                         if (fetchResponse.ok) {
                           const fetchData = await fetchResponse.json();
                           setSavedScenarios(fetchData.scenarios || []);
@@ -6947,13 +6952,16 @@ export default function CalculatorPage() {
                   try {
                     const response = await fetch(`/api/scenarios/${scenarioToDelete}`, {
                       method: 'DELETE',
+                      credentials: 'include',
                     });
                     if (response.ok) {
                       // Close popup
                       setIsDeleteConfirmOpen(false);
                       setScenarioToDelete(null);
                       // Refresh scenarios list
-                      const fetchResponse = await fetch('/api/scenarios');
+                      const fetchResponse = await fetch('/api/scenarios', {
+                        credentials: 'include',
+                      });
                       if (fetchResponse.ok) {
                         const fetchData = await fetchResponse.json();
                         setSavedScenarios(fetchData.scenarios || []);

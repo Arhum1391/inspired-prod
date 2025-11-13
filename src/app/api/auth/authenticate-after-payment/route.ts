@@ -76,19 +76,24 @@ export async function POST(request: NextRequest) {
       name: user.name || null,
     };
 
+    const cookieOptions = {
+      httpOnly: true as const,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict' as const,
+      maxAge: 7 * 24 * 60 * 60,
+      path: '/',
+      ...(process.env.AUTH_COOKIE_DOMAIN
+        ? { domain: process.env.AUTH_COOKIE_DOMAIN }
+        : {}),
+    };
+
     const response = NextResponse.json(
       { user: userResponse },
       { status: 200 }
     );
 
     // Set HTTP-only cookie with token
-    response.cookies.set('user-auth-token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-      path: '/',
-    });
+    response.cookies.set('user-auth-token', token, cookieOptions);
 
     return response;
   } catch (error) {

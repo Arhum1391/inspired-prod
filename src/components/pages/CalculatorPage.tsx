@@ -1,6 +1,6 @@
 'use client';
 
- import { useState, useEffect, useRef, Fragment } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -8,7 +8,8 @@ import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function CalculatorPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated: contextIsAuthenticated, isLoading } = useAuth();
+  const isAuthenticated = !isLoading && contextIsAuthenticated;
   const router = useRouter();
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -186,6 +187,9 @@ export default function CalculatorPage() {
 
   // Set default values for non-authenticated users
   useEffect(() => {
+    if (isLoading) {
+      return;
+    }
     if (isAuthenticated === false) {
       setSelectedAsset('Gold (XAUUSD)');
       setAccountBalance('80000');
@@ -209,10 +213,13 @@ export default function CalculatorPage() {
     }
 
     previousAuthStatus.current = isAuthenticated ?? null;
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isLoading]);
 
   // Fetch saved scenarios for authenticated users
   useEffect(() => {
+    if (isLoading) {
+      return;
+    }
     const fetchScenarios = async () => {
       if (!isAuthenticated) {
         setSavedScenarios([]);
@@ -237,7 +244,7 @@ export default function CalculatorPage() {
     };
 
     fetchScenarios();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isLoading]);
 
   // Scroll to tile on page change
   useEffect(() => {
@@ -496,6 +503,10 @@ export default function CalculatorPage() {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isTradingPairDropdownOpen]);
+
+  if (isLoading) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden calculator-page">

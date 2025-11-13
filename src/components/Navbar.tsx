@@ -243,9 +243,11 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                     className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors focus:outline-none active:outline-none cursor-pointer"
                 style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
               >
+
                     {item.label}
                   </button>
                 ) : (
+
               <Link
                     key={item.label}
                     href={item.href}
@@ -357,9 +359,11 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
                           className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none hover:bg-gray-700 text-left cursor-pointer"
                   style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
                 >
+
                           {item.label}
                         </button>
                       ) : (
+
                 <Link
                           key={item.label}
                           href={item.href}

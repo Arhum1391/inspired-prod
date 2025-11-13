@@ -9,7 +9,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 
 export default function ShariahPage() {
-  const { isAuthenticated: isSignedIn, user, isLoading } = useAuth();
+
+  const { isAuthenticated: contextIsAuthenticated, isLoading } = useAuth();
+  const isAuthenticated = !isLoading && contextIsAuthenticated;
+
   const router = useRouter();
   const isPaidUser = !!user?.isPaid;
   const isAuthenticated = isSignedIn && isPaidUser;
@@ -17,7 +20,6 @@ export default function ShariahPage() {
   const [showMethodologyPopup, setShowMethodologyPopup] = useState(false);
   const popupContentRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     if (!isLoading && !isSignedIn) {
       router.replace('/signin?next=/shariah');
@@ -74,6 +76,10 @@ export default function ShariahPage() {
       [index]: !prev[index]
     }));
   };
+  if (isLoading) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
       <style dangerouslySetInnerHTML={{__html: `

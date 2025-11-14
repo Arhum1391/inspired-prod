@@ -11,34 +11,17 @@ import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 export default function ShariahPage() {
 
   const auth = useAuth();
-  const { user, isLoading } = auth;
+  const { isLoading } = auth;
   const isSignedIn = auth.isAuthenticated;
 
   const router = useRouter();
-  const isPaidUser = !!user?.isPaid;
-  const isAuthenticated = isSignedIn && isPaidUser;
+  const isAuthenticated = isSignedIn;
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [showMethodologyPopup, setShowMethodologyPopup] = useState(false);
   const popupContentRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (!isLoading && !isSignedIn) {
-      router.replace('/signin?next=/shariah');
-    }
-  }, [isLoading, isSignedIn, router]);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
-  }
-
-  if (!isSignedIn) {
-    return null;
-  }
-
+  // All hooks must be called before any conditional returns
   useEffect(() => {
     if (showMethodologyPopup && popupContentRef.current && backdropRef.current) {
       const updateHeight = () => {
@@ -77,8 +60,14 @@ export default function ShariahPage() {
       [index]: !prev[index]
     }));
   };
+
+  // Conditional returns must come after all hooks
   if (isLoading) {
-    return null;
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   return (

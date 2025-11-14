@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import { useState, useEffect } from 'react';
 
 interface ShariahDetailsPageProps {
   fundId: string;
@@ -11,6 +12,51 @@ interface ShariahDetailsPageProps {
 
 export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) {
   const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMobileComplianceModalOpen, setIsMobileComplianceModalOpen] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
+  // Close modal when screen size changes from mobile to desktop
+  useEffect(() => {
+    if (!isMobile && isMobileComplianceModalOpen) {
+      setIsMobileComplianceModalOpen(false);
+    }
+  }, [isMobile, isMobileComplianceModalOpen]);
+  
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (isMobileComplianceModalOpen) {
+      const originalStyle = window.getComputedStyle(document.body).overflow;
+      const originalPosition = window.getComputedStyle(document.body).position;
+      const originalTop = window.getComputedStyle(document.body).top;
+      const originalWidth = window.getComputedStyle(document.body).width;
+      
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${window.scrollY}px`;
+      document.body.style.width = '100%';
+      
+      return () => {
+        const scrollY = document.body.style.top;
+        document.body.style.overflow = originalStyle;
+        document.body.style.position = originalPosition;
+        document.body.style.top = originalTop;
+        document.body.style.width = originalWidth;
+        if (scrollY) {
+          window.scrollTo(0, parseInt(scrollY || '0') * -1);
+        }
+      };
+    }
+  }, [isMobileComplianceModalOpen]);
   
   const handleBack = () => {
     router.push('/shariah');
@@ -45,6 +91,441 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
   
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+      <style dangerouslySetInnerHTML={{__html: `
+        /* Desktop View All Icon - Point Right */
+        .shariah-details-compliance-viewall-icon {
+          transform: rotate(180deg) !important;
+        }
+        /* Mobile Spacer - Hidden on Desktop */
+        .shariah-details-mobile-spacer {
+          display: none !important;
+        }
+        @media (max-width: 768px) {
+          .shariah-details-header-container {
+            position: absolute !important;
+            width: 375px !important;
+            height: auto !important;
+            min-height: 227px !important;
+            left: 0px !important;
+            top: 94px !important;
+            padding: 0px 16px 24px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+          }
+          .shariah-details-header-content {
+            width: 343px !important;
+            height: auto !important;
+            min-height: 203px !important;
+            gap: 24px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .shariah-details-back-button {
+            width: 343px !important;
+            height: 16px !important;
+            gap: 4px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: flex-start !important;
+          }
+          .shariah-details-back-icon {
+            width: 16px !important;
+            height: 16px !important;
+            transform: none !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-back-text {
+            width: 37px !important;
+            height: 16px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-heading {
+            width: 343px !important;
+            height: auto !important;
+            min-height: 38px !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-size: 32px !important;
+            line-height: 120% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-description {
+            width: 343px !important;
+            height: auto !important;
+            min-height: 63px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-footer {
+            width: 343px !important;
+            height: 14px !important;
+            gap: 16px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+          }
+          .shariah-details-footer-left {
+            width: 162px !important;
+            height: 14px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-footer-dot {
+            width: 6px !important;
+            height: 6px !important;
+            background: #D9D9D9 !important;
+            border-radius: 50% !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-footer-right {
+            width: 121px !important;
+            height: 14px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            flex-shrink: 0 !important;
+          }
+          /* Compliance Breakdown Tile Mobile Styles */
+          .shariah-details-compliance-container {
+            position: absolute !important;
+            width: 100% !important;
+            max-width: 375px !important;
+            height: 794px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            top: 353px !important;
+            padding: 0px 16px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
+            margin-bottom: 40px !important;
+          }
+          .shariah-details-compliance-container > div:first-child {
+            display: none !important;
+          }
+          .shariah-details-compliance-tile {
+            width: 343px !important;
+            max-width: 343px !important;
+            height: 794px !important;
+            padding: 20px 12px !important;
+            gap: 8px !important;
+            background: #1F1F1F !important;
+            border-radius: 10px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            isolation: isolate !important;
+            box-sizing: border-box !important;
+            overflow: hidden !important;
+            border: none !important;
+          }
+          .shariah-details-compliance-content {
+            width: 319px !important;
+            height: 754px !important;
+            gap: 24px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            z-index: 0 !important;
+          }
+          .shariah-details-compliance-header {
+            width: 319px !important;
+            height: 50px !important;
+            gap: 24px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+          }
+          .shariah-details-compliance-title-block {
+            width: 232px !important;
+            height: 50px !important;
+            gap: 12px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            flex: 1 !important;
+          }
+          .shariah-details-compliance-title {
+            width: 150px !important;
+            height: auto !important;
+            min-height: 50px !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 24px !important;
+            line-height: 125% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 0 !important;
+            white-space: normal !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+          }
+          .shariah-details-compliance-viewall {
+            width: 63px !important;
+            height: 17px !important;
+            gap: 4px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            background: transparent !important;
+            border: none !important;
+            cursor: pointer !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-compliance-viewall span {
+            width: 43px !important;
+            height: 17px !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-size: 12px !important;
+            line-height: 145% !important;
+            color: #FFFFFF !important;
+            text-align: center !important;
+            display: flex !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-compliance-viewall-icon {
+            width: 16px !important;
+            height: 16px !important;
+            transform: rotate(180deg) !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+          }
+          /* Compliance Modal Mobile Styles */
+          .shariah-details-compliance-mobile-modal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(0, 0, 0, 0.6) !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            z-index: 1000 !important;
+            padding: 16px !important;
+          }
+          .shariah-details-compliance-mobile-modal-content {
+            width: 343px !important;
+            max-height: calc(100vh - 64px) !important;
+            background: #1F1F1F !important;
+            border-radius: 16px !important;
+            padding: 24px 12px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            box-sizing: border-box !important;
+            position: relative !important;
+          }
+          .shariah-details-compliance-mobile-modal-close {
+            width: 24px !important;
+            height: 24px !important;
+            border-radius: 12px !important;
+            border: 1px solid #AFB9BF !important;
+            background: transparent !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            padding: 0 !important;
+            align-self: flex-end !important;
+            position: absolute !important;
+            top: 24px !important;
+            right: 12px !important;
+          }
+          .shariah-details-compliance-mobile-modal-title {
+            font-family: 'Gilroy-SemiBold' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 24px !important;
+            line-height: 125% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+            margin-bottom: 4px !important;
+          }
+          .shariah-details-compliance-mobile-modal-list {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 16px !important;
+            width: 100% !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            padding-right: 4px !important;
+            align-items: center !important;
+            box-sizing: border-box !important;
+            padding-left: 4px !important;
+          }
+          .shariah-details-compliance-mobile-modal-list .shariah-details-compliance-card {
+            display: flex !important;
+          }
+          .shariah-details-compliance-table-header {
+            display: none !important;
+          }
+          .shariah-details-compliance-table-rows {
+            display: none !important;
+          }
+          .shariah-details-compliance-table-row {
+            display: none !important;
+          }
+          .shariah-details-compliance-cards-container {
+            width: 319px !important;
+            max-width: 319px !important;
+            gap: 16px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            box-sizing: border-box !important;
+          }
+          .shariah-details-compliance-card {
+            box-sizing: border-box !important;
+            width: 319px !important;
+            max-width: 319px !important;
+            height: 152px !important;
+            padding: 16px 12px !important;
+            gap: 16px !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+            overflow: hidden !important;
+          }
+          .shariah-details-compliance-card-row {
+            width: 295px !important;
+            height: 14px !important;
+            gap: 16px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-compliance-card-label-group {
+            width: auto !important;
+            height: 14px !important;
+            gap: 8px !important;
+            padding: 0px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            flex: 1 !important;
+          }
+          .shariah-details-compliance-card-label {
+            font-family: 'Gilroy-Medium' !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-details-compliance-card-value {
+            font-family: 'Gilroy-Medium' !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: #909090 !important;
+            text-align: right !important;
+            flex: 1 !important;
+          }
+          .shariah-details-compliance-card-value.status {
+            color: #05B353 !important;
+          }
+          .shariah-details-compliance-card-divider {
+            width: 295px !important;
+            height: 0px !important;
+            border: 1px solid #404040 !important;
+            flex-shrink: 0 !important;
+          }
+          /* Analyst Notes Section Mobile Styles */
+          .shariah-details-analyst-notes {
+            position: absolute !important;
+            width: 343px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            top: 1187px !important;
+            height: auto !important;
+            min-height: 145px !important;
+            padding: 0px 16px !important;
+            margin-bottom: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+            box-sizing: border-box !important;
+          }
+          /* Spacer to prevent Footer overlap on mobile */
+          .shariah-details-mobile-spacer {
+            display: block !important;
+            width: 100% !important;
+            height: 60px !important;
+            min-height: 60px !important;
+          }
+          .shariah-details-analyst-notes h2 {
+            width: 311px !important;
+            height: auto !important;
+            min-height: 58px !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 32px !important;
+            line-height: 120% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+            flex: none !important;
+            order: 0 !important;
+            align-self: stretch !important;
+            flex-grow: 0 !important;
+          }
+          .shariah-details-analyst-notes p {
+            width: 311px !important;
+            height: auto !important;
+            min-height: 63px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+            flex: none !important;
+            order: 1 !important;
+            align-self: stretch !important;
+            flex-grow: 0 !important;
+          }
+        }
+      `}} />
       <Navbar />
       
       {/* Background Gradient SVG - Top Right */}
@@ -84,6 +565,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
       <div className="relative z-10 flex flex-col items-start justify-center px-4 sm:px-6 lg:px-8" style={{ minHeight: '1400px', paddingBottom: '150px' }}>
         {/* Content Container */}
         <div
+          className="shariah-details-header-container"
           style={{
             position: 'absolute',
             width: '630px',
@@ -96,135 +578,157 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             gap: '24px',
           }}
         >
-          {/* Back Button Row */}
-          <button
-            onClick={handleBack}
-            className="flex items-center text-white hover:text-gray-300 transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20"
-            style={{
-              outline: 'none',
-              boxShadow: 'none',
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              padding: 0,
-              fontFamily: 'Gilroy-Medium',
-              fontSize: '16px',
-              lineHeight: '100%',
-              color: '#FFFFFF',
-            }}
-            onFocus={(e) => e.target.blur()}
-          >
-            <ChevronLeft size={20} className="mr-1" />
-            Back
-          </button>
-          
-          {/* Heading */}
-          <h1
-            style={{
-              width: '630px',
-              fontFamily: 'Gilroy-SemiBold',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '48px',
-              lineHeight: '120%',
-              color: '#FFFFFF',
-              flex: 'none',
-              order: 1,
-              alignSelf: 'stretch',
-              flexGrow: 0,
-              margin: 0,
-            }}
-          >
-            {fund.title}
-          </h1>
-          
-          {/* Description */}
-          <p
-            style={{
-              width: '630px',
-              fontFamily: 'Gilroy-Medium',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '130%',
-              color: '#FFFFFF',
-              flex: 'none',
-              order: 2,
-              alignSelf: 'stretch',
-              flexGrow: 0,
-              margin: 0,
-            }}
-          >
-            {fund.description}
-          </p>
-          
-          {/* Footer Row */}
           <div
+            className="shariah-details-header-content"
             style={{
               display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
               padding: '0px',
-              gap: '16px',
-              width: '630px',
-              height: '14px',
-              flex: 'none',
-              order: 3,
-              alignSelf: 'stretch',
-              flexGrow: 0,
+              gap: '24px',
             }}
           >
-            {/* Footer Left */}
-            <span
+            {/* Back Button Row */}
+            <button
+              onClick={handleBack}
+              className="shariah-details-back-button flex items-center text-white hover:text-gray-300 transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20"
               style={{
+                outline: 'none',
+                boxShadow: 'none',
+                background: 'transparent',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
                 fontFamily: 'Gilroy-Medium',
-                fontStyle: 'normal',
-                fontWeight: 400,
-                fontSize: '14px',
+                fontSize: '16px',
                 lineHeight: '100%',
                 color: '#FFFFFF',
-                flex: 'none',
-                order: 0,
-                flexGrow: 0,
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                gap: '4px',
               }}
+              onFocus={(e) => e.target.blur()}
             >
-              {fund.footerLeft}
-            </span>
+              <ChevronLeft size={16} className="shariah-details-back-icon" />
+              <span className="shariah-details-back-text">Back</span>
+            </button>
             
-            {/* Dot Separator */}
-            <div
+            {/* Heading */}
+            <h1
+              className="shariah-details-heading"
               style={{
-                width: '6px',
-                height: '6px',
-                background: '#D9D9D9',
-                borderRadius: '50%',
+                width: '630px',
+                fontFamily: 'Gilroy-SemiBold',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '48px',
+                lineHeight: '120%',
+                color: '#FFFFFF',
                 flex: 'none',
                 order: 1,
+                alignSelf: 'stretch',
                 flexGrow: 0,
+                margin: 0,
               }}
-            />
+            >
+              {fund.title}
+            </h1>
             
-            {/* Footer Right */}
-            <span
+            {/* Description */}
+            <p
+              className="shariah-details-description"
               style={{
+                width: '630px',
                 fontFamily: 'Gilroy-Medium',
                 fontStyle: 'normal',
                 fontWeight: 400,
-                fontSize: '14px',
-                lineHeight: '100%',
+                fontSize: '16px',
+                lineHeight: '130%',
                 color: '#FFFFFF',
                 flex: 'none',
                 order: 2,
+                alignSelf: 'stretch',
+                flexGrow: 0,
+                margin: 0,
+              }}
+            >
+              {fund.description}
+            </p>
+            
+            {/* Footer Row */}
+            <div
+              className="shariah-details-footer"
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                padding: '0px',
+                gap: '16px',
+                width: '630px',
+                height: '14px',
+                flex: 'none',
+                order: 3,
+                alignSelf: 'stretch',
                 flexGrow: 0,
               }}
             >
-              {fund.footerRight}
-            </span>
+              {/* Footer Left */}
+              <span
+                className="shariah-details-footer-left"
+                style={{
+                  fontFamily: 'Gilroy-Medium',
+                  fontStyle: 'normal',
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  lineHeight: '100%',
+                  color: '#FFFFFF',
+                  flex: 'none',
+                  order: 0,
+                  flexGrow: 0,
+                }}
+              >
+                {fund.footerLeft}
+              </span>
+              
+              {/* Dot Separator */}
+              <div
+                className="shariah-details-footer-dot"
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  background: '#D9D9D9',
+                  borderRadius: '50%',
+                  flex: 'none',
+                  order: 1,
+                  flexGrow: 0,
+                }}
+              />
+              
+              {/* Footer Right */}
+              <span
+                className="shariah-details-footer-right"
+                style={{
+                  fontFamily: 'Gilroy-Medium',
+                  fontStyle: 'normal',
+                  fontWeight: 400,
+                  fontSize: '14px',
+                  lineHeight: '100%',
+                  color: '#FFFFFF',
+                  flex: 'none',
+                  order: 2,
+                  flexGrow: 0,
+                }}
+              >
+                {fund.footerRight}
+              </span>
+            </div>
           </div>
         </div>
         
         {/* Compliance Breakdown Tile */}
         <div
+          className="shariah-details-compliance-container"
           style={{
             position: 'absolute',
             width: '1064px',
@@ -241,73 +745,150 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             alignItems: 'flex-start',
           }}
         >
-          {/* Curved Gradient Border */}
+          {/* Curved Gradient Border - Desktop */}
           <div 
             style={{
               position: 'absolute',
-              inset: 0,
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
               pointerEvents: 'none',
               borderRadius: '16px',
               padding: '1px',
               background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+              boxSizing: 'border-box',
+              zIndex: 0,
             }}
           >
             <div style={{ width: '100%', height: '100%', borderRadius: '15px', background: '#1F1F1F' }}></div>
           </div>
           
-          {/* Heading */}
-          <h2
-            style={{
-              fontFamily: 'Gilroy-SemiBold',
-              fontSize: '24px',
-              fontWeight: 400,
-              color: '#FFFFFF',
-              margin: 0,
-              marginBottom: '15px',
-              position: 'relative',
-              zIndex: 1,
-            }}
-          >
-            Compliance breakdown
-          </h2>
-          
-          {/* Content Container */}
           <div
+            className="shariah-details-compliance-tile"
             style={{
+              width: '100%',
+              height: '100%',
+              borderRadius: '16px',
+              background: 'transparent',
+              padding: '20px',
+              boxSizing: 'border-box',
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
-              padding: '0px',
-              gap: '12px',
-              width: '1024px',
-              height: '266px',
-              flex: 'none',
-              order: 1,
-              alignSelf: 'stretch',
-              flexGrow: 0,
               position: 'relative',
+              overflow: 'hidden',
               zIndex: 1,
             }}
           >
-            {/* Header Row */}
+            
             <div
+              className="shariah-details-compliance-content"
               style={{
-                boxSizing: 'border-box',
                 display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-                padding: '16px',
-                gap: '24px',
-                width: '1024px',
-                height: '46px',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: '0px',
+                gap: '12px',
+                width: '100%',
+                maxWidth: '1024px',
+                height: '266px',
                 flex: 'none',
-                order: 0,
+                order: 1,
                 alignSelf: 'stretch',
                 flexGrow: 0,
+                position: 'relative',
+                zIndex: 1,
+                boxSizing: 'border-box',
               }}
             >
+              {/* Header with Title and View All */}
+              <div
+                className="shariah-details-compliance-header"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  padding: '0px',
+                  gap: '24px',
+                  width: '100%',
+                  marginBottom: '15px',
+                  position: 'relative',
+                  zIndex: 1,
+                }}
+              >
+                <div
+                  className="shariah-details-compliance-title-block"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    padding: '0px',
+                    gap: '12px',
+                    flex: 1,
+                  }}
+                >
+                  <h2
+                    className="shariah-details-compliance-title"
+                    style={{
+                      fontFamily: 'Gilroy-SemiBold',
+                      fontSize: '24px',
+                      fontWeight: 400,
+                      color: '#FFFFFF',
+                      margin: 0,
+                      position: 'relative',
+                      zIndex: 1,
+                    }}
+                  >
+                    Compliance Breakdown
+                  </h2>
+                </div>
+                <button
+                  className="shariah-details-compliance-viewall"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: '0px',
+                    gap: '4px',
+                    background: 'transparent',
+                    border: 'none',
+                    cursor: 'pointer',
+                    position: 'relative',
+                    zIndex: 1,
+                  }}
+                  onClick={() => {
+                    if (isMobile) {
+                      setIsMobileComplianceModalOpen(true);
+                    }
+                  }}
+                >
+                  <span>View All</span>
+                  <ChevronLeft size={16} className="shariah-details-compliance-viewall-icon" />
+                </button>
+              </div>
+              
+              {/* Desktop Table Header */}
+              <div
+                className="shariah-details-compliance-table-header"
+                style={{
+                  boxSizing: 'border-box',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '16px',
+                  gap: '24px',
+                  width: '100%',
+                  maxWidth: '1024px',
+                  height: '46px',
+                  borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
+                  flex: 'none',
+                  order: 0,
+                  alignSelf: 'stretch',
+                  flexGrow: 0,
+                }}
+              >
               {/* Criteria Column */}
               <div
                 style={{
@@ -456,24 +1037,237 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               </div>
             </div>
             
-            {/* Data Rows Container */}
+            {/* Mobile Cards Container */}
             <div
+              className="shariah-details-compliance-cards-container"
+              style={{
+                display: 'none',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: '0px',
+                gap: '16px',
+                width: '319px',
+              }}
+            >
+              {/* Card 1: Debt to Market Cap */}
+              <div
+                className="shariah-details-compliance-card"
+                style={{
+                  display: 'none',
+                  boxSizing: 'border-box',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '16px 12px',
+                  gap: '16px',
+                  width: '319px',
+                  height: '152px',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                }}
+              >
+                {/* Status Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Status</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value status">Pass</span>
+                </div>
+                {/* Divider */}
+                <div className="shariah-details-compliance-card-divider" />
+                {/* Criteria Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Criteria</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Debt to Market Cap</span>
+                </div>
+                {/* Threshold Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Threshold</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">&lt; 33%</span>
+                </div>
+                {/* Actual Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Actual</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">0%</span>
+                </div>
+              </div>
+              
+              {/* Card 2: Interest Income */}
+              <div
+                className="shariah-details-compliance-card"
+                style={{
+                  display: 'none',
+                  boxSizing: 'border-box',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '16px 12px',
+                  gap: '16px',
+                  width: '319px',
+                  height: '152px',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                }}
+              >
+                {/* Status Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Status</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value status">Pass</span>
+                </div>
+                {/* Divider */}
+                <div className="shariah-details-compliance-card-divider" />
+                {/* Criteria Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Criteria</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Interest Income</span>
+                </div>
+                {/* Threshold Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Threshold</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">&lt; 5%</span>
+                </div>
+                {/* Actual Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Actual</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">0%</span>
+                </div>
+              </div>
+              
+              {/* Card 3: Business Activity */}
+              <div
+                className="shariah-details-compliance-card"
+                style={{
+                  display: 'none',
+                  boxSizing: 'border-box',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '16px 12px',
+                  gap: '16px',
+                  width: '319px',
+                  height: '152px',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                }}
+              >
+                {/* Status Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Status</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value status">Pass</span>
+                </div>
+                {/* Divider */}
+                <div className="shariah-details-compliance-card-divider" />
+                {/* Criteria Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Criteria</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Business Activity</span>
+                </div>
+                {/* Threshold Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Threshold</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Halal</span>
+                </div>
+                {/* Actual Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Actual</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Permissible</span>
+                </div>
+              </div>
+              
+              {/* Card 4: Cash Holdings */}
+              <div
+                className="shariah-details-compliance-card"
+                style={{
+                  display: 'none',
+                  boxSizing: 'border-box',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '16px 12px',
+                  gap: '16px',
+                  width: '319px',
+                  height: '152px',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                }}
+              >
+                {/* Status Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Status</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value status">Pass</span>
+                </div>
+                {/* Divider */}
+                <div className="shariah-details-compliance-card-divider" />
+                {/* Criteria Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Criteria</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Cash Holdings</span>
+                </div>
+                {/* Threshold Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Threshold</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">&lt; 33%</span>
+                </div>
+                {/* Actual Row */}
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Actual</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">N/A</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Desktop Data Rows Container */}
+            <div
+              className="shariah-details-compliance-table-rows"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'flex-start',
                 padding: '0px',
                 gap: '8px',
-                width: '1024px',
+                width: '100%',
+                maxWidth: '1024px',
                 height: '208px',
                 flex: 'none',
                 order: 1,
                 alignSelf: 'stretch',
                 flexGrow: 0,
+                boxSizing: 'border-box',
               }}
             >
               {/* Row 1: Debt to Market Cap */}
               <div
+                className="shariah-details-compliance-table-row"
                 style={{
                   boxSizing: 'border-box',
                   display: 'flex',
@@ -482,7 +1276,8 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   alignItems: 'center',
                   padding: '16px',
                   gap: '24px',
-                  width: '1024px',
+                  width: '100%',
+                  maxWidth: '1024px',
                   height: '46px',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                   flex: 'none',
@@ -641,6 +1436,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               
               {/* Row 2: Interest Income */}
               <div
+                className="shariah-details-compliance-table-row"
                 style={{
                   boxSizing: 'border-box',
                   display: 'flex',
@@ -649,7 +1445,8 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   alignItems: 'center',
                   padding: '16px',
                   gap: '24px',
-                  width: '1024px',
+                  width: '100%',
+                  maxWidth: '1024px',
                   height: '46px',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                   flex: 'none',
@@ -808,6 +1605,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               
               {/* Row 3: Business Activity */}
               <div
+                className="shariah-details-compliance-table-row"
                 style={{
                   boxSizing: 'border-box',
                   display: 'flex',
@@ -816,7 +1614,8 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   alignItems: 'center',
                   padding: '16px',
                   gap: '24px',
-                  width: '1024px',
+                  width: '100%',
+                  maxWidth: '1024px',
                   height: '46px',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                   flex: 'none',
@@ -975,6 +1774,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               
               {/* Row 4: Cash Holdings */}
               <div
+                className="shariah-details-compliance-table-row"
                 style={{
                   boxSizing: 'border-box',
                   display: 'flex',
@@ -983,7 +1783,8 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   alignItems: 'center',
                   padding: '16px',
                   gap: '24px',
-                  width: '1024px',
+                  width: '100%',
+                  maxWidth: '1024px',
                   height: '46px',
                   borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
                   flex: 'none',
@@ -1142,9 +1943,11 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             </div>
           </div>
         </div>
+        </div>
         
         {/* Analyst Notes Section */}
         <div
+          className="shariah-details-analyst-notes"
           style={{
             position: 'absolute',
             width: '1064px',
@@ -1156,6 +1959,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             alignItems: 'flex-start',
             padding: '0px',
             gap: '24px',
+            marginBottom: '120px',
           }}
         >
           {/* Heading */}
@@ -1201,6 +2005,207 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
           </p>
         </div>
       </div>
+      
+      {/* Mobile Spacer to prevent Footer overlap */}
+      <div className="shariah-details-mobile-spacer" />
+      
+      {/* Mobile Compliance Modal */}
+      {isMobile && isMobileComplianceModalOpen && (
+        <div
+          className="shariah-details-compliance-mobile-modal"
+          onClick={() => setIsMobileComplianceModalOpen(false)}
+        >
+          <div
+            className="shariah-details-compliance-mobile-modal-content"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="shariah-details-compliance-mobile-modal-close"
+              onClick={() => setIsMobileComplianceModalOpen(false)}
+            >
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L7 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round"/>
+                <path d="M7 1L1 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round"/>
+              </svg>
+            </button>
+            <h2 className="shariah-details-compliance-mobile-modal-title">Compliance Breakdown</h2>
+            <div className="shariah-details-compliance-mobile-modal-list">
+              {/* Card 1: Debt to Market Cap */}
+              <div
+                className="shariah-details-compliance-card"
+                style={{
+                  boxSizing: 'border-box',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '16px 12px',
+                  gap: '16px',
+                  width: '319px',
+                  height: '152px',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                }}
+              >
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Status</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value status">Pass</span>
+                </div>
+                <div className="shariah-details-compliance-card-divider" />
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Criteria</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Debt to Market Cap</span>
+                </div>
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Threshold</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">&lt; 33%</span>
+                </div>
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Actual</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">0%</span>
+                </div>
+              </div>
+              
+              {/* Card 2: Interest Income */}
+              <div
+                className="shariah-details-compliance-card"
+                style={{
+                  boxSizing: 'border-box',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '16px 12px',
+                  gap: '16px',
+                  width: '319px',
+                  height: '152px',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                }}
+              >
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Status</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value status">Pass</span>
+                </div>
+                <div className="shariah-details-compliance-card-divider" />
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Criteria</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Interest Income</span>
+                </div>
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Threshold</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">&lt; 5%</span>
+                </div>
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Actual</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">2%</span>
+                </div>
+              </div>
+              
+              {/* Card 3: Business Activity */}
+              <div
+                className="shariah-details-compliance-card"
+                style={{
+                  boxSizing: 'border-box',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '16px 12px',
+                  gap: '16px',
+                  width: '319px',
+                  height: '152px',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                }}
+              >
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Status</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value status">Pass</span>
+                </div>
+                <div className="shariah-details-compliance-card-divider" />
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Criteria</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Business Activity</span>
+                </div>
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Threshold</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">No prohibited activities</span>
+                </div>
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Actual</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Compliant</span>
+                </div>
+              </div>
+              
+              {/* Card 4: Cash Holdings */}
+              <div
+                className="shariah-details-compliance-card"
+                style={{
+                  boxSizing: 'border-box',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  padding: '16px 12px',
+                  gap: '16px',
+                  width: '319px',
+                  height: '152px',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  borderRadius: '8px',
+                }}
+              >
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Status</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value status">Pass</span>
+                </div>
+                <div className="shariah-details-compliance-card-divider" />
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Criteria</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">Cash Holdings</span>
+                </div>
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Threshold</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">&lt; 33%</span>
+                </div>
+                <div className="shariah-details-compliance-card-row">
+                  <div className="shariah-details-compliance-card-label-group">
+                    <span className="shariah-details-compliance-card-label">Actual</span>
+                  </div>
+                  <span className="shariah-details-compliance-card-value">15%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
       <Footer />
     </div>

@@ -577,7 +577,7 @@ export default function CalculatorPage() {
             max-width: 343px !important;
             font-size: 16px !important;
             line-height: 130% !important;
-            margin-top: -30px !important;
+            margin-top: 12px !important;
             min-height: 63px !important;
             text-align: left !important;
           }
@@ -1786,7 +1786,7 @@ export default function CalculatorPage() {
               
               {/* Bullet 3 */}
               <div
-                className="calculator-save-header-inner"
+                className="calculator-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -1833,6 +1833,7 @@ export default function CalculatorPage() {
               
               {/* Bullet 4 */}
               <div
+                className="calculator-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',

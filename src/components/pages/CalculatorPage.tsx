@@ -10,15 +10,21 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function CalculatorPage() {
 
   const auth = useAuth();
-  const { user, isLoading } = auth;
+  const { isLoading } = auth;
   const isSignedIn = auth.isAuthenticated;
 
   const router = useRouter();
-  const isPaidUser = !!user?.isPaid;
-  const isAuthenticated = isSignedIn && isPaidUser;
+  const isAuthenticated = isSignedIn;
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
+  const [accountBalance, setAccountBalance] = useState('');
+  const [riskPercentage, setRiskPercentage] = useState('');
+  const [stopLoss, setStopLoss] = useState('');
+  const [pipValue, setPipValue] = useState('');
+  const [lotSize, setLotSize] = useState('');
+  const [forexLotType, setForexLotType] = useState('Standard Lot');
+  const [isForexLotTypeDropdownOpen, setIsForexLotTypeDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isFormulaPopupOpen, setIsFormulaPopupOpen] = useState(false);
   const formulaPopupRef = useRef<HTMLDivElement>(null);
@@ -29,6 +35,7 @@ export default function CalculatorPage() {
   const [tradingPair, setTradingPair] = useState<string | null>(null);
   const [isTradingPairDropdownOpen, setIsTradingPairDropdownOpen] = useState(false);
   const tradingPairDropdownRef = useRef<HTMLDivElement>(null);
+  const forexLotTypeRef = useRef<HTMLDivElement>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
   const [savedScenarios, setSavedScenarios] = useState<any[]>([]);
   const [editingScenarioId, setEditingScenarioId] = useState<string | null>(null);
@@ -508,11 +515,6 @@ export default function CalculatorPage() {
         <div>Loading...</div>
       </div>
     );
-  }
-
-  if (!isSignedIn) {
-
-    return null;
   }
 
   return (

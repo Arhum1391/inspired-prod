@@ -101,6 +101,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setUser(null);
           }
         } else {
+          // Server says not authenticated - clear localStorage and user state
+          // This handles expired tokens, invalid cookies, etc.
           if (typeof window !== 'undefined') {
             window.localStorage.removeItem('user');
           }
@@ -108,19 +110,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
       } catch (error) {
         console.warn('Unable to reach /api/auth/me:', error);
-        const savedUser =
-          typeof window !== 'undefined' ? window.localStorage.getItem('user') : null;
-        if (savedUser) {
-          try {
-            const parsedUser = JSON.parse(savedUser);
-            const normalized = normalizeUser(parsedUser);
-            setUser(normalized);
-          } catch (e) {
-            if (typeof window !== 'undefined') {
+        // Only use localStorage fallback if we're truly offline
+        // If online but request failed, server may have rejected us - clear localStorage
+        if (typeof window !== 'undefined' && navigator.onLine === false) {
+          const savedUser = window.localStorage.getItem('user');
+          if (savedUser) {
+            try {
+              const parsedUser = JSON.parse(savedUser);
+              const normalized = normalizeUser(parsedUser);
+              setUser(normalized);
+            } catch (e) {
               window.localStorage.removeItem('user');
+              setUser(null);
             }
+          } else {
             setUser(null);
           }
+        } else {
+          // Online but request failed - likely server rejection, clear localStorage
+          if (typeof window !== 'undefined') {
+            window.localStorage.removeItem('user');
+          }
+          setUser(null);
         }
       } finally {
         setIsLoading(false);
@@ -157,10 +168,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           const refreshed = normalizeUser(data.user);
           setUser(refreshed);
           localStorage.setItem('user', JSON.stringify(refreshed));
+        } else {
+          // Server didn't return user - token may be invalid, clear localStorage
+          localStorage.removeItem('user');
+          setUser(null);
         }
+      } else {
+        // Server rejected - token invalid, clear localStorage
+        localStorage.removeItem('user');
+        setUser(null);
       }
     } catch (error) {
       console.error('Error verifying login:', error);
+      // On error, if online, assume server rejection and clear localStorage
+      if (typeof window !== 'undefined' && navigator.onLine !== false) {
+        localStorage.removeItem('user');
+        setUser(null);
+      }
     }
   };
 

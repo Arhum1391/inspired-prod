@@ -10,15 +10,21 @@ import { useAuth } from '@/contexts/AuthContext';
 export default function CalculatorPage() {
 
   const auth = useAuth();
-  const { user, isLoading } = auth;
+  const { isLoading } = auth;
   const isSignedIn = auth.isAuthenticated;
 
   const router = useRouter();
-  const isPaidUser = !!user?.isPaid;
-  const isAuthenticated = isSignedIn && isPaidUser;
+  const isAuthenticated = isSignedIn;
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedAsset, setSelectedAsset] = useState<string | null>(null);
+  const [accountBalance, setAccountBalance] = useState('');
+  const [riskPercentage, setRiskPercentage] = useState('');
+  const [stopLoss, setStopLoss] = useState('');
+  const [pipValue, setPipValue] = useState('');
+  const [lotSize, setLotSize] = useState('');
+  const [forexLotType, setForexLotType] = useState('Standard Lot');
+  const [isForexLotTypeDropdownOpen, setIsForexLotTypeDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [isFormulaPopupOpen, setIsFormulaPopupOpen] = useState(false);
   const formulaPopupRef = useRef<HTMLDivElement>(null);
@@ -29,6 +35,7 @@ export default function CalculatorPage() {
   const [tradingPair, setTradingPair] = useState<string | null>(null);
   const [isTradingPairDropdownOpen, setIsTradingPairDropdownOpen] = useState(false);
   const tradingPairDropdownRef = useRef<HTMLDivElement>(null);
+  const forexLotTypeRef = useRef<HTMLDivElement>(null);
   const [tooltipPosition, setTooltipPosition] = useState<{ x: number; y: number } | null>(null);
   const [savedScenarios, setSavedScenarios] = useState<any[]>([]);
   const [editingScenarioId, setEditingScenarioId] = useState<string | null>(null);
@@ -510,11 +517,6 @@ export default function CalculatorPage() {
     );
   }
 
-  if (!isSignedIn) {
-
-    return null;
-  }
-
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden calculator-page">
       <style dangerouslySetInnerHTML={{__html: `
@@ -575,7 +577,7 @@ export default function CalculatorPage() {
             max-width: 343px !important;
             font-size: 16px !important;
             line-height: 130% !important;
-            margin-top: -30px !important;
+            margin-top: 12px !important;
             min-height: 63px !important;
             text-align: left !important;
           }
@@ -1784,7 +1786,7 @@ export default function CalculatorPage() {
               
               {/* Bullet 3 */}
               <div
-                className="calculator-save-header-inner"
+                className="calculator-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -1831,6 +1833,7 @@ export default function CalculatorPage() {
               
               {/* Bullet 4 */}
               <div
+                className="calculator-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',

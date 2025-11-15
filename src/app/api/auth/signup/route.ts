@@ -57,13 +57,20 @@ export async function POST(request: NextRequest) {
 
     // Generate auth token and set cookie so new users stay signed in
     const token = generateToken(user._id!);
-    response.cookies.set('user-auth-token', token, {
-      httpOnly: true,
+    
+    // Prepare cookie options (matching signin route)
+    const cookieOptions = {
+      httpOnly: true as const,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'strict' as const,
       maxAge: 7 * 24 * 60 * 60,
       path: '/',
-    });
+      ...(process.env.AUTH_COOKIE_DOMAIN
+        ? { domain: process.env.AUTH_COOKIE_DOMAIN }
+        : {}),
+    };
+    
+    response.cookies.set('user-auth-token', token, cookieOptions);
 
     return response;
   } catch (error) {

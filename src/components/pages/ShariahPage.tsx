@@ -11,62 +11,37 @@ import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 export default function ShariahPage() {
 
   const auth = useAuth();
-  const { user, isLoading } = auth;
+  const { isLoading } = auth;
   const isSignedIn = auth.isAuthenticated;
 
   const router = useRouter();
-  const isPaidUser = !!user?.isPaid;
-  const isAuthenticated = isSignedIn && isPaidUser;
+  const isAuthenticated = isSignedIn;
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [showMethodologyPopup, setShowMethodologyPopup] = useState(false);
   const popupContentRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+
+  // All hooks must be called before any conditional returns
   useEffect(() => {
-    if (!isLoading && !isSignedIn) {
-      router.replace('/signin?next=/shariah');
-    }
-  }, [isLoading, isSignedIn, router]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
-  }
-
-  if (!isSignedIn) {
-    return null;
-  }
-
-  useEffect(() => {
-    if (showMethodologyPopup && popupContentRef.current && backdropRef.current) {
-      const updateHeight = () => {
-        if (popupContentRef.current && backdropRef.current) {
-          const contentHeight = popupContentRef.current.offsetHeight;
-          const neededHeight = contentHeight + 200; // 200px for padding (100px top + 100px bottom)
-          backdropRef.current.style.height = `${neededHeight}px`;
-          backdropRef.current.style.overflow = 'visible';
-        }
-      };
-      // Use requestAnimationFrame to ensure DOM is fully rendered
-      requestAnimationFrame(() => {
-        setTimeout(updateHeight, 50);
-      });
-      window.addEventListener('resize', updateHeight);
-      // Use MutationObserver to detect content changes
-      const observer = new MutationObserver(updateHeight);
-      if (popupContentRef.current) {
-        observer.observe(popupContentRef.current, {
-          childList: true,
-          subtree: true,
-          attributes: true,
-          attributeFilter: ['style', 'class'],
-        });
-      }
+    if (showMethodologyPopup) {
+      // Lock body scroll when popup is open
+      const originalOverflow = document.body.style.overflow;
+      const originalPosition = document.body.style.position;
+      const originalTop = document.body.style.top;
+      const scrollY = window.scrollY;
+      
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      
       return () => {
-        window.removeEventListener('resize', updateHeight);
-        observer.disconnect();
+        // Restore body scroll when popup is closed
+        document.body.style.overflow = originalOverflow;
+        document.body.style.position = originalPosition;
+        document.body.style.top = originalTop;
+        document.body.style.width = '';
+        window.scrollTo(0, scrollY);
       };
     }
   }, [showMethodologyPopup]);
@@ -77,8 +52,14 @@ export default function ShariahPage() {
       [index]: !prev[index]
     }));
   };
+
+  // Conditional returns must come after all hooks
   if (isLoading) {
-    return null;
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   return (
@@ -108,12 +89,866 @@ export default function ShariahPage() {
         .popup-content-scroll::-webkit-scrollbar-thumb:hover {
           background: rgba(255, 255, 255, 0.5);
         }
+        .methodology-popup-content::-webkit-scrollbar {
+          width: 6px;
+        }
+        .methodology-popup-content::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .methodology-popup-content::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.3);
+          border-radius: 3px;
+        }
+        .methodology-popup-content::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.5);
+        }
+        @media (min-width: 769px) {
+          .shariah-hero-description {
+            margin-top: 12px !important;
+          }
+          /* Methodology Popup Desktop Styles */
+          .methodology-popup-backdrop {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 20px !important;
+            overflow: auto !important;
+          }
+          .methodology-popup-content {
+            position: relative !important;
+            width: 630px !important;
+            max-width: 90vw !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            margin: auto !important;
+            padding: 24px !important;
+            gap: 24px !important;
+            border-radius: 16px !important;
+          }
+        }
+        @media (max-width: 768px) {
+          .shariah-hero-container {
+            padding-top: 94px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            padding-bottom: 24px !important;
+          }
+          .shariah-layout {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
+          .shariah-section-wrapper {
+            position: relative !important;
+            width: 100% !important;
+            max-width: 375px !important;
+            margin: 0 auto !important;
+          }
+          .shariah-background-svg {
+            left: -180px !important;
+            top: -60px !important;
+            width: 620px !important;
+            height: 500px !important;
+            transform: rotate(15deg) !important;
+          }
+          .shariah-hero-title {
+            width: 100% !important;
+            max-width: 343px !important;
+            height: auto !important;
+            font-size: 32px !important;
+            line-height: 120% !important;
+            margin-top: 0 !important;
+            min-height: 152px !important;
+            text-align: left !important;
+          }
+          .shariah-hero-description {
+            width: 100% !important;
+            max-width: 343px !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            margin-top: 12px !important;
+            min-height: 63px !important;
+            text-align: left !important;
+          }
+          .shariah-hero-bullets {
+            width: 100% !important;
+            max-width: 343px !important;
+            gap: 16px !important;
+            margin-top: 0 !important;
+          }
+          .shariah-hero-stack {
+            position: relative !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            width: 343px !important;
+            gap: 24px !important;
+            z-index: 1 !important;
+            isolation: isolate !important;
+            margin: 0 !important;
+            margin-left: 16px !important;
+          }
+          .shariah-hero-stack .shariah-hero-bullets {
+            width: 343px !important;
+            max-width: 343px !important;
+            gap: 16px !important;
+            margin-top: 0 !important;
+            height: auto !important;
+            min-height: 112px !important;
+          }
+          .shariah-hero-stack .shariah-hero-bullet {
+            width: 343px !important;
+            gap: 8px !important;
+          }
+          .shariah-hero-stack .shariah-hero-bullet span {
+            width: calc(100% - 24px) !important;
+          }
+          .shariah-hero-bullet {
+            width: 100% !important;
+            flex-wrap: wrap !important;
+          }
+          .shariah-hero-bullet span {
+            width: calc(100% - 24px) !important;
+          }
+          .shariah-hero-cta {
+            flex-direction: column !important;
+            align-items: center !important;
+            width: 343px !important;
+            height: 120px !important;
+            gap: 20px !important;
+            margin-top: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            margin: 0 auto !important;
+          }
+          .shariah-hero-cta-primary,
+          .shariah-hero-cta-secondary {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 343px !important;
+            height: 50px !important;
+            padding: 18px 12px !important;
+            gap: 10px !important;
+            border-radius: 100px !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+          }
+          .shariah-hero-cta-primary {
+            background: #FFFFFF !important;
+            color: #0A0A0A !important;
+          }
+          .shariah-hero-cta-secondary {
+            border: 1px solid #FFFFFF !important;
+            color: #FFFFFF !important;
+            background: transparent !important;
+            box-sizing: border-box !important;
+          }
+          .shariah-projects-section {
+            margin-top: 45px !important;
+            width: 100% !important;
+            max-width: 343px !important;
+            margin-left: 16px !important;
+            margin-right: auto !important;
+            height: auto !important;
+            min-height: auto !important;
+          }
+          .shariah-projects-heading {
+            width: 343px !important;
+            height: 84px !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 32px !important;
+            line-height: 130% !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 0 !important;
+            align-self: stretch !important;
+            flex-grow: 0 !important;
+          }
+          .shariah-projects-description {
+            width: 343px !important;
+            height: auto !important;
+            min-height: 40px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 16px !important;
+            line-height: 125% !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 1 !important;
+            align-self: stretch !important;
+            flex-grow: 0 !important;
+          }
+          .shariah-methodology-tile {
+            margin-top: 24px !important;
+            margin-bottom: 60px !important;
+            width: 100% !important;
+            max-width: 343px !important;
+            margin-left: 16px !important;
+            margin-right: auto !important;
+            position: relative !important;
+            z-index: 1 !important;
+          }
+          .shariah-tiles-container {
+            width: 100% !important;
+            max-width: 343px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-top: 24px !important;
+          }
+          .shariah-tiles-wrapper {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 16px !important;
+            width: 100% !important;
+          }
+          .shariah-preview-tile {
+            width: 343px !important;
+            height: auto !important;
+            min-height: 405px !important;
+            max-height: 527px !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            opacity: 1 !important;
+            transform: rotate(0deg) !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            border-radius: 10px !important;
+            overflow: hidden !important;
+            position: relative !important;
+          }
+          .shariah-preview-content[style] {
+            padding: 20px 12px !important;
+            gap: 16px !important;
+            width: 319px !important;
+            max-width: 319px !important;
+            box-sizing: border-box !important;
+            height: auto !important;
+            min-height: 365px !important;
+            overflow: visible !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .shariah-preview-content {
+            padding: 20px 12px !important;
+            gap: 16px !important;
+            width: 319px !important;
+            max-width: 319px !important;
+            box-sizing: border-box !important;
+            height: auto !important;
+            min-height: 365px !important;
+            overflow: visible !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .shariah-preview-badge[style] {
+            width: 84px !important;
+            height: 24px !important;
+            padding: 10px !important;
+            border: 1px solid #05B0B3 !important;
+            border-radius: 40px !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            background: rgba(5, 176, 179, 0.12) !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-preview-badge {
+            width: 84px !important;
+            height: 24px !important;
+            padding: 10px !important;
+            border: 1px solid #05B0B3 !important;
+            border-radius: 40px !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            background: rgba(5, 176, 179, 0.12) !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-preview-badge span {
+            font-size: 12px !important;
+            line-height: 100% !important;
+            font-family: 'Gilroy-Medium' !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+          }
+          .shariah-preview-heading[style],
+          .shariah-preview-heading {
+            width: 319px !important;
+            height: auto !important;
+            min-height: 24px !important;
+            font-size: 24px !important;
+            line-height: 100% !important;
+            margin: 0 !important;
+            text-align: left !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-preview-desc[style],
+          .shariah-preview-desc {
+            width: 319px !important;
+            height: auto !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            margin: 0 !important;
+            text-align: left !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-preview-compliance[style],
+          .shariah-preview-compliance {
+            width: 319px !important;
+            gap: 8px !important;
+            margin: 0 !important;
+            height: auto !important;
+            flex-shrink: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .shariah-preview-compliance-title[style],
+          .shariah-preview-compliance-title {
+            width: 319px !important;
+            height: auto !important;
+            min-height: 16px !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            margin: 0 !important;
+            font-family: 'Gilroy-Medium' !important;
+            flex-shrink: 0 !important;
+            text-align: left !important;
+          }
+          .shariah-preview-bullets[style],
+          .shariah-preview-bullets {
+            width: 319px !important;
+            gap: 8px !important;
+            margin: 0 !important;
+            height: auto !important;
+            flex-shrink: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .shariah-preview-bullets > div {
+            width: 319px !important;
+            max-width: 319px !important;
+            height: auto !important;
+            min-height: 14px !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            gap: 8px !important;
+            box-sizing: border-box !important;
+            overflow: visible !important;
+          }
+          .shariah-preview-bullets > div[style] {
+            width: 319px !important;
+            max-width: 319px !important;
+            align-items: center !important;
+          }
+          .shariah-preview-bullets > div > div {
+            width: 8px !important;
+            height: 8px !important;
+            min-width: 8px !important;
+            min-height: 8px !important;
+            flex-shrink: 0 !important;
+            flex-grow: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            align-self: center !important;
+            display: block !important;
+          }
+          .shariah-preview-bullets > div > span {
+            width: 295px !important;
+            max-width: 295px !important;
+            min-width: 0 !important;
+            height: auto !important;
+            min-height: 14px !important;
+            font-size: 14px !important;
+            line-height: 130% !important;
+            text-align: left !important;
+            flex: 1 1 auto !important;
+            flex-basis: 295px !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            white-space: normal !important;
+            overflow: visible !important;
+            box-sizing: border-box !important;
+            display: block !important;
+            hyphens: auto !important;
+            word-break: break-word !important;
+            overflow-wrap: anywhere !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            align-self: center !important;
+            vertical-align: middle !important;
+          }
+          .shariah-preview-bullets > div > span[style] {
+            width: 295px !important;
+            max-width: 295px !important;
+            min-width: 0 !important;
+            white-space: normal !important;
+            overflow-wrap: anywhere !important;
+            word-break: break-word !important;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+          }
+          .shariah-preview-footer[style],
+          .shariah-preview-footer {
+            width: 319px !important;
+            height: auto !important;
+            min-height: 14px !important;
+            gap: 16px !important;
+            margin: 0 !important;
+            justify-content: space-between !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+          }
+          .shariah-preview-footer > span[style],
+          .shariah-preview-footer > span {
+            font-size: 14px !important;
+            line-height: 100% !important;
+            width: auto !important;
+            font-family: 'Gilroy-Regular' !important;
+            text-align: left !important;
+            white-space: nowrap !important;
+          }
+          .shariah-preview-footer > span:first-child[style],
+          .shariah-preview-footer > span:first-child {
+            margin: 0 !important;
+            flex: 0 0 auto !important;
+          }
+          .shariah-preview-footer > span:last-child[style],
+          .shariah-preview-footer > span:last-child {
+            margin: 0 !important;
+            flex: 0 0 auto !important;
+            margin-left: auto !important;
+          }
+          .shariah-preview-tile button[style],
+          .shariah-preview-tile button {
+            width: 319px !important;
+            height: 36px !important;
+            padding: 10px 16px !important;
+            gap: 8px !important;
+            border-radius: 100px !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+          }
+          .shariah-preview-gradient {
+            left: 319px !important;
+            top: -326px !important;
+          }
+          .shariah-preview-tint-overlay {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 343px !important;
+            height: 369px !important;
+            background: rgba(31, 31, 31, 0.8) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
+            border-radius: 10px !important;
+            z-index: 15 !important;
+            pointer-events: none !important;
+          }
+          .shariah-preview-overlay {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            padding: 0px !important;
+            gap: 16px !important;
+            position: absolute !important;
+            width: 303.23px !important;
+            height: 54px !important;
+            left: 50% !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+          }
+          .shariah-preview-title {
+            width: 303.23px !important;
+            height: 20px !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 20px !important;
+            line-height: 100% !important;
+            text-align: center !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 1 !important;
+            margin: 0 !important;
+          }
+          .shariah-preview-description {
+            width: 303.23px !important;
+            height: 18px !important;
+            font-family: 'Gilroy-Regular' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 14px !important;
+            line-height: 130% !important;
+            text-align: center !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 1 !important;
+            align-self: stretch !important;
+            flex-grow: 0 !important;
+            margin: 0 !important;
+          }
+          .shariah-methodology-text {
+            width: 319px !important;
+            height: auto !important;
+            min-height: 168px !important;
+            font-family: 'Gilroy-Regular' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 0 !important;
+            align-self: stretch !important;
+            flex-grow: 0 !important;
+          }
+          .shariah-methodology-button {
+            order: 1 !important;
+            align-self: flex-start !important;
+            margin-top: 8px !important;
+          }
+          .calculator-ready-tile {
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            padding: 20px 16px !important;
+            gap: 10px !important;
+            isolation: isolate !important;
+            width: 343px !important;
+            height: 330px !important;
+            border-radius: 10px !important;
+            margin-top: 60px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-bottom: 24px !important;
+          }
+          .calculator-ready-ellipse-left {
+            width: 588px !important;
+            height: 588px !important;
+            left: -492px !important;
+            top: -508px !important;
+            filter: blur(200px) !important;
+            transform: rotate(90deg) !important;
+          }
+          .calculator-ready-ellipse-right {
+            width: 588px !important;
+            height: 588px !important;
+            left: 330px !important;
+            bottom: -370px !important;
+            filter: blur(200px) !important;
+            transform: rotate(90deg) !important;
+          }
+          .calculator-ready-content {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            width: 311px !important;
+            height: 290px !important;
+            margin: 0 auto !important;
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
+          }
+          .calculator-ready-header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 24px !important;
+            width: 311px !important;
+            height: 130px !important;
+          }
+          .calculator-ready-header h2 {
+            width: 311px !important;
+            height: 64px !important;
+            font-size: 32px !important;
+            line-height: 100% !important;
+            text-align: center !important;
+          }
+          .calculator-ready-header p {
+            width: 311px !important;
+            height: 42px !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            text-align: center !important;
+          }
+          .calculator-ready-buttons {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 20px !important;
+            width: 311px !important;
+            height: 120px !important;
+            margin-bottom: 12px !important;
+          }
+          .calculator-ready-buttons button {
+            width: 311px !important;
+            height: 50px !important;
+            padding: 18px 12px !important;
+            gap: 10px !important;
+            border-radius: 100px !important;
+          }
+          .calculator-ready-buttons button:first-child {
+            background: #FFFFFF !important;
+            color: #0A0A0A !important;
+          }
+          .calculator-ready-buttons button:last-child {
+            border: 1px solid #FFFFFF !important;
+            color: #FFFFFF !important;
+            background: transparent !important;
+          }
+          .calculator-faq-tile {
+            width: 343px !important;
+            padding: 24px !important;
+          }
+          .calculator-faq-header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 24px !important;
+            width: 343px !important;
+            height: 140px !important;
+            margin: 40px auto !important;
+          }
+          /* Methodology Popup Mobile Styles */
+          .methodology-popup-backdrop {
+            padding: 20px !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+          }
+          .methodology-popup-content {
+            position: relative !important;
+            width: 343px !important;
+            max-width: 100% !important;
+            min-height: auto !important;
+            height: auto !important;
+            padding: 20px 12px !important;
+            gap: 24px !important;
+            border-radius: 10px !important;
+            margin: auto !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+          }
+          .methodology-popup-header {
+            width: 319px !important;
+            height: 52px !important;
+            gap: 16px !important;
+            padding: 0 !important;
+          }
+          .methodology-popup-header-row {
+            width: 319px !important;
+            height: 20px !important;
+            gap: 63px !important;
+            padding: 0 !important;
+          }
+          .methodology-popup-title-container {
+            width: 236px !important;
+            height: 20px !important;
+            gap: 4px !important;
+            padding: 0 !important;
+            flex: 1 !important;
+          }
+          .methodology-popup-title {
+            width: 221px !important;
+            height: 20px !important;
+            font-size: 20px !important;
+            line-height: 100% !important;
+            color: #F3F8FF !important;
+            margin: 0 !important;
+          }
+          .methodology-popup-close-btn {
+            width: 20px !important;
+            height: 20px !important;
+            border: 1px solid #AFB9BF !important;
+            border-radius: 20px !important;
+            padding: 0 !important;
+            flex-shrink: 0 !important;
+          }
+          .methodology-popup-description {
+            width: 319px !important;
+            height: 16px !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            color: #F3F8FF !important;
+            margin: 0 !important;
+          }
+          .methodology-popup-content-area {
+            width: 319px !important;
+            height: 952px !important;
+            gap: 16px !important;
+            padding: 0 !important;
+          }
+          .methodology-popup-section {
+            box-sizing: border-box !important;
+            width: 319px !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 8px !important;
+            padding: 20px !important;
+            gap: 12px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+          }
+          .methodology-popup-section-title {
+            width: 279px !important;
+            height: 20px !important;
+            font-size: 20px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+            align-self: stretch !important;
+          }
+          .methodology-popup-bullet-list {
+            width: 279px !important;
+            gap: 8px !important;
+            padding: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+          }
+          .methodology-popup-bullet-item {
+            width: 279px !important;
+            gap: 8px !important;
+            padding: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+          }
+          .methodology-popup-bullet-row {
+            width: 279px !important;
+            height: 14px !important;
+            gap: 8px !important;
+            padding: 0 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+          }
+          .methodology-popup-bullet-dot {
+            width: 8px !important;
+            height: 8px !important;
+            background: #FFFFFF !important;
+            border-radius: 50% !important;
+            flex-shrink: 0 !important;
+          }
+          .methodology-popup-bullet-text {
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            flex-shrink: 0 !important;
+          }
+          .methodology-popup-bullet-description {
+            width: 279px !important;
+            height: 28px !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            color: rgba(255, 255, 255, 0.3) !important;
+            padding: 0 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 10px !important;
+          }
+          .methodology-popup-close-button-container {
+            width: 319px !important;
+            height: 48px !important;
+            gap: 20px !important;
+            padding: 0 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: flex-start !important;
+            margin-top: 0 !important;
+          }
+          .methodology-popup-close-button {
+            width: 319px !important;
+            height: 48px !important;
+            padding: 12px 16px !important;
+            gap: 10px !important;
+            background: #FFFFFF !important;
+            border-radius: 100px !important;
+            border: none !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            color: #404040 !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            flex: 1 !important;
+            cursor: pointer !important;
+          }
+          .calculator-faq-header h2 {
+            width: 343px !important;
+            height: 84px !important;
+            font-size: 32px !important;
+            line-height: 130% !important;
+            text-align: center !important;
+          }
+          .calculator-faq-header p {
+            width: 343px !important;
+            height: 32px !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            text-align: center !important;
+          }
+          .calculator-faq-list {
+            width: 343px !important;
+            margin: 24px auto 0 !important;
+            gap: 16px !important;
+          }
+          .calculator-faq-answer {
+            margin-top: 8px !important;
+            padding-top: 8px !important;
+          }
+        }
       `}} />
       <Navbar />
       
       {/* Background SVG Gradient */}
       <svg 
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none shariah-background-svg"
         style={{
           left: '-500px',
           top: '-80px',
@@ -148,8 +983,8 @@ export default function ShariahPage() {
       
       {/* Main Content */}
       <div className="relative z-10">
-        <div className="min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 flex items-start">
-          <div className="max-w-7xl mx-auto w-full relative">
+        <div className="min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 flex items-start shariah-hero-container shariah-layout">
+          <div className="max-w-7xl mx-auto w-full relative shariah-section-wrapper">
             {/* Vector Logo */}
             <svg
               width="538"
@@ -182,8 +1017,10 @@ export default function ShariahPage() {
               </defs>
             </svg>
             
+            <div className="shariah-hero-stack">
             {/* Title - Left Middle */}
             <h1
+              className="shariah-hero-title"
               style={{
                 width: '630px',
                 height: '174px',
@@ -209,6 +1046,7 @@ export default function ShariahPage() {
             </h1>
             {/* Description */}
             <p
+              className="shariah-hero-description"
               style={{
                 width: '630px',
                 fontFamily: 'Gilroy-Medium',
@@ -217,7 +1055,7 @@ export default function ShariahPage() {
                 fontSize: '16px',
                 lineHeight: '130%',
                 color: '#FFFFFF',
-                marginTop: '24px',
+                marginTop: isAuthenticated ? '-26px' : '12px',
               }}
             >
               {isAuthenticated
@@ -228,6 +1066,7 @@ export default function ShariahPage() {
             {/* Bullet Points */}
             {!isAuthenticated && (
             <div
+              className="shariah-hero-bullets"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -245,6 +1084,7 @@ export default function ShariahPage() {
             >
               {/* Bullet 1 */}
               <div
+                className="shariah-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -291,6 +1131,7 @@ export default function ShariahPage() {
               
               {/* Bullet 2 */}
               <div
+                className="shariah-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -337,6 +1178,7 @@ export default function ShariahPage() {
               
               {/* Bullet 3 */}
               <div
+                className="shariah-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -383,6 +1225,7 @@ export default function ShariahPage() {
               
               {/* Bullet 4 */}
               <div
+                className="shariah-hero-bullet"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -431,6 +1274,7 @@ export default function ShariahPage() {
             {/* Buttons Container */}
             {!isAuthenticated && (
             <div
+              className="shariah-hero-cta"
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -442,12 +1286,17 @@ export default function ShariahPage() {
                 flex: 'none',
                 order: 3,
                 flexGrow: 0,
-                marginTop: '32px',
+                marginTop: '24px',
               }}
             >
               {/* Button 1 */}
               <button
+                className="shariah-hero-cta-primary"
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
                   padding: '12px 32px',
                   background: '#FFFFFF',
                   color: '#0A0A0A',
@@ -459,6 +1308,8 @@ export default function ShariahPage() {
                   cursor: 'pointer',
                   flex: 'none',
                   minWidth: '180px',
+                  height: '50px',
+                  width: 'auto',
                   whiteSpace: 'nowrap',
                   outline: 'none',
                 }}
@@ -469,7 +1320,12 @@ export default function ShariahPage() {
               </button>
               {/* Button 2 */}
               <button
+                className="shariah-hero-cta-secondary"
                 style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
                   padding: '12px 32px',
                   background: '#000000',
                   color: '#FFFFFF',
@@ -481,6 +1337,8 @@ export default function ShariahPage() {
                   cursor: 'pointer',
                   flex: 'none',
                   minWidth: '180px',
+                  height: '50px',
+                  width: 'auto',
                   whiteSpace: 'nowrap',
                   outline: 'none',
                 }}
@@ -500,9 +1358,11 @@ export default function ShariahPage() {
               </button>
             </div>
             )}
+            </div>
             
             {/* Shariah-Compliant Projects Section */}
             <div
+              className="shariah-projects-section"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -522,6 +1382,7 @@ export default function ShariahPage() {
             >
               {/* Heading */}
               <h2
+                className="shariah-projects-heading"
                 style={{
                   width: '1282px',
                   height: '47px',
@@ -543,6 +1404,7 @@ export default function ShariahPage() {
               
               {/* Description */}
               <p
+                className="shariah-projects-description"
                 style={{
                   width: '1282px',
                   height: '16px',
@@ -565,7 +1427,7 @@ export default function ShariahPage() {
             
             {/* Methodology Tile */}
             <div
-              className="relative overflow-hidden group transition-all duration-300 flex flex-col items-start p-4 gap-4 h-auto bg-[#1F1F1F] rounded-2xl"
+              className="relative overflow-hidden group transition-all duration-300 flex flex-col items-start p-4 gap-4 h-auto bg-[#1F1F1F] rounded-2xl shariah-methodology-tile"
               style={{
                 marginTop: '48px',
                 width: '1290px',
@@ -606,11 +1468,11 @@ export default function ShariahPage() {
               {/* Content with relative positioning to appear above gradient */}
               <div className="relative z-10 w-full h-full flex flex-col">
                 <h3 className="text-white text-lg font-semibold mb-3" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Methodology</h3>
-                <p className="text-white-400 text-sm leading-relaxed mb-4" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                <p className="text-white-400 text-sm leading-relaxed mb-4 shariah-methodology-text" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
                   Our Shariah screening process follows a comprehensive approach that evaluates businesses based on their core activities, financial ratios, and ethical standards. We exclude companies with significant involvement in prohibited activities and those with excessive debt or interest income.
                 </p>
                 <button
-                  className="flex items-center justify-center gap-2 bg-[#1F1F1F] text-white border border-white px-4 py-2 rounded-full font-semibold hover:bg-[#2A2A2A] transition-colors focus:outline-none focus:ring-0 w-fit"
+                  className="flex items-center justify-center gap-2 bg-[#1F1F1F] text-white border border-white px-4 py-2 rounded-full font-semibold hover:bg-[#2A2A2A] transition-colors focus:outline-none focus:ring-0 w-fit shariah-methodology-button"
                   style={{ 
                     fontFamily: 'Gilroy-SemiBold, sans-serif',
                     outline: 'none',
@@ -643,6 +1505,7 @@ export default function ShariahPage() {
             
             {/* Three Tiles Container */}
             <div
+              className="shariah-tiles-container"
               style={{
                 position: 'relative',
                 marginTop: '72px',
@@ -653,11 +1516,11 @@ export default function ShariahPage() {
               }}
             >
               <div
-                className="flex flex-row gap-6"
+                className="flex flex-row gap-6 shariah-tiles-wrapper"
               >
               {/* Tile 1 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden shariah-preview-tile"
                 style={{
                   boxSizing: 'border-box',
                   width: '414px',
@@ -681,7 +1544,7 @@ export default function ShariahPage() {
                 
                 {/* Gradient Ellipse */}
                 <div 
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none shariah-preview-gradient"
                   style={{
                     width: '588px',
                     height: '588px',
@@ -699,7 +1562,7 @@ export default function ShariahPage() {
                 
                 {/* Content */}
                 <div
-                  className="relative z-10"
+                  className="relative z-10 shariah-preview-content"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -715,6 +1578,7 @@ export default function ShariahPage() {
                 >
                   {/* Container */}
                   <div
+                    className="shariah-preview-badge"
                     style={{
                       background: 'rgba(5, 176, 179, 0.12)',
                       border: '2px solid rgba(5, 176, 179, 0.72)',
@@ -729,6 +1593,7 @@ export default function ShariahPage() {
                   
                   {/* Heading */}
                   <h3
+                    className="shariah-preview-heading"
                     style={{
                       width: '366px',
                       height: '24px',
@@ -750,6 +1615,7 @@ export default function ShariahPage() {
                   
                   {/* Description */}
                   <p
+                    className="shariah-preview-desc"
                     style={{
                       color: '#FFFFFF',
                       fontFamily: 'Gilroy-Medium, sans-serif',
@@ -764,6 +1630,7 @@ export default function ShariahPage() {
                   
                   {/* Compliance Rationale Section */}
                   <div
+                    className="shariah-preview-compliance"
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -780,6 +1647,7 @@ export default function ShariahPage() {
                   >
                     {/* Subheading */}
                     <h4
+                      className="shariah-preview-compliance-title"
                       style={{
                         width: '366px',
                         height: '18px',
@@ -801,6 +1669,7 @@ export default function ShariahPage() {
                     
                     {/* Bullet List */}
                     <div
+                      className="shariah-preview-bullets"
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -1004,6 +1873,7 @@ export default function ShariahPage() {
                   
                   {/* Footer Text */}
                   <div
+                    className="shariah-preview-footer"
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -1086,9 +1956,29 @@ export default function ShariahPage() {
                   </button>
                 </div>
                 
+                {/* Grey Tint Overlay for Preview Mode */}
+                {!isAuthenticated && (
+                <div
+                  className="shariah-preview-tint-overlay"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: 'rgba(31, 31, 31, 0.8)',
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                    borderRadius: '16px',
+                    zIndex: 15,
+                    pointerEvents: 'none',
+                  }}
+                />
+                )}
                 {/* Preview Overlay */}
                 {!isAuthenticated && (
                 <div
+                  className="shariah-preview-overlay"
                   style={{
                     position: 'absolute',
                     top: '50%',
@@ -1104,6 +1994,7 @@ export default function ShariahPage() {
                   }}
                 >
                   <h2
+                    className="shariah-preview-title"
                     style={{
                       fontFamily: 'Gilroy-SemiBold',
                       fontSize: '32px',
@@ -1116,6 +2007,7 @@ export default function ShariahPage() {
                     Preview Only
                   </h2>
                   <p
+                    className="shariah-preview-description"
                     style={{
                       fontFamily: 'Gilroy-Medium',
                       fontSize: '16px',
@@ -1133,7 +2025,7 @@ export default function ShariahPage() {
               
               {/* Tile 2 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden shariah-preview-tile"
                 style={{
                   boxSizing: 'border-box',
                   width: '414px',
@@ -1157,7 +2049,7 @@ export default function ShariahPage() {
                 
                 {/* Gradient Ellipse */}
                 <div 
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none shariah-preview-gradient"
                   style={{
                     width: '588px',
                     height: '588px',
@@ -1175,7 +2067,7 @@ export default function ShariahPage() {
                 
                 {/* Content */}
                 <div
-                  className="relative z-10"
+                  className="relative z-10 shariah-preview-content"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -1191,6 +2083,7 @@ export default function ShariahPage() {
                 >
                   {/* Container */}
                   <div
+                    className="shariah-preview-badge"
                     style={{
                       background: 'rgba(5, 176, 179, 0.12)',
                       border: '2px solid rgba(5, 176, 179, 0.72)',
@@ -1205,6 +2098,7 @@ export default function ShariahPage() {
                   
                   {/* Heading */}
                   <h3
+                    className="shariah-preview-heading"
                     style={{
                       width: '366px',
                       height: '24px',
@@ -1226,6 +2120,7 @@ export default function ShariahPage() {
                   
                   {/* Description */}
                   <p
+                    className="shariah-preview-desc"
                     style={{
                       color: '#FFFFFF',
                       fontFamily: 'Gilroy-Medium, sans-serif',
@@ -1240,6 +2135,7 @@ export default function ShariahPage() {
                   
                   {/* Compliance Rationale Section */}
                   <div
+                    className="shariah-preview-compliance"
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -1256,6 +2152,7 @@ export default function ShariahPage() {
                   >
                     {/* Subheading */}
                     <h4
+                      className="shariah-preview-compliance-title"
                       style={{
                         width: '366px',
                         height: '18px',
@@ -1277,6 +2174,7 @@ export default function ShariahPage() {
                     
                     {/* Bullet List */}
                     <div
+                      className="shariah-preview-bullets"
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -1480,6 +2378,7 @@ export default function ShariahPage() {
                   
                   {/* Footer Text */}
                   <div
+                    className="shariah-preview-footer"
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -1562,9 +2461,29 @@ export default function ShariahPage() {
                   </button>
                 </div>
                 
+                {/* Grey Tint Overlay for Preview Mode */}
+                {!isAuthenticated && (
+                <div
+                  className="shariah-preview-tint-overlay"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: 'rgba(31, 31, 31, 0.8)',
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                    borderRadius: '16px',
+                    zIndex: 15,
+                    pointerEvents: 'none',
+                  }}
+                />
+                )}
                 {/* Preview Overlay */}
                 {!isAuthenticated && (
                 <div
+                  className="shariah-preview-overlay"
                   style={{
                     position: 'absolute',
                     top: '50%',
@@ -1580,6 +2499,7 @@ export default function ShariahPage() {
                   }}
                 >
                   <h2
+                    className="shariah-preview-title"
                     style={{
                       fontFamily: 'Gilroy-SemiBold',
                       fontSize: '32px',
@@ -1592,6 +2512,7 @@ export default function ShariahPage() {
                     Preview Only
                   </h2>
                   <p
+                    className="shariah-preview-description"
                     style={{
                       fontFamily: 'Gilroy-Medium',
                       fontSize: '16px',
@@ -1609,7 +2530,7 @@ export default function ShariahPage() {
               
               {/* Tile 3 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden shariah-preview-tile"
                 style={{
                   boxSizing: 'border-box',
                   width: '414px',
@@ -1633,7 +2554,7 @@ export default function ShariahPage() {
                 
                 {/* Gradient Ellipse */}
                 <div 
-                  className="absolute pointer-events-none"
+                  className="absolute pointer-events-none shariah-preview-gradient"
                   style={{
                     width: '588px',
                     height: '588px',
@@ -1651,7 +2572,7 @@ export default function ShariahPage() {
                 
                 {/* Content */}
                 <div
-                  className="relative z-10"
+                  className="relative z-10 shariah-preview-content"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -1667,6 +2588,7 @@ export default function ShariahPage() {
                 >
                   {/* Container */}
                   <div
+                    className="shariah-preview-badge"
                     style={{
                       background: 'rgba(5, 176, 179, 0.12)',
                       border: '2px solid rgba(5, 176, 179, 0.72)',
@@ -1681,6 +2603,7 @@ export default function ShariahPage() {
                   
                   {/* Heading */}
                   <h3
+                    className="shariah-preview-heading"
                     style={{
                       width: '366px',
                       height: '24px',
@@ -1702,6 +2625,7 @@ export default function ShariahPage() {
                   
                   {/* Description */}
                   <p
+                    className="shariah-preview-desc"
                     style={{
                       color: '#FFFFFF',
                       fontFamily: 'Gilroy-Medium, sans-serif',
@@ -1716,6 +2640,7 @@ export default function ShariahPage() {
                   
                   {/* Compliance Rationale Section */}
                   <div
+                    className="shariah-preview-compliance"
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -1732,6 +2657,7 @@ export default function ShariahPage() {
                   >
                     {/* Subheading */}
                     <h4
+                      className="shariah-preview-compliance-title"
                       style={{
                         width: '366px',
                         height: '18px',
@@ -1753,6 +2679,7 @@ export default function ShariahPage() {
                     
                     {/* Bullet List */}
                     <div
+                      className="shariah-preview-bullets"
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
@@ -1956,6 +2883,7 @@ export default function ShariahPage() {
                   
                   {/* Footer Text */}
                   <div
+                    className="shariah-preview-footer"
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
@@ -2038,9 +2966,29 @@ export default function ShariahPage() {
                   </button>
                 </div>
                 
+                {/* Grey Tint Overlay for Preview Mode */}
+                {!isAuthenticated && (
+                <div
+                  className="shariah-preview-tint-overlay"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    height: '100%',
+                    background: 'rgba(31, 31, 31, 0.8)',
+                    backdropFilter: 'blur(4px)',
+                    WebkitBackdropFilter: 'blur(4px)',
+                    borderRadius: '16px',
+                    zIndex: 15,
+                    pointerEvents: 'none',
+                  }}
+                />
+                )}
                 {/* Preview Overlay */}
                 {!isAuthenticated && (
                 <div
+                  className="shariah-preview-overlay"
                   style={{
                     position: 'absolute',
                     top: '50%',
@@ -2056,6 +3004,7 @@ export default function ShariahPage() {
                   }}
                 >
                   <h2
+                    className="shariah-preview-title"
                     style={{
                       fontFamily: 'Gilroy-SemiBold',
                       fontSize: '32px',
@@ -2068,6 +3017,7 @@ export default function ShariahPage() {
                     Preview Only
                   </h2>
                   <p
+                    className="shariah-preview-description"
                     style={{
                       fontFamily: 'Gilroy-Medium',
                       fontSize: '16px',
@@ -2082,13 +3032,13 @@ export default function ShariahPage() {
                 </div>
                 )}
               </div>
-              </div>
             </div>
+          </div>
             
             {/* New Single Tile */}
             {!isAuthenticated && (
             <div
-              className="relative overflow-hidden"
+              className="relative overflow-hidden calculator-tile calculator-ready-tile"
               style={{
                 width: '1064px',
                 height: '247px',
@@ -2116,7 +3066,7 @@ export default function ShariahPage() {
 
               {/* Gradient Ellipse - Top Left */}
               <div 
-                className="absolute pointer-events-none"
+                className="absolute pointer-events-none calculator-ready-ellipse-left"
                 style={{
                   width: '588px',
                   height: '588px',
@@ -2134,7 +3084,7 @@ export default function ShariahPage() {
 
               {/* Gradient Ellipse - Bottom Right */}
               <div 
-                className="absolute pointer-events-none"
+                className="absolute pointer-events-none calculator-ready-ellipse-right"
                 style={{
                   width: '588px',
                   height: '588px',
@@ -2151,9 +3101,10 @@ export default function ShariahPage() {
               ></div>
               
               {/* Content */}
-              <div className="relative z-10 w-full h-full flex flex-col items-center justify-center" style={{ gap: '10px' }}>
+              <div className="relative z-10 w-full h-full flex flex-col items-center justify-center calculator-ready-content" style={{ gap: '10px' }}>
                 {/* Frame 81 */}
                 <div
+                  className="calculator-ready-header"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -2214,6 +3165,7 @@ export default function ShariahPage() {
                 
                 {/* Buttons Container */}
                 <div
+                  className="calculator-ready-buttons"
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -2248,6 +3200,7 @@ export default function ShariahPage() {
                     }}
                     onMouseDown={(e) => e.preventDefault()}
                     onFocus={(e) => e.currentTarget.style.outline = 'none'}
+                    onClick={() => router.push('/pricing')}
                   >
                     Start Subscription
                   </button>
@@ -2289,6 +3242,7 @@ export default function ShariahPage() {
             
             {/* Frequently Asked Questions Section */}
             <div
+              className="calculator-faq-header"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -2352,6 +3306,7 @@ export default function ShariahPage() {
             
             {/* FAQ Tiles Container */}
             <div
+              className="calculator-faq-list"
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -2364,7 +3319,7 @@ export default function ShariahPage() {
             >
               {/* FAQ Tile 1 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile calculator-faq-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[0] ? 'auto' : '68px',
@@ -2426,7 +3381,7 @@ export default function ShariahPage() {
                   </svg>
                 </div>
                 {expandedTiles[0] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
+                  <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
                       Yes - your access continues until your period ends.
                     </p>
@@ -2436,7 +3391,7 @@ export default function ShariahPage() {
 
               {/* FAQ Tile 2 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile calculator-faq-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[1] ? 'auto' : '68px',
@@ -2498,7 +3453,7 @@ export default function ShariahPage() {
                   </svg>
                 </div>
                 {expandedTiles[1] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
+                  <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
                       Answer placeholder text - will be updated later.
                     </p>
@@ -2508,7 +3463,7 @@ export default function ShariahPage() {
 
               {/* FAQ Tile 3 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile calculator-faq-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[2] ? 'auto' : '68px',
@@ -2570,7 +3525,7 @@ export default function ShariahPage() {
                   </svg>
                 </div>
                 {expandedTiles[2] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
+                  <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
                       Answer placeholder text - will be updated later.
                     </p>
@@ -2580,7 +3535,7 @@ export default function ShariahPage() {
 
               {/* FAQ Tile 4 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden calculator-tile calculator-faq-tile"
                 style={{
                   width: '1064px',
                   height: expandedTiles[3] ? 'auto' : '68px',
@@ -2642,7 +3597,7 @@ export default function ShariahPage() {
                   </svg>
                 </div>
                 {expandedTiles[3] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
+                  <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
                       Answer placeholder text - will be updated later.
                     </p>
@@ -2666,30 +3621,35 @@ export default function ShariahPage() {
       {showMethodologyPopup && (
         <div
           ref={backdropRef}
+          className="methodology-popup-backdrop"
           style={{
-            position: 'absolute',
+            position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
+            bottom: 0,
             width: '100%',
+            height: '100%',
             backgroundColor: 'rgba(0, 0, 0, 0.7)',
             backdropFilter: 'blur(8px)',
             WebkitBackdropFilter: 'blur(8px)',
             zIndex: 10002,
             display: 'flex',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             justifyContent: 'center',
-            padding: '100px 20px 100px 20px',
-            overflow: 'visible',
+            padding: '20px',
+            overflow: 'auto',
           }}
           onClick={() => setShowMethodologyPopup(false)}
         >
           <div
             ref={popupContentRef}
             data-popup-content
+            className="methodology-popup-content"
             style={{
               position: 'relative',
               width: '630px',
+              maxWidth: '100%',
               background: '#1F1F1F',
               borderRadius: '16px',
               padding: '24px',
@@ -2698,18 +3658,22 @@ export default function ShariahPage() {
               display: 'flex',
               flexDirection: 'column',
               zIndex: 10003,
-              marginBottom: '100px',
               flexShrink: 0,
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              margin: 'auto',
             }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header Section */}
             <div
+              className="methodology-popup-header"
               style={{
                 display: 'flex',
-                flexDirection: 'row',
+                flexDirection: 'column',
                 alignItems: 'flex-start',
-                justifyContent: 'space-between',
+                padding: '0px',
+                gap: '16px',
                 width: '100%',
                 marginBottom: '5px',
                 position: 'relative',
@@ -2717,15 +3681,30 @@ export default function ShariahPage() {
             >
               {/* Heading and Description */}
               <div
+                className="methodology-popup-header-row"
                 style={{
                   display: 'flex',
-                  flexDirection: 'column',
-                  gap: '8px',
-                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  padding: '0px',
+                  gap: '63px',
+                  width: '100%',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                <div 
+                  className="methodology-popup-title-container"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    padding: '0px',
+                    gap: '4px',
+                    flex: 1,
+                  }}
+                >
                   <h2
+                    className="methodology-popup-title"
                     style={{
                       fontFamily: 'Gilroy-SemiBold',
                       fontSize: '24px',
@@ -2736,26 +3715,28 @@ export default function ShariahPage() {
                   >
                     Screening Methodology
                   </h2>
-                  
-                  {/* Close Button */}
-                  <button
-                    onClick={() => setShowMethodologyPopup(false)}
-                    style={{
-                      width: '20px',
-                      height: '20px',
-                      border: '1px solid #AFB9BF',
-                      borderRadius: '20px',
-                      background: 'transparent',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: 0,
-                      flex: 'none',
-                      flexGrow: 0,
-                      position: 'relative',
-                      marginLeft: 'auto',
-                    }}
+                </div>
+                
+                {/* Close Button */}
+                <button
+                  className="methodology-popup-close-btn"
+                  onClick={() => setShowMethodologyPopup(false)}
+                  style={{
+                    width: '20px',
+                    height: '20px',
+                    border: '1px solid #AFB9BF',
+                    borderRadius: '20px',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0,
+                    flex: 'none',
+                    flexGrow: 0,
+                    position: 'relative',
+                    boxSizing: 'border-box',
+                  }}
                 onMouseDown={(e) => {
                   e.preventDefault();
                   e.currentTarget.style.border = '1px solid #AFB9BF';
@@ -2791,24 +3772,25 @@ export default function ShariahPage() {
                   />
                 </svg>
               </button>
-                </div>
-                <p
-                  style={{
-                    fontFamily: 'Gilroy-Medium',
-                    fontSize: '16px',
-                    fontWeight: 400,
-                    color: '#FFFFFF',
-                    margin: 0,
-                    lineHeight: '130%',
-                  }}
-                >
-                  Comprehensive framework aligned with AAOIFI standards
-                </p>
               </div>
+              <p
+                className="methodology-popup-description"
+                style={{
+                  fontFamily: 'Gilroy-Medium',
+                  fontSize: '16px',
+                  fontWeight: 400,
+                  color: '#FFFFFF',
+                  margin: 0,
+                  lineHeight: '130%',
+                }}
+              >
+                Comprehensive framework aligned with AAOIFI standards
+              </p>
             </div>
             
             {/* Content Area */}
             <div 
+              className="methodology-popup-content-area"
               style={{ 
                 width: '100%',
                 display: 'flex',
@@ -2818,6 +3800,7 @@ export default function ShariahPage() {
             >
               {/* Financial Ratios Box */}
               <div
+                className="methodology-popup-section"
                 style={{
                   boxSizing: 'border-box',
                   display: 'flex',
@@ -2840,6 +3823,7 @@ export default function ShariahPage() {
               >
                 {/* Heading */}
                 <h3
+                  className="methodology-popup-section-title"
                   style={{
                     width: '520px',
                     height: '20px',
@@ -2861,6 +3845,7 @@ export default function ShariahPage() {
                 
                 {/* Bullet List */}
                 <div
+                  className="methodology-popup-bullet-list"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -2876,6 +3861,7 @@ export default function ShariahPage() {
                 >
                   {/* Bullet 1: Debt to Market Cap */}
                   <div
+                    className="methodology-popup-bullet-item"
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
@@ -2891,6 +3877,7 @@ export default function ShariahPage() {
                     }}
                   >
                     <div
+                      className="methodology-popup-bullet-row"
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -2906,6 +3893,7 @@ export default function ShariahPage() {
                       }}
                     >
                       <div
+                        className="methodology-popup-bullet-dot"
                         style={{
                           width: '8px',
                           height: '8px',
@@ -2917,6 +3905,7 @@ export default function ShariahPage() {
                         }}
                       />
                       <span
+                        className="methodology-popup-bullet-text"
                         style={{
                           width: '129px',
                           height: '14px',
@@ -2935,6 +3924,7 @@ export default function ShariahPage() {
                       </span>
                     </div>
                     <div
+                      className="methodology-popup-bullet-description"
                       style={{
                         width: '510px',
                         height: '14px',
@@ -3238,6 +4228,7 @@ export default function ShariahPage() {
               
               {/* Governance & Ethics Box */}
               <div
+                className="methodology-popup-section"
                 style={{
                   boxSizing: 'border-box',
                   display: 'flex',
@@ -3261,6 +4252,7 @@ export default function ShariahPage() {
               >
                 {/* Heading */}
                 <h3
+                  className="methodology-popup-section-title"
                   style={{
                     width: '520px',
                     height: '20px',
@@ -3484,6 +4476,7 @@ export default function ShariahPage() {
               
               {/* Prohibited Business Activities Box */}
               <div
+                className="methodology-popup-section"
                 style={{
                   boxSizing: 'border-box',
                   display: 'flex',
@@ -3506,6 +4499,7 @@ export default function ShariahPage() {
               >
                 {/* Heading */}
                 <h3
+                  className="methodology-popup-section-title"
                   style={{
                     width: '520px',
                     height: '20px',
@@ -3867,6 +4861,7 @@ export default function ShariahPage() {
               
               {/* Data Sources Box */}
               <div
+                className="methodology-popup-section"
                 style={{
                   boxSizing: 'border-box',
                   display: 'flex',
@@ -3889,6 +4884,7 @@ export default function ShariahPage() {
               >
                 {/* Heading */}
                 <h3
+                  className="methodology-popup-section-title"
                   style={{
                     width: '520px',
                     height: '20px',
@@ -4158,8 +5154,9 @@ export default function ShariahPage() {
             </div>
             
             {/* Close Button */}
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '4px' }}>
+            <div className="methodology-popup-close-button-container" style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '4px' }}>
               <button
+                className="methodology-popup-close-button"
                 onClick={() => setShowMethodologyPopup(false)}
                 style={{
                   width: '560px',

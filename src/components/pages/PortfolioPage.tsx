@@ -820,12 +820,165 @@ export default function PortfolioPage() {
         button:active {
           border: inherit !important;
         }
+        /* Portfolio hero mobile styles (match research page patterns) */
+        @media (max-width: 768px) {
+          .portfolio-hero-container {
+            padding-top: 112px !important;
+            padding-bottom: 64px !important;
+          }
+          .portfolio-section-wrapper {
+            width: 100% !important;
+            max-width: 375px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .portfolio-hero-logo {
+            display: none !important;
+          }
+          .portfolio-title {
+            width: 343px !important;
+            height: auto !important;
+            min-height: 38px !important;
+            margin-top: 0 !important;
+            font-size: 32px !important;
+            line-height: 120% !important;
+          }
+          .portfolio-description {
+            width: 343px !important;
+            margin-top: 12px !important;
+          }
+          .portfolio-background-svg {
+            width: 1100px !important;
+            height: 565px !important;
+            left: -400px !important;
+            top: -120px !important;
+            rotate: -8deg !important;
+          }
+          /* Move 'Your Portfolio' sections up on mobile */
+          .portfolio-auth-section {
+            margin: 160px auto 0 auto !important;
+          }
+          .portfolio-guest-section {
+            margin: 48px auto 0 !important;
+          }
+          /* Make Binance connect panel a bit wider on mobile */
+          .portfolio-connect-tile {
+            padding: 20px 12px !important;
+          }
+          .portfolio-connect-inner {
+            max-width: 373px !important; /* slightly wider than 343 */
+            width: 100% !important;
+          }
+          /* Auth cards row: stack graph and pie chart */
+          .portfolio-auth-section {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+          .portfolio-auth-cards-row {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 20px !important;
+            width: 100% !important;
+            max-width: 343px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          /* Graph card sizing on mobile */
+          .portfolio-graph-card {
+            width: 343px !important;
+            height: 260px !important;
+            border-radius: 10px !important;
+          }
+          .portfolio-graph-card > .absolute {
+            border-radius: 10px !important;
+          }
+          /* Ensure inner card min-height fits the wrapper to avoid clipping */
+          .portfolio-graph-card .min-h-\[344px\] {
+            min-height: 260px !important;
+          }
+          /* Keep internal chart area visible within available height */
+          .portfolio-graph-card .h-\[200px\] {
+            height: 200px !important;
+          }
+          /* Allocation card sizing on mobile */
+          .portfolio-allocation-card > div {
+            width: 343px !important;
+            height: 316px !important;
+            border-radius: 10px !important;
+            padding: 20px 12px !important;
+          }
+          /* Match calculator FAQ mobile styles */
+          .portfolio-faq-header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 24px !important;
+            width: 343px !important;
+            height: 140px !important;
+            margin: 48px auto 0 !important;
+          }
+          .portfolio-faq-header h2,
+          .portfolio-faq-title {
+            width: 343px !important;
+            height: 84px !important;
+            font-size: 32px !important;
+            line-height: 130% !important;
+            text-align: center !important;
+            margin: 0 !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            overflow-wrap: anywhere !important;
+          }
+          .portfolio-faq-header p,
+          .portfolio-faq-desc {
+            width: 343px !important;
+            height: 32px !important;
+            font-size: 16px !important;
+            line-height: 100% !important;
+            text-align: center !important;
+            margin: 0 !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            overflow-wrap: anywhere !important;
+          }
+          .portfolio-faq-container {
+            width: 100% !important;
+            max-width: 373px !important;
+            gap: 16px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+          .portfolio-faq-item {
+            width: 100% !important;
+            max-width: 373px !important;
+            padding: 20px !important;
+            border-radius: 16px !important;
+          }
+          /* Stack buttons vertically on mobile */
+          .portfolio-buttons-container {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 16px !important;
+          }
+          .portfolio-buttons-wrapper {
+            flex-direction: column !important;
+            width: 100% !important;
+            max-width: 343px !important;
+            gap: 12px !important;
+          }
+          .portfolio-manage-button,
+          .portfolio-disconnect-button {
+            width: 100% !important;
+            max-width: 343px !important;
+          }
+        }
       `}} />
       <Navbar />
       
       {/* Background SVG Gradient */}
       <svg 
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none portfolio-background-svg"
         style={{
           left: '-500px',
           top: '-80px',
@@ -860,8 +1013,8 @@ export default function PortfolioPage() {
       
       {/* Main Content */}
       <div className="relative z-10">
-        <div className="min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 flex items-start">
-          <div className="max-w-7xl mx-auto w-full relative">
+        <div className="min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 flex items-start portfolio-hero-container">
+          <div className="max-w-7xl mx-auto w-full relative portfolio-section-wrapper">
             {/* Vector Logo */}
             <svg
               width="538"
@@ -877,6 +1030,7 @@ export default function PortfolioPage() {
                 pointerEvents: 'none',
                 zIndex: 1,
               }}
+              className="portfolio-hero-logo"
             >
               <g opacity="0.5">
                 <path d="M485.003 448.627C449.573 580.853 314.193 659.464 182.624 624.21C51.0543 588.956 -26.8824 453.187 8.54736 320.961C43.9772 188.735 179.378 110.129 310.947 145.383L478.648 190.318C517.106 200.623 558.36 174.855 558.36 174.855L485.003 448.627ZM266.707 306.134C223.047 294.435 178.123 320.521 166.366 364.399C154.609 408.277 180.471 453.33 224.131 465.029C267.791 476.727 312.715 450.641 324.472 406.763L345.76 327.316L266.707 306.134Z" fill="url(#paint0_linear_vector_logo_portfolio)"/>
@@ -913,6 +1067,7 @@ export default function PortfolioPage() {
                 position: 'relative',
                 zIndex: 2,
               }}
+              className="portfolio-title"
             >
               {isAuthenticated 
                 ? 'Your Portfolio - Track Allocation, P/L, and Performance in One View'
@@ -931,6 +1086,7 @@ export default function PortfolioPage() {
                 color: '#FFFFFF',
                 marginTop: '24px',
               }}
+              className="portfolio-description"
             >
               {isAuthenticated
                 ? 'Analyze your holdings, visualize profit & loss, and monitor diversification over time. Built for clarity and accountability.'
@@ -1225,6 +1381,7 @@ export default function PortfolioPage() {
                 maxWidth: '1280px',
                 margin: '300px auto 0 auto',
               }}
+              className="portfolio-auth-section"
             >
               <div
                 style={{
@@ -1236,6 +1393,7 @@ export default function PortfolioPage() {
                 }}
               >
                 <div
+                  className="portfolio-buttons-container"
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -1259,67 +1417,10 @@ export default function PortfolioPage() {
                   >
                     Your Portfolio
                   </h2>
-                  <button
-                    type="button"
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      gap: '4px',
-                      width: '180px',
-                      height: '48px',
-                      background: '#FFFFFF',
-                      borderRadius: '100px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                      lineHeight: '100%',
-                      color: '#404040',
-                    }}
-                    onClick={openAddHoldingModal}
-                  >
-                    <span
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        width: '16px',
-                        height: '16px',
-                      }}
-                    >
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M8 3.33337V12.6667"
-                          stroke="#404040"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M3.33398 8H12.6673"
-                          stroke="#404040"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                    {hasConnectedApi ? 'Manage API Key' : 'Connect Binance'}
-                  </button>
-                  {hasConnectedApi ? (
+                  <div className="portfolio-buttons-wrapper" style={{ display: 'flex', flexDirection: 'row', gap: '24px', alignItems: 'center' }}>
                     <button
                       type="button"
+                      className="portfolio-manage-button"
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
@@ -1329,23 +1430,84 @@ export default function PortfolioPage() {
                         gap: '4px',
                         width: '180px',
                         height: '48px',
-                        background: 'transparent',
+                        background: '#FFFFFF',
                         borderRadius: '100px',
-                        border: '1px solid rgba(255,255,255,0.4)',
+                        border: 'none',
                         cursor: 'pointer',
                         fontFamily: 'Gilroy-SemiBold',
                         fontStyle: 'normal',
                         fontWeight: 400,
                         fontSize: '16px',
                         lineHeight: '100%',
-                        color: '#FFFFFF',
+                        color: '#404040',
                       }}
-                      onClick={handleDisconnect}
-                      disabled={isRemovingCredentials}
+                      onClick={openAddHoldingModal}
                     >
-                      {isRemovingCredentials ? 'Disconnecting…' : 'Disconnect'}
+                      <span
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          width: '16px',
+                          height: '16px',
+                        }}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M8 3.33337V12.6667"
+                            stroke="#404040"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                          <path
+                            d="M3.33398 8H12.6673"
+                            stroke="#404040"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                      {hasConnectedApi ? 'Manage API Key' : 'Connect Binance'}
                     </button>
-                  ) : null}
+                    {hasConnectedApi ? (
+                      <button
+                        type="button"
+                        className="portfolio-disconnect-button"
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '12px 16px',
+                          gap: '4px',
+                          width: '180px',
+                          height: '48px',
+                          background: 'transparent',
+                          borderRadius: '100px',
+                          border: '1px solid rgba(255,255,255,0.4)',
+                          cursor: 'pointer',
+                          fontFamily: 'Gilroy-SemiBold',
+                          fontStyle: 'normal',
+                          fontWeight: 400,
+                          fontSize: '16px',
+                          lineHeight: '100%',
+                          color: '#FFFFFF',
+                        }}
+                        onClick={handleDisconnect}
+                        disabled={isRemovingCredentials}
+                      >
+                        {isRemovingCredentials ? 'Disconnecting…' : 'Disconnect'}
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
                 <p
                   style={{
@@ -1388,17 +1550,18 @@ export default function PortfolioPage() {
 
               <div style={{ width: '100%' }}>
                 {hasConnectedApi ? (
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'stretch',
+                    gap: '20px',
+                    width: '100%',
+                    maxWidth: '1280px',
+                  }}
+                  className="portfolio-auth-cards-row"
+                >
                   <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'stretch',
-                      gap: '20px',
-                      width: '100%',
-                      maxWidth: '1280px',
-                    }}
-                  >
-                    <div
                       style={{
                         position: 'relative',
                         width: '847px',
@@ -1407,6 +1570,7 @@ export default function PortfolioPage() {
                         background: '#1F1F1F',
                         overflow: 'hidden',
                       }}
+                    className="portfolio-graph-card"
                     >
                       <div
                         className="absolute inset-0 pointer-events-none"
@@ -1449,10 +1613,12 @@ export default function PortfolioPage() {
                       {chartError}
                     </div>
                   )}
-                    <AllocationDistributionCard
-                      slices={allocationData}
-                      isLoading={isFetchingPortfolio}
-                    />
+                    <div className="portfolio-allocation-card">
+                      <AllocationDistributionCard
+                        slices={allocationData}
+                        isLoading={isFetchingPortfolio}
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div
@@ -1470,6 +1636,7 @@ export default function PortfolioPage() {
                       position: 'relative',
                       overflow: 'hidden',
                     }}
+                    className="portfolio-connect-tile"
                   >
                     <div
                       className="absolute inset-0 pointer-events-none"
@@ -1498,6 +1665,7 @@ export default function PortfolioPage() {
                         width: '100%',
                         maxWidth: '1240px',
                       }}
+                      className="portfolio-connect-inner"
                     >
                       <div
                         style={{
@@ -1599,6 +1767,7 @@ export default function PortfolioPage() {
                 padding: '0px',
                 gap: '64px',
               }}
+              className="portfolio-guest-section"
             >
               <div
                 style={{
@@ -1928,6 +2097,7 @@ export default function PortfolioPage() {
                 marginRight: 'auto',
                 marginTop: isAuthenticated ? '220px' : '0px',
               }}
+              className="portfolio-faq-header"
             >
               {/* Heading */}
               <h2
@@ -1947,6 +2117,7 @@ export default function PortfolioPage() {
                   flexGrow: 0,
                   margin: 0,
                 }}
+                className="portfolio-faq-title"
               >
                 Frequently Asked Questions
               </h2>
@@ -1969,6 +2140,7 @@ export default function PortfolioPage() {
                   flexGrow: 0,
                   margin: 0,
                 }}
+                className="portfolio-faq-desc"
               >
                 Everything you need to know about your subscription.
               </p>
@@ -1985,10 +2157,11 @@ export default function PortfolioPage() {
                 marginLeft: 'auto',
                 marginRight: 'auto',
               }}
+              className="portfolio-faq-container"
             >
               {/* FAQ Tile 1 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden portfolio-faq-item"
                 style={{
                   width: '1064px',
                   height: expandedTiles[0] ? 'auto' : '68px',
@@ -2060,7 +2233,7 @@ export default function PortfolioPage() {
 
               {/* FAQ Tile 2 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden portfolio-faq-item"
                 style={{
                   width: '1064px',
                   height: expandedTiles[1] ? 'auto' : '68px',
@@ -2132,7 +2305,7 @@ export default function PortfolioPage() {
 
               {/* FAQ Tile 3 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden portfolio-faq-item"
                 style={{
                   width: '1064px',
                   height: expandedTiles[2] ? 'auto' : '68px',
@@ -2204,7 +2377,7 @@ export default function PortfolioPage() {
 
               {/* FAQ Tile 4 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden portfolio-faq-item"
                 style={{
                   width: '1064px',
                   height: expandedTiles[3] ? 'auto' : '68px',

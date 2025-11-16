@@ -4,14 +4,13 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { researchReports } from '@/data/researchReports';
 
-type ResearchDetailPageProps = {
-  params: {
-    slug: string;
-  };
+type ResearchDetailPageParams = {
+  slug: string;
 };
 
-export default function ResearchDetailPage({ params }: ResearchDetailPageProps) {
-  const report = researchReports.find(item => item.slug === params.slug);
+export default async function ResearchDetailPage({ params }: { params: Promise<ResearchDetailPageParams> }) {
+  const { slug } = await params;
+  const report = researchReports.find(item => item.slug === slug);
 
   if (!report) {
     notFound();
@@ -21,6 +20,233 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media (max-width: 768px) {
+          /* Read More Research Articles - mobile column layout */
+          .research-related {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            padding: 0 16px !important;
+            gap: 32px !important;
+            width: 100% !important; /* match width of section above */
+          }
+          .research-related-title {
+            width: 100% !important;
+            max-width: 100% !important; /* align with above section */
+            height: auto !important;
+            font-size: 32px !important;
+            line-height: 130% !important;
+            margin: 0 !important;
+          }
+          .research-related-list {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 20px !important;
+            width: 100% !important;
+            max-width: 100% !important; /* align with above section */
+          }
+          .research-related-card {
+            width: 100% !important; /* expand to container width */
+            height: 311px !important; /* increased mobile card height */
+            padding: 20px 12px !important;
+            border-radius: 10px !important;
+            flex: 0 0 auto !important;
+            /* Ensure space below the button at bottom on mobile */
+            padding-bottom: 28px !important;
+          }
+          .research-related-card-inner {
+            width: 100% !important; /* fill card width */
+            height: auto !important;
+            gap: 16px !important;
+          }
+          .research-related-card-inner h3 {
+            font-size: 24px !important;
+            line-height: 100% !important;
+            margin: 0 !important;
+          }
+          .research-related-card-inner p {
+            width: 100% !important; /* fill available width */
+            font-size: 16px !important;
+            line-height: 130% !important;
+            margin: 0 !important;
+          }
+          .research-related-card-inner a {
+            width: 100% !important; /* full-width button */
+            height: 36px !important;
+            border-radius: 100px !important;
+            /* Add breathing room below the CTA */
+            margin-bottom: 8px !important;
+          }
+          /* Hide gradient ellipse inside cards on mobile */
+          .research-related-card .pointer-events-none {
+            display: none !important;
+          }
+          /* Frame 1000004806 - hero container */
+          .research-detail-hero {
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            padding: 0 16px 24px !important;
+            width: 100% !important;
+            min-height: 358px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            margin-top: 94px !important;
+          }
+          /* Frame 1000012139 - inner row */
+          .research-detail-row {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 0 !important;
+            gap: 22px !important;
+            width: 100% !important;
+            height: auto !important;
+          }
+          /* Frame 25 - text column */
+          .research-detail-col {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 24px !important;
+            width: 100% !important;
+            height: auto !important;
+            flex: 1 1 auto !important;
+          }
+          /* Title */
+          .research-detail-title {
+            width: 100% !important;
+            height: auto !important;
+            /* Keep web font style; do not override family/weight */
+            /* Adjust size only if needed; otherwise inherit */
+            line-height: 120% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+          }
+          /* Description */
+          .research-detail-desc {
+            width: 100% !important;
+            height: auto !important;
+            /* Keep web font style; do not override family/weight */
+            line-height: 130% !important;
+            color: #FFFFFF !important;
+            margin: 0 !important;
+          }
+          /* Frame 1000012135 - meta row */
+          .research-detail-meta {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 0 !important;
+            gap: 16px !important;
+            width: 100% !important;
+            height: 24px !important;
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+          }
+          .research-detail-meta .dot {
+            width: 6px !important;
+            height: 6px !important;
+            background: #D9D9D9 !important;
+            border-radius: 50% !important;
+            flex: 0 0 auto !important;
+          }
+          .research-detail-date,
+          .research-detail-readtime {
+            /* Keep web font style; do not override family/weight */
+            line-height: 100% !important;
+            color: #FFFFFF !important;
+            flex: 0 0 auto !important;
+            white-space: nowrap !important;
+          }
+          /* Category chip */
+          .research-detail-category {
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 10px !important;
+            gap: 10px !important;
+            width: 106px !important;
+            height: 24px !important;
+            background: rgba(5, 176, 179, 0.12) !important;
+            border: 1px solid #05B0B3 !important;
+            border-radius: 40px !important;
+            flex: 0 0 auto !important;
+          }
+          .research-detail-category span {
+            width: auto !important;
+            height: 12px !important;
+            /* Keep web font style; do not override family/weight */
+            line-height: 100% !important;
+            color: #05B0B3 !important;
+            white-space: nowrap !important;
+          }
+          /* Frame 47 - CTA column */
+          .research-detail-cta {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 20px !important;
+            width: 100% !important;
+            height: auto !important;
+          }
+          /* Primary CTA (Download) */
+          .research-detail-download {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 18px 12px !important;
+            gap: 8px !important;
+            width: 100% !important;
+            height: 50px !important;
+            background: #FFFFFF !important;
+            border-radius: 100px !important;
+            border: none !important;
+            color: #0A0A0A !important;
+            /* Keep web font style; do not override family/weight/size */
+            text-decoration: none !important;
+          }
+          /* Secondary CTA (Share) */
+          .research-detail-share {
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 18px 12px !important;
+            gap: 8px !important;
+            width: 100% !important;
+            height: 50px !important;
+            border: 1px solid #FFFFFF !important;
+            border-radius: 100px !important;
+            background: transparent !important;
+            color: #FFFFFF !important;
+            /* Keep web font style; do not override family/weight/size */
+            text-decoration: none !important;
+          }
+          /* Reduce right gradient SVG size/impact on mobile */
+          .research-detail-bg {
+            width: 1100px !important;
+            height: 565px !important;
+            right: -400px !important;
+            top: -120px !important;
+          }
+          /* Reduce top padding for the main container on mobile only */
+          .research-detail-wrapper {
+            padding-top: 6px !important; /* was pt-32 (~128px) */
+          }
+        }
+      `}} />
       <Navbar />
 
       <svg
@@ -36,6 +262,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
           zIndex: 0,
           pointerEvents: 'none',
         }}
+        className="research-detail-bg"
       >
         <g filter="url(#filter0_f_research_right)">
           <circle
@@ -78,7 +305,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
       </svg>
 
       <div className="relative z-10">
-        <div className="w-full pt-32 pb-24 px-6 sm:px-10 lg:px-16 xl:px-24">
+        <div className="w-full pt-32 pb-24 px-6 sm:px-10 lg:px-16 xl:px-24 research-detail-wrapper">
           <div className="mx-auto" style={{ maxWidth: '1282px' }}>
           <div
             style={{
@@ -88,6 +315,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
               gap: '22px',
               width: '630px',
             }}
+            className="research-detail-hero"
           >
             <div
               style={{
@@ -97,6 +325,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                 gap: '24px',
                 width: '630px',
               }}
+              className="research-detail-row research-detail-col"
             >
               <h1
                 style={{
@@ -108,6 +337,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                   color: '#FFFFFF',
                   margin: 0,
                 }}
+                className="research-detail-title"
               >
                 {report.title}
               </h1>
@@ -122,6 +352,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                   color: '#FFFFFF',
                   margin: 0,
                 }}
+                className="research-detail-desc"
               >
                 {report.description}
               </p>
@@ -134,6 +365,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                   gap: '16px',
                   flexWrap: 'wrap',
                 }}
+                className="research-detail-meta"
               >
                 <span
                   style={{
@@ -144,12 +376,11 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                     lineHeight: '100%',
                     color: '#FFFFFF',
                   }}
+                  className="research-detail-date"
                 >
                   Uploaded on {report.date}
                 </span>
-                <span
-                  style={{ width: '6px', height: '6px', background: '#D9D9D9', borderRadius: '50%' }}
-                ></span>
+                <span className="dot"></span>
                 <span
                   style={{
                     fontFamily: 'Gilroy-Medium',
@@ -159,12 +390,11 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                     lineHeight: '100%',
                     color: '#FFFFFF',
                   }}
+                  className="research-detail-readtime"
                 >
                   {report.readTime}
                 </span>
-                <span
-                  style={{ width: '6px', height: '6px', background: '#D9D9D9', borderRadius: '50%' }}
-                ></span>
+                <span className="dot"></span>
                 <div
                   style={{
                     boxSizing: 'border-box',
@@ -178,6 +408,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                     border: '1px solid #05B0B3',
                     borderRadius: '40px',
                   }}
+                  className="research-detail-category"
                 >
                   <span
                     style={{
@@ -203,6 +434,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                   gap: '20px',
                   flexWrap: 'wrap',
                 }}
+                className="research-detail-cta"
               >
                 <a
                   href={report.pdfUrl ?? '#'}
@@ -226,6 +458,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                     opacity: report.pdfUrl ? 1 : 0.6,
                   }}
                   download
+                  className="research-detail-download"
                 >
                   <span style={{ display: 'inline-flex', width: '20px', height: '20px' }}>
                     <svg
@@ -281,6 +514,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                     lineHeight: '100%',
                     textDecoration: 'none',
                   }}
+                  className="research-detail-share"
                 >
                   <span style={{ display: 'inline-flex', width: '20px', height: '20px' }}>
                     <svg
@@ -434,6 +668,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
               maxWidth: '1282px',
               marginTop: '120px',
             }}
+            className="research-related"
           >
             <h2
               style={{
@@ -445,6 +680,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                 color: '#FFFFFF',
                 margin: 0,
               }}
+              className="research-related-title"
             >
               Read More Research Articles
             </h2>
@@ -460,11 +696,12 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                 justifyContent: 'space-between',
                 overflowX: 'auto',
               }}
+              className="research-related-list"
             >
               {relatedArticles.map(related => (
                 <div
                   key={related.slug}
-                  className="relative overflow-hidden"
+                  className="relative overflow-hidden research-related-card"
                   style={{
                     position: 'relative',
                     boxSizing: 'border-box',
@@ -504,6 +741,7 @@ export default function ResearchDetailPage({ params }: ResearchDetailPageProps) 
                       width: '100%',
                       zIndex: 1,
                     }}
+                    className="research-related-card-inner"
                   >
                     <div
                       style={{

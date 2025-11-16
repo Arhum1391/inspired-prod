@@ -3,7 +3,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
@@ -91,19 +90,23 @@ const AccountPage = () => {
       
       {/* Mobile Layout */}
       <div className="lg:hidden relative w-full pt-24 pb-24">
-        <div className="max-w-[375px] mx-auto px-4 flex flex-col gap-10">
+        <div className="max-w-[420px] mx-auto px-4 flex flex-col gap-10">
           {/* Profile Card */}
           <div className="relative bg-[#1F1F1F] rounded-[10px] p-5 flex flex-col gap-10 overflow-hidden">
             <div
               className="absolute pointer-events-none"
               style={{
+                position: 'absolute',
                 width: '588px',
                 height: '588px',
-                right: '-280px',
-                top: '-360px',
+                left: '339.5px',
+                top: '-376px',
                 background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
                 filter: 'blur(100px)',
                 transform: 'rotate(90deg)',
+                flex: 'none',
+                order: 0,
+                flexGrow: 0,
                 zIndex: 0
               }}
             />
@@ -158,13 +161,17 @@ const AccountPage = () => {
             <div
               className="absolute pointer-events-none"
               style={{
+                position: 'absolute',
                 width: '588px',
                 height: '588px',
-                right: '-280px',
-                top: '-320px',
+                left: '339.5px',
+                top: '-326px',
                 background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
                 filter: 'blur(100px)',
                 transform: 'rotate(90deg)',
+                flex: 'none',
+                order: 0,
+                flexGrow: 0,
                 zIndex: 0
               }}
             />
@@ -233,35 +240,36 @@ const AccountPage = () => {
           </div>
 
           {/* Payment Method Card */}
-          <div className="relative bg-[#1F1F1F] rounded-[10px] p-5 flex flex-col gap-6 overflow-hidden">
-            <div className="relative z-10 flex flex-col gap-6">
-              <div className="flex flex-row items-center justify-between gap-4">
+          <div className="relative bg-[#1F1F1F] rounded-[10px] p-5 flex flex-col gap-6 overflow-hidden w-full">
+            <div className="relative z-10 flex flex-col gap-6 w-full">
+              <div className="flex flex-row items-center justify-between gap-4 w-full">
                 <h2 className="text-white text-[20px] font-normal leading-none gilroy-semibold">
                   Payment Method
                 </h2>
                 <button
                   onClick={() => hasActiveSubscription ? router.push('/account/payment-method') : router.push('/pricing')}
-                  className="bg-white text-[#1F1F1F] px-3 py-2 rounded-full text-sm font-normal gilroy-semibold text-center hover:bg-gray-100 transition-colors"
+                  className="bg-white text-[#1F1F1F] px-3 py-2 rounded-full text-sm font-normal gilroy-semibold text-center hover:bg-gray-100 transition-colors whitespace-nowrap"
                 >
                   {hasActiveSubscription ? 'Update Payment' : 'Add Payment Method'}
                 </button>
               </div>
 
               {paymentMethod ? (
-                <div className="w-full border border-white/30 rounded-lg px-4 py-3 flex flex-col gap-2">
-                  <div className="flex flex-row items-center gap-3">
-                    <div className="w-10 h-6 bg-black/10 rounded-sm" />
-                    <div className="flex flex-col gap-1">
-                      <span className="text-white/60 text-sm gilroy-medium">
+                <div className="w-full border border-white/30 rounded-lg px-4 py-3 flex flex-row items-center gap-3">
+                  <div className="w-10 h-6 bg-black/10 rounded-sm relative flex-shrink-0">
+                    <div className="absolute inset-0 bg-[#0028FF] rounded-sm" style={{ margin: '1px' }} />
+                    <div className="absolute left-1 top-1 right-1 h-1 bg-white rounded-sm" style={{ marginTop: '4px' }} />
+                  </div>
+                  <div className="flex flex-col gap-1 flex-1 min-w-0">
+                    <span className="text-white/60 text-sm gilroy-medium whitespace-nowrap">
                         •••• •••• •••• {paymentMethod.last4 || '4242'}
                       </span>
-                      <span className="text-white/60 text-xs gilroy-medium">
+                    <span className="text-white/60 text-xs gilroy-medium whitespace-nowrap">
                         Expires {String(paymentMethod.expMonth || 12).padStart(2, '0')}/{String(paymentMethod.expYear || 2026).slice(-2)}
                       </span>
                     </div>
-                    <div className="ml-auto px-2.5 py-1.5 border border-[#05B0B3] text-[#05B0B3] text-xs rounded-full">
+                  <div className="px-2 py-1 border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] text-xs rounded-full flex-shrink-0 whitespace-nowrap">
                       Currently in Use
-                    </div>
                   </div>
                 </div>
               ) : (
@@ -273,36 +281,131 @@ const AccountPage = () => {
           </div>
 
           {/* Billing History */}
-          <div className="relative bg-[#1F1F1F] rounded-[10px] p-5 flex flex-col gap-6 overflow-hidden">
             <div
-              className="absolute pointer-events-none"
+            className="relative bg-[#1F1F1F] rounded-[10px] w-full"
               style={{
-                width: '588px',
-                height: '588px',
-                right: '-260px',
-                bottom: '-300px',
-                background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                filter: 'blur(100px)',
-                transform: 'rotate(-30deg)',
-                zIndex: 0
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              padding: '20px 12px',
+              gap: '8px',
+              flex: 'none',
+              order: 2,
+              flexGrow: 0
+            }}
+          >
+            <div 
+              className="w-full"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: '0px',
+                gap: '24px',
+                flex: 'none',
+                order: 0,
+                alignSelf: 'stretch',
+                flexGrow: 0
               }}
-            />
-
-            <div className="relative z-10 flex flex-col gap-6">
-              <div className="flex flex-row items-center justify-between">
-                <h2 className="text-white text-[20px] font-normal gilroy-semibold">
+            >
+              <div 
+                className="flex flex-row items-center w-full"
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  padding: '0px',
+                  gap: '24px',
+                  height: '20px',
+                  flex: 'none',
+                  order: 0,
+                  alignSelf: 'stretch',
+                  flexGrow: 0
+                }}
+              >
+                <div
+                  className="flex-1"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    padding: '0px',
+                    gap: '12px',
+                    flex: 'none',
+                    order: 0,
+                    flexGrow: 1
+                  }}
+                >
+                  <h2 
+                    className="text-white gilroy-semibold"
+                    style={{
+                      fontFamily: 'Gilroy-SemiBold',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '20px',
+                      lineHeight: '100%',
+                      color: '#FFFFFF',
+                      flex: 'none',
+                      order: 0,
+                      flexGrow: 0
+                    }}
+                  >
                   Billing History
                 </h2>
+                </div>
                 <button
                   onClick={() => router.push('/account/billing-history')}
-                  className="text-white text-xs font-normal gilroy-semibold flex items-center gap-1 hover:opacity-80"
+                  className="flex flex-row items-center gap-1 hover:opacity-80"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: '0px',
+                    gap: '4px',
+                    width: '63px',
+                    height: '17px',
+                    flex: 'none',
+                    order: 1,
+                    flexGrow: 0
+                  }}
+                >
+                  <span
+                    className="text-white gilroy-semibold"
+                    style={{
+                      fontFamily: 'Gilroy-SemiBold',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '12px',
+                      lineHeight: '145%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      color: '#FFFFFF',
+                      flex: 'none',
+                      order: 0,
+                      flexGrow: 0
+                    }}
                 >
                   View All
-                  <span className="inline-block rotate-[-90deg]">➜</span>
+                  </span>
+                  <span 
+                    className="inline-block"
+                    style={{
+                      width: '16px',
+                      height: '16px',
+                      transform: 'rotate(-90deg)',
+                      flex: 'none',
+                      order: 1,
+                      flexGrow: 0
+                    }}
+                  >
+                    ➜
+                  </span>
                 </button>
               </div>
 
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-4 w-full">
                 {billingHistory.length > 0 ? (
                   billingHistory.map((invoice: any) => {
                     const invoiceId = invoice.invoiceId || invoice.id || '';
@@ -314,92 +417,361 @@ const AccountPage = () => {
                     return (
                       <div
                         key={invoiceId || invoice.id}
-                        className="border border-white/30 rounded-lg px-4 py-3 flex flex-col gap-3"
+                        className="border border-white/30 rounded-lg w-full"
+                        style={{
+                          boxSizing: 'border-box',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '16px 12px',
+                          gap: '16px',
+                          border: '1px solid rgba(255, 255, 255, 0.3)',
+                          borderRadius: '8px',
+                          flex: 'none',
+                          alignSelf: 'stretch',
+                          flexGrow: 0
+                        }}
                       >
-                        <div className="flex flex-row items-center justify-between">
-                          <div className="flex flex-col">
-                            <span className="text-white text-sm gilroy-medium">Invoice Id :</span>
-                            <span className="text-white/60 text-sm gilroy-medium" title={invoiceId}>
+                        <div 
+                          className="flex flex-row justify-between items-center w-full"
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '0px',
+                            gap: '16px',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0
+                          }}
+                        >
+                          <div 
+                            className="flex flex-row items-center gap-2"
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              padding: '0px',
+                              gap: '8px',
+                              flex: 'none',
+                              order: 0,
+                              flexGrow: 1
+                            }}
+                          >
+                            <span 
+                              className="text-white gilroy-medium"
+                              style={{
+                                fontFamily: 'Gilroy-Medium',
+                                fontStyle: 'normal',
+                                fontWeight: 400,
+                                fontSize: '14px',
+                                lineHeight: '100%',
+                                color: '#FFFFFF',
+                                flex: 'none',
+                                order: 0,
+                                flexGrow: 0
+                              }}
+                            >
+                              Invoice Id :
+                            </span>
+                            <span 
+                              className="text-[#909090] gilroy-medium"
+                              style={{
+                                fontFamily: 'Gilroy-Medium',
+                                fontStyle: 'normal',
+                                fontWeight: 400,
+                                fontSize: '14px',
+                                lineHeight: '100%',
+                                color: '#909090',
+                                flex: 'none',
+                                order: 1,
+                                flexGrow: 0
+                              }}
+                              title={invoiceId}
+                            >
                               {displayInvoiceId}
                             </span>
                           </div>
-                          <div className="px-3 py-1 border border-[#05B353] bg-[rgba(5,179,83,0.12)] text-[#05B353] text-xs rounded-full">
+                          <div
+                            className="border border-[#05B353] rounded-full"
+                            style={{
+                              boxSizing: 'border-box',
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              padding: '8px 10px',
+                              gap: '10px',
+                              width: '64px',
+                              height: '24px',
+                              background: 'rgba(5, 179, 83, 0.12)',
+                              border: '1px solid #05B353',
+                              borderRadius: '40px',
+                              flex: 'none',
+                              order: 1,
+                              flexGrow: 0
+                            }}
+                          >
+                            <span
+                              className="text-[#05B353] gilroy-medium text-center"
+                              style={{
+                                fontFamily: 'Gilroy-Medium',
+                                fontStyle: 'normal',
+                                fontWeight: 400,
+                                fontSize: '12px',
+                                lineHeight: '100%',
+                                textAlign: 'center',
+                                color: '#05B353',
+                                flex: 'none',
+                                order: 0,
+                                flexGrow: 0
+                              }}
+                            >
                             {invoice.status === 'paid' ? 'Paid' : invoice.status}
+                            </span>
                           </div>
                         </div>
-                        <div className="flex flex-col gap-2 text-white/70 text-sm gilroy-medium">
-                          <div className="flex justify-between">
-                            <span>Date</span>
-                            <span>{new Date(invoice.paidAt || invoice.createdAt).toLocaleDateString()}</span>
+                        <div 
+                          className="w-full border-t border-[#404040]"
+                          style={{
+                            width: '100%',
+                            height: '0px',
+                            border: '1px solid #404040',
+                            flex: 'none',
+                            order: 1,
+                            alignSelf: 'stretch',
+                            flexGrow: 0
+                          }}
+                        />
+                        <div 
+                          className="flex flex-row justify-between items-center w-full"
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '0px',
+                            gap: '16px',
+                            flex: 'none',
+                            order: 2,
+                            alignSelf: 'stretch',
+                            flexGrow: 0
+                          }}
+                        >
+                          <div 
+                            className="flex flex-row items-center gap-2"
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              padding: '0px',
+                              gap: '8px',
+                              flex: 'none',
+                              order: 0,
+                              flexGrow: 1
+                            }}
+                          >
+                            <span 
+                              className="text-white gilroy-medium"
+                              style={{
+                                fontFamily: 'Gilroy-Medium',
+                                fontStyle: 'normal',
+                                fontWeight: 400,
+                                fontSize: '14px',
+                                lineHeight: '100%',
+                                color: '#FFFFFF',
+                                flex: 'none',
+                                order: 0,
+                                flexGrow: 0
+                              }}
+                            >
+                              Date
+                            </span>
+                            <span 
+                              className="text-[#909090] gilroy-medium"
+                              style={{
+                                fontFamily: 'Gilroy-Medium',
+                                fontStyle: 'normal',
+                                fontWeight: 400,
+                                fontSize: '14px',
+                                lineHeight: '100%',
+                                color: '#909090',
+                                flex: 'none',
+                                order: 1,
+                                flexGrow: 0
+                              }}
+                            >
+                              {new Date(invoice.paidAt || invoice.createdAt).toLocaleDateString()}
+                            </span>
                           </div>
-                          <div className="flex justify-between">
-                            <span>Amount</span>
-                            <span>{invoice.amount} {invoice.currency?.toUpperCase() || 'USD'}</span>
+                        </div>
+                        <div 
+                          className="flex flex-row justify-between items-center w-full"
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            padding: '0px',
+                            gap: '16px',
+                            flex: 'none',
+                            order: 3,
+                            alignSelf: 'stretch',
+                            flexGrow: 0
+                          }}
+                        >
+                          <div 
+                            className="flex flex-row items-center gap-2"
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              padding: '0px',
+                              gap: '8px',
+                              flex: 'none',
+                              order: 0,
+                              flexGrow: 1
+                            }}
+                          >
+                            <span 
+                              className="text-white gilroy-medium"
+                              style={{
+                                fontFamily: 'Gilroy-Medium',
+                                fontStyle: 'normal',
+                                fontWeight: 400,
+                                fontSize: '14px',
+                                lineHeight: '100%',
+                                color: '#FFFFFF',
+                                flex: 'none',
+                                order: 0,
+                                flexGrow: 0
+                              }}
+                            >
+                              Amount
+                            </span>
+                            <span 
+                              className="text-[#909090] gilroy-medium"
+                              style={{
+                                fontFamily: 'Gilroy-Medium',
+                                fontStyle: 'normal',
+                                fontWeight: 400,
+                                fontSize: '14px',
+                                lineHeight: '100%',
+                                color: '#909090',
+                                flex: 'none',
+                                order: 1,
+                                flexGrow: 0
+                              }}
+                            >
+                              {invoice.amount} {invoice.currency?.toUpperCase() || 'USD'}
+                            </span>
                           </div>
                         </div>
                         {invoice.invoiceUrl && (
+                          <>
+                            <div 
+                              className="w-full border-t border-[#404040]"
+                              style={{
+                                width: '100%',
+                                height: '0px',
+                                border: '1px solid #404040',
+                                flex: 'none',
+                                order: 4,
+                                alignSelf: 'stretch',
+                                flexGrow: 0
+                              }}
+                            />
                           <a
                             href={invoice.invoiceUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="mt-2 w-full bg-white text-[#0A0A0A] px-4 py-2 rounded-full text-sm font-normal gilroy-semibold text-center hover:bg-gray-100 transition-colors"
-                          >
-                            Download PDF
-                          </a>
+                              className="w-full bg-white text-[#0A0A0A] rounded-full flex flex-row justify-center items-center gap-1 hover:bg-gray-100 transition-colors"
+                              style={{
+                                boxSizing: 'border-box',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                padding: '10px 12px',
+                                gap: '8px',
+                                width: '100%',
+                                height: '36px',
+                                background: '#FFFFFF',
+                                border: '1px solid #FFFFFF',
+                                borderRadius: '100px',
+                                flex: 'none',
+                                order: 5,
+                                alignSelf: 'stretch',
+                                flexGrow: 0
+                              }}
+                            >
+                              <div
+                                className="relative"
+                                style={{
+                                  width: '16px',
+                                  height: '16px',
+                                  flex: 'none',
+                                  order: 0,
+                                  flexGrow: 0
+                                }}
+                              >
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+                                  <path d="M6 1V8M6 8L3 5M6 8L9 5" stroke="#0A0A0A" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M1 10H11" stroke="#0A0A0A" strokeWidth="1" strokeLinecap="round"/>
+                                </svg>
+                              </div>
+                              <span
+                                className="text-[#0A0A0A] gilroy-semibold"
+                                style={{
+                                  fontFamily: 'Gilroy-SemiBold',
+                                  fontStyle: 'normal',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  lineHeight: '100%',
+                                  color: '#0A0A0A',
+                                  flex: 'none',
+                                  order: 1,
+                                  flexGrow: 0
+                                }}
+                              >
+                                PDF
+                              </span>
+                            </a>
+                          </>
                         )}
                       </div>
                     );
                   })
                 ) : (
-                  <div className="border border-white/30 rounded-lg px-4 py-6 text-center text-white/50 text-sm">
-                    No billing history available yet
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Card */}
-          <div className="relative bg-[#141414] rounded-[10px] p-6 flex flex-col gap-6 overflow-hidden">
-            <div
-              className="absolute pointer-events-none"
+                  <div 
+                    className="border border-white/30 rounded-lg w-full"
               style={{
-                width: '620px',
-                height: '360px',
-                left: '-160px',
-                top: '120px',
-                background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                filter: 'blur(100px)',
-                transform: 'rotate(-30deg)',
-                zIndex: 0
-              }}
-            />
-
-            <div className="relative z-10 flex flex-col gap-6">
-              <Image src="/logo/navlogo-mob.svg" alt="Inspired Analyst" width={160} height={30} className="w-[160px] h-auto" />
-              <p className="text-white text-sm gilroy-medium leading-[130%]">
-                I simplify stocks, crypto, and data science with humor and clarity. My content turns complex ideas into practical tips—helping you stand out, level up, and crush your goals without the boring jargon.
-              </p>
-              <div className="flex flex-col gap-3 text-white/80 text-sm gilroy-medium">
-                <span className="text-white text-base gilroy-semibold">General</span>
-                <div className="flex flex-col gap-2">
-                  <span>Research</span>
-                  <span>Calculator</span>
-                  <span>Portfolio</span>
-                  <span>Shariah</span>
-                  <span>Our Team</span>
-                  <span>Bootcamp</span>
+                      boxSizing: 'border-box',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      padding: '16px 12px',
+                      gap: '16px',
+                      border: '1px solid rgba(255, 255, 255, 0.3)',
+                      borderRadius: '8px',
+                      flex: 'none',
+                      alignSelf: 'stretch',
+                      flexGrow: 0
+                    }}
+                  >
+                    <div className="text-white/50 text-sm text-center">
+                      No billing history available yet
                 </div>
               </div>
-              <div className="border-t border-white/20 pt-4 flex flex-col gap-3 text-white/80 text-xs gilroy-medium">
-                <span>© {new Date().getFullYear()} Inspired Analyst. All Rights Reserved</span>
-                <div className="flex flex-col gap-2">
-                  <span>Privacy Policy</span>
-                  <span>Terms &amp; Conditions</span>
+                )}
                 </div>
               </div>
             </div>
-          </div>
+
         </div>
       </div>
 

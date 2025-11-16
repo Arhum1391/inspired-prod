@@ -86,7 +86,7 @@ export default function ResearchPage() {
   const renderResearchCard = (card: ResearchReport, key: string) => (
     <div
       key={key}
-      className="relative overflow-hidden"
+      className="relative overflow-hidden research-card"
       style={{
         boxSizing: 'border-box',
         display: 'flex',
@@ -126,6 +126,7 @@ export default function ResearchPage() {
           height: '173px',
           zIndex: 1,
         }}
+        className="card-inner"
       >
         <div
           style={{
@@ -175,6 +176,7 @@ export default function ResearchPage() {
             color: '#FFFFFF',
             margin: 0,
           }}
+          className="card-title"
         >
           {card.title}
         </h3>
@@ -189,6 +191,7 @@ export default function ResearchPage() {
             color: '#FFFFFF',
             margin: 0,
           }}
+          className="card-desc"
         >
           {card.description}
         </p>
@@ -202,6 +205,7 @@ export default function ResearchPage() {
             gap: '16px',
             width: '366px',
           }}
+          className="card-meta"
         >
           <span
             style={{
@@ -237,6 +241,7 @@ export default function ResearchPage() {
             gap: '16px',
             width: '366px',
           }}
+          className="card-cta"
         >
           <button
             type="button"
@@ -321,48 +326,295 @@ export default function ResearchPage() {
         button:active {
           border: inherit !important;
         }
+        /* Research hero mobile styles */
+        @media (max-width: 768px) {
+          .research-hero-container {
+            padding-top: 2px !important;
+            padding-bottom: 64px !important;
+          }
+          /* Move main section down for unpaid (guest) users on mobile */
+          .research-hero-container.is-guest {
+            padding-top: 96px !important;
+          }
+          .research-section-wrapper {
+            width: 100% !important;
+            max-width: 375px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .research-hero-logo {
+            display: none !important;
+          }
+          .research-title {
+            width: 343px !important;
+            height: auto !important;
+            min-height: 38px !important;
+            margin-top: 0 !important;
+            font-size: 32px !important;
+            line-height: 120% !important;
+          }
+          /* Guest spacing for title/description on mobile */
+          .research-hero-container.is-guest .research-title {
+            margin-top: 64px !important;
+          }
+          .research-description {
+            width: 343px !important;
+            margin-top: 12px !important;
+          }
+          .research-hero-container.is-guest .research-description {
+            margin-top: 36px !important;
+          }
+          .research-bullets {
+            width: 343px !important;
+            height: auto !important;
+            gap: 12px !important;
+            margin-top: 16px !important;
+          }
+          .research-bullet-row {
+            width: 343px !important;
+            height: 16px !important;
+          }
+          .research-bullet-text {
+            width: auto !important;
+            height: 16px !important;
+            white-space: normal !important;
+          }
+          .research-cta {
+            width: 343px !important;
+            height: auto !important;
+            gap: 12px !important;
+            margin-top: 24px !important;
+            flex-direction: column !important;
+          }
+          .research-cta button {
+            width: 343px !important;
+            min-width: 343px !important;
+          }
+          /* Hide custom mobile ellipses in favor of shared SVG background */
+          .research-mobile-ellipse {
+            display: none !important;
+          }
+          /* Reduce background SVG size/position on mobile */
+          .shariah-background-svg {
+            width: 1100px !important;
+            height: 565px !important;
+            left: -400px !important;
+            top: -120px !important;
+            rotate: -8deg !important;
+          }
+          /* Hide toggle label text on mobile */
+          .research-toggle-label {
+            display: none !important;
+          }
+          /* Stack research rows as column on mobile */
+          .research-cards-row {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 20px !important;
+            width: 373px !important;
+          }
+          /* Mobile card sizing */
+          .research-card {
+            width: 373px !important;
+            height: 273px !important;
+            padding: 20px 12px !important;
+            border-radius: 10px !important;
+          }
+          /* Ensure cards container aligns to search width */
+          .research-cards-container {
+            width: 373px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          /* Fit card contents within 343x273 */
+          .card-inner {
+            width: 329px !important;
+            height: auto !important;
+            gap: 12px !important;
+          }
+          .card-title {
+            width: 339px !important;
+            white-space: normal !important;
+          }
+          .card-desc {
+            width: 339px !important;
+            white-space: normal !important;
+          }
+          .card-meta {
+            width: 339px !important;
+          }
+          .card-cta {
+            width: 339px !important;
+          }
+          .research-load-more {
+            width: 373px !important;
+            min-width: 343px !important;
+          }
+          /* Guest CTA tile mobile responsive */
+          .research-hero-container.is-guest .guest-cta-tile {
+            width: 100% !important;
+            max-width: 343px !important;
+            height: auto !important;
+            padding: 20px 12px !important;
+            border-radius: 10px !important;
+            margin: 0 auto 120px !important;
+          }
+          .research-hero-container.is-guest .guest-cta-ellipse {
+            display: none !important;
+          }
+          .research-hero-container.is-guest .guest-cta-inner {
+            gap: 12px !important;
+          }
+          .research-hero-container.is-guest .guest-cta-text {
+            width: 100% !important;
+            height: auto !important;
+            gap: 16px !important;
+          }
+          .research-hero-container.is-guest .guest-cta-text h2 {
+            width: 100% !important;
+            height: auto !important;
+            font-size: 24px !important;
+            line-height: 120% !important;
+            text-align: center !important;
+          }
+          .research-hero-container.is-guest .guest-cta-text p {
+            width: 100% !important;
+            height: auto !important;
+            font-size: 14px !important;
+            line-height: 130% !important;
+            text-align: center !important;
+          }
+          .research-hero-container.is-guest .guest-cta-actions {
+            width: 100% !important;
+            height: auto !important;
+            margin-top: 16px !important;
+            gap: 12px !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+          }
+          .research-hero-container.is-guest .guest-cta-actions button {
+            width: 100% !important;
+            min-width: 100% !important;
+          }
+          /* Pricing-like FAQ mobile styles */
+          .research-faq-header {
+            width: 373px !important;
+            align-items: center !important;
+            gap: 16px !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            height: auto !important;
+            max-width: 373px !important;
+            display: flex !important;
+          }
+          .research-faq-header.is-auth {
+            /* Move heading further up on mobile when authenticated */
+            padding-top: 10px !important;
+            margin-top: 100px !important;
+          }
+          .research-faq-header.is-guest {
+            /* Nudge up on mobile for guests too */
+            margin-top: -12px !important;
+          }
+          .research-faq-header h2 {
+            text-align: center !important;
+            font-size: 24px !important;
+            line-height: 130% !important;
+            width: 100% !important;
+            max-width: 373px !important;
+            height: auto !important;
+            min-height: 31px !important;
+            margin: 0 !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            overflow-wrap: anywhere !important;
+          }
+          .research-faq-header p {
+            text-align: center !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            width: 100% !important;
+            max-width: 373px !important;
+            height: auto !important;
+            min-height: 16px !important;
+            margin: 0 !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            overflow-wrap: anywhere !important;
+          }
+          /* Extra specificity to beat inline styles */
+          .research-faq-title {
+            width: 100% !important;
+            max-width: 373px !important;
+            height: auto !important;
+            min-height: 31px !important;
+            font-size: 24px !important;
+            line-height: 130% !important;
+            text-align: center !important;
+            margin: 0 !important;
+            align-self: center !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            overflow-wrap: anywhere !important;
+          }
+          .research-faq-desc {
+            width: 100% !important;
+            max-width: 373px !important;
+            height: auto !important;
+            min-height: 16px !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            text-align: center !important;
+            margin: 0 !important;
+            align-self: center !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+            overflow-wrap: anywhere !important;
+          }
+          .research-faq-container {
+            width: 100% !important;
+            max-width: 373px !important;
+            gap: 16px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+          }
+          .research-faq-item {
+            width: 100% !important;
+            max-width: 373px !important;
+            padding: 20px !important;
+            border-radius: 16px !important;
+          }
+        }
       `}} />
       <Navbar />
       
       {/* Background SVG Gradient */}
-      <svg 
-        className="absolute pointer-events-none"
-        style={{
-          left: '-500px',
-          top: '-80px',
-          width: '1686.4px',
-          height: '934.41px',
-          rotate: '-12deg',
-          zIndex: 0,
-        }}
-        viewBox="0 0 635 728" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="xMidYMid meet"
-      >
-        <g filter="url(#filter0_f_research)">
-          <path d="M-323.419 -963.166C-339.01 -913.804 -341.542 -793.642 -219.641 -721.835C68.1756 -552.293 47.4452 -238.748 50.2608 -183.474C54.8056 -94.2532 60.7748 113.384 232.274 209.929C361.298 282.563 423.638 276.679 416.511 277.203L434.837 526.531C384.709 530.216 273.76 520.175 109.635 427.781C-199.701 253.642 -196.356 -110.679 -199.416 -170.757C-204.206 -264.783 -195.12 -417.24 -346.527 -506.428C-604.593 -658.445 -598.186 -923.295 -561.811 -1038.46L-323.419 -963.166Z" fill="url(#paint0_linear_research)" opacity="1"/>
+      <svg className="absolute pointer-events-none shariah-background-svg" viewBox="0 0 635 728" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style={{left: '-500px', top: '-80px', width: '1686.4px', height: '934.41px', rotate: '-12deg', zIndex: 0}}>
+        <g filter="url(#filter0_f_shariah)">
+          <path d="M-323.419 -963.166C-339.01 -913.804 -341.542 -793.642 -219.641 -721.835C68.1756 -552.293 47.4452 -238.748 50.2608 -183.474C54.8056 -94.2532 60.7748 113.384 232.274 209.929C361.298 282.563 423.638 276.679 416.511 277.203L434.837 526.531C384.709 530.216 273.76 520.175 109.635 427.781C-199.701 253.642 -196.356 -110.679 -199.416 -170.757C-204.206 -264.783 -195.12 -417.24 -346.527 -506.428C-604.593 -658.445 -598.186 -923.295 -561.811 -1038.46L-323.419 -963.166Z" fill="url(#paint0_linear_shariah)" opacity="1"></path>
         </g>
         <defs>
-          <filter id="filter0_f_research" x="-780.181" y="-1238.46" width="1415.02" height="1965.62" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-            <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-            <feGaussianBlur stdDeviation="75" result="effect1_foregroundBlur_research"/>
+          <filter id="filter0_f_shariah" x="-780.181" y="-1238.46" width="1415.02" height="1965.62" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <feFlood floodOpacity="0" result="BackgroundImageFix"></feFlood>
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"></feBlend>
+            <feGaussianBlur stdDeviation="75" result="effect1_foregroundBlur_shariah"></feGaussianBlur>
           </filter>
-          <linearGradient id="paint0_linear_research" x1="-442.615" y1="-1000.81" x2="328.493" y2="452.779" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#3813F3"/>
-            <stop offset="0.307692" stopColor="#DE50EC"/>
-            <stop offset="0.543269" stopColor="#B9B9E9"/>
-            <stop offset="0.740385" stopColor="#4B25FD"/>
-            <stop offset="0.9999" stopColor="#05B0B3"/>
+          <linearGradient id="paint0_linear_shariah" x1="-442.615" y1="-1000.81" x2="328.493" y2="452.779" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#3813F3"></stop>
+            <stop offset="0.307692" stopColor="#DE50EC"></stop>
+            <stop offset="0.543269" stopColor="#B9B9E9"></stop>
+            <stop offset="0.740385" stopColor="#4B25FD"></stop>
+            <stop offset="0.9999" stopColor="#05B0B3"></stop>
           </linearGradient>
         </defs>
       </svg>
       
       {/* Main Content */}
       <div className="relative z-10">
-        <div className="min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 flex items-start">
-          <div className="max-w-7xl mx-auto w-full relative">
+        <div className={`min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 flex items-start research-hero-container ${isAuthenticated ? 'is-auth' : 'is-guest'}`}>
+          <div className="max-w-7xl mx-auto w-full relative research-section-wrapper">
             {/* Vector Logo */}
             <svg
               width="538"
@@ -378,6 +630,7 @@ export default function ResearchPage() {
                 pointerEvents: 'none',
                 zIndex: 1,
               }}
+              className="research-hero-logo"
             >
               <g opacity="0.5">
                 <path d="M485.003 448.627C449.573 580.853 314.193 659.464 182.624 624.21C51.0543 588.956 -26.8824 453.187 8.54736 320.961C43.9772 188.735 179.378 110.129 310.947 145.383L478.648 190.318C517.106 200.623 558.36 174.855 558.36 174.855L485.003 448.627ZM266.707 306.134C223.047 294.435 178.123 320.521 166.366 364.399C154.609 408.277 180.471 453.33 224.131 465.029C267.791 476.727 312.715 450.641 324.472 406.763L345.76 327.316L266.707 306.134Z" fill="url(#paint0_linear_vector_logo_research)"/>
@@ -414,6 +667,7 @@ export default function ResearchPage() {
                 position: 'relative',
                 zIndex: 2,
               }}
+              className="research-title"
             >
               {isAuthenticated 
                 ? 'Latest Research - Clear, Actionable & Data-Backed'
@@ -432,12 +686,15 @@ export default function ResearchPage() {
                 color: '#FFFFFF',
                 marginTop: isAuthenticated ? '0px' : '24px',
               }}
+              className="research-description"
             >
               {isAuthenticated
                 ? 'Access full reports covering market trends, equity insights, and Shariah-compliant opportunities - updated regularly for serious investors.'
                 : 'Full research library, Position Sizing Calculator (save scenarios), portfolio analytics, and Shariah project details. Cancel anytime.'
               }
             </p>
+
+            {/* Mobile-only gradient ellipses were removed in favor of shared SVG background */}
             {/* Bullet Points */}
             {!isAuthenticated && (
             <div
@@ -455,6 +712,7 @@ export default function ResearchPage() {
                 flexGrow: 0,
                 marginTop: '24px',
               }}
+              className="research-bullets"
             >
               {/* Bullet 1 */}
               <div
@@ -471,6 +729,7 @@ export default function ResearchPage() {
                   alignSelf: 'stretch',
                   flexGrow: 0,
                 }}
+                className="research-bullet-row"
               >
                 <div
                   style={{
@@ -497,6 +756,7 @@ export default function ResearchPage() {
                     order: 1,
                     flexGrow: 0,
                   }}
+                  className="research-bullet-text"
                 >
                   Deep-dive reports with downloadable PDFs
                 </span>
@@ -517,6 +777,7 @@ export default function ResearchPage() {
                   alignSelf: 'stretch',
                   flexGrow: 0,
                 }}
+                className="research-bullet-row"
               >
                 <div
                   style={{
@@ -543,6 +804,7 @@ export default function ResearchPage() {
                     order: 1,
                     flexGrow: 0,
                   }}
+                  className="research-bullet-text"
                 >
                   Position sizing tailored to your risk
                 </span>
@@ -563,6 +825,7 @@ export default function ResearchPage() {
                   alignSelf: 'stretch',
                   flexGrow: 0,
                 }}
+                className="research-bullet-row"
               >
                 <div
                   style={{
@@ -589,6 +852,7 @@ export default function ResearchPage() {
                     order: 1,
                     flexGrow: 0,
                   }}
+                  className="research-bullet-text"
                 >
                   Portfolio allocation & P/L tracking
                 </span>
@@ -609,6 +873,7 @@ export default function ResearchPage() {
                   alignSelf: 'stretch',
                   flexGrow: 0,
                 }}
+                className="research-bullet-row"
               >
                 <div
                   style={{
@@ -635,6 +900,7 @@ export default function ResearchPage() {
                     order: 1,
                     flexGrow: 0,
                   }}
+                  className="research-bullet-text"
                 >
                   Shariah methodology & detailed screens
                 </span>
@@ -657,6 +923,7 @@ export default function ResearchPage() {
                 flexGrow: 0,
                 marginTop: '32px',
               }}
+              className="research-cta"
             >
               {/* Button 1 */}
               <button
@@ -726,6 +993,7 @@ export default function ResearchPage() {
                 width: '100%',
                 marginTop: '220px',
               }}
+              className="research-body"
             >
               <div
                 style={{
@@ -737,6 +1005,7 @@ export default function ResearchPage() {
                   maxWidth: '1282px',
                   margin: '0 auto',
                 }}
+                className="research-body-inner"
               >
                 <div
                   style={{
@@ -746,6 +1015,7 @@ export default function ResearchPage() {
                     gap: '24px',
                     width: '100%',
                   }}
+                  className="research-body-head"
                 >
                   <h2
                     style={{
@@ -796,6 +1066,7 @@ export default function ResearchPage() {
                       borderRadius: '7px',
                       border: '1px solid #1F1F1F',
                     }}
+                    className="research-search"
                   >
                     <svg
                       width="16"
@@ -850,6 +1121,7 @@ export default function ResearchPage() {
                     gap: '24px',
                     width: '100%',
                   }}
+                  className="research-filter-row"
                 >
                   <div
                     style={{
@@ -866,6 +1138,7 @@ export default function ResearchPage() {
                         alignItems: 'center',
                         gap: '8px',
                       }}
+                      className="research-filters-group"
                     >
                       {FILTER_OPTIONS.map(option => {
                         const isActive = activeFilter === option;
@@ -957,6 +1230,7 @@ export default function ResearchPage() {
                           textAlign: 'center',
                           whiteSpace: 'nowrap',
                         }}
+                        className="research-toggle-label"
                       >
                         Shariah-compliant only
                       </span>
@@ -998,6 +1272,7 @@ export default function ResearchPage() {
                           flexWrap: 'nowrap',
                           justifyContent: rowCards.length === 3 ? 'space-between' : 'flex-start',
                         }}
+                        className="research-cards-row"
                       >
                         {rowCards.map((card, cardIndex) =>
                           renderResearchCard(card, `${rowIndex}-${cardIndex}-${card.title}`)
@@ -1071,6 +1346,7 @@ export default function ResearchPage() {
                       lineHeight: '100%',
                       color: '#0A0A0A',
                     }}
+                    className="research-load-more"
                   >
                     Load More
                   </button>
@@ -1090,6 +1366,7 @@ export default function ResearchPage() {
                 width: '100%',
                 marginTop: '220px',
               }}
+              className="research-body"
             >
               <div
                 style={{
@@ -1101,6 +1378,7 @@ export default function ResearchPage() {
                   maxWidth: '1282px',
                   margin: '0 auto',
                 }}
+                className="research-body-inner research-body-head"
               >
                 <h2
                   style={{
@@ -1143,11 +1421,12 @@ export default function ResearchPage() {
                   justifyContent: 'space-between',
                   overflowX: 'auto',
                 }}
+                className="research-cards-row"
               >
                 {previewCards.map((card, index) => (
                   <div
                     key={card.title}
-                    className="relative overflow-hidden"
+                    className="relative overflow-hidden research-card"
                     style={{
                       boxSizing: 'border-box',
                       display: 'flex',
@@ -1406,7 +1685,7 @@ export default function ResearchPage() {
             {/* Ready to unlock full access Tile */}
             {!isAuthenticated && (
             <div
-              className="relative overflow-hidden"
+              className="relative overflow-hidden guest-cta-tile"
               style={{
                 width: '1064px',
                 height: '247px',
@@ -1434,7 +1713,7 @@ export default function ResearchPage() {
 
               {/* Gradient Ellipse - Top Left */}
               <div 
-                className="absolute pointer-events-none"
+                className="absolute pointer-events-none guest-cta-ellipse"
                 style={{
                   width: '588px',
                   height: '588px',
@@ -1452,7 +1731,7 @@ export default function ResearchPage() {
 
               {/* Gradient Ellipse - Bottom Right */}
               <div 
-                className="absolute pointer-events-none"
+                className="absolute pointer-events-none guest-cta-ellipse"
                 style={{
                   width: '588px',
                   height: '588px',
@@ -1469,9 +1748,10 @@ export default function ResearchPage() {
               ></div>
               
               {/* Content */}
-              <div className="relative z-10 w-full h-full flex flex-col items-center justify-center" style={{ gap: '10px' }}>
+              <div className="relative z-10 w-full h-full flex flex-col items-center justify-center guest-cta-inner" style={{ gap: '10px' }}>
                 {/* Frame 81 */}
                 <div
+                  className="guest-cta-text"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -1532,6 +1812,7 @@ export default function ResearchPage() {
                 
                 {/* Buttons Container */}
                 <div
+                  className="guest-cta-actions"
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
@@ -1623,6 +1904,7 @@ export default function ResearchPage() {
                 marginRight: 'auto',
                 marginTop: isAuthenticated ? '220px' : '0px',
               }}
+              className={`research-faq-header ${isAuthenticated ? 'is-auth' : 'is-guest'}`}
             >
               {/* Heading */}
               <h2
@@ -1642,6 +1924,7 @@ export default function ResearchPage() {
                   flexGrow: 0,
                   margin: 0,
                 }}
+                className="research-faq-title"
               >
                 Frequently Asked Questions
               </h2>
@@ -1664,6 +1947,7 @@ export default function ResearchPage() {
                   flexGrow: 0,
                   margin: 0,
                 }}
+                className="research-faq-desc"
               >
                 Everything you need to know about your subscription.
               </p>
@@ -1680,10 +1964,11 @@ export default function ResearchPage() {
                 marginLeft: 'auto',
                 marginRight: 'auto',
               }}
+            className="research-faq-container"
             >
               {/* FAQ Tile 1 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden research-faq-item"
                 style={{
                   width: '1064px',
                   height: expandedTiles[0] ? 'auto' : '68px',
@@ -1755,7 +2040,7 @@ export default function ResearchPage() {
 
               {/* FAQ Tile 2 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden research-faq-item"
                 style={{
                   width: '1064px',
                   height: expandedTiles[1] ? 'auto' : '68px',
@@ -1827,7 +2112,7 @@ export default function ResearchPage() {
 
               {/* FAQ Tile 3 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden research-faq-item"
                 style={{
                   width: '1064px',
                   height: expandedTiles[2] ? 'auto' : '68px',
@@ -1899,7 +2184,7 @@ export default function ResearchPage() {
 
               {/* FAQ Tile 4 */}
               <div
-                className="relative overflow-hidden"
+                className="relative overflow-hidden research-faq-item"
                 style={{
                   width: '1064px',
                   height: expandedTiles[3] ? 'auto' : '68px',

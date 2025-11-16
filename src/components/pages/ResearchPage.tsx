@@ -329,12 +329,12 @@ export default function ResearchPage() {
         /* Research hero mobile styles */
         @media (max-width: 768px) {
           .research-hero-container {
-            padding-top: 2px !important;
+            padding-top: 148px !important;
             padding-bottom: 64px !important;
           }
           /* Move main section down for unpaid (guest) users on mobile */
           .research-hero-container.is-guest {
-            padding-top: 96px !important;
+            padding-top: 120px !important;
           }
           .research-section-wrapper {
             width: 100% !important;

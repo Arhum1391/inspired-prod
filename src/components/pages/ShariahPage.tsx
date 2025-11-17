@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
+import type { ShariahTile } from '@/types/admin';
 
 export default function ShariahPage() {
 
@@ -20,6 +21,9 @@ export default function ShariahPage() {
   const [showMethodologyPopup, setShowMethodologyPopup] = useState(false);
   const popupContentRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
+  const [tiles, setTiles] = useState<ShariahTile[]>([]);
+  const [tilesLoading, setTilesLoading] = useState(true);
+  const [tilesError, setTilesError] = useState<string | null>(null);
 
   // All hooks must be called before any conditional returns
   useEffect(() => {
@@ -45,6 +49,388 @@ export default function ShariahPage() {
       };
     }
   }, [showMethodologyPopup]);
+
+  useEffect(() => {
+    const fetchTiles = async () => {
+      try {
+        setTilesLoading(true);
+        const response = await fetch('/api/shariah-tiles');
+        if (!response.ok) {
+          throw new Error('Failed to load Shariah tiles');
+        }
+        const data = await response.json();
+        setTiles(data);
+        setTilesError(null);
+      } catch (error) {
+        console.error('Failed to load Shariah tiles:', error);
+        setTilesError('Unable to load Shariah projects right now.');
+      } finally {
+        setTilesLoading(false);
+      }
+    };
+
+    fetchTiles();
+  }, []);
+
+  const getDetailPath = (tile: ShariahTile) =>
+    tile.detailPath?.trim() && tile.detailPath.startsWith('/shariah/')
+      ? tile.detailPath
+      : `/shariah/${tile.slug}`;
+
+  const renderTile = (tile: ShariahTile) => {
+    const detailPath = getDetailPath(tile);
+    return (
+      <div
+        key={tile._id ?? tile.slug}
+        className="relative overflow-hidden shariah-preview-tile"
+        style={{
+          boxSizing: 'border-box',
+          width: '414px',
+          height: '392px',
+          borderRadius: '16px',
+          flex: 'none',
+          flexGrow: 0,
+        }}
+      >
+        <div
+          className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
+          style={{
+            borderRadius: '16px',
+            background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+          }}
+        >
+          <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
+        </div>
+
+        <div
+          className="absolute pointer-events-none shariah-preview-gradient"
+          style={{
+            width: '588px',
+            height: '588px',
+            left: '399px',
+            top: '-326px',
+            background:
+              'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(100px)',
+            transform: 'rotate(90deg)',
+            flex: 'none',
+            flexGrow: 0,
+            zIndex: 0,
+            borderRadius: '50%',
+          }}
+        ></div>
+
+        <div
+          className="relative z-10 shariah-preview-content"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            padding: '24px',
+            gap: '8px',
+            isolation: 'isolate',
+            width: '100%',
+            height: '100%',
+            filter: isAuthenticated ? 'none' : 'blur(8px)',
+            pointerEvents: isAuthenticated ? 'auto' : 'none',
+          }}
+        >
+          <div
+            className="shariah-preview-badge"
+            style={{
+              background: 'rgba(5, 176, 179, 0.12)',
+              border: '2px solid rgba(5, 176, 179, 0.72)',
+              borderRadius: '25px',
+              padding: '3px 12px',
+              textAlign: 'center',
+              display: 'inline-block',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: 'Gilroy-SemiBold, sans-serif',
+                color: 'rgba(5, 176, 179, 1)',
+                fontSize: '12px',
+              }}
+            >
+              {tile.category}
+            </span>
+          </div>
+
+          <h3
+            className="shariah-preview-heading"
+            style={{
+              width: '366px',
+              height: '24px',
+              fontFamily: 'Gilroy-SemiBold',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '24px',
+              lineHeight: '100%',
+              color: '#FFFFFF',
+              flex: 'none',
+              margin: 0,
+              marginTop: '4px',
+            }}
+          >
+            {tile.title}
+          </h3>
+
+          <p
+            className="shariah-preview-desc"
+            style={{
+              color: '#FFFFFF',
+              fontFamily: 'Gilroy-Medium, sans-serif',
+              fontSize: '16px',
+              lineHeight: '130%',
+              margin: 0,
+              marginTop: '5px',
+            }}
+          >
+            {tile.description}
+          </p>
+
+          <div
+            className="shariah-preview-compliance"
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              padding: '0px',
+              gap: '8px',
+              width: '366px',
+              height: '108px',
+              flex: 'none',
+              alignSelf: 'stretch',
+              flexGrow: 0,
+              marginTop: '8px',
+            }}
+          >
+            <h4
+              className="shariah-preview-compliance-title"
+              style={{
+                width: '366px',
+                height: '18px',
+                fontFamily: 'Gilroy-Medium',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: '18px',
+                lineHeight: '100%',
+                color: '#FFFFFF',
+                flex: 'none',
+                margin: 0,
+              }}
+            >
+              Compliance Rationale:
+            </h4>
+
+            <div
+              className="shariah-preview-bullets"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: '0px',
+                gap: '8px',
+                width: '366px',
+                height: '80px',
+                flex: 'none',
+                alignSelf: 'stretch',
+                flexGrow: 0,
+                marginTop: '5px',
+              }}
+            >
+              {tile.compliancePoints?.map((point, index) => (
+                <div
+                  key={`${tile.slug}-point-${index}`}
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: '0px',
+                    gap: '8px',
+                    width: '366px',
+                    height: '14px',
+                    flex: 'none',
+                    alignSelf: 'stretch',
+                    flexGrow: 0,
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      background: '#FFFFFF',
+                      borderRadius: '50%',
+                      flex: 'none',
+                    }}
+                  />
+                  <span
+                    style={{
+                      width: '320px',
+                      minHeight: '14px',
+                      fontFamily: 'Gilroy-Regular',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      color: '#FFFFFF',
+                      flex: 'none',
+                    }}
+                  >
+                    {point}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div
+            className="shariah-preview-footer"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '366px',
+              marginTop: '15px',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: 'Gilroy-Medium, sans-serif',
+                fontSize: '14px',
+                color: '#FFFFFF',
+              }}
+            >
+              {tile.footerLeft}
+            </span>
+            <span
+              style={{
+                fontFamily: 'Gilroy-Medium, sans-serif',
+                fontSize: '14px',
+                color: '#FFFFFF',
+              }}
+            >
+              {tile.footerRight}
+            </span>
+          </div>
+
+          <button
+            style={{
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '6px 16px',
+              gap: '8px',
+              width: '366px',
+              height: '36px',
+              border: '1px solid #FFFFFF',
+              borderRadius: '100px',
+              background: 'transparent',
+              color: '#FFFFFF',
+              cursor: 'pointer',
+              marginTop: '15px',
+              fontFamily: 'Gilroy-SemiBold, sans-serif',
+              fontSize: '14px',
+              outline: 'none',
+            }}
+            onClick={() => {
+              if (isAuthenticated) {
+                router.push(detailPath);
+              }
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.currentTarget.style.border = '1px solid #FFFFFF';
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = 'none';
+              e.currentTarget.style.border = '1px solid #FFFFFF';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.border = '1px solid #FFFFFF';
+            }}
+          >
+            {tile.ctaLabel || 'View Details'}
+            <Image
+              src="/logo/backhome.png"
+              alt={tile.ctaLabel || 'View Details'}
+              width={16}
+              height={16}
+              className="w-4 h-4"
+            />
+          </button>
+        </div>
+
+        {!isAuthenticated && (
+          <>
+            <div
+              className="shariah-preview-tint-overlay"
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'rgba(31, 31, 31, 0.8)',
+                backdropFilter: 'blur(4px)',
+                WebkitBackdropFilter: 'blur(4px)',
+                borderRadius: '16px',
+                zIndex: 15,
+                pointerEvents: 'none',
+              }}
+            />
+            <div
+              className="shariah-preview-overlay"
+              style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '12px',
+                zIndex: 20,
+                pointerEvents: 'none',
+              }}
+            >
+              <h2
+                className="shariah-preview-title"
+                style={{
+                  fontFamily: 'Gilroy-SemiBold',
+                  fontSize: '32px',
+                  fontWeight: 400,
+                  color: '#FFFFFF',
+                  margin: 0,
+                  textAlign: 'center',
+                }}
+              >
+                {tile.lockedTitle || 'Preview Only'}
+              </h2>
+              <p
+                className="shariah-preview-description"
+                style={{
+                  fontFamily: 'Gilroy-Medium',
+                  fontSize: '16px',
+                  fontWeight: 400,
+                  color: '#FFFFFF',
+                  margin: 0,
+                  textAlign: 'center',
+                }}
+              >
+                {tile.lockedDescription || 'Detailed Screening Available with Premium'}
+              </p>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  };
 
   const toggleTile = (index: number) => {
     setExpandedTiles(prev => ({
@@ -1515,1526 +1901,23 @@ export default function ShariahPage() {
                 marginRight: 'auto',
               }}
             >
-              <div
-                className="flex flex-row gap-6 shariah-tiles-wrapper"
-              >
-              {/* Tile 1 */}
-              <div
-                className="relative overflow-hidden shariah-preview-tile"
-                style={{
-                  boxSizing: 'border-box',
-                  width: '414px',
-                  height: '392px',
-                  borderRadius: '16px',
-                  flex: 'none',
-                  order: 0,
-                  flexGrow: 0,
-                }}
-              >
-                {/* Curved Gradient Border */}
-                <div 
-                  className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
-                  style={{
-                    borderRadius: '16px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
-                  }}
-                >
-                  <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
+              {tilesLoading ? (
+                <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                  Loading Shariah projects...
                 </div>
-                
-                {/* Gradient Ellipse */}
-                <div 
-                  className="absolute pointer-events-none shariah-preview-gradient"
-                  style={{
-                    width: '588px',
-                    height: '588px',
-                    left: '399px',
-                    top: '-326px',
-                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                    filter: 'blur(100px)',
-                    transform: 'rotate(90deg)',
-                    flex: 'none',
-                    flexGrow: 0,
-                    zIndex: 0,
-                    borderRadius: '50%'
-                  }}
-                ></div>
-                
-                {/* Content */}
-                <div
-                  className="relative z-10 shariah-preview-content"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    padding: '24px',
-                    gap: '8px',
-                    isolation: 'isolate',
-                    width: '100%',
-                    height: '100%',
-                    filter: isAuthenticated ? 'none' : 'blur(8px)',
-                    pointerEvents: isAuthenticated ? 'auto' : 'none',
-                  }}
-                >
-                  {/* Container */}
-                  <div
-                    className="shariah-preview-badge"
-                    style={{
-                      background: 'rgba(5, 176, 179, 0.12)',
-                      border: '2px solid rgba(5, 176, 179, 0.72)',
-                      borderRadius: '25px',
-                      padding: '3px 12px',
-                      textAlign: 'center',
-                      display: 'inline-block',
-                    }}
-                  >
-                    <span style={{ fontFamily: 'Gilroy-SemiBold, sans-serif', color: 'rgba(5, 176, 179, 1)', fontSize: '12px' }}>Technology</span>
-                  </div>
-                  
-                  {/* Heading */}
-                  <h3
-                    className="shariah-preview-heading"
-                    style={{
-                      width: '366px',
-                      height: '24px',
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '24px',
-                      lineHeight: '100%',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 0,
-                      flexGrow: 0,
-                      margin: 0,
-                      marginTop: '4px',
-                    }}
-                  >
-                    Ethical Tech Fund
-                  </h3>
-                  
-                  {/* Description */}
-                  <p
-                    className="shariah-preview-desc"
-                    style={{
-                      color: '#FFFFFF',
-                      fontFamily: 'Gilroy-Medium, sans-serif',
-                      fontSize: '16px',
-                      lineHeight: '130%',
-                      margin: 0,
-                      marginTop: '5px',
-                    }}
-                  >
-                    A collection of technology companies that meet strict ethical and Shariah compliance standards.
-                  </p>
-                  
-                  {/* Compliance Rationale Section */}
-                  <div
-                    className="shariah-preview-compliance"
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                      padding: '0px',
-                      gap: '8px',
-                      width: '366px',
-                      height: '108px',
-                      flex: 'none',
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                      marginTop: '8px',
-                    }}
-                  >
-                    {/* Subheading */}
-                    <h4
-                      className="shariah-preview-compliance-title"
-                      style={{
-                        width: '366px',
-                        height: '18px',
-                        fontFamily: 'Gilroy-Medium',
-                        fontStyle: 'normal',
-                        fontWeight: 400,
-                        fontSize: '18px',
-                        lineHeight: '100%',
-                        color: '#FFFFFF',
-                        flex: 'none',
-                        order: 0,
-                        alignSelf: 'stretch',
-                        flexGrow: 0,
-                        margin: 0,
-                      }}
-                    >
-                      Compliance Rationale:
-                    </h4>
-                    
-                    {/* Bullet List */}
-                    <div
-                      className="shariah-preview-bullets"
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        padding: '0px',
-                        gap: '8px',
-                        width: '366px',
-                        height: '80px',
-                        flex: 'none',
-                        order: 1,
-                        alignSelf: 'stretch',
-                        flexGrow: 0,
-                        marginTop: '5px',
-                      }}
-                    >
-                      {/* Bullet 1 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 0,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '249px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Core business activities are permissible
-                        </span>
-                      </div>
-                      
-                      {/* Bullet 2 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 1,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '199px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Debt ratio below 33% threshold
-                        </span>
-                      </div>
-                      
-                      {/* Bullet 3 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 2,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '282px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Interest income less than 5% of total revenue
-                        </span>
-                      </div>
-                      
-                      {/* Bullet 4 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 3,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '276px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Passes ethical business practices screening
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Footer Text */}
-                  <div
-                    className="shariah-preview-footer"
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '366px',
-                      marginTop: '15px',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'Gilroy-Medium, sans-serif',
-                        fontSize: '14px',
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      Shariah Compliant
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'Gilroy-Medium, sans-serif',
-                        fontSize: '14px',
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      May 15, 2023
-                    </span>
-                  </div>
-                  
-                  {/* Button */}
-                  <button
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '6px 16px',
-                      gap: '8px',
-                      width: '366px',
-                      height: '36px',
-                      border: '1px solid #FFFFFF',
-                      borderRadius: '100px',
-                      background: 'transparent',
-                      color: '#FFFFFF',
-                      cursor: 'pointer',
-                      flex: 'none',
-                      order: 0,
-                      flexGrow: 0,
-                      marginTop: '15px',
-                      fontFamily: 'Gilroy-SemiBold, sans-serif',
-                      fontSize: '14px',
-                      outline: 'none',
-                    }}
-                    onClick={() => {
-                      if (isAuthenticated) {
-                        router.push('/shariah/1');
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.outline = 'none';
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                  >
-                    View Details
-                    <Image 
-                      src="/logo/backhome.png" 
-                      alt="View Details" 
-                      width={16}
-                      height={16}
-                      className="w-4 h-4"
-                    />
-                  </button>
+              ) : tilesError ? (
+                <div className="text-center py-12 text-red-400">{tilesError}</div>
+              ) : tiles.length === 0 ? (
+                <div className="text-center py-12 text-gray-400">
+                  No Shariah tiles available yet. Check back soon.
                 </div>
-                
-                {/* Grey Tint Overlay for Preview Mode */}
-                {!isAuthenticated && (
-                <div
-                  className="shariah-preview-tint-overlay"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'rgba(31, 31, 31, 0.8)',
-                    backdropFilter: 'blur(4px)',
-                    WebkitBackdropFilter: 'blur(4px)',
-                    borderRadius: '16px',
-                    zIndex: 15,
-                    pointerEvents: 'none',
-                  }}
-                />
-                )}
-                {/* Preview Overlay */}
-                {!isAuthenticated && (
-                <div
-                  className="shariah-preview-overlay"
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '12px',
-                    zIndex: 20,
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <h2
-                    className="shariah-preview-title"
-                    style={{
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontSize: '32px',
-                      fontWeight: 400,
-                      color: '#FFFFFF',
-                      margin: 0,
-                      textAlign: 'center',
-                    }}
-                  >
-                    Preview Only
-                  </h2>
-                  <p
-                    className="shariah-preview-description"
-                    style={{
-                      fontFamily: 'Gilroy-Medium',
-                      fontSize: '16px',
-                      fontWeight: 400,
-                      color: '#FFFFFF',
-                      margin: 0,
-                      textAlign: 'center',
-                    }}
-                  >
-                    Detailed Screening Available with Premium
-                  </p>
+              ) : (
+                <div className="flex flex-row gap-6 shariah-tiles-wrapper flex-wrap">
+                  {tiles.map((tile) => renderTile(tile))}
                 </div>
-                )}
-              </div>
-              
-              {/* Tile 2 */}
-              <div
-                className="relative overflow-hidden shariah-preview-tile"
-                style={{
-                  boxSizing: 'border-box',
-                  width: '414px',
-                  height: '392px',
-                  borderRadius: '16px',
-                  flex: 'none',
-                  order: 1,
-                  flexGrow: 0,
-                }}
-              >
-                {/* Curved Gradient Border */}
-                <div 
-                  className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
-                  style={{
-                    borderRadius: '16px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
-                  }}
-                >
-                  <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
-                </div>
-                
-                {/* Gradient Ellipse */}
-                <div 
-                  className="absolute pointer-events-none shariah-preview-gradient"
-                  style={{
-                    width: '588px',
-                    height: '588px',
-                    left: '399px',
-                    top: '-326px',
-                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                    filter: 'blur(100px)',
-                    transform: 'rotate(90deg)',
-                    flex: 'none',
-                    flexGrow: 0,
-                    zIndex: 0,
-                    borderRadius: '50%'
-                  }}
-                ></div>
-                
-                {/* Content */}
-                <div
-                  className="relative z-10 shariah-preview-content"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    padding: '24px',
-                    gap: '8px',
-                    isolation: 'isolate',
-                    width: '100%',
-                    height: '100%',
-                    filter: isAuthenticated ? 'none' : 'blur(8px)',
-                    pointerEvents: isAuthenticated ? 'auto' : 'none',
-                  }}
-                >
-                  {/* Container */}
-                  <div
-                    className="shariah-preview-badge"
-                    style={{
-                      background: 'rgba(5, 176, 179, 0.12)',
-                      border: '2px solid rgba(5, 176, 179, 0.72)',
-                      borderRadius: '25px',
-                      padding: '3px 12px',
-                      textAlign: 'center',
-                      display: 'inline-block',
-                    }}
-                  >
-                    <span style={{ fontFamily: 'Gilroy-SemiBold, sans-serif', color: 'rgba(5, 176, 179, 1)', fontSize: '12px' }}>Finance</span>
-                  </div>
-                  
-                  {/* Heading */}
-                  <h3
-                    className="shariah-preview-heading"
-                    style={{
-                      width: '366px',
-                      height: '24px',
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '24px',
-                      lineHeight: '100%',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 0,
-                      flexGrow: 0,
-                      margin: 0,
-                      marginTop: '4px',
-                    }}
-                  >
-                    Sustainable Investment Fund
-                  </h3>
-                  
-                  {/* Description */}
-                  <p
-                    className="shariah-preview-desc"
-                    style={{
-                      color: '#FFFFFF',
-                      fontFamily: 'Gilroy-Medium, sans-serif',
-                      fontSize: '16px',
-                      lineHeight: '130%',
-                      margin: 0,
-                      marginTop: '5px',
-                    }}
-                  >
-                    Investment portfolio focused on companies with environmental & social governance practices.
-                  </p>
-                  
-                  {/* Compliance Rationale Section */}
-                  <div
-                    className="shariah-preview-compliance"
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                      padding: '0px',
-                      gap: '8px',
-                      width: '366px',
-                      height: '108px',
-                      flex: 'none',
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                      marginTop: '8px',
-                    }}
-                  >
-                    {/* Subheading */}
-                    <h4
-                      className="shariah-preview-compliance-title"
-                      style={{
-                        width: '366px',
-                        height: '18px',
-                        fontFamily: 'Gilroy-Medium',
-                        fontStyle: 'normal',
-                        fontWeight: 400,
-                        fontSize: '18px',
-                        lineHeight: '100%',
-                        color: '#FFFFFF',
-                        flex: 'none',
-                        order: 0,
-                        alignSelf: 'stretch',
-                        flexGrow: 0,
-                        margin: 0,
-                      }}
-                    >
-                      Compliance Rationale:
-                    </h4>
-                    
-                    {/* Bullet List */}
-                    <div
-                      className="shariah-preview-bullets"
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        padding: '0px',
-                        gap: '8px',
-                        width: '366px',
-                        height: '80px',
-                        flex: 'none',
-                        order: 1,
-                        alignSelf: 'stretch',
-                        flexGrow: 0,
-                        marginTop: '5px',
-                      }}
-                    >
-                      {/* Bullet 1 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 0,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '222px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Investments promote sustainability
-                        </span>
-                      </div>
-                      
-                      {/* Bullet 2 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 1,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '192px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Positive impact on community
-                        </span>
-                      </div>
-                      
-                      {/* Bullet 3 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 2,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '308px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Increased collaboration among local businesses
-                        </span>
-                      </div>
-                      
-                      {/* Bullet 4 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 3,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '297px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Enhanced public spaces for community events
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Footer Text */}
-                  <div
-                    className="shariah-preview-footer"
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '366px',
-                      marginTop: '15px',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'Gilroy-Medium, sans-serif',
-                        fontSize: '14px',
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      Ethically sound
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'Gilroy-Medium, sans-serif',
-                        fontSize: '14px',
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      June 10, 2023
-                    </span>
-                  </div>
-                  
-                  {/* Button */}
-                  <button
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '6px 16px',
-                      gap: '8px',
-                      width: '366px',
-                      height: '36px',
-                      border: '1px solid #FFFFFF',
-                      borderRadius: '100px',
-                      background: 'transparent',
-                      color: '#FFFFFF',
-                      cursor: 'pointer',
-                      flex: 'none',
-                      order: 0,
-                      flexGrow: 0,
-                      marginTop: '15px',
-                      fontFamily: 'Gilroy-SemiBold, sans-serif',
-                      fontSize: '14px',
-                      outline: 'none',
-                    }}
-                    onClick={() => {
-                      if (isAuthenticated) {
-                        router.push('/shariah/2');
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.outline = 'none';
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                  >
-                    View Details
-                    <Image 
-                      src="/logo/backhome.png" 
-                      alt="View Details" 
-                      width={16}
-                      height={16}
-                      className="w-4 h-4"
-                    />
-                  </button>
-                </div>
-                
-                {/* Grey Tint Overlay for Preview Mode */}
-                {!isAuthenticated && (
-                <div
-                  className="shariah-preview-tint-overlay"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'rgba(31, 31, 31, 0.8)',
-                    backdropFilter: 'blur(4px)',
-                    WebkitBackdropFilter: 'blur(4px)',
-                    borderRadius: '16px',
-                    zIndex: 15,
-                    pointerEvents: 'none',
-                  }}
-                />
-                )}
-                {/* Preview Overlay */}
-                {!isAuthenticated && (
-                <div
-                  className="shariah-preview-overlay"
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '12px',
-                    zIndex: 20,
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <h2
-                    className="shariah-preview-title"
-                    style={{
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontSize: '32px',
-                      fontWeight: 400,
-                      color: '#FFFFFF',
-                      margin: 0,
-                      textAlign: 'center',
-                    }}
-                  >
-                    Preview Only
-                  </h2>
-                  <p
-                    className="shariah-preview-description"
-                    style={{
-                      fontFamily: 'Gilroy-Medium',
-                      fontSize: '16px',
-                      fontWeight: 400,
-                      color: '#FFFFFF',
-                      margin: 0,
-                      textAlign: 'center',
-                    }}
-                  >
-                    Detailed Screening Available with Premium
-                  </p>
-                </div>
-                )}
-              </div>
-              
-              {/* Tile 3 */}
-              <div
-                className="relative overflow-hidden shariah-preview-tile"
-                style={{
-                  boxSizing: 'border-box',
-                  width: '414px',
-                  height: '392px',
-                  borderRadius: '16px',
-                  flex: 'none',
-                  order: 2,
-                  flexGrow: 0,
-                }}
-              >
-                {/* Curved Gradient Border */}
-                <div 
-                  className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
-                  style={{
-                    borderRadius: '16px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
-                  }}
-                >
-                  <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
-                </div>
-                
-                {/* Gradient Ellipse */}
-                <div 
-                  className="absolute pointer-events-none shariah-preview-gradient"
-                  style={{
-                    width: '588px',
-                    height: '588px',
-                    left: '399px',
-                    top: '-326px',
-                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                    filter: 'blur(100px)',
-                    transform: 'rotate(90deg)',
-                    flex: 'none',
-                    flexGrow: 0,
-                    zIndex: 0,
-                    borderRadius: '50%'
-                  }}
-                ></div>
-                
-                {/* Content */}
-                <div
-                  className="relative z-10 shariah-preview-content"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    padding: '24px',
-                    gap: '8px',
-                    isolation: 'isolate',
-                    width: '100%',
-                    height: '100%',
-                    filter: isAuthenticated ? 'none' : 'blur(8px)',
-                    pointerEvents: isAuthenticated ? 'auto' : 'none',
-                  }}
-                >
-                  {/* Container */}
-                  <div
-                    className="shariah-preview-badge"
-                    style={{
-                      background: 'rgba(5, 176, 179, 0.12)',
-                      border: '2px solid rgba(5, 176, 179, 0.72)',
-                      borderRadius: '25px',
-                      padding: '3px 12px',
-                      textAlign: 'center',
-                      display: 'inline-block',
-                    }}
-                  >
-                    <span style={{ fontFamily: 'Gilroy-SemiBold, sans-serif', color: 'rgba(5, 176, 179, 1)', fontSize: '12px' }}>Healthcare</span>
-                  </div>
-                  
-                  {/* Heading */}
-                  <h3
-                    className="shariah-preview-heading"
-                    style={{
-                      width: '366px',
-                      height: '24px',
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '24px',
-                      lineHeight: '100%',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 0,
-                      flexGrow: 0,
-                      margin: 0,
-                      marginTop: '4px',
-                    }}
-                  >
-                    Wellness and Prevention Fund
-                  </h3>
-                  
-                  {/* Description */}
-                  <p
-                    className="shariah-preview-desc"
-                    style={{
-                      color: '#FFFFFF',
-                      fontFamily: 'Gilroy-Medium, sans-serif',
-                      fontSize: '16px',
-                      lineHeight: '130%',
-                      margin: 0,
-                      marginTop: '5px',
-                    }}
-                  >
-                    A fund dedicated to healthcare companies that prioritize preventative care & wellness programs.
-                  </p>
-                  
-                  {/* Compliance Rationale Section */}
-                  <div
-                    className="shariah-preview-compliance"
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'flex-start',
-                      padding: '0px',
-                      gap: '8px',
-                      width: '366px',
-                      height: '108px',
-                      flex: 'none',
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                      marginTop: '8px',
-                    }}
-                  >
-                    {/* Subheading */}
-                    <h4
-                      className="shariah-preview-compliance-title"
-                      style={{
-                        width: '366px',
-                        height: '18px',
-                        fontFamily: 'Gilroy-Medium',
-                        fontStyle: 'normal',
-                        fontWeight: 400,
-                        fontSize: '18px',
-                        lineHeight: '100%',
-                        color: '#FFFFFF',
-                        flex: 'none',
-                        order: 0,
-                        alignSelf: 'stretch',
-                        flexGrow: 0,
-                        margin: 0,
-                      }}
-                    >
-                      Compliance Rationale:
-                    </h4>
-                    
-                    {/* Bullet List */}
-                    <div
-                      className="shariah-preview-bullets"
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        padding: '0px',
-                        gap: '8px',
-                        width: '366px',
-                        height: '80px',
-                        flex: 'none',
-                        order: 1,
-                        alignSelf: 'stretch',
-                        flexGrow: 0,
-                        marginTop: '5px',
-                      }}
-                    >
-                      {/* Bullet 1 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 0,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '224px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Supports healthy lifestyle initiatives
-                        </span>
-                      </div>
-                      
-                      {/* Bullet 2 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 1,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '243px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Focuses on prevention over treatment
-                        </span>
-                      </div>
-                      
-                      {/* Bullet 3 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 2,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '359px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Emphasizes community engagement in health initiatives
-                        </span>
-                      </div>
-                      
-                      {/* Bullet 4 */}
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'center',
-                          padding: '0px',
-                          gap: '8px',
-                          width: '366px',
-                          height: '14px',
-                          flex: 'none',
-                          order: 3,
-                          alignSelf: 'stretch',
-                          flexGrow: 0,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            flex: 'none',
-                            order: 0,
-                            flexGrow: 0,
-                          }}
-                        />
-                        <span
-                          style={{
-                            width: '303px',
-                            height: '14px',
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                            flex: 'none',
-                            order: 1,
-                            flexGrow: 0,
-                          }}
-                        >
-                          Promotes holistic wellness and lifestyle changes
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Footer Text */}
-                  <div
-                    className="shariah-preview-footer"
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '366px',
-                      marginTop: '15px',
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'Gilroy-Medium, sans-serif',
-                        fontSize: '14px',
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      Health-Focused Investing
-                    </span>
-                    <span
-                      style={{
-                        fontFamily: 'Gilroy-Medium, sans-serif',
-                        fontSize: '14px',
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      July 5, 2023
-                    </span>
-                  </div>
-                  
-                  {/* Button */}
-                  <button
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '6px 16px',
-                      gap: '8px',
-                      width: '366px',
-                      height: '36px',
-                      border: '1px solid #FFFFFF',
-                      borderRadius: '100px',
-                      background: 'transparent',
-                      color: '#FFFFFF',
-                      cursor: 'pointer',
-                      flex: 'none',
-                      order: 0,
-                      flexGrow: 0,
-                      marginTop: '15px',
-                      fontFamily: 'Gilroy-SemiBold, sans-serif',
-                      fontSize: '14px',
-                      outline: 'none',
-                    }}
-                    onClick={() => {
-                      if (isAuthenticated) {
-                        router.push('/shariah/3');
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.outline = 'none';
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                  >
-                    View Details
-                    <Image 
-                      src="/logo/backhome.png" 
-                      alt="View Details" 
-                      width={16}
-                      height={16}
-                      className="w-4 h-4"
-                    />
-                  </button>
-                </div>
-                
-                {/* Grey Tint Overlay for Preview Mode */}
-                {!isAuthenticated && (
-                <div
-                  className="shariah-preview-tint-overlay"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    background: 'rgba(31, 31, 31, 0.8)',
-                    backdropFilter: 'blur(4px)',
-                    WebkitBackdropFilter: 'blur(4px)',
-                    borderRadius: '16px',
-                    zIndex: 15,
-                    pointerEvents: 'none',
-                  }}
-                />
-                )}
-                {/* Preview Overlay */}
-                {!isAuthenticated && (
-                <div
-                  className="shariah-preview-overlay"
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '12px',
-                    zIndex: 20,
-                    pointerEvents: 'none',
-                  }}
-                >
-                  <h2
-                    className="shariah-preview-title"
-                    style={{
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontSize: '32px',
-                      fontWeight: 400,
-                      color: '#FFFFFF',
-                      margin: 0,
-                      textAlign: 'center',
-                    }}
-                  >
-                    Preview Only
-                  </h2>
-                  <p
-                    className="shariah-preview-description"
-                    style={{
-                      fontFamily: 'Gilroy-Medium',
-                      fontSize: '16px',
-                      fontWeight: 400,
-                      color: '#FFFFFF',
-                      margin: 0,
-                      textAlign: 'center',
-                    }}
-                  >
-                    Detailed Screening Available with Premium
-                  </p>
-                </div>
-                )}
-              </div>
+              )}
             </div>
-          </div>
-            
+
             {/* New Single Tile */}
             {!isAuthenticated && (
             <div

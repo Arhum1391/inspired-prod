@@ -1,22 +1,80 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { researchReports } from '@/data/researchReports';
+import type { ResearchReport } from '@/data/researchReports';
 
-type ResearchDetailPageParams = {
-  slug: string;
-};
+export default function ResearchDetailPage() {
+  const params = useParams();
+  const slug = params.slug as string;
+  const [report, setReport] = useState<ResearchReport | null>(null);
+  const [relatedArticles, setRelatedArticles] = useState<ResearchReport[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export default async function ResearchDetailPage({ params }: { params: Promise<ResearchDetailPageParams> }) {
-  const { slug } = await params;
-  const report = researchReports.find(item => item.slug === slug);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch the specific report
+        const reportResponse = await fetch(`/api/research/${slug}`);
+        if (!reportResponse.ok) {
+          if (reportResponse.status === 404) {
+            setError('Research report not found');
+          } else {
+            setError('Failed to load research report');
+          }
+          setLoading(false);
+          return;
+        }
 
-  if (!report) {
-    notFound();
+        const reportData = await reportResponse.json();
+        setReport(reportData);
+
+        // Fetch all reports for related articles
+        const allReportsResponse = await fetch('/api/research');
+        if (allReportsResponse.ok) {
+          const allReports = await allReportsResponse.json();
+          const related = allReports
+            .filter((item: ResearchReport) => item.slug !== slug)
+            .slice(0, 3);
+          setRelatedArticles(related);
+        }
+      } catch (error) {
+        console.error('Failed to fetch research report:', error);
+        setError('Failed to load research report');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (slug) {
+      fetchData();
+    }
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
-  const relatedArticles = researchReports.filter(item => item.slug !== report.slug).slice(0, 3);
+  if (error || !report) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4">{error || 'Research report not found'}</h1>
+          <Link href="/research" className="text-purple-400 hover:text-purple-300">
+            ← Back to Research
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">

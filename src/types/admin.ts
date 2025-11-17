@@ -128,3 +128,26 @@ export interface DashboardStats {
   bookingsToday: number;
   activeBootcamps: number;
 }
+
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+export interface ResearchPageContent {
+  _id?: string;
+  // Hero section for authenticated users
+  heroTitleAuthenticated: string;
+  heroDescriptionAuthenticated: string;
+  // Hero section for guest users
+  heroTitleGuest: string;
+  heroDescriptionGuest: string;
+  heroBulletPoints: string[]; // Array of bullet point texts
+  // FAQ section
+  faqTitle: string;
+  faqDescription: string;
+  faqItems: FAQItem[];
+  // Metadata
+  createdAt: Date;
+  updatedAt: Date;
+}

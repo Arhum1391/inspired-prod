@@ -7,7 +7,6 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import { useAuth } from '@/contexts/AuthContext';
-import { researchReports } from '@/data/researchReports';
 import type { ResearchReport } from '@/data/researchReports';
 
 type FilterOption = 'All' | 'Latest Uploaded' | 'All Dates';
@@ -22,6 +21,8 @@ export default function ResearchPage() {
   const [shariahOnly, setShariahOnly] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterOption>('All');
   const [searchQuery, setSearchQuery] = useState('');
+  const [researchCards, setResearchCards] = useState<ResearchReport[]>([]);
+  const [reportsLoading, setReportsLoading] = useState(true);
 
   useEffect(() => {
     if (!isLoading && !isSignedIn) {
@@ -29,7 +30,25 @@ export default function ResearchPage() {
     }
   }, [isLoading, isSignedIn, router]);
 
-  if (isLoading) {
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const response = await fetch('/api/research');
+        if (response.ok) {
+          const data = await response.json();
+          setResearchCards(data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch research reports:', error);
+      } finally {
+        setReportsLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
+
+  if (isLoading || reportsLoading) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
         <div>Loading...</div>
@@ -41,8 +60,7 @@ export default function ResearchPage() {
     return null;
   }
 
-  const previewCards = researchReports.slice(0, 3);
-  const researchCards = researchReports;
+  const previewCards = researchCards.slice(0, 3);
 
   const toggleTile = (index: number) => {
     setExpandedTiles(prev => ({
@@ -714,197 +732,60 @@ export default function ResearchPage() {
               }}
               className="research-bullets"
             >
-              {/* Bullet 1 */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: '0px',
-                  gap: '8px',
-                  width: '630px',
-                  height: '16px',
-                  flex: 'none',
-                  order: 0,
-                  alignSelf: 'stretch',
-                  flexGrow: 0,
-                }}
-                className="research-bullet-row"
-              >
+              {[
+                'Deep-dive reports with downloadable PDFs',
+                'Position sizing tailored to your risk',
+                'Portfolio allocation & P/L tracking',
+                'Shariah methodology & detailed screens'
+              ].map((bullet, index) => (
                 <div
+                  key={index}
                   style={{
-                    width: '8px',
-                    height: '8px',
-                    background: '#FFFFFF',
-                    borderRadius: '50%',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 0,
-                  }}
-                />
-                <span
-                  style={{
-                    width: '323px',
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    padding: '0px',
+                    gap: '8px',
+                    width: '630px',
                     height: '16px',
-                    fontFamily: 'Gilroy-Medium',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '100%',
-                    color: '#FFFFFF',
                     flex: 'none',
-                    order: 1,
+                    order: index,
+                    alignSelf: 'stretch',
                     flexGrow: 0,
                   }}
-                  className="research-bullet-text"
+                  className="research-bullet-row"
                 >
-                  Deep-dive reports with downloadable PDFs
-                </span>
-              </div>
-              
-              {/* Bullet 2 */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: '0px',
-                  gap: '8px',
-                  width: '630px',
-                  height: '16px',
-                  flex: 'none',
-                  order: 1,
-                  alignSelf: 'stretch',
-                  flexGrow: 0,
-                }}
-                className="research-bullet-row"
-              >
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    background: '#FFFFFF',
-                    borderRadius: '50%',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 0,
-                  }}
-                />
-                <span
-                  style={{
-                    width: '246px',
-                    height: '16px',
-                    fontFamily: 'Gilroy-Medium',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '100%',
-                    color: '#FFFFFF',
-                    flex: 'none',
-                    order: 1,
-                    flexGrow: 0,
-                  }}
-                  className="research-bullet-text"
-                >
-                  Position sizing tailored to your risk
-                </span>
-              </div>
-              
-              {/* Bullet 3 */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: '0px',
-                  gap: '8px',
-                  width: '630px',
-                  height: '16px',
-                  flex: 'none',
-                  order: 2,
-                  alignSelf: 'stretch',
-                  flexGrow: 0,
-                }}
-                className="research-bullet-row"
-              >
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    background: '#FFFFFF',
-                    borderRadius: '50%',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 0,
-                  }}
-                />
-                <span
-                  style={{
-                    width: '247px',
-                    height: '16px',
-                    fontFamily: 'Gilroy-Medium',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '100%',
-                    color: '#FFFFFF',
-                    flex: 'none',
-                    order: 1,
-                    flexGrow: 0,
-                  }}
-                  className="research-bullet-text"
-                >
-                  Portfolio allocation & P/L tracking
-                </span>
-              </div>
-              
-              {/* Bullet 4 */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: '0px',
-                  gap: '8px',
-                  width: '630px',
-                  height: '16px',
-                  flex: 'none',
-                  order: 3,
-                  alignSelf: 'stretch',
-                  flexGrow: 0,
-                }}
-                className="research-bullet-row"
-              >
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    background: '#FFFFFF',
-                    borderRadius: '50%',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 0,
-                  }}
-                />
-                <span
-                  style={{
-                    width: '299px',
-                    height: '16px',
-                    fontFamily: 'Gilroy-Medium',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '100%',
-                    color: '#FFFFFF',
-                    flex: 'none',
-                    order: 1,
-                    flexGrow: 0,
-                  }}
-                  className="research-bullet-text"
-                >
-                  Shariah methodology & detailed screens
-                </span>
-              </div>
+                  <div
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      background: '#FFFFFF',
+                      borderRadius: '50%',
+                      flex: 'none',
+                      order: 0,
+                      flexGrow: 0,
+                    }}
+                  />
+                  <span
+                    style={{
+                      width: 'auto',
+                      height: '16px',
+                      fontFamily: 'Gilroy-Medium',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '16px',
+                      lineHeight: '100%',
+                      color: '#FFFFFF',
+                      flex: 'none',
+                      order: 1,
+                      flexGrow: 0,
+                    }}
+                    className="research-bullet-text"
+                  >
+                    {bullet}
+                  </span>
+                </div>
+              ))}
             </div>
             )}
             {/* Buttons Container */}
@@ -1966,293 +1847,84 @@ export default function ResearchPage() {
               }}
             className="research-faq-container"
             >
-              {/* FAQ Tile 1 */}
-              <div
-                className="relative overflow-hidden research-faq-item"
-                style={{
-                  width: '1064px',
-                  height: expandedTiles[0] ? 'auto' : '68px',
-                  borderRadius: '16px',
-                  background: '#1F1F1F',
-                  padding: '24px',
-                  boxSizing: 'border-box',
-                  cursor: 'pointer',
-                  transition: 'height 0.3s ease',
-                }}
-                onClick={() => toggleTile(0)}
-              >
-                {/* Curved Gradient Border */}
-                <div 
-                  className="absolute inset-0 pointer-events-none rounded-2xl"
+              {[
+                { question: 'Can I cancel anytime?', answer: 'Yes - your access continues until your period ends.' },
+                { question: 'Do you offer refunds?', answer: 'We offer a 7-day money-back guarantee for all new subscribers.' },
+                { question: 'What\'s Included?', answer: 'Full research library, position sizing calculator, portfolio analytics, and Shariah project details & screens.' },
+                { question: 'Will you add more features?', answer: 'Yes! We continuously improve our platform and add new features based on user feedback.' }
+              ].map((faq, index) => (
+                <div
+                  key={index}
+                  className="relative overflow-hidden research-faq-item"
                   style={{
+                    width: '1064px',
+                    height: expandedTiles[index] ? 'auto' : '68px',
                     borderRadius: '16px',
-                    padding: '1px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
+                    background: '#1F1F1F',
+                    padding: '24px',
+                    boxSizing: 'border-box',
+                    cursor: 'pointer',
+                    transition: 'height 0.3s ease',
                   }}
+                  onClick={() => toggleTile(index)}
                 >
-                  <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
-                </div>
-                
-                <div className="relative z-10 flex items-center justify-between" style={{ width: '100%' }}>
-                  <h3
+                  {/* Curved Gradient Border */}
+                  <div 
+                    className="absolute inset-0 pointer-events-none rounded-2xl"
                     style={{
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontWeight: 400,
-                      fontStyle: 'normal',
-                      fontSize: '20px',
-                      lineHeight: '100%',
-                      letterSpacing: '0%',
-                      color: '#FFFFFF',
-                      margin: 0,
+                      borderRadius: '16px',
+                      padding: '1px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
                     }}
                   >
-                    Can I cancel anytime?
-                  </h3>
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                      transform: expandedTiles[0] ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.3s ease',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <path
-                      d="M5 7.5L10 12.5L15 7.5"
-                      stroke="#FFFFFF"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                {expandedTiles[0] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
-                    <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
-                      Yes - your access continues until your period ends.
-                    </p>
+                    <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
                   </div>
-                )}
-              </div>
-
-              {/* FAQ Tile 2 */}
-              <div
-                className="relative overflow-hidden research-faq-item"
-                style={{
-                  width: '1064px',
-                  height: expandedTiles[1] ? 'auto' : '68px',
-                  borderRadius: '16px',
-                  background: '#1F1F1F',
-                  padding: '24px',
-                  boxSizing: 'border-box',
-                  cursor: 'pointer',
-                  transition: 'height 0.3s ease',
-                }}
-                onClick={() => toggleTile(1)}
-              >
-                {/* Curved Gradient Border */}
-                <div 
-                  className="absolute inset-0 pointer-events-none rounded-2xl"
-                  style={{
-                    borderRadius: '16px',
-                    padding: '1px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
-                  }}
-                >
-                  <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
-                </div>
-                
-                <div className="relative z-10 flex items-center justify-between" style={{ width: '100%' }}>
-                  <h3
-                    style={{
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontWeight: 400,
-                      fontStyle: 'normal',
-                      fontSize: '20px',
-                      lineHeight: '100%',
-                      letterSpacing: '0%',
-                      color: '#FFFFFF',
-                      margin: 0,
-                    }}
-                  >
-                    Do you offer refunds?
-                  </h3>
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                      transform: expandedTiles[1] ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.3s ease',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <path
-                      d="M5 7.5L10 12.5L15 7.5"
-                      stroke="#FFFFFF"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                {expandedTiles[1] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
-                    <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
-                      We offer a 7-day money-back guarantee for all new subscribers.
-                    </p>
+                  
+                  <div className="relative z-10 flex items-center justify-between" style={{ width: '100%' }}>
+                    <h3
+                      style={{
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontWeight: 400,
+                        fontStyle: 'normal',
+                        fontSize: '20px',
+                        lineHeight: '100%',
+                        letterSpacing: '0%',
+                        color: '#FFFFFF',
+                        margin: 0,
+                      }}
+                    >
+                      {faq.question}
+                    </h3>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      style={{
+                        transform: expandedTiles[index] ? 'rotate(180deg)' : 'rotate(0deg)',
+                        transition: 'transform 0.3s ease',
+                        flexShrink: 0,
+                      }}
+                    >
+                      <path
+                        d="M5 7.5L10 12.5L15 7.5"
+                        stroke="#FFFFFF"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
                   </div>
-                )}
-              </div>
-
-              {/* FAQ Tile 3 */}
-              <div
-                className="relative overflow-hidden research-faq-item"
-                style={{
-                  width: '1064px',
-                  height: expandedTiles[2] ? 'auto' : '68px',
-                  borderRadius: '16px',
-                  background: '#1F1F1F',
-                  padding: '24px',
-                  boxSizing: 'border-box',
-                  cursor: 'pointer',
-                  transition: 'height 0.3s ease',
-                }}
-                onClick={() => toggleTile(2)}
-              >
-                {/* Curved Gradient Border */}
-                <div 
-                  className="absolute inset-0 pointer-events-none rounded-2xl"
-                  style={{
-                    borderRadius: '16px',
-                    padding: '1px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
-                  }}
-                >
-                  <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
+                  {expandedTiles[index] && (
+                    <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
+                      <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
+                        {faq.answer}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                
-                <div className="relative z-10 flex items-center justify-between" style={{ width: '100%' }}>
-                  <h3
-                    style={{
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontWeight: 400,
-                      fontStyle: 'normal',
-                      fontSize: '20px',
-                      lineHeight: '100%',
-                      letterSpacing: '0%',
-                      color: '#FFFFFF',
-                      margin: 0,
-                    }}
-                  >
-                    What's Included?
-                  </h3>
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                      transform: expandedTiles[2] ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.3s ease',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <path
-                      d="M5 7.5L10 12.5L15 7.5"
-                      stroke="#FFFFFF"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                {expandedTiles[2] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
-                    <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
-                      Full research library, position sizing calculator, portfolio analytics, and Shariah project details & screens.
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              {/* FAQ Tile 4 */}
-              <div
-                className="relative overflow-hidden research-faq-item"
-                style={{
-                  width: '1064px',
-                  height: expandedTiles[3] ? 'auto' : '68px',
-                  borderRadius: '16px',
-                  background: '#1F1F1F',
-                  padding: '24px',
-                  boxSizing: 'border-box',
-                  cursor: 'pointer',
-                  transition: 'height 0.3s ease',
-                }}
-                onClick={() => toggleTile(3)}
-              >
-                {/* Curved Gradient Border */}
-                <div 
-                  className="absolute inset-0 pointer-events-none rounded-2xl"
-                  style={{
-                    borderRadius: '16px',
-                    padding: '1px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
-                  }}
-                >
-                  <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
-                </div>
-                
-                <div className="relative z-10 flex items-center justify-between" style={{ width: '100%' }}>
-                  <h3
-                    style={{
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontWeight: 400,
-                      fontStyle: 'normal',
-                      fontSize: '20px',
-                      lineHeight: '100%',
-                      letterSpacing: '0%',
-                      color: '#FFFFFF',
-                      margin: 0,
-                    }}
-                  >
-                    Will you add more features?
-                  </h3>
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 20 20"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    style={{
-                      transform: expandedTiles[3] ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.3s ease',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <path
-                      d="M5 7.5L10 12.5L15 7.5"
-                      stroke="#FFFFFF"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-                {expandedTiles[3] && (
-                  <div className="relative z-10 mt-4" style={{ paddingTop: '16px' }}>
-                    <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
-                      Yes! We continuously improve our platform and add new features based on user feedback.
-                    </p>
-                  </div>
-                )}
-              </div>
+              ))}
             </div>
 
           {/* Newsletter Subscription */}

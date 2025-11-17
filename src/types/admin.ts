@@ -70,6 +70,16 @@ export interface TargetAudience {
   items: string[];
 }
 
+export type ComplianceComparison = 'less_than' | 'greater_than' | 'equal' | 'custom';
+
+export interface ComplianceMetric {
+  criteria: string;
+  threshold: string;
+  actual: string;
+  comparisonType: ComplianceComparison;
+  customStatus?: 'pass' | 'fail';
+}
+
 export interface InfoCards {
   duration: {
     value: string;
@@ -148,6 +158,25 @@ export interface ResearchPageContent {
   faqDescription: string;
   faqItems: FAQItem[];
   // Metadata
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface ShariahTile {
+  _id?: string;
+  slug: string;
+  title: string;
+  category: string;
+  description: string;
+  compliancePoints: string[];
+  footerLeft: string;
+  footerRight: string;
+  ctaLabel: string;
+  detailPath: string;
+  lockedTitle: string;
+  lockedDescription: string;
+  analystNotes: string;
+  complianceMetrics?: ComplianceMetric[];
   createdAt: Date;
   updatedAt: Date;
 }

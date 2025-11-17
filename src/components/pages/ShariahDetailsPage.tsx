@@ -5,6 +5,7 @@ import { ChevronLeft } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useState, useEffect } from 'react';
+import type { ShariahTile, ComplianceMetric } from '@/types/admin';
 
 interface ShariahDetailsPageProps {
   fundId: string;
@@ -14,6 +15,345 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const [isMobileComplianceModalOpen, setIsMobileComplianceModalOpen] = useState(false);
+  const [tile, setTile] = useState<ShariahTile | null>(null);
+  const [tileLoading, setTileLoading] = useState(true);
+  const [tileError, setTileError] = useState<string | null>(null);
+
+  const fallbackComplianceMetrics: ComplianceMetric[] = [
+    {
+      criteria: 'Debt to Market Cap',
+      threshold: '< 33%',
+      actual: '0%',
+      comparisonType: 'less_than',
+    },
+    {
+      criteria: 'Interest Income',
+      threshold: '< 5%',
+      actual: '0%',
+      comparisonType: 'less_than',
+    },
+    {
+      criteria: 'Business Activity',
+      threshold: 'Halal',
+      actual: 'Permissible',
+      comparisonType: 'custom',
+      customStatus: 'pass',
+    },
+    {
+      criteria: 'Cash Holdings',
+      threshold: '< 33%',
+      actual: '12%',
+      comparisonType: 'less_than',
+    },
+  ];
+
+  const parseNumericValue = (value: string) => {
+    if (!value) return null;
+    const match = value.replace(/,/g, '').match(/-?\d+(\.\d+)?/);
+    return match ? parseFloat(match[0]) : null;
+  };
+
+  const metricIsPass = (metric: ComplianceMetric) => {
+    const comparison = metric.comparisonType || 'less_than';
+    if (comparison === 'custom') {
+      return (metric.customStatus || 'pass').toLowerCase() !== 'fail';
+    }
+    const actualVal = parseNumericValue(metric.actual);
+    const thresholdVal = parseNumericValue(metric.threshold);
+    if (actualVal === null || thresholdVal === null) {
+      return true;
+    }
+    switch (comparison) {
+      case 'less_than':
+        return actualVal <= thresholdVal;
+      case 'greater_than':
+        return actualVal >= thresholdVal;
+      case 'equal':
+        return Math.abs(actualVal - thresholdVal) < 0.001;
+      default:
+        return true;
+    }
+  };
+
+  const metricStatusLabel = (metric: ComplianceMetric) => (metricIsPass(metric) ? 'Pass' : 'Fail');
+
+  const renderMobileComplianceCard = (metric: ComplianceMetric, index: number) => {
+    const isPass = metricIsPass(metric);
+    const statusLabel = metricStatusLabel(metric);
+
+    return (
+      <div
+        key={`${metric.criteria}-${index}`}
+        className="shariah-details-compliance-card"
+        style={{
+          display: 'none',
+          boxSizing: 'border-box',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '16px 12px',
+          gap: '16px',
+          width: '319px',
+          height: '152px',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          borderRadius: '8px',
+        }}
+      >
+        <div className="shariah-details-compliance-card-row">
+          <div className="shariah-details-compliance-card-label-group">
+            <span className="shariah-details-compliance-card-label">Status</span>
+          </div>
+          <span
+            className={`shariah-details-compliance-card-value status ${isPass ? 'pass' : 'fail'}`}
+          >
+            {statusLabel}
+          </span>
+        </div>
+        <div className="shariah-details-compliance-card-divider" />
+        <div className="shariah-details-compliance-card-row">
+          <div className="shariah-details-compliance-card-label-group">
+            <span className="shariah-details-compliance-card-label">Criteria</span>
+          </div>
+          <span className="shariah-details-compliance-card-value">{metric.criteria}</span>
+        </div>
+        <div className="shariah-details-compliance-card-row">
+          <div className="shariah-details-compliance-card-label-group">
+            <span className="shariah-details-compliance-card-label">Threshold</span>
+          </div>
+          <span className="shariah-details-compliance-card-value">{metric.threshold}</span>
+        </div>
+        <div className="shariah-details-compliance-card-row">
+          <div className="shariah-details-compliance-card-label-group">
+            <span className="shariah-details-compliance-card-label">Actual</span>
+          </div>
+          <span className="shariah-details-compliance-card-value">{metric.actual}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderModalComplianceCard = (metric: ComplianceMetric, index: number) => {
+    const isPass = metricIsPass(metric);
+    const statusLabel = metricStatusLabel(metric);
+
+    return (
+      <div
+        key={`modal-${metric.criteria}-${index}`}
+        className="shariah-details-compliance-card"
+        style={{
+          boxSizing: 'border-box',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '16px 12px',
+          gap: '16px',
+          width: '319px',
+          height: '152px',
+          border: '1px solid rgba(255, 255, 255, 0.3)',
+          borderRadius: '8px',
+        }}
+      >
+        <div className="shariah-details-compliance-card-row">
+          <div className="shariah-details-compliance-card-label-group">
+            <span className="shariah-details-compliance-card-label">Status</span>
+          </div>
+          <span
+            className={`shariah-details-compliance-card-value status ${isPass ? 'pass' : 'fail'}`}
+          >
+            {statusLabel}
+          </span>
+        </div>
+        <div className="shariah-details-compliance-card-divider" />
+        <div className="shariah-details-compliance-card-row">
+          <div className="shariah-details-compliance-card-label-group">
+            <span className="shariah-details-compliance-card-label">Criteria</span>
+          </div>
+          <span className="shariah-details-compliance-card-value">{metric.criteria}</span>
+        </div>
+        <div className="shariah-details-compliance-card-row">
+          <div className="shariah-details-compliance-card-label-group">
+            <span className="shariah-details-compliance-card-label">Threshold</span>
+          </div>
+          <span className="shariah-details-compliance-card-value">{metric.threshold}</span>
+        </div>
+        <div className="shariah-details-compliance-card-row">
+          <div className="shariah-details-compliance-card-label-group">
+            <span className="shariah-details-compliance-card-label">Actual</span>
+          </div>
+          <span className="shariah-details-compliance-card-value">{metric.actual}</span>
+        </div>
+      </div>
+    );
+  };
+
+  const renderDesktopComplianceRow = (metric: ComplianceMetric, index: number) => {
+    const isPass = metricIsPass(metric);
+    const statusLabel = metricStatusLabel(metric);
+
+    return (
+      <div
+        key={`${metric.criteria}-${index}`}
+        className="shariah-details-compliance-table-row"
+        style={{
+          boxSizing: 'border-box',
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: '16px',
+          gap: '24px',
+          width: '100%',
+          maxWidth: '1024px',
+          height: '46px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          flex: 'none',
+          order: index,
+          alignSelf: 'stretch',
+          flexGrow: 0,
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: '0px',
+            gap: '8px',
+            width: '230px',
+            height: '14px',
+            flex: 'none',
+            order: 0,
+            flexGrow: 1,
+          }}
+        >
+          <span
+            style={{
+              width: '230px',
+              height: '14px',
+              fontFamily: 'Gilroy-Medium',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '100%',
+              color: '#909090',
+              flex: 'none',
+              order: 0,
+              alignSelf: 'stretch',
+              flexGrow: 0,
+            }}
+          >
+            {metric.criteria}
+          </span>
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            padding: '0px',
+            gap: '8px',
+            width: '230px',
+            height: '14px',
+            flex: 'none',
+            order: 1,
+            flexGrow: 1,
+          }}
+        >
+          <span
+            style={{
+              width: '230px',
+              height: '14px',
+              fontFamily: 'Gilroy-Medium',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '100%',
+              textAlign: 'right',
+              color: '#909090',
+              flex: 'none',
+              order: 0,
+              alignSelf: 'stretch',
+              flexGrow: 0,
+            }}
+          >
+            {metric.threshold}
+          </span>
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            padding: '0px',
+            gap: '8px',
+            width: '230px',
+            height: '14px',
+            flex: 'none',
+            order: 2,
+            flexGrow: 1,
+          }}
+        >
+          <span
+            style={{
+              width: '230px',
+              height: '14px',
+              fontFamily: 'Gilroy-Medium',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '100%',
+              textAlign: 'right',
+              color: '#909090',
+              flex: 'none',
+              order: 0,
+              alignSelf: 'stretch',
+              flexGrow: 0,
+            }}
+          >
+            {metric.actual}
+          </span>
+        </div>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            padding: '0px',
+            gap: '8px',
+            width: '230px',
+            height: '14px',
+            flex: 'none',
+            order: 3,
+            flexGrow: 1,
+          }}
+        >
+          <span
+            style={{
+              width: '230px',
+              height: '14px',
+              fontFamily: 'Gilroy-Medium',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              fontSize: '14px',
+              lineHeight: '100%',
+              textAlign: 'right',
+              color: isPass ? '#05B353' : '#FF4D4D',
+              flex: 'none',
+              order: 0,
+              alignSelf: 'stretch',
+              flexGrow: 0,
+            }}
+          >
+            {statusLabel}
+          </span>
+        </div>
+      </div>
+    );
+  };
   
   useEffect(() => {
     const checkMobile = () => {
@@ -24,6 +364,29 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  useEffect(() => {
+    const fetchTile = async () => {
+      try {
+        setTileLoading(true);
+        const response = await fetch(`/api/shariah-tiles/${fundId}`);
+        if (!response.ok) {
+          throw new Error('Failed to load Shariah tile');
+        }
+        const data = await response.json();
+        setTile(data);
+        setTileError(null);
+      } catch (error) {
+        console.error('Failed to load Shariah tile:', error);
+        setTileError('Unable to load this fund right now.');
+        setTile(null);
+      } finally {
+        setTileLoading(false);
+      }
+    };
+
+    fetchTile();
+  }, [fundId]);
   
   // Close modal when screen size changes from mobile to desktop
   useEffect(() => {
@@ -61,33 +424,27 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
   const handleBack = () => {
     router.push('/shariah');
   };
-  
-  // Fund data based on fundId
-  const fundData = {
-    '1': {
-      title: 'Ethical Tech Fund',
-      description: 'A collection of technology companies that meet strict ethical and Shariah compliance standards.',
-      footerLeft: 'Updated on May 15, 2023',
-      footerRight: 'Shariah Compliant',
-      analystNotes: 'Ethical Tech Fund demonstrates strong adherence to Shariah principles, maintaining a clear focus on technology-driven solutions that align with ethical investment standards. The fund avoids exposure to interest-based financing, speculative instruments, and non-permissible income streams.'
-    },
-    '2': {
-      title: 'Sustainable Investment Fund',
-      description: 'Investment portfolio focused on companies with environmental & social governance practices.',
-      footerLeft: 'Ethically sound',
-      footerRight: 'June 10, 2023',
-      analystNotes: 'Sustainable Investment Fund demonstrates strong adherence to Shariah principles, maintaining a clear focus on companies with environmental and social governance practices that align with ethical investment standards. The fund avoids exposure to interest-based financing, speculative instruments, and non-permissible income streams.'
-    },
-    '3': {
-      title: 'Wellness and Prevention Fund',
-      description: 'A fund dedicated to healthcare companies that prioritize preventative care & wellness programs.',
-      footerLeft: 'Health-Focused Investing',
-      footerRight: 'July 5, 2023',
-      analystNotes: 'Wellness and Prevention Fund demonstrates strong adherence to Shariah principles, maintaining a clear focus on healthcare companies that prioritize preventative care and wellness programs, aligning with ethical investment standards. The fund avoids exposure to interest-based financing, speculative instruments, and non-permissible income streams.'
-    }
-  };
-  
-  const fund = fundData[fundId as keyof typeof fundData] || fundData['1'];
+
+  if (tileLoading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
+  }
+
+  if (tileError || !tile) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+        <div>{tileError || 'Fund not found.'}</div>
+      </div>
+    );
+  }
+
+  const complianceMetrics =
+    tile.complianceMetrics && tile.complianceMetrics.length > 0
+      ? tile.complianceMetrics
+      : fallbackComplianceMetrics;
   
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
@@ -632,7 +989,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                 margin: 0,
               }}
             >
-              {fund.title}
+              {tile.title}
             </h1>
             
             {/* Description */}
@@ -653,7 +1010,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                 margin: 0,
               }}
             >
-              {fund.description}
+              {tile.description}
             </p>
             
             {/* Footer Row */}
@@ -688,7 +1045,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   flexGrow: 0,
                 }}
               >
-                {fund.footerLeft}
+                {tile.footerLeft}
               </span>
               
               {/* Dot Separator */}
@@ -720,7 +1077,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   flexGrow: 0,
                 }}
               >
-                {fund.footerRight}
+                {tile.footerRight}
               </span>
             </div>
           </div>
@@ -1037,6 +1394,8 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               </div>
             </div>
             
+            {false && (
+              <>
             {/* Mobile Cards Container */}
             <div
               className="shariah-details-compliance-cards-container"
@@ -1941,6 +2300,44 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                 </div>
               </div>
             </div>
+              </>
+            )}
+            {/* Mobile Cards Container */}
+            <div
+              className="shariah-details-compliance-cards-container"
+              style={{
+                display: 'none',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: '0px',
+                gap: '16px',
+                width: '319px',
+              }}
+            >
+              {complianceMetrics.map((metric, index) => renderMobileComplianceCard(metric, index))}
+            </div>
+            
+            {/* Desktop Data Rows Container */}
+            <div
+              className="shariah-details-compliance-table-rows"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
+                padding: '0px',
+                gap: '8px',
+                width: '100%',
+                maxWidth: '1024px',
+                height: 'auto',
+                flex: 'none',
+                order: 1,
+                alignSelf: 'stretch',
+                flexGrow: 0,
+                boxSizing: 'border-box',
+              }}
+            >
+              {complianceMetrics.map((metric, index) => renderDesktopComplianceRow(metric, index))}
+            </div>
           </div>
         </div>
         </div>
@@ -2001,7 +2398,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               margin: 0,
             }}
           >
-            {fund.analystNotes}
+            {tile.analystNotes}
           </p>
         </div>
       </div>
@@ -2030,7 +2427,8 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               </svg>
             </button>
             <h2 className="shariah-details-compliance-mobile-modal-title">Compliance Breakdown</h2>
-            <div className="shariah-details-compliance-mobile-modal-list">
+            {false && (
+              <div className="shariah-details-compliance-mobile-modal-list">
               {/* Card 1: Debt to Market Cap */}
               <div
                 className="shariah-details-compliance-card"
@@ -2202,6 +2600,10 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   <span className="shariah-details-compliance-card-value">15%</span>
                 </div>
               </div>
+            </div>
+            )}
+            <div className="shariah-details-compliance-mobile-modal-list">
+              {complianceMetrics.map((metric, index) => renderModalComplianceCard(metric, index))}
             </div>
           </div>
         </div>

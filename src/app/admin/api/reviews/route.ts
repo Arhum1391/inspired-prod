@@ -7,6 +7,7 @@ async function getReviews(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const statusParam = searchParams.get('status') as ReviewStatus | null;
+    const analystParam = searchParams.get('analystId');
 
     if (statusParam && !['pending', 'approved', 'rejected'].includes(statusParam)) {
       return NextResponse.json(
@@ -15,7 +16,19 @@ async function getReviews(req: NextRequest) {
       );
     }
 
-    const reviews = await listAllReviews(statusParam ?? undefined);
+    let analystId: number | undefined;
+    if (analystParam !== null) {
+      const parsed = Number(analystParam);
+      if (Number.isNaN(parsed)) {
+        return NextResponse.json(
+          { error: 'analystId must be numeric' },
+          { status: 400 }
+        );
+      }
+      analystId = parsed;
+    }
+
+    const reviews = await listAllReviews(statusParam ?? undefined, analystId);
     return NextResponse.json({ reviews });
   } catch (error) {
     console.error('Admin reviews fetch error:', error);

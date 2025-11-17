@@ -26,6 +26,8 @@ const renderStars = (rating: number) =>
 export default function AdminReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [filter, setFilter] = useState<FilterOption>('pending');
+  const [analysts, setAnalysts] = useState<{ id: number; name: string }[]>([]);
+  const [selectedAnalyst, setSelectedAnalyst] = useState<number | 'all'>('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [actionId, setActionId] = useState<string | null>(null);
@@ -34,7 +36,14 @@ export default function AdminReviewsPage() {
     try {
       setLoading(true);
       setError('');
-      const query = filter === 'all' ? '' : `?status=${filter}`;
+      const params = new URLSearchParams();
+      if (filter !== 'all') {
+        params.set('status', filter);
+      }
+      if (selectedAnalyst !== 'all') {
+        params.set('analystId', selectedAnalyst.toString());
+      }
+      const query = params.toString() ? `?${params.toString()}` : '';
       const response = await fetch(`/admin/api/reviews${query}`);
       if (!response.ok) {
         throw new Error('Failed to fetch reviews');
@@ -53,7 +62,29 @@ export default function AdminReviewsPage() {
   useEffect(() => {
     fetchReviews();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
+  }, [filter, selectedAnalyst]);
+
+  useEffect(() => {
+    const fetchAnalysts = async () => {
+      try {
+        const response = await fetch('/api/team');
+        if (!response.ok) {
+          throw new Error('Failed to load analysts');
+        }
+        const data = await response.json();
+        const options =
+          data.team?.map((analyst: { id: number; name: string }) => ({
+            id: analyst.id,
+            name: analyst.name,
+          })) ?? [];
+        setAnalysts(options);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchAnalysts();
+  }, []);
 
   const formatDate = (value?: string | Date) => {
     if (!value) return '—';
@@ -92,7 +123,7 @@ export default function AdminReviewsPage() {
 
   const handleReject = async (id: string) => {
     setActionId(id);
-    if (!window.confirm('Rejecting a review will delete it permanently. Continue?')) {
+    if (!window.confirm('This will permanently delete the review. Continue?')) {
       setActionId(null);
       return;
     }
@@ -138,6 +169,20 @@ export default function AdminReviewsPage() {
               {option.label}
             </button>
           ))}
+          <select
+            value={selectedAnalyst}
+            onChange={(e) =>
+              setSelectedAnalyst(e.target.value === 'all' ? 'all' : Number(e.target.value))
+            }
+            className="px-4 py-2 rounded-lg bg-slate-800 text-gray-200 border border-slate-600 focus:outline-none"
+          >
+            <option value="all">All analysts</option>
+            {analysts.map((analyst) => (
+              <option key={analyst.id} value={analyst.id}>
+                {analyst.name}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -191,7 +236,7 @@ export default function AdminReviewsPage() {
                 </span>
               </div>
               <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-                {review.status === 'pending' && (
+                {review.status === 'pending' ? (
                   <>
                     <button
                       onClick={() => handleApprove(review._id!)}
@@ -208,6 +253,14 @@ export default function AdminReviewsPage() {
                       {actionId === review._id ? 'Rejecting...' : 'Reject'}
                     </button>
                   </>
+                ) : (
+                  <button
+                    onClick={() => handleReject(review._id!)}
+                    disabled={actionId === review._id}
+                    className="px-4 py-2 rounded-lg border border-red-500 text-red-300 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                  >
+                    {actionId === review._id ? 'Deleting...' : 'Delete'}
+                  </button>
                 )}
                 {review.status === 'approved' && (
                   <span className="text-sm text-gray-400">Approved on {formatDate(review.approvedAt)}</span>

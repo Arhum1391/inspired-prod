@@ -56,12 +56,15 @@ export async function listReviewsByAnalyst(
   return results.map(serializeReview);
 }
 
-export async function listAllReviews(status?: ReviewStatus): Promise<Review[]> {
+export async function listAllReviews(status?: ReviewStatus, analystId?: number): Promise<Review[]> {
   const collection = await getReviewsCollection();
   const query: Document = {};
 
   if (status) {
     query.status = status;
+  }
+  if (typeof analystId === 'number' && !Number.isNaN(analystId)) {
+    query.analystId = analystId;
   }
 
   const reviews = await collection.find(query).sort({ createdAt: -1 }).toArray();

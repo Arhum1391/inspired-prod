@@ -1207,19 +1207,21 @@ const ReviewsContent: React.FC = () => {
                                     type="text"
                                     value={reviewForm.reviewerName}
                                     onChange={(e) => handleReviewInputChange('reviewerName', e.target.value)}
-                                    className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/60"
+                                    className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-0 focus-visible:outline-none focus:border-[#2A2A2A] focus:shadow-none focus-visible:shadow-none"
+                                    style={{ boxShadow: 'none', outline: 'none', WebkitAppearance: 'none' }}
                                     placeholder="Enter your name"
                                     disabled={isSubmittingReview}
                                 />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm text-gray-300 mb-2">Meeting Date</label>
+                                    <label className="block text-sm text-gray-300 mb-2">Review Date</label>
                                     <input
                                         type="date"
                                         value={reviewForm.reviewDate}
                                         onChange={(e) => handleReviewInputChange('reviewDate', e.target.value)}
-                                        className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/60"
+                                        className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-0 focus-visible:outline-none focus:border-[#2A2A2A] focus:shadow-none focus-visible:shadow-none"
+                                        style={{ boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', appearance: 'none' }}
                                         disabled={isSubmittingReview}
                                     />
                                 </div>
@@ -1231,7 +1233,7 @@ const ReviewsContent: React.FC = () => {
                                                 key={value}
                                                 type="button"
                                                 onClick={() => setReviewForm(prev => ({ ...prev, rating: value }))}
-                                                className="p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-white/40"
+                                                className="p-1 rounded-full focus:outline-none focus:ring-0 focus-visible:outline-none"
                                                 disabled={isSubmittingReview}
                                             >
                                                 <svg
@@ -1253,7 +1255,7 @@ const ReviewsContent: React.FC = () => {
                                     value={reviewForm.comment}
                                     onChange={(e) => handleReviewInputChange('comment', e.target.value)}
                                     rows={4}
-                                    className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:border-white/60 resize-none"
+                                    className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-0 focus-visible:outline-none focus:border-[#2A2A2A] resize-none"
                                     placeholder="Let others know how the session helped you..."
                                     disabled={isSubmittingReview}
                                 />
@@ -1269,14 +1271,14 @@ const ReviewsContent: React.FC = () => {
                                 <button
                                     type="button"
                                     onClick={closeReviewDrawer}
-                                    className="px-6 py-3 rounded-full border border-white/30 text-white hover:bg-white/10 transition-all duration-300"
+                                    className="px-6 py-3 rounded-full border border-white/30 text-white hover:bg-white/10 transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:outline-none"
                                     disabled={isSubmittingReview}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className={`px-8 py-3 rounded-full font-semibold transition-all duration-300 ${
+                                    className={`px-8 py-3 rounded-full font-semibold transition-all duration-300 focus:outline-none focus:ring-0 focus-visible:outline-none ${
                                         isSubmittingReview ? 'bg-white/40 text-gray-700 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'
                                     }`}
                                 >

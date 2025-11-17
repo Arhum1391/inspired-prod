@@ -9,10 +9,12 @@ import { NewsletterSubscription } from '@/components';
 import BootcampCardSkeleton from '@/components/BootcampCardSkeleton';
 import { Bootcamp } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function BootcampPage() {
   const [bootcamps, setBootcamps] = useState<Bootcamp[]>([]);
   const [loading, setLoading] = useState(true);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     fetchBootcamps();
@@ -36,6 +38,167 @@ export default function BootcampPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatDateWithOrdinal = (dateString?: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return '';
+
+    const day = date.getDate();
+    const suffix =
+      day % 10 === 1 && day !== 11
+        ? 'st'
+        : day % 10 === 2 && day !== 12
+        ? 'nd'
+        : day % 10 === 3 && day !== 13
+        ? 'rd'
+        : 'th';
+
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    const year = date.getFullYear();
+
+    return `${day}${suffix} ${month}, ${year}`;
+  };
+
+  const renderEnrolledHero = (bootcamp: Bootcamp) => {
+    const mentors = bootcamp.mentors ?? [];
+    const enrollmentDate =
+      formatDateWithOrdinal(bootcamp.registrationStartDate?.toString()) || '1st Oct, 2025';
+
+    return (
+      <div className="relative z-10 w-full px-0 sm:px-2 -mt-16">
+        <div className="flex flex-col gap-6 w-full max-w-[1280px] mx-auto">
+          <div className="flex flex-col gap-4">
+            <p
+              className="text-3xl sm:text-[36px] text-white"
+              style={{ fontFamily: 'Gilroy-SemiBold', lineHeight: '100%' }}
+            >
+              Enrolled Bootcamp
+            </p>
+          </div>
+
+        <div className="relative bg-[#1F1F1F] rounded-2xl p-4 sm:p-6 lg:p-8 overflow-hidden isolate">
+          {/* Curved Gradient Border */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              borderRadius: '16px',
+              background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+              padding: '1px',
+              zIndex: 0,
+            }}
+          >
+            <div
+              className="w-full h-full rounded-[15px]"
+              style={{
+                background: '#1F1F1F',
+              }}
+            ></div>
+          </div>
+            <div
+            className="absolute w-[688px] h-[288px] left-1/2 -translate-x-1/2 -top-[410px] blur-[120px] rotate-90 rounded-full pointer-events-none"
+              style={{
+                background:
+                  'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+              }}
+            />
+
+          <div className="relative z-10 flex flex-col gap-4 text-white">
+            <div className="flex flex-col gap-3">
+                <div className="flex flex-col lg:flex-row lg:items-center gap-4">
+                  <h3
+                    className="text-2xl sm:text-[26px] flex-1"
+                    style={{ fontFamily: 'Gilroy-SemiBold', lineHeight: '100%' }}
+                  >
+                    {bootcamp.title}
+                  </h3>
+                  <div
+                    className="inline-flex rounded-full p-[1px]"
+                    style={{
+                      background:
+                        'linear-gradient(226.35deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.05) 50.5%)',
+                    }}
+                  >
+                    <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#1F1F1F] text-xs uppercase tracking-wide border border-white/10">
+                      {bootcamp.price}
+                    </div>
+                  </div>
+                </div>
+                <p className="text-base leading-[130%]" style={{ fontFamily: 'Gilroy-Regular' }}>
+                  {bootcamp.description}
+                </p>
+              </div>
+
+            <div className="flex flex-col gap-1.5">
+                <p className="text-lg font-semibold" style={{ fontFamily: 'Gilroy-SemiBold' }}>
+                  Mentors:
+                </p>
+                <div className="flex flex-wrap gap-4 text-base" style={{ fontFamily: 'Gilroy-Regular' }}>
+                  {mentors.map((mentor, index) => (
+                    <span key={mentor + index}>{mentor}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                <span
+                  className="rounded-full border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] px-4 py-1 text-xs font-medium"
+                  style={{ fontFamily: 'Gilroy-Medium' }}
+                >
+                  {bootcamp.duration}
+                </span>
+                <span
+                  className="rounded-full border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC] px-4 py-1 text-xs font-medium"
+                  style={{ fontFamily: 'Gilroy-Medium' }}
+                >
+                  {bootcamp.format}
+                </span>
+              </div>
+
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1.5">
+                  <p className="text-lg font-semibold" style={{ fontFamily: 'Gilroy-SemiBold' }}>
+                    Progress
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="relative flex items-center justify-center w-10 h-10">
+                      <div className="absolute inset-0 rounded-full border-[3px] border-white" />
+                      <div className="absolute inset-0 rounded-full border-[5px] border-[#667EEA] opacity-80" />
+                      <span className="text-[10px] font-medium">50%</span>
+                    </div>
+                    <p className="text-base" style={{ fontFamily: 'Gilroy-Regular' }}>
+                      3/6 Videos Completed
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-4 items-center">
+                  <p className="text-base" style={{ fontFamily: 'Gilroy-Regular' }}>
+                    Enrolled on: {enrollmentDate}
+                  </p>
+                  <Link
+                    href={`/bootcamp/${bootcamp.id}/progress`}
+                    className="flex items-center gap-2 rounded-full border border-white px-5 py-2 text-sm font-semibold"
+                    style={{ fontFamily: 'Gilroy-SemiBold' }}
+                  >
+                    View Full Progress
+                    <Image
+                      src="/logo/backhome.png"
+                      alt="View progress"
+                      width={16}
+                      height={16}
+                      className="w-4 h-4"
+                      style={{ filter: 'brightness(0) invert(1)' }}
+                    />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
 
@@ -151,6 +314,9 @@ export default function BootcampPage() {
     </div>
   );
 
+  const showEnrolledHero = isAuthenticated && !loading && bootcamps.length > 0;
+  const enrolledBootcamp = showEnrolledHero ? bootcamps[0] : null;
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
       {/* Vector Background SVG - Enhanced for Mobile Only */}
@@ -172,8 +338,9 @@ export default function BootcampPage() {
       </div>
 
       {/* Desktop Image Belts - Right Side */}
-      <div className="hidden lg:block absolute z-0 right-24 xl:right-32 top-0 w-56 xl:w-72" style={{ height: 'calc(70vh + 160px)' }}>
-        <div className="flex w-full h-full pt-20">
+      {!showEnrolledHero && (
+        <div className="hidden lg:block absolute z-0 right-24 xl:right-32 top-0 w-56 xl:w-72" style={{ height: 'calc(70vh + 160px)' }}>
+          <div className="flex w-full h-full pt-20">
           {/* Belt 1 - Rectangle 1 Images */}
           <div className="flex-1 fade-mask-reduced overflow-hidden">
             <div className="animate-scrollUp flex flex-col gap-5">
@@ -333,8 +500,9 @@ export default function BootcampPage() {
               ></div>
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      )}
 
 
 
@@ -370,24 +538,41 @@ export default function BootcampPage() {
         <div className="relative z-0 w-full px-4 sm:px-6 lg:px-6 pt-44 sm:pt-44 md:pt-48 lg:pt-56">
           <div className="mx-auto max-w-7xl">
             {/* Text Content - Frame 25 - Aligned with logo using same spacing, mobile adjusted for sidebar */}
-            <div className="flex flex-col items-start gap-6 w-full max-w-[280px] min-[400px]:max-w-[343px] min-[500px]:max-w-[460px] min-[600px]:max-w-[560px] min-[700px]:max-w-[630px] md:w-full md:max-w-[630px] lg:ml-0">
-              {/* Main Heading */}
-              <h1 className="text-[32px] leading-[120%] min-[400px]:text-[36px] md:text-3xl lg:text-4xl xl:text-5xl font-semibold text-white w-full" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                Master AI, Finance & Tech Through Expert-Led Bootcamps
-              </h1>
+            {!showEnrolledHero && (
+              <div className="flex flex-col items-start gap-6 w-full max-w-[280px] min-[400px]:max-w-[343px] min-[500px]:max-w-[460px] min-[600px]:max-w-[560px] min-[700px]:max-w-[630px] md:w-full md:max-w-[630px] lg:ml-0">
+                {/* Main Heading */}
+                <h1 className="text-[32px] leading-[120%] min-[400px]:text-[36px] md:text-3xl lg:text-4xl xl:text-5xl font-semibold text-white w-full" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
+                  Master AI, Finance & Tech Through Expert-Led Bootcamps
+                </h1>
 
-              {/* Subheading */}
-              <p className="text-base leading-[130%] min-[400px]:text-[17px] md:text-base lg:text-lg text-white w-full" style={{fontFamily: 'Gilroy'}}>
-                Intensive, hands-on learning programs designed to transform you into an industry-ready professional in weeks, not years.
-              </p>
-            </div>
+                {/* Subheading */}
+                <p className="text-base leading-[130%] min-[400px]:text-[17px] md:text-base lg:text-lg text-white w-full" style={{fontFamily: 'Gilroy'}}>
+                  Intensive, hands-on learning programs designed to transform you into an industry-ready professional in weeks, not years.
+                </p>
+              </div>
+            )}
+            {enrolledBootcamp && renderEnrolledHero(enrolledBootcamp)}
           </div>
         </div>
       </section>
 
+      {showEnrolledHero && (
+        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-6 mt-32">
+          <div className="mx-auto max-w-7xl">
+            <div className="flex flex-col gap-3">
+              
+              <h2 className="text-3xl text-white" style={{ fontFamily: 'Gilroy-SemiBold' }}>
+                Trending Bootcamps
+              </h2>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Image Belts - Only visible on mobile */}
-      <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-8 mb-8">
-        <div className="flex flex-col w-full h-full gap-2">
+      {!showEnrolledHero && (
+        <div className="lg:hidden flex flex-col justify-center items-center h-40 sm:h-48 relative w-full overflow-hidden mt-8 mb-8">
+          <div className="flex flex-col w-full h-full gap-2">
           {/* Belt 1 - Rectangle 1 Images */}
           <div className="flex-1 fade-mask-reduced overflow-hidden">
             <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
@@ -691,12 +876,13 @@ export default function BootcampPage() {
               ></div>
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      )}
 
 
       {/* Bootcamp Cards Section */}
-      <section className="relative z-0 pt-32 sm:pt-40 lg:pt-44 pb-12 sm:pb-16 lg:pb-20">
+      <section className={`relative z-0 ${showEnrolledHero ? 'pt-12' : 'pt-32 sm:pt-40 lg:pt-44'} pb-12 sm:pb-16 lg:pb-20`}>
         <div className="w-full px-4 sm:px-6 lg:px-6">
           <div className="mx-auto max-w-7xl">
             {/* Cards Grid - 3 columns on desktop, 1 on mobile */}

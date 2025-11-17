@@ -1104,7 +1104,7 @@ export default function AboutPage() {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                router.push(`/reviews?analyst=${analyst.id}`);
+                                router.push(`/reviews?analyst=${analyst.id}&selectedAnalyst=${analyst.id}`);
                               }}
                               onMouseDown={(e) => {
                                 e.preventDefault();

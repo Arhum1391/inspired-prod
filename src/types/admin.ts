@@ -38,6 +38,23 @@ export interface Booking {
   createdAt: Date;
 }
 
+export type ReviewStatus = 'pending' | 'approved' | 'rejected';
+
+export interface Review {
+  _id?: string;
+  analystId: number;
+  analystName: string;
+  reviewerName: string;
+  rating: number;
+  comment: string;
+  reviewDate: string;
+  status: ReviewStatus;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  approvedAt?: Date | string;
+  rejectedAt?: Date | string;
+}
+
 export interface Newsletter {
   _id?: string;
   title: string;

@@ -111,10 +111,9 @@ const PREVIEW_ALLOCATION: AllocationSlice[] = PREVIEW_HOLDINGS.map((holding, ind
 });
 
 export default function PortfolioPage() {
-  const { isAuthenticated: isSignedIn, user, isLoading } = useAuth();
+  const { isAuthenticated: isSignedIn, isLoading } = useAuth();
   const router = useRouter();
-  const isPaidUser = !!user?.isPaid;
-  const isAuthenticated = isSignedIn && isPaidUser;
+  const isAuthenticated = isSignedIn;
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [isAddHoldingModalOpen, setAddHoldingModalOpen] = useState(false);
   const [nivoComponents, setNivoComponents] = useState<typeof import('@nivo/pie') | null>(null);

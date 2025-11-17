@@ -13,10 +13,9 @@ type FilterOption = 'All' | 'Latest Uploaded' | 'All Dates';
 const FILTER_OPTIONS: FilterOption[] = ['All', 'Latest Uploaded', 'All Dates'];
 
 export default function ResearchPage() {
-  const { isAuthenticated: isSignedIn, user, isLoading } = useAuth();
+  const { isAuthenticated: isSignedIn, isLoading } = useAuth();
   const router = useRouter();
-  const isPaidUser = !!user?.isPaid;
-  const isAuthenticated = isSignedIn && isPaidUser;
+  const isAuthenticated = isSignedIn;
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [shariahOnly, setShariahOnly] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterOption>('All');

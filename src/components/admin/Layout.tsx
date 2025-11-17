@@ -247,6 +247,15 @@ export default function Layout({ children }: LayoutProps) {
       )
     },
     { 
+      name: 'Reviews', 
+      href: '/admin/reviews', 
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.618 4.985a1 1 0 00.95.69h5.244c.969 0 1.371 1.24.588 1.81l-4.24 3.08a1 1 0 00-.364 1.118l1.618 4.985c.3.921-.755 1.688-1.54 1.118l-4.24-3.08a1 1 0 00-1.176 0l-4.239 3.08c-.784.57-1.84-.197-1.54-1.118l1.618-4.985a1 1 0 00-.364-1.118L2.649 10.412c-.783-.57-.38-1.81.588-1.81h5.244a1 1 0 00.95-.69l1.618-4.985z" />
+        </svg>
+      )
+    },
+    { 
       name: 'Subscribers', 
       href: '/admin/subscribers', 
       icon: (

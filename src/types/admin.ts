@@ -197,3 +197,32 @@ export interface ShariahTile {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export interface BootcampLesson {
+  _id?: string;
+  lessonId: string;
+  bootcampId: string;
+  title: string;
+  description?: string;
+  youtubeVideoId: string;
+  thumbnail?: string;
+  order: number;
+  duration?: number; // Duration in seconds
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LessonProgress {
+  lessonId: string;
+  progress: number; // 0-100
+  lastWatchedAt?: Date;
+  completedAt?: Date;
+}
+
+export interface BootcampProgress {
+  _id?: string;
+  userId: string;
+  bootcampId: string;
+  lessons: LessonProgress[];
+  updatedAt: Date;
+}

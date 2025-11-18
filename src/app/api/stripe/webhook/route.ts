@@ -209,23 +209,90 @@ async function processWebhookAsync(event: any) {
             return;
           }
 
+          // Get user ID from metadata or find by email
+          let userId = null;
+          if (metadata.userId) {
+            try {
+              userId = new ObjectId(metadata.userId);
+              console.log(`📝 Found userId in metadata: ${userId}`);
+            } catch (error) {
+              console.error(`⚠️ Invalid userId in metadata: ${metadata.userId}`, error);
+            }
+          }
+
+          if (!userId && metadata.customerEmail) {
+            console.log(`🔍 Looking up user by email: ${metadata.customerEmail}`);
+            const user = await db.collection('public_users').findOne({ 
+              email: metadata.customerEmail.toLowerCase().trim() 
+            });
+            if (user) {
+              userId = user._id;
+              console.log(`✅ Found user by email: ${userId}`);
+            } else {
+              console.error(`❌ No user found with email: ${metadata.customerEmail}`);
+              // Try without lowercasing in case email format differs
+              const userAlt = await db.collection('public_users').findOne({ 
+                email: metadata.customerEmail.trim() 
+              });
+              if (userAlt) {
+                userId = userAlt._id;
+                console.log(`✅ Found user with alternate email format: ${userId}`);
+              }
+            }
+          }
+
+          if (!userId) {
+            console.error('❌ Could not find user for bootcamp registration', {
+              userIdInMetadata: metadata.userId,
+              customerEmail: metadata.customerEmail,
+              bootcampId: metadata.bootcampId,
+              sessionId: session.id
+            });
+            await client.close();
+            return;
+          }
+
+          // Validate bootcampId exists
+          if (!metadata.bootcampId) {
+            console.error('❌ Missing bootcampId in metadata', { metadata, sessionId: session.id });
+            await client.close();
+            return;
+          }
+
           // Create bootcamp registration record
           const registration = {
+            userId: userId,
             stripeSessionId: session.id,
             bootcampId: metadata.bootcampId,
-            customerName: metadata.customerName,
-            customerEmail: metadata.customerEmail,
+            customerName: metadata.customerName || '',
+            customerEmail: metadata.customerEmail || '',
             notes: metadata.notes || '',
             amount: session.amount_total / 100,
-            currency: session.currency,
+            currency: session.currency || 'usd',
             paymentStatus: 'paid',
             status: 'confirmed',
             createdAt: new Date(),
             updatedAt: new Date()
           };
 
-          await db.collection('bootcamp_registrations').insertOne(registration);
-          console.log(`✅ Bootcamp registration saved for ${metadata.customerEmail}`);
+          const result = await db.collection('bootcamp_registrations').insertOne(registration);
+          console.log(`✅ Bootcamp registration saved successfully:`, {
+            registrationId: result.insertedId,
+            userId: userId.toString(),
+            bootcampId: metadata.bootcampId,
+            customerEmail: metadata.customerEmail,
+            sessionId: session.id
+          });
+
+          // Verify the registration was saved
+          const verifyRegistration = await db.collection('bootcamp_registrations').findOne({
+            _id: result.insertedId
+          });
+          if (!verifyRegistration) {
+            console.error('❌ Registration verification failed - registration not found after insert');
+          } else {
+            console.log('✅ Registration verified in database');
+          }
           
         } else if (type === 'booking') {
           // Check if this session already exists to prevent duplicates

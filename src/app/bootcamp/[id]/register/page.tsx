@@ -6,11 +6,13 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import { Bootcamp } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function BootcampRegisterPage() {
   const params = useParams();
   const router = useRouter();
   const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [bootcamp, setBootcamp] = useState<Bootcamp | null>(null);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -27,6 +29,25 @@ export default function BootcampRegisterPage() {
       fetchBootcamp(params.id as string);
     }
   }, [params.id]);
+
+  // Check authentication and populate form with user data
+  useEffect(() => {
+    if (!authLoading) {
+      if (!isAuthenticated || !user) {
+        // User not authenticated - redirect to sign in
+        router.push(`/signin?redirect=/bootcamp/${params.id}/register`);
+        return;
+      }
+
+      // Pre-populate form with authenticated user's data
+      if (user.name && !fullName) {
+        setFullName(user.name);
+      }
+      if (user.email && !email) {
+        setEmail(user.email);
+      }
+    }
+  }, [authLoading, isAuthenticated, user, params.id, router]);
 
   // Check payment status and restore form data on mount
   useEffect(() => {
@@ -56,6 +77,9 @@ export default function BootcampRegisterPage() {
       setPaymentError('');
       // Clear the URL params to clean up the URL
       window.history.replaceState({}, '', window.location.pathname);
+      
+      // Verify payment and create enrollment (fallback if webhook hasn't processed)
+      verifyPaymentAndCreateEnrollment(sessionId);
     } else if (paymentStatus === 'cancelled') {
       // Payment was cancelled
       setPaymentError('Payment was cancelled. Please try again.');
@@ -63,7 +87,7 @@ export default function BootcampRegisterPage() {
       // Clear the URL params
       window.history.replaceState({}, '', window.location.pathname);
     }
-  }, [params.id, searchParams]);
+  }, [params.id, searchParams, router]);
 
   const fetchBootcamp = async (id: string) => {
     try {
@@ -93,6 +117,49 @@ export default function BootcampRegisterPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const verifyPaymentAndCreateEnrollment = async (sessionId: string) => {
+    try {
+      console.log('🔍 Verifying payment and creating enrollment for session:', sessionId);
+      
+      const response = await fetch('/api/bootcamp/verify-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          sessionId: sessionId,
+          bootcampId: params.id
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        console.log('✅ Enrollment verified/created successfully:', data);
+        // Trigger refresh of enrolled bootcamps
+        if (typeof window !== 'undefined') {
+          setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('bootcamp-enrollment-updated'));
+          }, 500);
+        }
+      } else {
+        console.error('⚠️ Failed to verify/create enrollment:', data);
+        // Don't show error to user - webhook might process later
+        // But try again after a delay
+        setTimeout(() => {
+          verifyPaymentAndCreateEnrollment(sessionId);
+        }, 5000);
+      }
+    } catch (error) {
+      console.error('Error verifying payment:', error);
+      // Try again after delay
+      setTimeout(() => {
+        verifyPaymentAndCreateEnrollment(sessionId);
+      }, 5000);
     }
   };
 
@@ -177,6 +244,13 @@ export default function BootcampRegisterPage() {
   };
 
   const handleStripePayment = async () => {
+    // Check authentication
+    if (!isAuthenticated || !user) {
+      setPaymentError('Please sign in to purchase a bootcamp.');
+      router.push(`/signin?redirect=/bootcamp/${params.id}/register`);
+      return;
+    }
+
     if (!fullName.trim()) {
       setEmailError('Please enter your name');
       return;
@@ -222,6 +296,7 @@ export default function BootcampRegisterPage() {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies for authentication
         body: JSON.stringify({
           type: 'bootcamp',
           bootcampId: bootcampId,
@@ -254,6 +329,11 @@ export default function BootcampRegisterPage() {
           + (data.availableIds ? ` (Available IDs: ${data.availableIds.map((b: any) => `${b.id} [${b.isActive ? 'active' : 'inactive'}]`).join(', ')})` : '');
         setPaymentError(errorMessage || 'Failed to create payment session. Please try again.');
         setPaymentInitiating(false);
+        
+        // If authentication error, redirect to sign in
+        if (response.status === 401) {
+          router.push(`/signin?redirect=/bootcamp/${params.id}/register`);
+        }
       }
     } catch (error) {
       console.error('Error creating Stripe checkout session:', error);
@@ -302,12 +382,24 @@ export default function BootcampRegisterPage() {
     }
   };
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
         <Navbar variant="hero" />
         <div className="flex items-center justify-center h-64">
           <div className="text-white">Loading bootcamp...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Check authentication - if not authenticated, show message (redirect happens in useEffect)
+  if (!isAuthenticated || !user) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+        <Navbar variant="hero" />
+        <div className="flex items-center justify-center h-64">
+          <div className="text-white">Redirecting to sign in...</div>
         </div>
       </div>
     );

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
 import { stripe, createLineItem, createSessionMetadata, SessionData, getSuccessUrl, getCancelUrl } from '@/lib/stripe';
+import { requireAuth } from '@/lib/authHelpers';
+import { ObjectId } from 'mongodb';
 import Joi from 'joi';
 import { Bootcamp } from '@/types/admin';
 
@@ -86,6 +88,31 @@ export async function POST(request: NextRequest) {
     console.log(`💰 Pricing Mode: ${isTestMode ? 'TEST ($1 charges)' : 'PRODUCTION (real prices)'}`);
     const body = await request.json();
     console.log('Stripe checkout request body:', JSON.stringify(body, null, 2));
+
+    // For bootcamp purchases, require authentication
+    if (body.type === 'bootcamp') {
+      const { error: authError, userId } = await requireAuth(request);
+      if (authError || !userId) {
+        return NextResponse.json(
+          { error: 'Authentication required. Please sign in to purchase a bootcamp.' },
+          { status: 401 }
+        );
+      }
+
+      // Get user from database to ensure they exist and get their email
+      const db = await getDatabase();
+      const user = await db.collection('public_users').findOne({ _id: new ObjectId(userId) });
+      if (!user) {
+        return NextResponse.json(
+          { error: 'User not found' },
+          { status: 404 }
+        );
+      }
+
+      // Override customerEmail with authenticated user's email
+      body.customerEmail = user.email;
+      body.userId = userId;
+    }
 
     // Simple validation
     if (!body.type || !body.customerEmail) {
@@ -250,6 +277,7 @@ export async function POST(request: NextRequest) {
           type: body.type,
           customerEmail: body.customerEmail,
           customerName: body.customerName || '',
+          ...(body.userId ? { userId: body.userId } : {}),
           ...(body.type === 'booking' ? {
             meetingTypeId: body.meetingTypeId
           } : {

@@ -7,18 +7,67 @@ import Link from 'next/link';
 import Footer from '@/components/Footer';
 import { NewsletterSubscription } from '@/components';
 import BootcampCardSkeleton from '@/components/BootcampCardSkeleton';
+import LoadingScreen from '@/components/LoadingScreen';
 import { Bootcamp } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 import { useAuth } from '@/contexts/AuthContext';
 
+interface EnrolledBootcamp {
+  bootcamp: Bootcamp;
+  enrollment: {
+    bootcampId: string;
+    enrolledAt: string;
+    amount: number;
+    currency: string;
+  };
+  progress: {
+    overallProgress: number;
+    completedLessons: number;
+    totalLessons: number;
+    lastUpdated: string;
+  };
+}
+
 export default function BootcampPage() {
   const [bootcamps, setBootcamps] = useState<Bootcamp[]>([]);
+  const [enrolledBootcamps, setEnrolledBootcamps] = useState<EnrolledBootcamp[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isAuthenticated } = useAuth();
+  const [enrolledLoading, setEnrolledLoading] = useState(false);
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
 
   useEffect(() => {
     fetchBootcamps();
   }, []);
+
+  useEffect(() => {
+    // Fetch enrolled bootcamps when authentication status is known
+    if (!authLoading && isAuthenticated) {
+      fetchEnrolledBootcamps();
+    } else if (!authLoading && !isAuthenticated) {
+      setEnrolledBootcamps([]);
+    }
+  }, [authLoading, isAuthenticated]);
+
+  // Listen for enrollment updates (e.g., after payment)
+  useEffect(() => {
+    const handleEnrollmentUpdate = () => {
+      if (isAuthenticated && !authLoading) {
+        console.log('🔄 Enrollment updated event received, refreshing enrolled bootcamps...');
+        // Small delay to ensure webhook has processed
+        setTimeout(() => {
+          fetchEnrolledBootcamps();
+        }, 1000);
+      }
+    };
+
+    if (typeof window !== 'undefined') {
+      window.addEventListener('bootcamp-enrollment-updated', handleEnrollmentUpdate);
+      return () => {
+        window.removeEventListener('bootcamp-enrollment-updated', handleEnrollmentUpdate);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, authLoading]);
 
   const fetchBootcamps = async () => {
     try {
@@ -37,6 +86,36 @@ export default function BootcampPage() {
       setBootcamps(getFallbackBootcamps());
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchEnrolledBootcamps = async () => {
+    setEnrolledLoading(true);
+    try {
+      const response = await fetch('/api/bootcamp/enrolled', {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        // Store all enrolled bootcamps
+        if (data.enrolledBootcamps && data.enrolledBootcamps.length > 0) {
+          setEnrolledBootcamps(data.enrolledBootcamps);
+        } else {
+          setEnrolledBootcamps([]);
+        }
+      } else if (response.status === 401) {
+        // Not authenticated - clear enrolled bootcamps
+        setEnrolledBootcamps([]);
+      } else {
+        console.error('Failed to fetch enrolled bootcamps');
+        setEnrolledBootcamps([]);
+      }
+    } catch (error) {
+      console.error('Error fetching enrolled bootcamps:', error);
+      setEnrolledBootcamps([]);
+    } finally {
+      setEnrolledLoading(false);
     }
   };
 
@@ -61,24 +140,45 @@ export default function BootcampPage() {
     return `${day}${suffix} ${month}, ${year}`;
   };
 
-  const renderEnrolledHero = (bootcamp: Bootcamp) => {
-    const mentors = bootcamp.mentors ?? [];
-    const enrollmentDate =
-      formatDateWithOrdinal(bootcamp.registrationStartDate?.toString()) || '1st Oct, 2025';
+  const ProgressCircle = ({ value }: { value: number }) => {
+    const normalized = Math.min(Math.max(value, 0), 100);
+    const circumference = 2 * Math.PI * 14;
+    const offset = circumference - (normalized / 100) * circumference;
 
     return (
-      <div className="relative z-10 w-full px-0 sm:px-2 -mt-16">
-        <div className="flex flex-col gap-6 w-full max-w-[1280px] mx-auto">
-          <div className="flex flex-col gap-4">
-            <p
-              className="text-3xl sm:text-[36px] text-white"
-              style={{ fontFamily: 'Gilroy-SemiBold', lineHeight: '100%' }}
-            >
-              Enrolled Bootcamp
-            </p>
-          </div>
+      <div className="relative flex items-center justify-center w-10 h-10">
+        <svg className="w-10 h-10 transform -rotate-90" viewBox="0 0 32 32">
+          <circle cx="16" cy="16" r="14" stroke="#FFFFFF" strokeWidth="3" fill="none" opacity={0.2} />
+          <circle
+            cx="16"
+            cy="16"
+            r="14"
+            stroke="#667EEA"
+            strokeWidth="4"
+            fill="none"
+            strokeDasharray={circumference}
+            strokeDashoffset={offset}
+            strokeLinecap="round"
+          />
+        </svg>
+        <span
+          className="absolute inset-0 flex items-center justify-center text-[10px] font-medium text-white"
+          style={{ fontFamily: 'Gilroy-Regular' }}
+        >
+          {value}%
+        </span>
+      </div>
+    );
+  };
 
-        <div className="relative bg-[#1F1F1F] rounded-2xl p-4 sm:p-6 lg:p-8 overflow-hidden isolate">
+  const renderEnrolledHero = (enrolledData: EnrolledBootcamp) => {
+    const bootcamp = enrolledData.bootcamp;
+    const mentors = bootcamp.mentors ?? [];
+    const enrollmentDate = formatDateWithOrdinal(enrolledData.enrollment.enrolledAt) || '1st Oct, 2025';
+    const { overallProgress, completedLessons, totalLessons } = enrolledData.progress;
+
+    return (
+        <div key={enrolledData.enrollment.bootcampId} className="relative bg-[#1F1F1F] rounded-2xl p-4 sm:p-6 lg:p-8 overflow-hidden isolate">
           {/* Curved Gradient Border */}
           <div
             className="absolute inset-0 pointer-events-none"
@@ -162,13 +262,9 @@ export default function BootcampPage() {
                     Progress
                   </p>
                   <div className="flex items-center gap-3">
-                    <div className="relative flex items-center justify-center w-10 h-10">
-                      <div className="absolute inset-0 rounded-full border-[3px] border-white" />
-                      <div className="absolute inset-0 rounded-full border-[5px] border-[#667EEA] opacity-80" />
-                      <span className="text-[10px] font-medium">50%</span>
-                    </div>
+                    <ProgressCircle value={overallProgress} />
                     <p className="text-base" style={{ fontFamily: 'Gilroy-Regular' }}>
-                      3/6 Videos Completed
+                      {completedLessons}/{totalLessons} Videos Completed
                     </p>
                   </div>
                 </div>
@@ -196,11 +292,8 @@ export default function BootcampPage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
     );
   };
-
 
   const renderBootcampCard = (bootcamp: Bootcamp) => (
     <div key={bootcamp._id} className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
@@ -314,8 +407,16 @@ export default function BootcampPage() {
     </div>
   );
 
-  const showEnrolledHero = isAuthenticated && !loading && bootcamps.length > 0;
-  const enrolledBootcamp = showEnrolledHero ? bootcamps[0] : null;
+  const showEnrolledHero = isAuthenticated && !authLoading && !enrolledLoading && enrolledBootcamps.length > 0;
+  
+  // Show loading state while checking enrollment status for authenticated users
+  const isLoadingEnrollment = isAuthenticated && !authLoading && enrolledLoading;
+  const isInitialLoad = loading || authLoading || isLoadingEnrollment;
+
+  // Show loading screen while checking enrollment
+  if (isInitialLoad) {
+    return <LoadingScreen message="Loading..." />;
+  }
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
@@ -551,7 +652,23 @@ export default function BootcampPage() {
                 </p>
               </div>
             )}
-            {enrolledBootcamp && renderEnrolledHero(enrolledBootcamp)}
+            {enrolledBootcamps.length > 0 && (
+              <div className="relative z-10 w-full px-0 sm:px-2 -mt-16">
+                <div className="flex flex-col gap-6 w-full max-w-[1280px] mx-auto">
+                  <div className="flex flex-col gap-4">
+                    <p
+                      className="text-3xl sm:text-[36px] text-white"
+                      style={{ fontFamily: 'Gilroy-SemiBold', lineHeight: '100%' }}
+                    >
+                      {enrolledBootcamps.length === 1 ? 'Enrolled Bootcamp' : 'Enrolled Bootcamps'}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-6">
+                    {enrolledBootcamps.map((enrolledData) => renderEnrolledHero(enrolledData))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>

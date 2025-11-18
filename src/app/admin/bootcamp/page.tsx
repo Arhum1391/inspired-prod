@@ -54,6 +54,17 @@ export default function BootcampPage() {
   const [newCurriculumItem, setNewCurriculumItem] = useState('');
   const [newTargetAudienceItem, setNewTargetAudienceItem] = useState('');
   
+  // Lesson management state
+  const [lessons, setLessons] = useState<any[]>([]);
+  const [loadingLessons, setLoadingLessons] = useState(false);
+  const [newLesson, setNewLesson] = useState({
+    title: '',
+    youtubeVideoId: '',
+    description: '',
+    order: 0,
+  });
+  const [editingLesson, setEditingLesson] = useState<any>(null);
+  
   // Validation state
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
 
@@ -332,6 +343,9 @@ export default function BootcampPage() {
     
     // Clear validation errors when editing
     setValidationErrors({});
+    
+    // Fetch lessons for this bootcamp
+    fetchLessons(bootcamp.id);
   };
 
   const handleDelete = async (id: string) => {
@@ -624,6 +638,97 @@ export default function BootcampPage() {
         items: formData.targetAudience.items.filter((_, i) => i !== index)
       }
     });
+  };
+
+  // Lesson management functions
+  const fetchLessons = async (bootcampId: string) => {
+    setLoadingLessons(true);
+    try {
+      const response = await fetch(`/admin/api/bootcamp/${bootcampId}/lessons`);
+      if (response.ok) {
+        const data = await response.json();
+        setLessons(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch lessons:', error);
+    } finally {
+      setLoadingLessons(false);
+    }
+  };
+
+  const handleAddLesson = async () => {
+    if (!editingBootcamp || !newLesson.title || !newLesson.youtubeVideoId) {
+      alert('Please fill in title and YouTube video ID');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/admin/api/bootcamp/${editingBootcamp.id}/lessons`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newLesson),
+      });
+
+      if (response.ok) {
+        await fetchLessons(editingBootcamp.id);
+        setNewLesson({ title: '', youtubeVideoId: '', description: '', order: 0 });
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to add lesson');
+      }
+    } catch (error) {
+      console.error('Failed to add lesson:', error);
+      alert('Failed to add lesson');
+    }
+  };
+
+  const handleUpdateLesson = async (lesson: any) => {
+    if (!editingBootcamp) return;
+
+    try {
+      const response = await fetch(`/admin/api/bootcamp/${editingBootcamp.id}/lessons`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lessonId: lesson.lessonId,
+          title: lesson.title,
+          description: lesson.description,
+          youtubeVideoId: lesson.youtubeVideoId,
+          order: lesson.order,
+        }),
+      });
+
+      if (response.ok) {
+        await fetchLessons(editingBootcamp.id);
+        setEditingLesson(null);
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to update lesson');
+      }
+    } catch (error) {
+      console.error('Failed to update lesson:', error);
+      alert('Failed to update lesson');
+    }
+  };
+
+  const handleDeleteLesson = async (lessonId: string) => {
+    if (!editingBootcamp || !confirm('Are you sure you want to delete this lesson?')) return;
+
+    try {
+      const response = await fetch(
+        `/admin/api/bootcamp/${editingBootcamp.id}/lessons?lessonId=${lessonId}`,
+        { method: 'DELETE' }
+      );
+
+      if (response.ok) {
+        await fetchLessons(editingBootcamp.id);
+      } else {
+        alert('Failed to delete lesson');
+      }
+    } catch (error) {
+      console.error('Failed to delete lesson:', error);
+      alert('Failed to delete lesson');
+    }
   };
 
   if (loading) {
@@ -1533,6 +1638,125 @@ export default function BootcampPage() {
                   </div>
                 </div>
               </div>
+
+              {/* Lessons/Videos Management Section */}
+              {editingBootcamp && (
+                <div className="border-t border-slate-600 pt-6">
+                  <h3 className="text-lg font-semibold text-white mb-4">Lessons/Videos Management</h3>
+                  
+                  {loadingLessons ? (
+                    <p className="text-gray-400">Loading lessons...</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Add New Lesson Form */}
+                      <div className="bg-slate-700 rounded-lg p-4 space-y-3">
+                        <h4 className="text-sm font-medium text-white">Add New Lesson</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                          <input
+                            type="text"
+                            placeholder="Lesson Title"
+                            value={newLesson.title}
+                            onChange={(e) => setNewLesson({ ...newLesson, title: e.target.value })}
+                            className="px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          />
+                          <input
+                            type="text"
+                            placeholder="YouTube Video ID or URL"
+                            value={newLesson.youtubeVideoId}
+                            onChange={(e) => setNewLesson({ ...newLesson, youtubeVideoId: e.target.value })}
+                            className="px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                          />
+                        </div>
+                        <textarea
+                          placeholder="Description (optional)"
+                          value={newLesson.description}
+                          onChange={(e) => setNewLesson({ ...newLesson, description: e.target.value })}
+                          rows={2}
+                          className="w-full px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleAddLesson}
+                          className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                        >
+                          Add Lesson
+                        </button>
+                      </div>
+
+                      {/* Existing Lessons List */}
+                      {lessons.length > 0 ? (
+                        <div className="space-y-2">
+                          <h4 className="text-sm font-medium text-white">Existing Lessons ({lessons.length})</h4>
+                          {lessons.map((lesson, index) => (
+                            <div key={lesson.lessonId} className="bg-slate-800 rounded-lg p-4">
+                              {editingLesson?.lessonId === lesson.lessonId ? (
+                                <div className="space-y-3">
+                                  <input
+                                    type="text"
+                                    value={editingLesson.title}
+                                    onChange={(e) => setEditingLesson({ ...editingLesson, title: e.target.value })}
+                                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                  />
+                                  <input
+                                    type="text"
+                                    value={editingLesson.youtubeVideoId}
+                                    onChange={(e) => setEditingLesson({ ...editingLesson, youtubeVideoId: e.target.value })}
+                                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                  />
+                                  <div className="flex gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => handleUpdateLesson(editingLesson)}
+                                      className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingLesson(null)}
+                                      className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <p className="text-white font-medium">#{index + 1}. {lesson.title}</p>
+                                    <p className="text-gray-400 text-sm">Video ID: {lesson.youtubeVideoId}</p>
+                                    {lesson.description && (
+                                      <p className="text-gray-500 text-xs mt-1">{lesson.description}</p>
+                                    )}
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingLesson({ ...lesson })}
+                                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
+                                    >
+                                      Edit
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() => handleDeleteLesson(lesson.lessonId)}
+                                      className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
+                                    >
+                                      Delete
+                                    </button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-400 text-sm">No lessons added yet. Add your first lesson above.</p>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Validation Summary - Always show if there are errors */}
               {Object.keys(validationErrors).length > 0 && (

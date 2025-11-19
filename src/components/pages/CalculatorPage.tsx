@@ -112,7 +112,7 @@ export default function CalculatorPage() {
     'Micro Lot': 0.10,
   };
 
-  const isCryptoAsset = selectedAsset === 'Crypto (BTC, ETH, etc.)';
+  const isCryptoAsset = selectedAsset === 'Crypto (BTC, ETH, etc.)' || selectedAsset === 'Gold (XAUUSD)';
 
   const formatCompactCurrency = (value: number) => {
     if (!Number.isFinite(value)) {
@@ -199,7 +199,7 @@ export default function CalculatorPage() {
       setAccountBalance('80000');
       setRiskPercentage('10');
       setStopLoss('45');
-      setPipValue('1');
+      setPipValue('10');
       setLotSize('160');
       previousAuthStatus.current = false;
       return;
@@ -262,7 +262,7 @@ export default function CalculatorPage() {
   useEffect(() => {
     if (selectedAsset === 'Gold (XAUUSD)') {
       // Set Pip Value as constant for Gold
-      setPipValue('1');
+      setPipValue('10');
 
       // Parse input values, handling empty strings and invalid inputs
       const balance = parseFloat(accountBalance.trim()) || 0;
@@ -279,11 +279,11 @@ export default function CalculatorPage() {
       // Risk Amount = (Account Balance × Risk%) / 100
       const riskAmount = (balance * risk) / 100;
 
-      // For Gold: Pip Value per standard lot = $1 per pip (constant)
-      // This means: 1 Standard Lot (100 oz) → 1 pip (0.01 move) = $1
+      // For Gold: Pip Value per standard lot = $10 per pip (constant)
+      // This means: 1 Standard Lot (100 oz) → 1 pip (0.01 move) = $10
       // Formula: Lot Size = Risk Amount / (Stop Loss × Pip Value)
-      // Where Pip Value = $1 per pip (constant for Gold)
-      const pipValuePerStandardLot = 1; // $1 per pip for 1 standard lot (100 oz)
+      // Where Pip Value = $10 per pip (constant for Gold)
+      const pipValuePerStandardLot = 10; // $10 per pip for 1 standard lot (100 oz)
       
       // Lot Size = Risk Amount / (Stop Loss × Pip Value per standard lot)
       // Calculates the number of standard lots needed
@@ -420,7 +420,7 @@ export default function CalculatorPage() {
     setLotSize('');
     // Reset Pip Value based on selected asset
     if (selectedAsset === 'Gold (XAUUSD)') {
-      setPipValue('1');
+      setPipValue('10');
     } else if (selectedAsset === 'Currency (Forex Pairs)') {
       setPipValue('');
     } else {
@@ -999,8 +999,8 @@ export default function CalculatorPage() {
             line-height: 100% !important;
           }
           .calculator-page .calculator-results-tile {
-            min-height: 408px !important;
-            height: 408px !important;
+            min-height: 372px !important;
+            height: 372px !important;
           }
           .calculator-page .calculator-results-content {
             width: 343px !important;
@@ -2585,7 +2585,8 @@ export default function CalculatorPage() {
                           </div>
                         </div>
                         
-                        {/* Pip Value (Gold/Forex) or Position Size (Crypto) - Frame 1000004750 */}
+                        {/* Pip Value (Forex), Position Size (Crypto), or Lot Size (Gold) - Frame 1000004750 */}
+                        {(selectedAsset === 'Crypto (BTC, ETH, etc.)' || selectedAsset === 'Gold (XAUUSD)' || selectedAsset === 'Currency (Forex Pairs)') && (
                         <div
                           className="calculator-input-field calculator-input-field-half"
                           style={{
@@ -2620,10 +2621,10 @@ export default function CalculatorPage() {
                               margin: 0,
                             }}
                           >
-                            {selectedAsset === 'Crypto (BTC, ETH, etc.)' ? 'Position Size (USD)' : 'Pip Value ($)'}
+                            {selectedAsset === 'Crypto (BTC, ETH, etc.)' ? 'Position Size (USD)' : selectedAsset === 'Gold (XAUUSD)' ? 'Lot Size' : selectedAsset === 'Currency (Forex Pairs)' ? 'Pip Value ($)' : ''}
                           </label>
                           
-                          {/* For Crypto: Position Size, For Gold: Read-only input, For Forex: Lot Type Dropdown */}
+                          {/* For Crypto: Position Size, For Gold: Lot Size, For Forex: Lot Type Dropdown */}
                           {!selectedAsset ? (
                           <div
                             className="calculator-input-control"
@@ -2709,7 +2710,7 @@ export default function CalculatorPage() {
                             <input
                               className="calculator-input"
                               type="text"
-                              value={pipValue}
+                              value={lotSize}
                               readOnly
                               style={{
                                 boxSizing: 'border-box',
@@ -2891,10 +2892,11 @@ export default function CalculatorPage() {
                             </div>
                           )}
                         </div>
+                        )}
                       </div>
                       
-                      {/* Row 3 - Frame 1000004763 (Only for Gold and Forex, hidden for Crypto) */}
-                      {selectedAsset !== 'Crypto (BTC, ETH, etc.)' && (
+                      {/* Row 3 - Frame 1000004763 (Only for Forex, hidden for Crypto and Gold) */}
+                      {selectedAsset === 'Currency (Forex Pairs)' && (
                       <div
                         className="calculator-input-row"
                         style={{
@@ -3257,7 +3259,7 @@ export default function CalculatorPage() {
                     padding: '24px',
                     gap: '32px',
                     width: '394px',
-                    minHeight: '326px',
+                    minHeight: '290px',
                     flex: 'none',
                     order: 1,
                     alignSelf: 'stretch',
@@ -3490,8 +3492,8 @@ export default function CalculatorPage() {
                       </span>
                     </div>
                     
-                    {/* Pip Value Row (Only for Gold and Forex) */}
-                    {(selectedAsset === 'Gold (XAUUSD)' || selectedAsset === 'Currency (Forex Pairs)') && (
+                    {/* Pip Value Row (Only for Forex) */}
+                    {selectedAsset === 'Currency (Forex Pairs)' && (
                       <div
                         className="calculator-save-preview-row"
                         style={{
@@ -3547,11 +3549,7 @@ export default function CalculatorPage() {
                             textAlign: 'right',
                           }}
                         >
-                          {selectedAsset === 'Gold (XAUUSD)' 
-                            ? '$1/pip' 
-                            : selectedAsset === 'Currency (Forex Pairs)' 
-                              ? `$${forexLotTypePipValues[forexLotType]}/pip`
-                              : '-'}
+                          {`$${forexLotTypePipValues[forexLotType]}/pip`}
                         </span>
                       </div>
                     )}
@@ -5648,7 +5646,7 @@ export default function CalculatorPage() {
                     margin: 0,
                   }}
                 >
-                  Pip Value for Gold: 1 Standard Lot (100 oz) → 1 pip (0.01 move) = $1
+                  Pip Value for Gold: 1 Standard Lot (100 oz) → 1 pip (0.01 move) = $10
                 </p>
               )}
               

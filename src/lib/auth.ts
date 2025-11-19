@@ -40,6 +40,11 @@ export interface PublicUser {
   isPaid: boolean;
   subscriptionStatus: string;
   lastPaymentAt?: Date | null;
+  emailVerified?: boolean;
+  emailVerificationToken?: string | null;
+  emailVerificationTokenExpiry?: Date | null;
+  passwordResetToken?: string | null;
+  passwordResetTokenExpiry?: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -94,9 +99,13 @@ export async function getUserById(id: string): Promise<User | null> {
 // PUBLIC USER FUNCTIONS (uses 'public_users' collection, identified by email)
 // ============================================================================
 
-export async function createPublicUser(email: string, password: string, name?: string): Promise<PublicUser> {
+export async function createPublicUser(email: string, password: string, name?: string, emailVerificationToken?: string): Promise<PublicUser> {
   const db = await getDatabase();
   const hashedPassword = await hashPassword(password);
+  
+  const emailVerificationTokenExpiry = emailVerificationToken 
+    ? new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
+    : null;
   
   const user: Omit<PublicUser, '_id'> = {
     email,
@@ -105,6 +114,11 @@ export async function createPublicUser(email: string, password: string, name?: s
     isPaid: false,
     subscriptionStatus: 'none',
     lastPaymentAt: null,
+    emailVerified: false,
+    emailVerificationToken: emailVerificationToken || null,
+    emailVerificationTokenExpiry: emailVerificationTokenExpiry,
+    passwordResetToken: null,
+    passwordResetTokenExpiry: null,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -124,6 +138,11 @@ export async function getPublicUserByEmail(email: string): Promise<PublicUser | 
     isPaid: user.isPaid ?? false,
     subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
     lastPaymentAt: user.lastPaymentAt ?? null,
+    emailVerified: user.emailVerified ?? false,
+    emailVerificationToken: user.emailVerificationToken ?? null,
+    emailVerificationTokenExpiry: user.emailVerificationTokenExpiry ?? null,
+    passwordResetToken: user.passwordResetToken ?? null,
+    passwordResetTokenExpiry: user.passwordResetTokenExpiry ?? null,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   } : null;
@@ -140,6 +159,11 @@ export async function getPublicUserById(id: string): Promise<PublicUser | null> 
     isPaid: user.isPaid ?? false,
     subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
     lastPaymentAt: user.lastPaymentAt ?? null,
+    emailVerified: user.emailVerified ?? false,
+    emailVerificationToken: user.emailVerificationToken ?? null,
+    emailVerificationTokenExpiry: user.emailVerificationTokenExpiry ?? null,
+    passwordResetToken: user.passwordResetToken ?? null,
+    passwordResetTokenExpiry: user.passwordResetTokenExpiry ?? null,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   } : null;
@@ -153,6 +177,12 @@ export async function updatePublicUser(
     isPaid?: boolean;
     subscriptionStatus?: string;
     lastPaymentAt?: Date | null;
+    emailVerified?: boolean;
+    emailVerificationToken?: string | null;
+    emailVerificationTokenExpiry?: Date | null;
+    passwordResetToken?: string | null;
+    passwordResetTokenExpiry?: Date | null;
+    password?: string;
   }
 ): Promise<PublicUser | null> {
   const db = await getDatabase();
@@ -179,7 +209,73 @@ export async function updatePublicUser(
     isPaid: result.isPaid ?? false,
     subscriptionStatus: result.subscriptionStatus ?? (result.isPaid ? 'active' : 'none'),
     lastPaymentAt: result.lastPaymentAt ?? null,
+    emailVerified: result.emailVerified ?? false,
+    emailVerificationToken: result.emailVerificationToken ?? null,
+    emailVerificationTokenExpiry: result.emailVerificationTokenExpiry ?? null,
+    passwordResetToken: result.passwordResetToken ?? null,
+    passwordResetTokenExpiry: result.passwordResetTokenExpiry ?? null,
     createdAt: result.createdAt,
     updatedAt: result.updatedAt
+  };
+}
+
+// Generate a secure random token
+export function generateSecureToken(): string {
+  return require('crypto').randomBytes(32).toString('hex');
+}
+
+// Get user by email verification token
+export async function getPublicUserByVerificationToken(token: string): Promise<PublicUser | null> {
+  const db = await getDatabase();
+  const user = await db.collection('public_users').findOne({ 
+    emailVerificationToken: token,
+    emailVerificationTokenExpiry: { $gt: new Date() }
+  });
+  
+  if (!user) return null;
+  
+  return {
+    _id: user._id.toString(),
+    email: user.email,
+    password: user.password,
+    name: user.name || null,
+    isPaid: user.isPaid ?? false,
+    subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
+    lastPaymentAt: user.lastPaymentAt ?? null,
+    emailVerified: user.emailVerified ?? false,
+    emailVerificationToken: user.emailVerificationToken ?? null,
+    emailVerificationTokenExpiry: user.emailVerificationTokenExpiry ?? null,
+    passwordResetToken: user.passwordResetToken ?? null,
+    passwordResetTokenExpiry: user.passwordResetTokenExpiry ?? null,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
+  };
+}
+
+// Get user by password reset token
+export async function getPublicUserByPasswordResetToken(token: string): Promise<PublicUser | null> {
+  const db = await getDatabase();
+  const user = await db.collection('public_users').findOne({ 
+    passwordResetToken: token,
+    passwordResetTokenExpiry: { $gt: new Date() }
+  });
+  
+  if (!user) return null;
+  
+  return {
+    _id: user._id.toString(),
+    email: user.email,
+    password: user.password,
+    name: user.name || null,
+    isPaid: user.isPaid ?? false,
+    subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
+    lastPaymentAt: user.lastPaymentAt ?? null,
+    emailVerified: user.emailVerified ?? false,
+    emailVerificationToken: user.emailVerificationToken ?? null,
+    emailVerificationTokenExpiry: user.emailVerificationTokenExpiry ?? null,
+    passwordResetToken: user.passwordResetToken ?? null,
+    passwordResetTokenExpiry: user.passwordResetTokenExpiry ?? null,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt
   };
 }

@@ -49,6 +49,14 @@ export default function SignIn() {
           return;
         }
 
+        // Check if email verification is required
+        if (data.requiresVerification) {
+          setError('Account created! Please check your email to verify your account before signing in.');
+          setIsLoading(false);
+          // Optionally redirect to a verification message page or show a success message
+          return;
+        }
+
         // Store email in sessionStorage for checkout (do NOT login yet)
         // User will be authenticated after completing checkout/payment
         if (data.user && data.user.email) {
@@ -79,7 +87,12 @@ export default function SignIn() {
         const data = await response.json();
 
         if (!response.ok) {
-          setError(data.error || 'Invalid credentials');
+          // Check if email verification is required
+          if (data.requiresVerification) {
+            setError(data.error || 'Please verify your email address before signing in. Check your inbox for the verification link.');
+          } else {
+            setError(data.error || 'Invalid credentials');
+          }
           setIsLoading(false);
           return;
         }

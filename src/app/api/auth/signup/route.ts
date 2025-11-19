@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createPublicUser, getPublicUserByEmail, generateToken } from '@/lib/auth';
+import { createPublicUser, getPublicUserByEmail, generateSecureToken } from '@/lib/auth';
+import { sendVerificationEmail } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,8 +39,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create user
-    const user = await createPublicUser(email, password, name);
+    // Generate verification token
+    const verificationToken = generateSecureToken();
+
+    // Create user with verification token
+    const user = await createPublicUser(email, password, name, verificationToken);
+
+    // Send verification email
+    try {
+      await sendVerificationEmail(email, verificationToken);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      // Still return success, but log the error
+      // In production, you might want to handle this differently
+    }
 
     // Return user without password
     const userResponse = {
@@ -48,31 +61,18 @@ export async function POST(request: NextRequest) {
       name: user.name,
       isPaid: user.isPaid,
       subscriptionStatus: user.subscriptionStatus,
+      emailVerified: user.emailVerified,
     };
 
-    const response = NextResponse.json(
-      { message: 'User created successfully', user: userResponse },
+    // Don't set auth cookie - user needs to verify email first
+    return NextResponse.json(
+      { 
+        message: 'Account created successfully. Please check your email to verify your account.', 
+        user: userResponse,
+        requiresVerification: true
+      },
       { status: 201 }
     );
-
-    // Generate auth token and set cookie so new users stay signed in
-    const token = generateToken(user._id!);
-    
-    // Prepare cookie options (matching signin route)
-    const cookieOptions = {
-      httpOnly: true as const,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict' as const,
-      maxAge: 7 * 24 * 60 * 60,
-      path: '/',
-      ...(process.env.AUTH_COOKIE_DOMAIN
-        ? { domain: process.env.AUTH_COOKIE_DOMAIN }
-        : {}),
-    };
-    
-    response.cookies.set('user-auth-token', token, cookieOptions);
-
-    return response;
   } catch (error) {
     console.error('Signup error:', error);
     return NextResponse.json(

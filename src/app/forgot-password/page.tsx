@@ -18,14 +18,32 @@ export default function ForgotPassword() {
       return;
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setStatusMessage('Please enter a valid email address.');
+      return;
+    }
+
     try {
       setIsSending(true);
       setStatusMessage(null);
 
-      // TODO: Replace with actual password reset request.
-      await new Promise(resolve => setTimeout(resolve, 1200));
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
 
-      setStatusMessage('If that email matches an account, we’ve sent password reset instructions.');
+      const data = await response.json();
+
+      if (!response.ok) {
+        setStatusMessage(data.error || 'Something went wrong. Please try again.');
+        setIsSending(false);
+        return;
+      }
+
+      setStatusMessage(data.message || 'If that email matches an account, wev e sent password reset instructions.');
     } catch (error) {
       setStatusMessage('Something went wrong. Please try again.');
     } finally {
@@ -33,8 +51,46 @@ export default function ForgotPassword() {
     }
   };
 
-  const handleResend = () => {
-    setStatusMessage('We’ve resent the password reset link (if the email exists in our records).');
+  const handleResend = async () => {
+    const emailInput = document.querySelector('input[name="email"]') as HTMLInputElement;
+    const email = emailInput?.value;
+
+    if (!email) {
+      setStatusMessage('Please enter your email address first.');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setStatusMessage('Please enter a valid email address.');
+      return;
+    }
+
+    try {
+      setIsSending(true);
+      setStatusMessage(null);
+
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setStatusMessage(data.error || 'Something went wrong. Please try again.');
+        setIsSending(false);
+        return;
+      }
+
+      setStatusMessage(data.message || 'We ve resent the password reset link if the email exists in our records).');
+    } catch (error) {
+      setStatusMessage('Something went wrong. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (

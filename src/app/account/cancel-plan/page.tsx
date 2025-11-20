@@ -27,10 +27,10 @@ const CancelPlanPage = () => {
         if (response.ok) {
           const data = await response.json();
           setSubscription(data.subscription);
-          
+
           // If no active subscription, redirect to pricing
-          if (!data.subscription || !data.subscription.status || 
-              !['active', 'trialing', 'past_due'].includes(data.subscription.status)) {
+          if (!data.subscription || !data.subscription.status ||
+            !['active', 'trialing', 'past_due'].includes(data.subscription.status)) {
             router.push('/pricing');
             return;
           }
@@ -86,9 +86,9 @@ const CancelPlanPage = () => {
   const handleConfirmCancel = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedReason) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       const response = await fetch('/api/subscription/cancel', {
         method: 'POST',
@@ -109,7 +109,6 @@ const CancelPlanPage = () => {
             subscriptionStatus: data.user.subscriptionStatus,
           });
         }
-        
         router.push('/account?canceled=1');
       } else {
         alert(data.error || 'Failed to cancel subscription');
@@ -165,7 +164,6 @@ const CancelPlanPage = () => {
           zIndex: 0
         }}
       ></div>
-      
       {/* Mobile Gradients */}
       <div
         className="md:hidden absolute top-0 left-0 w-[588px] h-[588px] pointer-events-none opacity-100"
@@ -195,10 +193,10 @@ const CancelPlanPage = () => {
           zIndex: 0,
         }}
       ></div>
-      
+
       {/* Mobile Layout */}
       <div className="lg:hidden relative z-10" style={{ padding: '0px 16px', paddingTop: '94px' }}>
-        <div 
+        <div
           className="flex flex-col justify-center items-start w-full max-w-[343px] mx-auto"
           style={{
             display: 'flex',
@@ -210,7 +208,7 @@ const CancelPlanPage = () => {
           }}
         >
           {/* Header Section */}
-          <div 
+          <div
             className="flex flex-col items-start w-full"
             style={{
               display: 'flex',
@@ -225,7 +223,7 @@ const CancelPlanPage = () => {
             }}
           >
             {/* Back Button */}
-            <button 
+            <button
               onClick={handleBackToProfile}
               className="flex flex-row items-start gap-1 hover:opacity-80 transition-opacity"
               style={{
@@ -240,7 +238,7 @@ const CancelPlanPage = () => {
                 flexGrow: 0
               }}
             >
-              <div 
+              <div
                 className="relative"
                 style={{
                   width: '16px',
@@ -252,10 +250,10 @@ const CancelPlanPage = () => {
                 }}
               >
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-                  <path d="M5 1L5 9M5 1L1 5M5 1L9 5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M5 1L5 9M5 1L1 5M5 1L9 5" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
-              <span 
+              <span
                 className="text-white gilroy-medium"
                 style={{
                   fontFamily: 'Gilroy-Medium',
@@ -274,7 +272,7 @@ const CancelPlanPage = () => {
             </button>
 
             {/* Title and Step Indicator */}
-            <div 
+            <div
               className="flex flex-col items-start w-full"
               style={{
                 display: 'flex',
@@ -288,7 +286,7 @@ const CancelPlanPage = () => {
                 flexGrow: 0
               }}
             >
-              <h1 
+              <h1
                 className="text-white gilroy-semibold w-full"
                 style={{
                   fontFamily: 'Gilroy-SemiBold',
@@ -307,7 +305,7 @@ const CancelPlanPage = () => {
               </h1>
 
               {/* Step Indicator */}
-              <div 
+              <div
                 className="flex flex-row items-center relative w-full"
                 style={{
                   display: 'flex',
@@ -323,7 +321,7 @@ const CancelPlanPage = () => {
                 }}
               >
                 {/* Step 1 */}
-                <div 
+                <div
                   className="flex flex-col items-center"
                   style={{
                     display: 'flex',
@@ -395,7 +393,7 @@ const CancelPlanPage = () => {
                 </div>
 
                 {/* Step 2 */}
-                <div 
+                <div
                   className="flex flex-col items-center"
                   style={{
                     display: 'flex',
@@ -468,7 +466,7 @@ const CancelPlanPage = () => {
                 </div>
 
                 {/* Step 3 */}
-                <div 
+                <div
                   className="flex flex-col items-center"
                   style={{
                     display: 'flex',
@@ -578,7 +576,7 @@ const CancelPlanPage = () => {
           {currentStep === 1 && (
             <>
               {/* Question Section */}
-              <div 
+              <div
                 className="flex flex-col items-start w-full"
                 style={{
                   display: 'flex',
@@ -592,7 +590,7 @@ const CancelPlanPage = () => {
                   flexGrow: 0
                 }}
               >
-                <h2 
+                <h2
                   className="text-white gilroy-semibold w-full"
                   style={{
                     fontFamily: 'Gilroy-SemiBold',
@@ -609,7 +607,7 @@ const CancelPlanPage = () => {
                 >
                   Before you go—why are you canceling?
                 </h2>
-                <p 
+                <p
                   className="text-[#909090] gilroy-medium w-full"
                   style={{
                     fontFamily: 'Gilroy-Medium',
@@ -629,7 +627,7 @@ const CancelPlanPage = () => {
               </div>
 
               {/* Reason Cards */}
-              <div 
+              <div
                 className="flex flex-col items-start w-full"
                 style={{
                   display: 'flex',
@@ -644,7 +642,7 @@ const CancelPlanPage = () => {
                 }}
               >
                 {/* First Column */}
-                <div 
+                <div
                   className="flex flex-col items-start w-full"
                   style={{
                     display: 'flex',
@@ -659,7 +657,7 @@ const CancelPlanPage = () => {
                   }}
                 >
                   {/* Too Expensive */}
-                  <div 
+                  <div
                     className="bg-[#1F1F1F] rounded-[10px] w-full cursor-pointer relative overflow-hidden"
                     onClick={() => handleReasonSelect('too-expensive')}
                     style={{
@@ -702,7 +700,7 @@ const CancelPlanPage = () => {
                       className="absolute inset-0 pointer-events-none"
                       style={{
                         borderRadius: '10px',
-                        background: selectedReason === 'too-expensive' 
+                        background: selectedReason === 'too-expensive'
                           ? 'linear-gradient(226.35deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 50.5%)'
                           : 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
                         padding: '1px',
@@ -716,9 +714,9 @@ const CancelPlanPage = () => {
                         }}
                       ></div>
                     </div>
-                    
+
                     <div className="flex flex-col items-start gap-3 relative z-10 w-full">
-                      <div 
+                      <div
                         className="flex flex-row items-center w-full"
                         style={{
                           display: 'flex',
@@ -733,7 +731,7 @@ const CancelPlanPage = () => {
                           flexGrow: 0
                         }}
                       >
-                        <h3 
+                        <h3
                           className="text-white gilroy-semibold flex-1"
                           style={{
                             fontFamily: 'Gilroy-SemiBold',
@@ -750,7 +748,7 @@ const CancelPlanPage = () => {
                           Too expensive
                         </h3>
                       </div>
-                      <div 
+                      <div
                         className="flex flex-row items-center w-full"
                         style={{
                           display: 'flex',
@@ -765,7 +763,7 @@ const CancelPlanPage = () => {
                           flexGrow: 0
                         }}
                       >
-                        <p 
+                        <p
                           className="gilroy-medium"
                           style={{
                             fontFamily: 'Gilroy-Medium',
@@ -791,7 +789,7 @@ const CancelPlanPage = () => {
                   </div>
 
                   {/* Not using enough */}
-                  <div 
+                  <div
                     className="bg-[#1F1F1F] rounded-[10px] w-full cursor-pointer relative overflow-hidden"
                     onClick={() => handleReasonSelect('not-using-enough')}
                     style={{
@@ -834,7 +832,7 @@ const CancelPlanPage = () => {
                       className="absolute inset-0 pointer-events-none"
                       style={{
                         borderRadius: '10px',
-                        background: selectedReason === 'not-using-enough' 
+                        background: selectedReason === 'not-using-enough'
                           ? 'linear-gradient(226.35deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 50.5%)'
                           : 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
                         padding: '1px',
@@ -848,9 +846,9 @@ const CancelPlanPage = () => {
                         }}
                       ></div>
                     </div>
-                    
+
                     <div className="flex flex-col items-start gap-3 relative z-10 w-full">
-                      <div 
+                      <div
                         className="flex flex-row items-center w-full"
                         style={{
                           display: 'flex',
@@ -865,7 +863,7 @@ const CancelPlanPage = () => {
                           flexGrow: 0
                         }}
                       >
-                        <h3 
+                        <h3
                           className="text-white gilroy-semibold flex-1"
                           style={{
                             fontFamily: 'Gilroy-SemiBold',
@@ -882,7 +880,7 @@ const CancelPlanPage = () => {
                           Not using enough
                         </h3>
                       </div>
-                      <div 
+                      <div
                         className="flex flex-row items-center w-full"
                         style={{
                           display: 'flex',
@@ -897,7 +895,7 @@ const CancelPlanPage = () => {
                           flexGrow: 0
                         }}
                       >
-                        <p 
+                        <p
                           className="gilroy-medium"
                           style={{
                             fontFamily: 'Gilroy-Medium',
@@ -924,7 +922,7 @@ const CancelPlanPage = () => {
                 </div>
 
                 {/* Second Column */}
-                <div 
+                <div
                   className="flex flex-col items-start w-full"
                   style={{
                     display: 'flex',
@@ -939,7 +937,7 @@ const CancelPlanPage = () => {
                   }}
                 >
                   {/* Technical issues */}
-                  <div 
+                  <div
                     className="bg-[#1F1F1F] rounded-[10px] w-full cursor-pointer relative overflow-hidden"
                     onClick={() => handleReasonSelect('technical-issues')}
                     style={{
@@ -982,7 +980,7 @@ const CancelPlanPage = () => {
                       className="absolute inset-0 pointer-events-none"
                       style={{
                         borderRadius: '10px',
-                        background: selectedReason === 'technical-issues' 
+                        background: selectedReason === 'technical-issues'
                           ? 'linear-gradient(226.35deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 50.5%)'
                           : 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
                         padding: '1px',
@@ -996,9 +994,9 @@ const CancelPlanPage = () => {
                         }}
                       ></div>
                     </div>
-                    
+
                     <div className="flex flex-col items-start gap-3 relative z-10 w-full">
-                      <div 
+                      <div
                         className="flex flex-row items-center w-full"
                         style={{
                           display: 'flex',
@@ -1013,7 +1011,7 @@ const CancelPlanPage = () => {
                           flexGrow: 0
                         }}
                       >
-                        <h3 
+                        <h3
                           className="text-white gilroy-semibold flex-1"
                           style={{
                             fontFamily: 'Gilroy-SemiBold',
@@ -1030,7 +1028,7 @@ const CancelPlanPage = () => {
                           Technical issues
                         </h3>
                       </div>
-                      <div 
+                      <div
                         className="flex flex-row items-center w-full"
                         style={{
                           display: 'flex',
@@ -1045,7 +1043,7 @@ const CancelPlanPage = () => {
                           flexGrow: 0
                         }}
                       >
-                        <p 
+                        <p
                           className="gilroy-medium"
                           style={{
                             fontFamily: 'Gilroy-Medium',
@@ -1071,7 +1069,7 @@ const CancelPlanPage = () => {
                   </div>
 
                   {/* Other */}
-                  <div 
+                  <div
                     className="bg-[#1F1F1F] rounded-[10px] w-full cursor-pointer relative overflow-hidden"
                     onClick={() => handleReasonSelect('other')}
                     style={{
@@ -1114,7 +1112,7 @@ const CancelPlanPage = () => {
                       className="absolute inset-0 pointer-events-none"
                       style={{
                         borderRadius: '10px',
-                        background: selectedReason === 'other' 
+                        background: selectedReason === 'other'
                           ? 'linear-gradient(226.35deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 50.5%)'
                           : 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
                         padding: '1px',
@@ -1128,9 +1126,9 @@ const CancelPlanPage = () => {
                         }}
                       ></div>
                     </div>
-                    
+
                     <div className="flex flex-col items-start gap-3 relative z-10 w-full">
-                      <div 
+                      <div
                         className="flex flex-row items-center w-full"
                         style={{
                           display: 'flex',
@@ -1145,7 +1143,7 @@ const CancelPlanPage = () => {
                           flexGrow: 0
                         }}
                       >
-                        <h3 
+                        <h3
                           className="text-white gilroy-semibold flex-1"
                           style={{
                             fontFamily: 'Gilroy-SemiBold',
@@ -1162,7 +1160,7 @@ const CancelPlanPage = () => {
                           Other
                         </h3>
                       </div>
-                      <div 
+                      <div
                         className="flex flex-row items-center w-full"
                         style={{
                           display: 'flex',
@@ -1177,7 +1175,7 @@ const CancelPlanPage = () => {
                           flexGrow: 0
                         }}
                       >
-                        <p 
+                        <p
                           className="gilroy-medium"
                           style={{
                             fontFamily: 'Gilroy-Medium',
@@ -1251,7 +1249,7 @@ const CancelPlanPage = () => {
           {currentStep === 2 && (
             <>
               {/* Question Section */}
-              <div 
+              <div
                 className="flex flex-col items-start w-full"
                 style={{
                   display: 'flex',
@@ -1265,7 +1263,7 @@ const CancelPlanPage = () => {
                   flexGrow: 0
                 }}
               >
-                <h2 
+                <h2
                   className="text-white gilroy-semibold w-full"
                   style={{
                     fontFamily: 'Gilroy-SemiBold',
@@ -1282,7 +1280,7 @@ const CancelPlanPage = () => {
                 >
                   Prefer one of these instead?
                 </h2>
-                <p 
+                <p
                   className="text-[#909090] gilroy-medium w-full"
                   style={{
                     fontFamily: 'Gilroy-Medium',
@@ -1302,7 +1300,7 @@ const CancelPlanPage = () => {
               </div>
 
               {/* Options Cards */}
-              <div 
+              <div
                 className="flex flex-col items-start w-full"
                 style={{
                   display: 'flex',
@@ -1317,7 +1315,7 @@ const CancelPlanPage = () => {
                 }}
               >
                 {/* Pause for 30 days */}
-                <div 
+                <div
                   className="bg-[#1F1F1F] rounded-[10px] w-full"
                   style={{
                     boxSizing: 'border-box',
@@ -1332,7 +1330,7 @@ const CancelPlanPage = () => {
                     flexGrow: 0
                   }}
                 >
-                  <div 
+                  <div
                     className="flex flex-col items-start w-full"
                     style={{
                       display: 'flex',
@@ -1346,7 +1344,7 @@ const CancelPlanPage = () => {
                       flexGrow: 0
                     }}
                   >
-                    <div 
+                    <div
                       className="flex flex-row items-center w-full"
                       style={{
                         display: 'flex',
@@ -1361,7 +1359,7 @@ const CancelPlanPage = () => {
                         flexGrow: 0
                       }}
                     >
-                      <h3 
+                      <h3
                         className="text-white gilroy-semibold flex-1"
                         style={{
                           fontFamily: 'Gilroy-SemiBold',
@@ -1378,7 +1376,7 @@ const CancelPlanPage = () => {
                         Pause for 30 days
                       </h3>
                     </div>
-                    <div 
+                    <div
                       className="flex flex-row items-center w-full"
                       style={{
                         display: 'flex',
@@ -1393,7 +1391,7 @@ const CancelPlanPage = () => {
                         flexGrow: 0
                       }}
                     >
-                      <p 
+                      <p
                         className="gilroy-medium"
                         style={{
                           fontFamily: 'Gilroy-Medium',
@@ -1416,7 +1414,7 @@ const CancelPlanPage = () => {
                       </p>
                     </div>
                   </div>
-                  <div 
+                  <div
                     className="flex flex-row justify-center items-center w-full"
                     style={{
                       display: 'flex',
@@ -1431,7 +1429,7 @@ const CancelPlanPage = () => {
                       flexGrow: 0
                     }}
                   >
-                    <button 
+                    <button
                       onClick={() => {
                         // TODO: Implement pause subscription functionality
                         console.log('Pause subscription');
@@ -1476,7 +1474,7 @@ const CancelPlanPage = () => {
                 </div>
 
                 {/* Switch to Annual */}
-                <div 
+                <div
                   className="bg-[#1F1F1F] rounded-[10px] w-full"
                   style={{
                     boxSizing: 'border-box',
@@ -1491,7 +1489,7 @@ const CancelPlanPage = () => {
                     flexGrow: 0
                   }}
                 >
-                  <div 
+                  <div
                     className="flex flex-col items-start w-full"
                     style={{
                       display: 'flex',
@@ -1505,7 +1503,7 @@ const CancelPlanPage = () => {
                       flexGrow: 0
                     }}
                   >
-                    <div 
+                    <div
                       className="flex flex-row items-center w-full"
                       style={{
                         display: 'flex',
@@ -1520,7 +1518,7 @@ const CancelPlanPage = () => {
                         flexGrow: 0
                       }}
                     >
-                      <h3 
+                      <h3
                         className="text-white gilroy-semibold flex-1"
                         style={{
                           fontFamily: 'Gilroy-SemiBold',
@@ -1537,7 +1535,7 @@ const CancelPlanPage = () => {
                         Switch to Annual (save 20%)
                       </h3>
                     </div>
-                    <div 
+                    <div
                       className="flex flex-row items-center w-full"
                       style={{
                         display: 'flex',
@@ -1552,7 +1550,7 @@ const CancelPlanPage = () => {
                         flexGrow: 0
                       }}
                     >
-                      <p 
+                      <p
                         className="gilroy-medium"
                         style={{
                           fontFamily: 'Gilroy-Medium',
@@ -1575,7 +1573,7 @@ const CancelPlanPage = () => {
                       </p>
                     </div>
                   </div>
-                  <div 
+                  <div
                     className="flex flex-row justify-center items-center w-full"
                     style={{
                       display: 'flex',
@@ -1590,7 +1588,7 @@ const CancelPlanPage = () => {
                       flexGrow: 0
                     }}
                   >
-                    <button 
+                    <button
                       onClick={() => router.push('/pricing')}
                       className="bg-white border border-white rounded-full text-[#1F1F1F] gilroy-semibold text-center hover:opacity-80 transition-opacity"
                       style={{
@@ -1788,13 +1786,13 @@ const CancelPlanPage = () => {
       <div className="hidden lg:flex flex-col items-center justify-center min-h-screen px-4 pt-20 pb-20 relative z-10">
         <div className="w-full max-w-[846px] flex flex-col items-center">
           <div className="w-full flex flex-col items-start gap-6 mb-10">
-            <button 
+            <button
               onClick={handleBackToProfile}
               className="flex flex-row items-center gap-1 hover:opacity-80 transition-opacity"
             >
               <div className="w-4 h-4 relative">
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M10 12L6 8L10 4" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M10 12L6 8L10 4" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </div>
               <span className="text-white text-base font-normal gilroy-medium">
@@ -1806,49 +1804,40 @@ const CancelPlanPage = () => {
               <h1 className="text-white text-4xl font-normal leading-none gilroy-semibold">
                 Cancel Subscription
               </h1>
-              
+
               <div className="flex flex-row items-center relative">
                 <div className="flex flex-col items-center gap-2 relative z-10">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${
-                    currentStep >= 1 ? 'bg-[#667EEA]' : 'border border-[#909090]'
-                  }`}>
-                    <span className={`text-sm font-normal gilroy-medium ${
-                      currentStep >= 1 ? 'text-white' : 'text-[#909090]'
-                    }`}>1</span>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${currentStep >= 1 ? 'bg-[#667EEA]' : 'border border-[#909090]'
+                    }`}>
+                    <span className={`text-sm font-normal gilroy-medium ${currentStep >= 1 ? 'text-white' : 'text-[#909090]'
+                      }`}>1</span>
                   </div>
-                  <span className={`text-xs font-normal gilroy-medium text-center ${
-                    currentStep >= 1 ? 'text-white' : 'text-[#909090]'
-                  }`}>Reason</span>
+                  <span className={`text-xs font-normal gilroy-medium text-center ${currentStep >= 1 ? 'text-white' : 'text-[#909090]'
+                    }`}>Reason</span>
                 </div>
 
                 <div className="w-18 h-0.5 bg-[#404040] mx-4 self-center -mt-4"></div>
 
                 <div className="flex flex-col items-center gap-2 relative z-10">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${
-                    currentStep >= 2 ? 'bg-[#667EEA]' : 'border border-[#909090]'
-                  }`}>
-                    <span className={`text-sm font-normal gilroy-medium ${
-                      currentStep >= 2 ? 'text-white' : 'text-[#909090]'
-                    }`}>2</span>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${currentStep >= 2 ? 'bg-[#667EEA]' : 'border border-[#909090]'
+                    }`}>
+                    <span className={`text-sm font-normal gilroy-medium ${currentStep >= 2 ? 'text-white' : 'text-[#909090]'
+                      }`}>2</span>
                   </div>
-                  <span className={`text-xs font-normal gilroy-medium text-center ${
-                    currentStep >= 2 ? 'text-white' : 'text-[#909090]'
-                  }`}>Options</span>
+                  <span className={`text-xs font-normal gilroy-medium text-center ${currentStep >= 2 ? 'text-white' : 'text-[#909090]'
+                    }`}>Options</span>
                 </div>
 
                 <div className="w-18 h-0.5 bg-[#404040] mx-4 self-center -mt-4"></div>
 
                 <div className="flex flex-col items-center gap-2 relative z-10">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${
-                    currentStep >= 3 ? 'bg-[#667EEA]' : 'border border-[#909090]'
-                  }`}>
-                    <span className={`text-sm font-normal gilroy-medium ${
-                      currentStep >= 3 ? 'text-white' : 'text-[#909090]'
-                    }`}>3</span>
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center ${currentStep >= 3 ? 'bg-[#667EEA]' : 'border border-[#909090]'
+                    }`}>
+                    <span className={`text-sm font-normal gilroy-medium ${currentStep >= 3 ? 'text-white' : 'text-[#909090]'
+                      }`}>3</span>
                   </div>
-                  <span className={`text-xs font-normal gilroy-medium text-center ${
-                    currentStep >= 3 ? 'text-white' : 'text-[#909090]'
-                  }`}>Confirm</span>
+                  <span className={`text-xs font-normal gilroy-medium text-center ${currentStep >= 3 ? 'text-white' : 'text-[#909090]'
+                    }`}>Confirm</span>
                 </div>
               </div>
             </div>
@@ -1869,15 +1858,13 @@ const CancelPlanPage = () => {
                 {/* First Row */}
                 <div className="w-full flex flex-row items-start gap-5">
                   {/* Too Expensive */}
-                  <div 
-                    className={`flex-1 p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden ${
-                      selectedReason === 'too-expensive' 
-                        ? 'bg-[#1F1F1F]' 
-                        : 'bg-[#1F1F1F]'
-                    }`}
+                  <div
+                    className={`flex-1 p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden ${selectedReason === 'too-expensive'
+                      ? 'bg-[#1F1F1F] border-r border-r-[#DE50EC] border-t border-t-[#DE50EC]'
+                      : 'bg-[#1F1F1F]'
+                      }`}
                     onClick={() => handleReasonSelect('too-expensive')}
                   >
-                    {/* Active State Gradient Ellipse */}
                     {selectedReason === 'too-expensive' && (
                       <div
                         className="absolute pointer-events-none"
@@ -1893,13 +1880,37 @@ const CancelPlanPage = () => {
                         }}
                       ></div>
                     )}
-
-                    {/* Curved Gradient Border */}
+                    {/* {selectedReason === 'too-expensive' && (
+                      <div
+                        className="absolute pointer-events-none bg-gradient-to-r"
+                        style={{
+                          width: '413px',
+                          height: '1px', // Thickness of the "border"
+                          right: '-50px',
+                          top: '0',
+                          zIndex: 0,
+                          backgroundImage: 'linear-gradient(to right, #DE50EC00, #DE50EC)',
+                        }}
+                      ></div>
+                    )}
+                    {selectedReason === 'too-expensive' && (
+                      <div
+                        className="absolute pointer-events-none bg-gradient-to-b"
+                        style={{
+                          width: '1px', // Thickness of the "border"
+                          height: '90px',
+                          right: '0',
+                          top: '0',
+                          zIndex: 10,
+                          backgroundImage: 'linear-gradient(to bottom, #DE50EC, #DE50EC00)',
+                        }}
+                      ></div>
+                    )} */}
                     <div
-                      className="absolute inset-0 pointer-events-none"
+                      className={`absolute inset-0 pointer-events-none`}
                       style={{
                         borderRadius: '16px',
-                        background: selectedReason === 'too-expensive' 
+                        background: selectedReason === 'too-expensive'
                           ? 'linear-gradient(226.35deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 50.5%)'
                           : 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
                         padding: '1px',
@@ -1913,7 +1924,6 @@ const CancelPlanPage = () => {
                         }}
                       ></div>
                     </div>
-                    
                     <div className="flex flex-col items-start gap-3 relative z-10">
                       <h3 className="text-white text-xl font-normal gilroy-semibold">
                         Too expensive
@@ -1924,13 +1934,14 @@ const CancelPlanPage = () => {
                     </div>
                   </div>
 
+
+
                   {/* Not using enough */}
-                  <div 
-                    className={`flex-1 p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden ${
-                      selectedReason === 'not-using-enough' 
-                        ? 'bg-[#1F1F1F]' 
-                        : 'bg-[#1F1F1F]'
-                    }`}
+                  <div
+                    className={`flex-1 p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden ${selectedReason === 'not-using-enough'
+                      ? 'bg-[#1F1F1F] border-r border-r-[#DE50EC] border-t border-t-[#DE50EC]'
+                      : 'bg-[#1F1F1F]'
+                      }`}
                     onClick={() => handleReasonSelect('not-using-enough')}
                   >
                     {/* Active State Gradient Ellipse */}
@@ -1955,7 +1966,7 @@ const CancelPlanPage = () => {
                       className="absolute inset-0 pointer-events-none"
                       style={{
                         borderRadius: '16px',
-                        background: selectedReason === 'not-using-enough' 
+                        background: selectedReason === 'not-using-enough'
                           ? 'linear-gradient(226.35deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 50.5%)'
                           : 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
                         padding: '1px',
@@ -1969,7 +1980,6 @@ const CancelPlanPage = () => {
                         }}
                       ></div>
                     </div>
-                    
                     <div className="flex flex-col items-start gap-3 relative z-10">
                       <h3 className="text-white text-xl font-normal gilroy-semibold">
                         Not using enough
@@ -1984,12 +1994,11 @@ const CancelPlanPage = () => {
                 {/* Second Row */}
                 <div className="w-full flex flex-row items-start gap-5">
                   {/* Technical issues */}
-                  <div 
-                    className={`flex-1 p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden ${
-                      selectedReason === 'technical-issues' 
-                        ? 'bg-[#1F1F1F]' 
-                        : 'bg-[#1F1F1F]'
-                    }`}
+                  <div
+                    className={`flex-1 p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden ${selectedReason === 'technical-issues'
+                      ? 'bg-[#1F1F1F] border-r border-r-[#DE50EC] border-t border-t-[#DE50EC]'
+                      : 'bg-[#1F1F1F]'
+                      }`}
                     onClick={() => handleReasonSelect('technical-issues')}
                   >
                     {/* Active State Gradient Ellipse */}
@@ -2014,7 +2023,7 @@ const CancelPlanPage = () => {
                       className="absolute inset-0 pointer-events-none"
                       style={{
                         borderRadius: '16px',
-                        background: selectedReason === 'technical-issues' 
+                        background: selectedReason === 'technical-issues'
                           ? 'linear-gradient(226.35deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 50.5%)'
                           : 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
                         padding: '1px',
@@ -2028,7 +2037,6 @@ const CancelPlanPage = () => {
                         }}
                       ></div>
                     </div>
-                    
                     <div className="flex flex-col items-start gap-3 relative z-10">
                       <h3 className="text-white text-xl font-normal gilroy-semibold">
                         Technical issues
@@ -2040,12 +2048,11 @@ const CancelPlanPage = () => {
                   </div>
 
                   {/* Other */}
-                  <div 
-                    className={`flex-1 p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden ${
-                      selectedReason === 'other' 
-                        ? 'bg-[#1F1F1F]' 
-                        : 'bg-[#1F1F1F]'
-                    }`}
+                  <div
+                    className={`flex-1 p-4 rounded-2xl cursor-pointer transition-all relative overflow-hidden ${selectedReason === 'other'
+                      ? 'bg-[#1F1F1F] border-r border-r-[#DE50EC] border-t border-t-[#DE50EC]'
+                      : 'bg-[#1F1F1F]'
+                      }`}
                     onClick={() => handleReasonSelect('other')}
                   >
                     {/* Active State Gradient Ellipse */}
@@ -2070,7 +2077,7 @@ const CancelPlanPage = () => {
                       className="absolute inset-0 pointer-events-none"
                       style={{
                         borderRadius: '16px',
-                        background: selectedReason === 'other' 
+                        background: selectedReason === 'other'
                           ? 'linear-gradient(226.35deg, rgba(102, 126, 234, 0.1) 0%, rgba(102, 126, 234, 0.05) 50.5%)'
                           : 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
                         padding: '1px',
@@ -2084,7 +2091,6 @@ const CancelPlanPage = () => {
                         }}
                       ></div>
                     </div>
-                    
                     <div className="flex flex-col items-start gap-3 relative z-10">
                       <h3 className="text-white text-xl font-normal gilroy-semibold">
                         Other
@@ -2101,11 +2107,10 @@ const CancelPlanPage = () => {
                 <button
                   onClick={handleContinue}
                   disabled={!selectedReason || isSubmitting}
-                  className={`px-4 py-3 rounded-full text-base font-normal gilroy-semibold text-center transition-opacity ${
-                    selectedReason && !isSubmitting
-                      ? 'bg-white text-[#1F1F1F] hover:opacity-80'
-                      : 'bg-[#909090] text-[#1F1F1F] cursor-not-allowed'
-                  }`}
+                  className={`px-4 py-3 rounded-full text-base font-normal gilroy-semibold text-center transition-opacity ${selectedReason && !isSubmitting
+                    ? 'bg-white text-[#1F1F1F] hover:opacity-80'
+                    : 'bg-[#909090] text-[#1F1F1F] cursor-not-allowed'
+                    }`}
                   style={{
                     width: '198px',
                     height: '48px',
@@ -2149,7 +2154,6 @@ const CancelPlanPage = () => {
                       }}
                     ></div>
                   </div>
-                  
                   <div className="flex flex-col items-start gap-3 relative z-10">
                     <h3 className="text-white text-xl font-normal gilroy-semibold">
                       Pause for 30 days
@@ -2157,7 +2161,7 @@ const CancelPlanPage = () => {
                     <p className="text-[#909090] text-sm font-normal gilroy-medium leading-[130%]">
                       Take a break and return when you're ready. We'll pause billing and keep your account active.
                     </p>
-                    <button 
+                    <button
                       onClick={() => {
                         // TODO: Implement pause subscription functionality
                         console.log('Pause subscription');
@@ -2188,7 +2192,6 @@ const CancelPlanPage = () => {
                       }}
                     ></div>
                   </div>
-                  
                   <div className="flex flex-col items-start gap-3 relative z-10">
                     <h3 className="text-white text-xl font-normal gilroy-semibold">
                       Switch to Annual (save 20%)
@@ -2196,7 +2199,7 @@ const CancelPlanPage = () => {
                     <p className="text-[#909090] text-sm font-normal gilroy-medium leading-[130%]">
                       Save money with our annual plan. Pay once and enjoy all premium features for a full year.
                     </p>
-                    <button 
+                    <button
                       onClick={() => router.push('/pricing')}
                       className="w-full py-2.5 px-4 bg-white rounded-full text-[#1F1F1F] text-sm font-normal gilroy-semibold hover:opacity-80 transition-opacity"
                     >
@@ -2220,11 +2223,10 @@ const CancelPlanPage = () => {
                 <button
                   onClick={handleContinueToCancel}
                   disabled={isSubmitting}
-                  className={`px-4 py-3 rounded-full text-base font-normal gilroy-semibold text-center transition-opacity ${
-                    !isSubmitting
-                      ? 'bg-white text-[#1F1F1F] hover:opacity-80'
-                      : 'bg-[#909090] text-[#1F1F1F] cursor-not-allowed'
-                  }`}
+                  className={`px-4 py-3 rounded-full text-base font-normal gilroy-semibold text-center transition-opacity ${!isSubmitting
+                    ? 'bg-white text-[#1F1F1F] hover:opacity-80'
+                    : 'bg-[#909090] text-[#1F1F1F] cursor-not-allowed'
+                    }`}
                   style={{
                     width: '198px',
                     height: '48px',
@@ -2287,11 +2289,10 @@ const CancelPlanPage = () => {
                 <button
                   onClick={handleConfirmCancel}
                   disabled={isSubmitting}
-                  className={`px-4 py-3 rounded-full text-base font-normal gilroy-semibold text-center transition-opacity ${
-                    !isSubmitting
-                      ? 'bg-white text-[#1F1F1F] hover:opacity-80'
-                      : 'bg-[#909090] text-[#1F1F1F] cursor-not-allowed'
-                  }`}
+                  className={`px-4 py-3 rounded-full text-base font-normal gilroy-semibold text-center transition-opacity ${!isSubmitting
+                    ? 'bg-white text-[#1F1F1F] hover:opacity-80'
+                    : 'bg-[#909090] text-[#1F1F1F] cursor-not-allowed'
+                    }`}
                   style={{
                     width: '198px',
                     height: '48px',

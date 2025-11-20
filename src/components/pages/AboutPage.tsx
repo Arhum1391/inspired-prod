@@ -579,7 +579,7 @@ export default function AboutPage() {
           </div>
 
           {/* Group 12 - Content Below Belt */}
-          <div className="hidden lg:flex w-full flex-col items-center mt-16 mb-16">
+          <div className="hidden lg:flex w-full flex-col items-center mt-60 mb-16">
             <p
               className="text-center text-white"
               style={{
@@ -600,7 +600,7 @@ export default function AboutPage() {
           </div>
 
           {/* Frame 86 - Meet the Founder Section */}
-          <div className="w-full flex flex-col items-center justify-center mt-32" style={{
+          <div className="w-full flex flex-col items-center justify-center mt-60" style={{
             width: '846px',
             maxWidth: '100%',
             gap: '40px',
@@ -734,7 +734,7 @@ export default function AboutPage() {
           </div>
 
           {/* Frame 1000012164 - The Team Behind Inspired Analyst */}
-          <div className="w-full flex flex-col items-center mt-16 lg:mt-32">
+          <div className="w-full flex flex-col items-center mt-16 lg:mt-60">
             <div
               className="flex flex-col items-start gap-6"
               style={{

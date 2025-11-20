@@ -11,16 +11,18 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/inspired-analyst
 # Calendly Configuration (OPTIONAL - for team setup page only)
 CALENDLY_ACCESS_TOKEN=eyJraWQiOi...
 
-# Email Configuration (REQUIRED for collaboration form)
+# Email Configuration (REQUIRED for email verification and password reset)
 COLLAB_EMAIL=your-email@example.com
 
-# SMTP Configuration (for sending emails - choose one option below)
+# SMTP Configuration (REQUIRED for email verification and password reset - choose one option below)
 # Option 1: Gmail/Google Workspace
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_SECURE=false
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
+# Note: For Gmail, you need to use an App Password, not your regular password
+# Generate one at: https://myaccount.google.com/apppasswords
 
 # Option 2: Outlook/Office 365
 # SMTP_HOST=smtp-mail.outlook.com
@@ -35,6 +37,10 @@ SMTP_PASS=your-app-password
 # SMTP_SECURE=false
 # SMTP_USER=your-username
 # SMTP_PASS=your-password
+
+# Base URL (OPTIONAL - defaults to localhost:3000 in development, VERCEL_URL in production)
+# Set this if you need a custom base URL for email links
+# NEXT_PUBLIC_BASE_URL=https://yourdomain.com
 ```
 
 ## ❌ NO LONGER NEEDED:

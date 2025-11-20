@@ -7,6 +7,37 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import type { ResearchReport } from '@/data/researchReports';
 
+const DATE_INPUT_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const RESEARCH_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+const formatResearchDate = (value?: string) => {
+  if (!value) return '';
+  if (DATE_INPUT_REGEX.test(value)) {
+    const [year, month, day] = value.split('-').map((part) => Number(part));
+    if (![year, month, day].some((part) => Number.isNaN(part))) {
+      return RESEARCH_DATE_FORMATTER.format(new Date(year, month - 1, day));
+    }
+  }
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime())) {
+    return RESEARCH_DATE_FORMATTER.format(parsed);
+  }
+  return value;
+};
+
+const formatReadTime = (value?: string) => {
+  if (!value) return '';
+  const numeric = Number(value);
+  if (!Number.isNaN(numeric) && value.trim() !== '') {
+    return `${numeric} min read`;
+  }
+  return value;
+};
+
 export default function ResearchDetailPage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -436,7 +467,7 @@ export default function ResearchDetailPage() {
                   }}
                   className="research-detail-date"
                 >
-                  Uploaded on {report.date}
+                  Uploaded on {formatResearchDate(report.date)}
                 </span>
                 <span className="dot"></span>
                 <span
@@ -450,7 +481,7 @@ export default function ResearchDetailPage() {
                   }}
                   className="research-detail-readtime"
                 >
-                  {report.readTime}
+                  {formatReadTime(report.readTime)}
                 </span>
                 <span className="dot"></span>
                 <div
@@ -893,7 +924,7 @@ export default function ResearchDetailPage() {
                           color: '#FFFFFF',
                         }}
                       >
-                        {related.date}
+                        {formatResearchDate(related.date)}
                       </span>
                       <span
                         style={{
@@ -905,7 +936,7 @@ export default function ResearchDetailPage() {
                           color: '#FFFFFF',
                         }}
                       >
-                        {related.readTime}
+                        {formatReadTime(related.readTime)}
                       </span>
                     </div>
 

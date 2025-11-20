@@ -9,6 +9,33 @@ import { useAuth } from '@/contexts/AuthContext';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import type { ShariahTile } from '@/types/admin';
 
+const FOOTER_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+const isIsoDateString = (value: string) => /^\d{4}-\d{2}-\d{2}$/.test(value);
+
+const formatFooterDate = (value?: string) => {
+  if (!value) return '';
+
+  if (isIsoDateString(value)) {
+    const [year, month, day] = value.split('-').map((part) => Number(part));
+    if (![year, month, day].some((part) => Number.isNaN(part))) {
+      const date = new Date(year, (month as number) - 1, day as number);
+      return FOOTER_DATE_FORMATTER.format(date);
+    }
+  }
+
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime())) {
+    return FOOTER_DATE_FORMATTER.format(parsed);
+  }
+
+  return value;
+};
+
 export default function ShariahPage() {
 
   const auth = useAuth();
@@ -312,7 +339,7 @@ export default function ShariahPage() {
                 color: '#FFFFFF',
               }}
             >
-              {tile.footerRight}
+              {formatFooterDate(tile.footerRight)}
             </span>
           </div>
 

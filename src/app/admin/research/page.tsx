@@ -4,6 +4,58 @@ import { useState, useEffect } from 'react';
 import type { ResearchReport } from '@/data/researchReports';
 import Link from 'next/link';
 
+const DATE_INPUT_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const DATE_DISPLAY_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+const formatDateForInput = (value: string) => {
+  if (!value) return '';
+  if (DATE_INPUT_REGEX.test(value)) {
+    return value;
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return '';
+  }
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const formatDateForDisplay = (value: string) => {
+  if (!value) return '';
+  if (DATE_INPUT_REGEX.test(value)) {
+    const [year, month, day] = value.split('-').map((part) => Number(part));
+    if (![year, month, day].some((part) => Number.isNaN(part))) {
+      return DATE_DISPLAY_FORMATTER.format(new Date(year, month - 1, day));
+    }
+  }
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime())) {
+    return DATE_DISPLAY_FORMATTER.format(parsed);
+  }
+  return value;
+};
+
+const extractNumericReadTime = (value: string) => {
+  if (!value) return '';
+  const match = value.match(/(\d+(\.\d+)?)/);
+  return match ? match[0] : '';
+};
+
+const formatReadTimeDisplay = (value: string) => {
+  if (!value) return '';
+  const numeric = Number(value);
+  if (!Number.isNaN(numeric) && value.trim() !== '') {
+    return `${numeric} min read`;
+  }
+  return value;
+};
+
 interface ContentSection {
   heading: string;
   body: string[];
@@ -87,8 +139,8 @@ export default function ResearchAdminPage() {
         slug: report.slug,
         title: report.title,
         description: report.description,
-        date: report.date,
-        readTime: report.readTime,
+        date: formatDateForInput(report.date),
+        readTime: extractNumericReadTime(report.readTime),
         category: report.category,
         shariahCompliant: report.shariahCompliant,
         summaryPoints: report.summaryPoints || [],
@@ -124,39 +176,107 @@ export default function ResearchAdminPage() {
 
   const validateForm = (): boolean => {
     const errors: {[key: string]: string} = {};
-    
-    if (!formData.slug.trim()) {
+    const trimmed = {
+      slug: formData.slug.trim(),
+      title: formData.title.trim(),
+      description: formData.description.trim(),
+      date: formData.date.trim(),
+      readTime: formData.readTime.trim(),
+      category: formData.category.trim(),
+      pdfUrl: formData.pdfUrl.trim(),
+    };
+
+    if (!trimmed.slug) {
       errors.slug = 'Slug is required';
-    } else if (!/^[a-z0-9-]+$/.test(formData.slug.trim())) {
+    } else if (!/^[a-z0-9-]+$/.test(trimmed.slug)) {
       errors.slug = 'Slug can only contain lowercase letters, numbers, and hyphens';
+    } else if (
+      reports.some(
+        (report) => report.slug === trimmed.slug && report._id !== editingReport?._id
+      )
+    ) {
+      errors.slug = 'A report with this slug already exists';
     }
-    
-    if (!formData.title.trim()) {
-      errors.title = 'Title is required';
-    }
-    
-    if (!formData.description.trim()) {
-      errors.description = 'Description is required';
-    }
-    
-    if (!formData.date.trim()) {
-      errors.date = 'Date is required';
-    }
-    
-    if (!formData.readTime.trim()) {
-      errors.readTime = 'Read time is required';
-    }
-    
-    if (!formData.category.trim()) {
+
+    if (!trimmed.category) {
       errors.category = 'Category is required';
+    } else if (trimmed.category.length < 2) {
+      errors.category = 'Category must be at least 2 characters long';
     }
-    
-    if (formData.summaryPoints.length === 0) {
-      errors.summaryPoints = 'At least one summary point is required';
+
+    if (!trimmed.title) {
+      errors.title = 'Title is required';
+    } else if (trimmed.title.length < 4) {
+      errors.title = 'Title must be at least 4 characters long';
+    } else if (!/[a-zA-Z]/.test(trimmed.title)) {
+      errors.title = 'Enter a valid Title';
     }
-    
-    if (formData.content.length === 0) {
-      errors.content = 'At least one content section is required';
+
+    if (!trimmed.description) {
+      errors.description = 'Description is required';
+    } else if (trimmed.description.length < 20) {
+      errors.description = 'Description must be at least 20 characters long';
+    } else if (!/[a-zA-Z]/.test(trimmed.description)) {
+      errors.description = 'Enter a valid Description';
+    }
+
+    if (!trimmed.date) {
+      errors.date = 'Date is required';
+    } else if (!DATE_INPUT_REGEX.test(trimmed.date)) {
+      errors.date = 'Select a valid date';
+    } else {
+      const parsed = new Date(`${trimmed.date}T00:00:00`);
+      if (Number.isNaN(parsed.getTime())) {
+        errors.date = 'Select a valid date';
+      }
+    }
+
+    if (!trimmed.readTime) {
+      errors.readTime = 'Read time is required';
+    } else {
+      const readTimeValue = Number(trimmed.readTime);
+      if (Number.isNaN(readTimeValue) || readTimeValue <= 0) {
+        errors.readTime = 'Enter a valid positive number';
+      }
+    }
+
+    if (trimmed.pdfUrl) {
+      const isRelativePath = trimmed.pdfUrl.startsWith('/');
+      let isValidUrl = false;
+      if (isRelativePath) {
+        isValidUrl = true;
+      } else {
+        try {
+          // eslint-disable-next-line no-new
+          new URL(trimmed.pdfUrl);
+          isValidUrl = true;
+        } catch {
+          isValidUrl = false;
+        }
+      }
+      if (!isValidUrl) {
+        errors.pdfUrl = 'Enter a valid URL (absolute or starting with /)';
+      }
+    }
+
+    const trimmedSummaryPoints = formData.summaryPoints.map((point) => point.trim()).filter(Boolean);
+    if (trimmedSummaryPoints.length === 0) {
+      errors.summaryPoints = 'Add at least one summary point';
+    } else if (trimmedSummaryPoints.length !== formData.summaryPoints.length) {
+      errors.summaryPoints = 'Summary points cannot be blank';
+    }
+
+    const trimmedContentSections = formData.content
+      .map((section) => ({
+        heading: section.heading.trim(),
+        body: section.body.map((paragraph) => paragraph.trim()).filter(Boolean),
+      }))
+      .filter((section) => section.heading && section.body.length > 0);
+
+    if (trimmedContentSections.length === 0) {
+      errors.content = 'Add at least one content section with heading and paragraph';
+    } else if (trimmedContentSections.length !== formData.content.length) {
+      errors.content = 'Content sections need headings and at least one paragraph';
     }
 
     setValidationErrors(errors);
@@ -173,6 +293,27 @@ export default function ResearchAdminPage() {
     setSubmitting(true);
 
     try {
+      const trimmedSummaryPoints = formData.summaryPoints.map((point) => point.trim()).filter(Boolean);
+      const trimmedContentSections = formData.content
+        .map((section) => ({
+          heading: section.heading.trim(),
+          body: section.body.map((paragraph) => paragraph.trim()).filter(Boolean),
+        }))
+        .filter((section) => section.heading && section.body.length > 0);
+
+      const payload = {
+        ...formData,
+        slug: formData.slug.trim(),
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        date: formData.date.trim(),
+        readTime: formData.readTime.trim(),
+        category: formData.category.trim(),
+        pdfUrl: formData.pdfUrl.trim(),
+        summaryPoints: trimmedSummaryPoints,
+        content: trimmedContentSections,
+      };
+
       const url = editingReport?._id 
         ? `/admin/api/research/${editingReport._id}`
         : '/admin/api/research';
@@ -182,7 +323,7 @@ export default function ResearchAdminPage() {
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -441,7 +582,7 @@ export default function ResearchAdminPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-300">
-                      {report.date}
+                      {formatDateForDisplay(report.date)}
                     </td>
                     <td className="px-6 py-4">
                       {report.shariahCompliant ? (
@@ -620,7 +761,7 @@ export default function ResearchAdminPage() {
                       Date *
                     </label>
                     <input
-                      type="text"
+                      type="date"
                       value={formData.date}
                       onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                       className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
@@ -628,7 +769,6 @@ export default function ResearchAdminPage() {
                           ? 'border-red-500 focus:ring-red-500' 
                           : 'border-slate-600 focus:ring-indigo-500'
                       }`}
-                      placeholder="April 15, 2025"
                     />
                     {validationErrors.date && (
                       <p className="text-red-400 text-xs mt-1">{validationErrors.date}</p>
@@ -637,10 +777,12 @@ export default function ResearchAdminPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Read Time *
+                      Read Time (min/s) *
                     </label>
                     <input
-                      type="text"
+                      type="number"
+                      min="0.1"
+                      step="0.1"
                       value={formData.readTime}
                       onChange={(e) => setFormData({ ...formData, readTime: e.target.value })}
                       className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
@@ -648,7 +790,7 @@ export default function ResearchAdminPage() {
                           ? 'border-red-500 focus:ring-red-500' 
                           : 'border-slate-600 focus:ring-indigo-500'
                       }`}
-                      placeholder="12 min read"
+                      placeholder="5"
                     />
                     {validationErrors.readTime && (
                       <p className="text-red-400 text-xs mt-1">{validationErrors.readTime}</p>
@@ -666,6 +808,9 @@ export default function ResearchAdminPage() {
                       className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       placeholder="/downloads/report.pdf"
                     />
+                    {validationErrors.pdfUrl && (
+                      <p className="text-red-400 text-xs mt-1">{validationErrors.pdfUrl}</p>
+                    )}
                   </div>
                 </div>
 

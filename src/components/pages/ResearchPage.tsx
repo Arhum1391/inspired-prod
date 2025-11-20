@@ -12,6 +12,37 @@ import type { ResearchReport } from '@/data/researchReports';
 type FilterOption = 'All' | 'Latest Uploaded' | 'All Dates';
 const FILTER_OPTIONS: FilterOption[] = ['All', 'Latest Uploaded', 'All Dates'];
 
+const DATE_INPUT_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const RESEARCH_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+const formatResearchDate = (value: string) => {
+  if (!value) return '';
+  if (DATE_INPUT_REGEX.test(value)) {
+    const [year, month, day] = value.split('-').map((part) => Number(part));
+    if (![year, month, day].some((part) => Number.isNaN(part))) {
+      return RESEARCH_DATE_FORMATTER.format(new Date(year, month - 1, day));
+    }
+  }
+  const parsed = new Date(value);
+  if (!Number.isNaN(parsed.getTime())) {
+    return RESEARCH_DATE_FORMATTER.format(parsed);
+  }
+  return value;
+};
+
+const formatReadTime = (value: string) => {
+  if (!value) return '';
+  const numeric = Number(value);
+  if (!Number.isNaN(numeric) && value.trim() !== '') {
+    return `${numeric} min read`;
+  }
+  return value;
+};
+
 export default function ResearchPage() {
   const { isAuthenticated: isSignedIn, isLoading } = useAuth();
   const router = useRouter();
@@ -234,7 +265,7 @@ export default function ResearchPage() {
               color: '#FFFFFF',
             }}
           >
-            {card.date}
+            {formatResearchDate(card.date)}
           </span>
           <span
             style={{
@@ -246,7 +277,7 @@ export default function ResearchPage() {
               color: '#FFFFFF',
             }}
           >
-            {card.readTime}
+            {formatReadTime(card.readTime)}
           </span>
         </div>
 
@@ -1433,7 +1464,7 @@ export default function ResearchPage() {
                             color: '#FFFFFF',
                           }}
                         >
-                          {card.date}
+                          {formatResearchDate(card.date)}
                         </span>
                         <span
                           style={{
@@ -1445,7 +1476,7 @@ export default function ResearchPage() {
                             color: '#FFFFFF',
                           }}
                         >
-                          {card.readTime}
+                          {formatReadTime(card.readTime)}
                         </span>
                       </div>
 

@@ -12,6 +12,7 @@ export default function SignIn() {
   const [formKey, setFormKey] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [infoMessage, setInfoMessage] = useState<string | null>(null);
   const router = useRouter();
   const { login, isAuthenticated, isLoading: authLoading } = useAuth();
 
@@ -19,6 +20,7 @@ export default function SignIn() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
+    setInfoMessage(null);
     
     const formData = new FormData(e.target as HTMLFormElement);
     const fullname = isSignUp ? formData.get('fullname') : null;
@@ -51,7 +53,7 @@ export default function SignIn() {
 
         // Check if email verification is required
         if (data.requiresVerification) {
-          setError('Account created! Please check your email to verify your account before signing in.');
+          setInfoMessage('Account created! Please check your email to verify your account before signing in.');
           setIsLoading(false);
           // Optionally redirect to a verification message page or show a success message
           return;
@@ -89,7 +91,7 @@ export default function SignIn() {
         if (!response.ok) {
           // Check if email verification is required
           if (data.requiresVerification) {
-            setError(data.error || 'Please verify your email address before signing in. Check your inbox for the verification link.');
+            setInfoMessage(data.error || 'Please verify your email address before signing in. Check your inbox for the verification link.');
           } else {
             setError(data.error || 'Invalid credentials');
           }
@@ -118,6 +120,7 @@ export default function SignIn() {
   const handleToggle = (value: boolean) => {
     setIsSignUp(value);
     setError(null);
+    setInfoMessage(null);
     setFormKey(prev => prev + 1);
   };
 
@@ -229,6 +232,23 @@ export default function SignIn() {
             {error && (
               <div className="w-full p-3 bg-red-500/20 border border-red-500 rounded-lg">
                 <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+
+            {/* Info Message */}
+            {infoMessage && (
+              <div className="w-full p-3 bg-white/10 border border-white/30 rounded-lg">
+                <p
+                  style={{
+                    fontFamily: 'Gilroy, sans-serif',
+                    fontWeight: 400,
+                    fontSize: '14px',
+                    lineHeight: '130%',
+                    color: '#FFFFFF'
+                  }}
+                >
+                  {infoMessage}
+                </p>
               </div>
             )}
 

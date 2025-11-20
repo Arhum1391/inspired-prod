@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
@@ -10,8 +10,13 @@ export default function VerifyEmail() {
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState<string>('Verifying your email...');
+  const hasRequestedRef = useRef(false);
 
   useEffect(() => {
+    if (hasRequestedRef.current) {
+      return;
+    }
+
     const token = searchParams.get('token');
 
     if (!token) {
@@ -19,6 +24,8 @@ export default function VerifyEmail() {
       setMessage('Invalid verification link. Please check your email and try again.');
       return;
     }
+
+    hasRequestedRef.current = true;
 
     // Verify email
     const verifyEmail = async () => {

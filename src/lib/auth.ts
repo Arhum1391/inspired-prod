@@ -197,25 +197,27 @@ export async function updatePublicUser(
     { returnDocument: 'after' }
   );
 
-  if (!result) {
+  const updatedUser = result?.value;
+
+  if (!updatedUser) {
     return null;
   }
 
   return {
-    _id: result._id.toString(),
-    email: result.email,
-    password: result.password,
-    name: result.name || null,
-    isPaid: result.isPaid ?? false,
-    subscriptionStatus: result.subscriptionStatus ?? (result.isPaid ? 'active' : 'none'),
-    lastPaymentAt: result.lastPaymentAt ?? null,
-    emailVerified: result.emailVerified ?? false,
-    emailVerificationToken: result.emailVerificationToken ?? null,
-    emailVerificationTokenExpiry: result.emailVerificationTokenExpiry ?? null,
-    passwordResetToken: result.passwordResetToken ?? null,
-    passwordResetTokenExpiry: result.passwordResetTokenExpiry ?? null,
-    createdAt: result.createdAt,
-    updatedAt: result.updatedAt
+    _id: updatedUser._id.toString(),
+    email: updatedUser.email,
+    password: updatedUser.password,
+    name: updatedUser.name || null,
+    isPaid: updatedUser.isPaid ?? false,
+    subscriptionStatus: updatedUser.subscriptionStatus ?? (updatedUser.isPaid ? 'active' : 'none'),
+    lastPaymentAt: updatedUser.lastPaymentAt ?? null,
+    emailVerified: updatedUser.emailVerified ?? false,
+    emailVerificationToken: updatedUser.emailVerificationToken ?? null,
+    emailVerificationTokenExpiry: updatedUser.emailVerificationTokenExpiry ?? null,
+    passwordResetToken: updatedUser.passwordResetToken ?? null,
+    passwordResetTokenExpiry: updatedUser.passwordResetTokenExpiry ?? null,
+    createdAt: updatedUser.createdAt,
+    updatedAt: updatedUser.updatedAt
   };
 }
 

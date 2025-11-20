@@ -84,39 +84,10 @@ export default function ResearchAdminPage() {
   const [newContentSection, setNewContentSection] = useState<ContentSection>({ heading: '', body: [] });
   const [newContentParagraph, setNewContentParagraph] = useState('');
   const [validationErrors, setValidationErrors] = useState<{[key: string]: string}>({});
-  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     fetchReports();
   }, []);
-
-  const importDummyData = async () => {
-    if (!confirm('This will import all dummy research reports from the data file. Reports with existing slugs will be skipped. Continue?')) {
-      return;
-    }
-
-    setImporting(true);
-
-    try {
-      const response = await fetch('/admin/api/research/populate', {
-        method: 'POST',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        alert(`Import completed!\n- Inserted: ${data.insertedCount}\n- Skipped (already exist): ${data.skipped}\n- Total: ${data.total}`);
-        await fetchReports();
-      } else {
-        const errorData = await response.json();
-        alert(`Failed to import: ${errorData.error || 'Unknown error'}`);
-      }
-    } catch (error) {
-      console.error('Failed to import dummy data:', error);
-      alert('Failed to import dummy data. Please try again.');
-    } finally {
-      setImporting(false);
-    }
-  };
 
   const fetchReports = async () => {
     try {
@@ -460,16 +431,6 @@ export default function ResearchAdminPage() {
           <p className="text-slate-400">Manage research reports and their content</p>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            onClick={importDummyData}
-            disabled={importing}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center gap-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-            </svg>
-            {importing ? 'Importing...' : 'Import Dummy Data'}
-          </button>
           <button
             onClick={() => openModal()}
             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors flex items-center gap-2"

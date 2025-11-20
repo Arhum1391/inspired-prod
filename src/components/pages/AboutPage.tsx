@@ -646,7 +646,7 @@ export default function AboutPage() {
                   boxSizing: 'border-box',
                   width: '343px',
                   height: '303px',
-                  background: 'url("team dark/Adnan.png"), #1F1F1F',
+                  background: 'url("team dark/Adnan.jpeg"), #1F1F1F',
                   backgroundSize: '110%',
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat',

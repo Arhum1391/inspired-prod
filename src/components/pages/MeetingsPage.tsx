@@ -2661,7 +2661,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                             src={(() => {
                                                 const analyst = analysts.find(a => a.id === selectedAnalyst);
                                                 const imageUrl = analyst?.image;
-                                                return (imageUrl && imageUrl.trim() !== '') ? imageUrl : '/team dark/Adnan.png';
+                                                return (imageUrl && imageUrl.trim() !== '') ? imageUrl : '/team dark/Adnan.jpeg';
                                             })()}
                                             alt={analysts.find(a => a.id === selectedAnalyst)?.name || 'Analyst'}
                                             width={80}

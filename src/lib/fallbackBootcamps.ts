@@ -48,7 +48,7 @@ export const getFallbackBootcamps = (): Bootcamp[] => [
         mentorId: 'adnan',
         name: 'Adnan',
         role: 'Senior Marketing Analyst',
-        image: '/team dark/Adnan.png',
+        image: '/team dark/Adnan.jpeg',
         description: 'Content creator specializing in stocks, crypto, data science, and side hustles. Known for making complex financial concepts accessible with humor and real-world examples.'
       },
       {

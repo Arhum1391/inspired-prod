@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import CollaborationForm from '@/components/sections/CollaborationForm';
 import Footer from '@/components/Footer';
+import Link from 'next/link';
 
 type Analyst = {
   id: number;
@@ -183,6 +184,9 @@ export default function AboutPage() {
     
     return () => clearTimeout(timer);
   }, []);
+
+  console.log("analysts", analysts)
+
   return (
     <div className="bg-[#0A0A0A] min-h-screen text-white relative overflow-hidden">
       {/* Top Right Gradient Ellipse */}
@@ -694,8 +698,8 @@ export default function AboutPage() {
                 </div>
 
                 {/* Frame 23 - Book Mentorship Button */}
-                <a
-                  href="/meetings"
+                <Link
+                  href={`/meetings?step=2&selectedAnalyst=${analysts.length > 0 ? analysts[0].id : 0}`}
                   className="flex flex-row justify-center items-center w-full md:w-auto md:max-w-[187px] mt-4 md:mt-0"
                   style={{
                     width: '100%',
@@ -728,7 +732,7 @@ export default function AboutPage() {
                   >
                     Book Mentorship
                   </span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>

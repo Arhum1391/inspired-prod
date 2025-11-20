@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
 
     // Always return the same message regardless of whether user exists
     return NextResponse.json(
-      { 
-        message: 'If an account with that email exists, we have sent a password reset link.' 
+      {
+        message: 'If an account with that email exists, we have sent a password reset link.'
       },
       { status: 200 }
     );

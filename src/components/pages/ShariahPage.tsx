@@ -450,7 +450,7 @@ export default function ShariahPage() {
                   textAlign: 'center',
                 }}
               >
-                {tile.lockedDescription || 'Detailed Screening Available with Premium'}
+                {tile.lockedDescription || 'Explore Verified Projects, Screening Criteria and Compliance Rationale'}
               </p>
             </div>
           </>

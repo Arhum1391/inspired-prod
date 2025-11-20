@@ -89,29 +89,22 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log('Stripe checkout request body:', JSON.stringify(body, null, 2));
 
-    // For bootcamp purchases, require authentication
+    // For bootcamp purchases, authentication is optional
+    // If user is authenticated, use their account. If not, they can still purchase but will need to sign up later
     if (body.type === 'bootcamp') {
       const { error: authError, userId } = await requireAuth(request);
-      if (authError || !userId) {
-        return NextResponse.json(
-          { error: 'Authentication required. Please sign in to purchase a bootcamp.' },
-          { status: 401 }
-        );
+      
+      if (!authError && userId) {
+        // User is authenticated - use their account
+        const db = await getDatabase();
+        const user = await db.collection('public_users').findOne({ _id: new ObjectId(userId) });
+        if (user) {
+          // Override customerEmail with authenticated user's email
+          body.customerEmail = user.email;
+          body.userId = userId;
+        }
       }
-
-      // Get user from database to ensure they exist and get their email
-      const db = await getDatabase();
-      const user = await db.collection('public_users').findOne({ _id: new ObjectId(userId) });
-      if (!user) {
-        return NextResponse.json(
-          { error: 'User not found' },
-          { status: 404 }
-        );
-      }
-
-      // Override customerEmail with authenticated user's email
-      body.customerEmail = user.email;
-      body.userId = userId;
+      // If not authenticated, proceed with the email they provided (will be handled in webhook)
     }
 
     // Simple validation

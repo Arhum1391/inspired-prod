@@ -198,6 +198,14 @@ async function processWebhookAsync(event: any) {
             }
           }
         } else if (type === 'bootcamp') {
+          console.log('🎓 [WEBHOOK] Processing bootcamp payment...', {
+            sessionId: session.id,
+            customerEmail: metadata.customerEmail,
+            bootcampId: metadata.bootcampId,
+            customerName: metadata.customerName,
+            userIdInMetadata: metadata.userId
+          });
+
           // Check if this session already exists to prevent duplicates
           const existingRegistration = await db.collection('bootcamp_registrations').findOne({
             stripeSessionId: session.id
@@ -211,46 +219,47 @@ async function processWebhookAsync(event: any) {
 
           // Get user ID from metadata or find by email
           let userId = null;
+          console.log('🔍 [WEBHOOK] Looking for user account...', {
+            userIdInMetadata: metadata.userId,
+            customerEmail: metadata.customerEmail
+          });
+
           if (metadata.userId) {
             try {
               userId = new ObjectId(metadata.userId);
-              console.log(`📝 Found userId in metadata: ${userId}`);
+              console.log(`📝 [WEBHOOK] Found userId in metadata: ${userId}`);
             } catch (error) {
-              console.error(`⚠️ Invalid userId in metadata: ${metadata.userId}`, error);
+              console.error(`⚠️ [WEBHOOK] Invalid userId in metadata: ${metadata.userId}`, error);
             }
           }
 
           if (!userId && metadata.customerEmail) {
-            console.log(`🔍 Looking up user by email: ${metadata.customerEmail}`);
+            console.log(`🔍 [WEBHOOK] Looking up user by email: ${metadata.customerEmail}`);
             const user = await db.collection('public_users').findOne({ 
               email: metadata.customerEmail.toLowerCase().trim() 
             });
             if (user) {
               userId = user._id;
-              console.log(`✅ Found user by email: ${userId}`);
+              console.log(`✅ [WEBHOOK] Found user by email: ${userId}`);
             } else {
-              console.error(`❌ No user found with email: ${metadata.customerEmail}`);
+              console.log(`ℹ️ [WEBHOOK] No user found with email: ${metadata.customerEmail} (lowercase)`);
               // Try without lowercasing in case email format differs
               const userAlt = await db.collection('public_users').findOne({ 
                 email: metadata.customerEmail.trim() 
               });
               if (userAlt) {
                 userId = userAlt._id;
-                console.log(`✅ Found user with alternate email format: ${userId}`);
+                console.log(`✅ [WEBHOOK] Found user with alternate email format: ${userId}`);
+              } else {
+                console.log(`ℹ️ [WEBHOOK] No user found with email: ${metadata.customerEmail} (original format)`);
               }
             }
           }
 
-          if (!userId) {
-            console.error('❌ Could not find user for bootcamp registration', {
-              userIdInMetadata: metadata.userId,
-              customerEmail: metadata.customerEmail,
-              bootcampId: metadata.bootcampId,
-              sessionId: session.id
-            });
-            await client.close();
-            return;
-          }
+          console.log('👤 [WEBHOOK] User lookup result:', {
+            userId: userId ? userId.toString() : null,
+            willRequireSignup: !userId
+          });
 
           // Validate bootcampId exists
           if (!metadata.bootcampId) {
@@ -259,7 +268,90 @@ async function processWebhookAsync(event: any) {
             return;
           }
 
-          // Create bootcamp registration record
+          // Get bootcamp details for email
+          const bootcamp = await db.collection('bootcamps').findOne({
+            id: metadata.bootcampId,
+            isActive: true
+          });
+
+          const bootcampTitle = bootcamp?.title || metadata.bootcampId;
+
+          // If user doesn't exist, still create registration but send signup email
+          if (!userId) {
+            console.log('ℹ️ [WEBHOOK] No user account found for bootcamp purchase - will require signup', {
+              customerEmail: metadata.customerEmail,
+              bootcampId: metadata.bootcampId,
+              sessionId: session.id,
+              bootcampTitle: bootcampTitle
+            });
+
+            // Create bootcamp registration record with userId: null
+            // This will be linked to the user when they sign up with the same email
+            const registration = {
+              userId: null,
+              stripeSessionId: session.id,
+              bootcampId: metadata.bootcampId,
+              customerName: metadata.customerName || '',
+              customerEmail: metadata.customerEmail || '',
+              notes: metadata.notes || '',
+              amount: session.amount_total / 100,
+              currency: session.currency || 'usd',
+              paymentStatus: 'paid',
+              status: 'confirmed',
+              requiresSignup: true, // Flag to indicate user needs to sign up
+              createdAt: new Date(),
+              updatedAt: new Date()
+            };
+
+            const result = await db.collection('bootcamp_registrations').insertOne(registration);
+            console.log(`✅ Bootcamp registration saved (pending signup):`, {
+              registrationId: result.insertedId,
+              bootcampId: metadata.bootcampId,
+              customerEmail: metadata.customerEmail,
+              sessionId: session.id
+            });
+
+            // Send email to customer asking them to sign up
+            console.log('📧 [WEBHOOK] Attempting to send bootcamp signup required email...', {
+              customerEmail: metadata.customerEmail,
+              customerName: metadata.customerName || '',
+              bootcampTitle: bootcampTitle,
+              bootcampId: metadata.bootcampId
+            });
+            
+            try {
+              const { sendBootcampSignupRequiredEmail } = await import('@/lib/email');
+              console.log('📧 [WEBHOOK] Email function imported, calling sendBootcampSignupRequiredEmail...');
+              
+              await sendBootcampSignupRequiredEmail(
+                metadata.customerEmail,
+                metadata.customerName || '',
+                bootcampTitle,
+                metadata.bootcampId
+              );
+              
+              console.log(`✅ [WEBHOOK] Signup required email sent successfully to ${metadata.customerEmail}`, {
+                email: metadata.customerEmail,
+                bootcampTitle: bootcampTitle,
+                bootcampId: metadata.bootcampId
+              });
+            } catch (emailError: any) {
+              console.error('❌ [WEBHOOK] Failed to send signup required email:', {
+                error: emailError?.message || emailError,
+                stack: emailError?.stack,
+                customerEmail: metadata.customerEmail,
+                bootcampTitle: bootcampTitle,
+                bootcampId: metadata.bootcampId,
+                errorDetails: emailError
+              });
+              // Don't fail the webhook if email fails - registration is still saved
+            }
+
+            await client.close();
+            return;
+          }
+
+          // User exists - create registration normally
           const registration = {
             userId: userId,
             stripeSessionId: session.id,

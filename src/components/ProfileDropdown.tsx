@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import  userIcon from "../../public/icons/user.svg"
+import logoutIcon from "../../public/icons/logout.svg"
 
 const ProfileDropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -252,7 +254,8 @@ const ProfileDropdown = () => {
                       }}
                     >
                       {/* User Icon */}
-                      <div 
+                      <img src={userIcon.src} />
+                      {/* <div 
                         className="relative"
                         style={{
                           width: '19.25px',
@@ -281,7 +284,7 @@ const ProfileDropdown = () => {
                             fill="white"
                           />
                         </svg>
-                      </div>
+                      </div> */}
                       <span 
                         className="text-white"
                         style={{
@@ -319,7 +322,8 @@ const ProfileDropdown = () => {
                       }}
                     >
                       {/* Logout Icon */}
-                      <div 
+                      <img src={logoutIcon.src} />
+                      {/* <div 
                         className="relative"
                         style={{
                           width: '24px',
@@ -355,7 +359,7 @@ const ProfileDropdown = () => {
                             strokeLinejoin="round"
                           />
                         </svg>
-                      </div>
+                      </div> */}
                       <span 
                         className="text-white"
                         style={{

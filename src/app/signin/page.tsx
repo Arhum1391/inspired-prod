@@ -5,6 +5,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/contexts/AuthContext';
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import CustomInput from '@/components/CustomInput';
+
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,18 +22,15 @@ export default function SignIn() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
     const formData = new FormData(e.target as HTMLFormElement);
     const fullname = isSignUp ? formData.get('fullname') : null;
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-    
     if (!email || !password) {
       setError('Please fill in all required fields');
       setIsLoading(false);
       return;
     }
-    
     try {
       if (isSignUp) {
         // Handle signup
@@ -196,7 +196,7 @@ export default function SignIn() {
             {/* Header Section */}
             <div className="flex flex-col items-center gap-3 w-full">
               <div className="flex flex-row justify-center items-center w-full">
-                <h1 
+                <h1
                   className="text-white text-center"
                   style={{
                     fontFamily: 'Gilroy, sans-serif',
@@ -210,7 +210,7 @@ export default function SignIn() {
               </div>
 
               <div className="flex flex-row justify-center items-center w-full">
-                <p 
+                <p
                   className="text-center"
                   style={{
                     fontFamily: 'Gilroy, sans-serif',
@@ -238,7 +238,7 @@ export default function SignIn() {
                 {/* Full Name Field - Only for Sign Up */}
                 {isSignUp && (
                   <div className="flex flex-col items-start gap-1 w-full">
-                    <label 
+                    <label
                       htmlFor="fullname"
                       className="w-full"
                       style={{
@@ -281,7 +281,7 @@ export default function SignIn() {
 
                 {/* Email Field */}
                 <div className="flex flex-col items-start gap-1 w-full">
-                  <label 
+                  <label
                     htmlFor="email"
                     className="w-full"
                     style={{
@@ -294,7 +294,7 @@ export default function SignIn() {
                   >
                     Email
                   </label>
-                  <input
+                  {/* <input
                     type="email"
                     id="email"
                     name="email"
@@ -319,12 +319,21 @@ export default function SignIn() {
                       outline: 'none'
                     }}
                     onFocus={(e) => e.target.style.border = '1px solid rgba(255, 255, 255, 0.3)'}
+                  /> */}
+                  <CustomInput
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="abc@example.com"
+                    required
+                    className="w-full h-10 bg-transparent focus:outline-none"
+                    onFocus={(e) => e.target.style.border = '1px solid rgba(255, 255, 255, 0.3)'}
                   />
                 </div>
 
                 {/* Password Field */}
                 <div className="flex flex-col items-start gap-1 w-full">
-                  <label 
+                  <label
                     htmlFor="password"
                     className="w-full"
                     style={{
@@ -338,7 +347,7 @@ export default function SignIn() {
                     Password
                   </label>
                   <div className="relative w-full">
-                    <input
+                    {/* <input
                       type={showPassword ? 'text' : 'password'}
                       id="password"
                       name="password"
@@ -363,6 +372,15 @@ export default function SignIn() {
                         outline: 'none'
                       }}
                       onFocus={(e) => e.target.style.border = '1px solid rgba(255, 255, 255, 0.3)'}
+                    /> */}
+                    <CustomInput
+                      type={showPassword ? 'text' : 'password'}
+                      id="password"
+                      name="password"
+                      placeholder="Enter password"
+                      required
+                      className="w-full h-10 bg-transparent focus:outline-none pr-10"
+                      onFocus={(e) => e.target.style.border = '1px solid rgba(255, 255, 255, 0.3)'}
                     />
                     <button
                       type="button"
@@ -370,15 +388,17 @@ export default function SignIn() {
                       className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center focus:outline-none"
                       style={{ color: 'rgba(255, 255, 255, 0.3)' }}
                     >
-                      {showPassword ? (
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M2 2L14 14M6.5 6.5C6.18 6.82 6 7.26 6 7.75C6 8.99 7.01 10 8.25 10C8.74 10 9.18 9.82 9.5 9.5M10.5 10.5C9.5 11.17 8.25 11.5 7 11.5C4 11.5 1.5 9 1.5 7C1.5 5.75 2.17 4.5 3.5 3.5M13 5.5C13.83 6.17 14.5 7 14.5 7C14.5 9 12 11.5 9 11.5" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
+                      {!showPassword ? (
+                        // <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        //   <path d="M2 2L14 14M6.5 6.5C6.18 6.82 6 7.26 6 7.75C6 8.99 7.01 10 8.25 10C8.74 10 9.18 9.82 9.5 9.5M10.5 10.5C9.5 11.17 8.25 11.5 7 11.5C4 11.5 1.5 9 1.5 7C1.5 5.75 2.17 4.5 3.5 3.5M13 5.5C13.83 6.17 14.5 7 14.5 7C14.5 9 12 11.5 9 11.5" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
+                        // </svg>
+                        <FaRegEyeSlash />
                       ) : (
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M1 8C1 8 3.5 3.5 8 3.5C12.5 3.5 15 8 15 8C15 8 12.5 12.5 8 12.5C3.5 12.5 1 8 1 8Z" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
-                          <circle cx="8" cy="8" r="2" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"/>
-                        </svg>
+                        // <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        //   <path d="M1 8C1 8 3.5 3.5 8 3.5C12.5 3.5 15 8 15 8C15 8 12.5 12.5 8 12.5C3.5 12.5 1 8 1 8Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
+                        //   <circle cx="8" cy="8" r="2" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
+                        // </svg>
+                        <FaRegEye />
                       )}
                     </button>
                   </div>
@@ -433,7 +453,7 @@ export default function SignIn() {
                   {isLoading ? 'Processing...' : (isSignUp ? 'Create Account' : 'Sign In')}
                 </button>
 
-                <p 
+                <p
                   className="w-full text-center"
                   style={{
                     fontFamily: 'Gilroy, sans-serif',
@@ -445,11 +465,11 @@ export default function SignIn() {
                 >
                   {isSignUp ? (
                     <>
-                      Already have an account? <button onClick={() => handleToggle(false)} type="button" className="underline hover:opacity-80" style={{ color: '#DE50EC', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'inherit', padding: 0 }}>Sign In</button>
+                      Already have an account? <button onClick={() => handleToggle(false)} type="button" className=" hover:opacity-80" style={{ color: '#DE50EC', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'inherit', padding: 0 }}>Sign In</button>
                     </>
                   ) : (
                     <>
-                      Don't have an account? <button onClick={() => handleToggle(true)} type="button" className="underline hover:opacity-80" style={{ color: '#DE50EC', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'inherit', padding: 0 }}>Sign Up</button>
+                      Don't have an account? <button onClick={() => handleToggle(true)} type="button" className=" hover:opacity-80" style={{ color: '#DE50EC', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'inherit', padding: 0 }}>Sign Up</button>
                     </>
                   )}
                 </p>

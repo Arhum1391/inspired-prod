@@ -719,7 +719,7 @@ export default function AboutPage() {
                   <span
                     className="text-center"
                     style={{
-                      width: '108px',
+                      
                       height: '14px',
                       fontFamily: 'Gilroy-SemiBold',
                       fontStyle: 'normal',

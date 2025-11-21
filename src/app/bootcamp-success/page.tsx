@@ -372,7 +372,7 @@ const BootcampSuccessContent: React.FC = () => {
 
                     {/* Back to Bootcamp Button */}
                     <button 
-                        onClick={() => router.push('/bootcamp/crypto-trading')}
+                        onClick={() => router.push('/bootcamp')}
                         className="bg-black border border-white text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0 h-12"
                         style={{ backgroundColor: 'black', outline: 'none', boxShadow: 'none' }}
                         onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}

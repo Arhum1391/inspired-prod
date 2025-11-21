@@ -1,11 +1,23 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+
+import { useRef } from 'react';
+
+import { Suspense, useEffect, useState } from 'react';
+
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
-export default function VerifyEmail() {
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={<VerifyEmailLoading />}>
+      <VerifyEmailContent />
+    </Suspense>
+  );
+}
+
+function VerifyEmailContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -254,6 +266,17 @@ export default function VerifyEmail() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function VerifyEmailLoading() {
+  return (
+    <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-10 w-10 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+        <p className="text-sm text-white/70">Preparing verification status...</p>
+      </div>
     </div>
   );
 }

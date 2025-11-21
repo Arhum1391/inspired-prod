@@ -1,11 +1,19 @@
 'use client';
 
-import { FormEvent, useState, useEffect } from 'react';
+import { FormEvent, Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 
-export default function ResetPassword() {
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<ResetPasswordLoading />}>
+      <ResetPasswordContent />
+    </Suspense>
+  );
+}
+
+function ResetPasswordContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -420,6 +428,17 @@ export default function ResetPassword() {
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function ResetPasswordLoading() {
+  return (
+    <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="h-10 w-10 rounded-full border-2 border-white/30 border-t-white animate-spin" />
+        <p className="text-sm text-white/70">Loading reset form...</p>
+      </div>
     </div>
   );
 }

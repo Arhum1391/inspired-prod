@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import CustomInput from '@/components/CustomInput';
+import CustomButton from '@/components/CustomButton';
 
 const AccountPage = () => {
   const { isAuthenticated, user } = useAuth();
@@ -87,7 +89,6 @@ const AccountPage = () => {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
       <Navbar />
-      
       {/* Mobile Layout */}
       <div className="lg:hidden relative w-full pt-24 pb-24">
         <div className="max-w-[420px] mx-auto px-4 flex flex-col gap-10">
@@ -137,7 +138,7 @@ const AccountPage = () => {
                     Email
                   </span>
                   <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
-                    <span className="text-white/60 text-sm gilroy-medium truncate">
+                    <span className="text-white/30 text-sm gilroy-medium truncate">
                       {user?.email || 'john.doe@example.com'}
                     </span>
                   </div>
@@ -147,7 +148,7 @@ const AccountPage = () => {
                     Password
                   </span>
                   <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
-                    <span className="text-white/60 text-sm gilroy-medium">
+                    <span className="text-white/30 text-sm gilroy-medium">
                       ••••••••
                     </span>
                   </div>
@@ -214,12 +215,12 @@ const AccountPage = () => {
 
                 {hasActiveSubscription ? (
                   <>
-                    <button
+                    {/* <button
                       onClick={() => router.push('/account/payment-method')}
                       className="w-full bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center hover:opacity-80 transition-opacity"
                     >
                       Update Payment
-                    </button>
+                    </button> */}
                     <button
                       onClick={() => router.push('/account/cancel-plan')}
                       className="w-full bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center hover:opacity-80 transition-opacity"
@@ -262,14 +263,14 @@ const AccountPage = () => {
                   </div>
                   <div className="flex flex-col gap-1 flex-1 min-w-0">
                     <span className="text-white/60 text-sm gilroy-medium whitespace-nowrap">
-                        •••• •••• •••• {paymentMethod.last4 || '4242'}
-                      </span>
+                      •••• •••• •••• {paymentMethod.last4 || '4242'}
+                    </span>
                     <span className="text-white/60 text-xs gilroy-medium whitespace-nowrap">
-                        Expires {String(paymentMethod.expMonth || 12).padStart(2, '0')}/{String(paymentMethod.expYear || 2026).slice(-2)}
-                      </span>
-                    </div>
+                      Expires {String(paymentMethod.expMonth || 12).padStart(2, '0')}/{String(paymentMethod.expYear || 2026).slice(-2)}
+                    </span>
+                  </div>
                   <div className="px-2 py-1 border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] text-xs rounded-full flex-shrink-0 whitespace-nowrap">
-                      Currently in Use
+                    Currently in Use
                   </div>
                 </div>
               ) : (
@@ -281,9 +282,9 @@ const AccountPage = () => {
           </div>
 
           {/* Billing History */}
-            <div
+          <div
             className="relative bg-[#1F1F1F] rounded-[10px] w-full"
-              style={{
+            style={{
               boxSizing: 'border-box',
               display: 'flex',
               flexDirection: 'column',
@@ -295,7 +296,7 @@ const AccountPage = () => {
               flexGrow: 0
             }}
           >
-            <div 
+            <div
               className="w-full"
               style={{
                 display: 'flex',
@@ -309,7 +310,7 @@ const AccountPage = () => {
                 flexGrow: 0
               }}
             >
-              <div 
+              <div
                 className="flex flex-row items-center w-full"
                 style={{
                   display: 'flex',
@@ -337,7 +338,7 @@ const AccountPage = () => {
                     flexGrow: 1
                   }}
                 >
-                  <h2 
+                  <h2
                     className="text-white gilroy-semibold"
                     style={{
                       fontFamily: 'Gilroy-SemiBold',
@@ -351,8 +352,8 @@ const AccountPage = () => {
                       flexGrow: 0
                     }}
                   >
-                  Billing History
-                </h2>
+                    Billing History
+                  </h2>
                 </div>
                 <button
                   onClick={() => router.push('/account/billing-history')}
@@ -386,10 +387,10 @@ const AccountPage = () => {
                       order: 0,
                       flexGrow: 0
                     }}
-                >
-                  View All
+                  >
+                    View All
                   </span>
-                  <span 
+                  <span
                     className="inline-block"
                     style={{
                       width: '16px',
@@ -433,7 +434,7 @@ const AccountPage = () => {
                           flexGrow: 0
                         }}
                       >
-                        <div 
+                        <div
                           className="flex flex-row justify-between items-center w-full"
                           style={{
                             display: 'flex',
@@ -448,7 +449,7 @@ const AccountPage = () => {
                             flexGrow: 0
                           }}
                         >
-                          <div 
+                          <div
                             className="flex flex-row items-center gap-2"
                             style={{
                               display: 'flex',
@@ -461,7 +462,7 @@ const AccountPage = () => {
                               flexGrow: 1
                             }}
                           >
-                            <span 
+                            <span
                               className="text-white gilroy-medium"
                               style={{
                                 fontFamily: 'Gilroy-Medium',
@@ -477,7 +478,7 @@ const AccountPage = () => {
                             >
                               Invoice Id :
                             </span>
-                            <span 
+                            <span
                               className="text-[#909090] gilroy-medium"
                               style={{
                                 fontFamily: 'Gilroy-Medium',
@@ -530,11 +531,11 @@ const AccountPage = () => {
                                 flexGrow: 0
                               }}
                             >
-                            {invoice.status === 'paid' ? 'Paid' : invoice.status}
+                              {invoice.status === 'paid' ? 'Paid' : invoice.status}
                             </span>
                           </div>
                         </div>
-                        <div 
+                        <div
                           className="w-full border-t border-[#404040]"
                           style={{
                             width: '100%',
@@ -546,7 +547,7 @@ const AccountPage = () => {
                             flexGrow: 0
                           }}
                         />
-                        <div 
+                        <div
                           className="flex flex-row justify-between items-center w-full"
                           style={{
                             display: 'flex',
@@ -561,7 +562,7 @@ const AccountPage = () => {
                             flexGrow: 0
                           }}
                         >
-                          <div 
+                          <div
                             className="flex flex-row items-center gap-2"
                             style={{
                               display: 'flex',
@@ -574,7 +575,7 @@ const AccountPage = () => {
                               flexGrow: 1
                             }}
                           >
-                            <span 
+                            <span
                               className="text-white gilroy-medium"
                               style={{
                                 fontFamily: 'Gilroy-Medium',
@@ -590,7 +591,7 @@ const AccountPage = () => {
                             >
                               Date
                             </span>
-                            <span 
+                            <span
                               className="text-[#909090] gilroy-medium"
                               style={{
                                 fontFamily: 'Gilroy-Medium',
@@ -608,7 +609,7 @@ const AccountPage = () => {
                             </span>
                           </div>
                         </div>
-                        <div 
+                        <div
                           className="flex flex-row justify-between items-center w-full"
                           style={{
                             display: 'flex',
@@ -623,7 +624,7 @@ const AccountPage = () => {
                             flexGrow: 0
                           }}
                         >
-                          <div 
+                          <div
                             className="flex flex-row items-center gap-2"
                             style={{
                               display: 'flex',
@@ -636,7 +637,7 @@ const AccountPage = () => {
                               flexGrow: 1
                             }}
                           >
-                            <span 
+                            <span
                               className="text-white gilroy-medium"
                               style={{
                                 fontFamily: 'Gilroy-Medium',
@@ -652,7 +653,7 @@ const AccountPage = () => {
                             >
                               Amount
                             </span>
-                            <span 
+                            <span
                               className="text-[#909090] gilroy-medium"
                               style={{
                                 fontFamily: 'Gilroy-Medium',
@@ -672,7 +673,7 @@ const AccountPage = () => {
                         </div>
                         {invoice.invoiceUrl && (
                           <>
-                            <div 
+                            <div
                               className="w-full border-t border-[#404040]"
                               style={{
                                 width: '100%',
@@ -684,10 +685,10 @@ const AccountPage = () => {
                                 flexGrow: 0
                               }}
                             />
-                          <a
-                            href={invoice.invoiceUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            <a
+                              href={invoice.invoiceUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
                               className="w-full bg-white text-[#0A0A0A] rounded-full flex flex-row justify-center items-center gap-1 hover:bg-gray-100 transition-colors"
                               style={{
                                 boxSizing: 'border-box',
@@ -719,8 +720,8 @@ const AccountPage = () => {
                                 }}
                               >
                                 <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-                                  <path d="M6 1V8M6 8L3 5M6 8L9 5" stroke="#0A0A0A" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
-                                  <path d="M1 10H11" stroke="#0A0A0A" strokeWidth="1" strokeLinecap="round"/>
+                                  <path d="M6 1V8M6 8L3 5M6 8L9 5" stroke="#0A0A0A" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" />
+                                  <path d="M1 10H11" stroke="#0A0A0A" strokeWidth="1" strokeLinecap="round" />
                                 </svg>
                               </div>
                               <span
@@ -746,9 +747,9 @@ const AccountPage = () => {
                     );
                   })
                 ) : (
-                  <div 
+                  <div
                     className="border border-white/30 rounded-lg w-full"
-              style={{
+                    style={{
                       boxSizing: 'border-box',
                       display: 'flex',
                       flexDirection: 'column',
@@ -765,12 +766,12 @@ const AccountPage = () => {
                   >
                     <div className="text-white/50 text-sm text-center">
                       No billing history available yet
-                </div>
-              </div>
+                    </div>
+                  </div>
                 )}
-                </div>
               </div>
             </div>
+          </div>
 
         </div>
       </div>
@@ -802,9 +803,11 @@ const AccountPage = () => {
                     Profile Settings
                   </h1>
                 </div>
-                <button className="hover:opacity-80 transition-opacity bg-white text-[#1F1F1F] px-4 py-2.5 rounded-full text-sm font-normal gilroy-semibold whitespace-nowrap">
+                <CustomButton
+                  className="hover:opacity-80 transition-opacity bg-white text-[#1F1F1F] px-4 py-2.5 rounded-full text-sm font-normal gilroy-semibold whitespace-nowrap"
+                >
                   Edit Profile
-                </button>
+                </CustomButton>
               </div>
 
               <div className="w-full flex flex-col items-start gap-6">
@@ -813,29 +816,23 @@ const AccountPage = () => {
                     <label className="text-white text-sm font-normal gilroy-medium">
                       Full Name (optional)
                     </label>
-                    <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4 focus-within:border-white/30">
-                      <input
-                        type="text"
-                        placeholder="John Doe"
-                        defaultValue={user?.name || ''}
-                        className="w-full bg-transparent border-none outline-none text-white placeholder-white/30 text-sm font-normal gilroy-medium"
-                      />
-                    </div>
+                    <CustomInput
+                      type="text"
+                      placeholder="John Doe"
+                      defaultValue={user?.name || ''}
+                    />
                   </div>
 
                   <div className="w-full sm:w-1/2 flex flex-col items-start gap-1">
                     <label className="text-white text-sm font-normal gilroy-medium">
                       Email
                     </label>
-                    <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4 focus-within:border-white/30">
-                      <input
-                        type="email"
-                        placeholder="John.doe24@gmail.com"
-                        defaultValue={user?.email || ''}
-                        readOnly
-                        className="w-full bg-transparent border-none outline-none text-white placeholder-white/30 text-sm font-normal gilroy-medium"
-                      />
-                    </div>
+                    <CustomInput
+                      type="email"
+                      placeholder="John.doe24@gmail.com"
+                      defaultValue={user?.email || ''}
+                      readOnly
+                    />
                   </div>
                 </div>
 
@@ -843,13 +840,7 @@ const AccountPage = () => {
                   <label className="text-white text-sm font-normal gilroy-medium">
                     Password
                   </label>
-                  <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4 focus-within:border-white/30">
-                    <input
-                      type="password"
-                      placeholder="••••••••"
-                      className="w-full bg-transparent border-none outline-none text-white placeholder-white/30 text-sm font-normal gilroy-medium"
-                    />
-                  </div>
+                  <CustomInput type="password" placeholder="••••••••" />
                 </div>
               </div>
             </div>
@@ -905,36 +896,36 @@ const AccountPage = () => {
               )}
 
               <div className="w-full flex flex-row items-start gap-6">
-                <button 
+                <CustomButton
                   onClick={() => router.push('/pricing')}
                   className="hover:opacity-80 transition-opacity bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
                 >
                   Change Plan
-                </button>
+                </CustomButton>
 
                 {hasActiveSubscription ? (
                   <>
-                    <button 
+                    {/* <CustomButton
                       onClick={() => router.push('/account/payment-method')}
                       className="hover:opacity-80 transition-opacity bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
                     >
                       Update Payment
-                    </button>
+                    </CustomButton> */}
 
-                    <button 
+                    <CustomButton
                       onClick={() => router.push('/account/cancel-plan')}
                       className="hover:opacity-80 transition-opacity bg-[#1F1F1F] border border-white text-white px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
                     >
                       Cancel Plan
-                    </button>
+                    </CustomButton>
                   </>
                 ) : (
-                  <button 
+                  <CustomButton
                     onClick={() => router.push('/pricing')}
                     className="hover:opacity-80 transition-opacity bg-white text-[#1F1F1F] px-4 py-3 rounded-full text-sm font-normal gilroy-semibold text-center flex-1"
                   >
                     Upgrade to Premium
-                  </button>
+                  </CustomButton>
                 )}
               </div>
             </div>
@@ -968,12 +959,12 @@ const AccountPage = () => {
                     </h2>
                   </div>
 
-                  <button 
-                    onClick={() => hasActiveSubscription ? router.push('/account/payment-method') : router.push('/pricing')}
+                  <CustomButton
+                    onClick={() => (hasActiveSubscription ? router.push('/account/payment-method') : router.push('/pricing'))}
                     className="hover:opacity-80 transition-opacity bg-white text-[#1F1F1F] px-4 py-2.5 rounded-full text-sm font-normal gilroy-semibold text-center"
                   >
                     {hasActiveSubscription ? 'Update Payment' : 'Add Payment Method'}
-                  </button>
+                  </CustomButton>
                 </div>
 
                 {paymentMethod ? (

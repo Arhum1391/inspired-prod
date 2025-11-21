@@ -237,6 +237,41 @@ const timezoneGroups: TimezoneGroup[] = [
   }
 ];
 
+type DurationPricing = Record<number, number>;
+
+const ANALYST_CUSTOM_PRICING: Record<string, DurationPricing> = {
+  adnan: {
+    30: 300,
+    90: 500,
+  },
+  assassin: {
+    30: 300,
+    90: 400,
+  },
+};
+
+const DEFAULT_PRICING: DurationPricing = {
+  30: 60,
+  90: 100,
+};
+
+const getMeetingPriceForAnalyst = (duration: number, analystName?: string): string => {
+  if (duration === 60) {
+    return '80 USD';
+  }
+
+  const normalizedName = analystName?.trim().toLowerCase() || '';
+  const pricingTable = ANALYST_CUSTOM_PRICING[normalizedName] || DEFAULT_PRICING;
+  const price = pricingTable[duration];
+
+  if (price) {
+    return `${price} USD`;
+  }
+
+  // Fallback to closest default tiers if new durations appear
+  return duration < 60 ? '60 USD' : '100 USD';
+};
+
 // --- HELPER COMPONENTS ---
 
 
@@ -681,6 +716,7 @@ const MeetingsPage = () => {
                 const data = await response.json();
                 console.log('✅ API Response data:', data);
                 setCalendlyEventTypes(data.eventTypes || []);
+                const selectedAnalystName = analysts.find(a => a.id === selectedAnalyst)?.name;
                 
                 // Transform Calendly event types to Meeting format with deduplication
                 const uniqueEventTypes = data.eventTypes.filter((eventType: any, index: number, self: any[]) => 
@@ -691,21 +727,11 @@ const MeetingsPage = () => {
                 console.log(`🔄 Filtered ${data.eventTypes.length} event types to ${uniqueEventTypes.length} unique types`);
                 
                 const transformedMeetings: Meeting[] = uniqueEventTypes.map((eventType: any, index: number) => {
-                    // Set price based on duration
-                    let price = '60 USD'; // Default
-                    if (eventType.duration === 30) {
-                        price = '60 USD';
-                    } else if (eventType.duration === 60) {
-                        price = '80 USD';
-                    } else if (eventType.duration === 90) {
-                        price = '100 USD';
-                    }
-                    
                     return {
                         id: index + 2, // Start from 2 to match existing IDs
                         title: eventType.name,
                         duration: `${eventType.duration} minutes`,
-                        price: price,
+                        price: getMeetingPriceForAnalyst(eventType.duration, selectedAnalystName),
                         description: eventType.description || 'A focused session to address specific challenges.',
                         color: index % 2 === 0 ? 'text-purple-400' : 'text-yellow-400',
                     };
@@ -990,7 +1016,7 @@ const MeetingsPage = () => {
     // Fetch Calendly event types when an analyst with Calendly integration is selected
     useEffect(() => {
         const handleAnalystSelection = async () => {
-            if (selectedAnalyst !== null) {
+            if (selectedAnalyst !== null && currentStep !==2) {
                 // Check if we're returning from payment (with safety checks)
                 if (typeof window === 'undefined') return;
                 
@@ -1298,6 +1324,7 @@ const MeetingsPage = () => {
         if (stepParam) {
             const step = parseInt(stepParam);
             if (step >= 1 && step <= 3) {
+                console.log("setting current step", step)
                 setCurrentStep(step);
             }
         }
@@ -2014,6 +2041,9 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
         return '60 USD';
     };
 
+    console.log("selectedAnalyst", selectedAnalyst)
+    console.log("current step", currentStep)
+
     return (
         <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative overflow-hidden" style={{ fontFamily: 'Gilroy-Medium, sans-serif' }}>
             {/* Lower Corner Gradients - Hidden on step 2 (booking section) */}
@@ -2633,7 +2663,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                             onFocus={(e) => e.target.blur()}
                         >
                         <ChevronLeft size={20} className="mr-1" />
-                        Back
+                        Back...
                     </button>
                     </div>
 
@@ -2661,7 +2691,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                             src={(() => {
                                                 const analyst = analysts.find(a => a.id === selectedAnalyst);
                                                 const imageUrl = analyst?.image;
-                                                return (imageUrl && imageUrl.trim() !== '') ? imageUrl : '/team dark/Adnan.png';
+                                                return (imageUrl && imageUrl.trim() !== '') ? imageUrl : '/team dark/Adnan.jpeg';
                                             })()}
                                             alt={analysts.find(a => a.id === selectedAnalyst)?.name || 'Analyst'}
                                             width={80}

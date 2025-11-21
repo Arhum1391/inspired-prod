@@ -22,6 +22,24 @@ const emptyForm: Omit<ShariahTile, '_id' | 'createdAt' | 'updatedAt'> = {
   analystNotes: '',
 };
 
+const DATE_INPUT_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const formatDateForInput = (value: string) => {
+  if (!value) return '';
+  if (DATE_INPUT_REGEX.test(value)) {
+    return value;
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return '';
+  }
+
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const defaultComplianceMetric: ComplianceMetric = {
   criteria: '',
   threshold: '',
@@ -150,7 +168,7 @@ export default function ShariahAdminPage() {
         compliancePoints: tile.compliancePoints || [],
         complianceMetrics: tile.complianceMetrics || [],
         footerLeft: tile.footerLeft,
-        footerRight: tile.footerRight,
+        footerRight: formatDateForInput(tile.footerRight),
         ctaLabel: tile.ctaLabel,
         detailPath: tile.detailPath,
         lockedTitle: tile.lockedTitle,
@@ -176,32 +194,102 @@ export default function ShariahAdminPage() {
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    const requiredFields: (keyof typeof emptyForm)[] = [
-      'slug',
-      'title',
-      'category',
-      'description',
-      'footerLeft',
-      'footerRight',
-      'ctaLabel',
-      'detailPath',
-      'lockedTitle',
-      'lockedDescription',
-      'analystNotes',
-    ];
+    const trimmed = {
+      slug: formData.slug.trim(),
+      title: formData.title.trim(),
+      category: formData.category.trim(),
+      description: formData.description.trim(),
+      footerLeft: formData.footerLeft.trim(),
+      footerRight: formData.footerRight.trim(),
+      ctaLabel: formData.ctaLabel.trim(),
+      detailPath: formData.detailPath.trim(),
+      lockedTitle: formData.lockedTitle.trim(),
+      lockedDescription: formData.lockedDescription.trim(),
+      analystNotes: formData.analystNotes.trim(),
+    };
 
-    requiredFields.forEach((field) => {
-      if (!formData[field].trim()) {
+    (Object.keys(trimmed) as (keyof typeof trimmed)[]).forEach((field) => {
+      if (!trimmed[field]) {
         errors[field] = 'This field is required';
       }
     });
 
-    if (!/^[a-z0-9-]+$/.test(formData.slug)) {
+    if (trimmed.slug && !/^[a-z0-9-]+$/.test(trimmed.slug)) {
       errors.slug = 'Slug can only contain lowercase letters, numbers, and hyphens';
+    }
+
+    if (
+      trimmed.slug &&
+      tiles.some((tile) => tile.slug === trimmed.slug && tile._id !== editingTile?._id)
+    ) {
+      errors.slug = 'A tile with this slug already exists';
+    }
+
+    if (trimmed.category && trimmed.category.length < 2) {
+      errors.category = 'Category must be at least 2 characters long';
+    }
+
+    if (trimmed.title) {
+      if (trimmed.title.length < 4) {
+        errors.title = 'Title must be at least 4 characters long';
+      } else if (!/[a-zA-Z]/.test(trimmed.title)) {
+        errors.title = 'Enter a valid Title';
+      }
+    }
+
+    if (trimmed.description) {
+      if (trimmed.description.length < 20) {
+        errors.description = 'Description must be at least 20 characters long';
+      } else if (!/[a-zA-Z]/.test(trimmed.description)) {
+        errors.description = 'Enter a valid Description';
+      }
+    }
+
+    if (trimmed.footerLeft && trimmed.footerLeft.length < 3) {
+      errors.footerLeft = 'Footer left text must be at least 3 characters';
+    }
+
+    if (trimmed.footerRight) {
+      if (!DATE_INPUT_REGEX.test(trimmed.footerRight)) {
+        errors.footerRight = 'Select a valid date';
+      } else {
+        const date = new Date(`${trimmed.footerRight}T00:00:00`);
+        if (Number.isNaN(date.getTime())) {
+          errors.footerRight = 'Select a valid date';
+        }
+      }
+    }
+
+    if (trimmed.ctaLabel && trimmed.ctaLabel.length < 3) {
+      errors.ctaLabel = 'CTA label must be at least 3 characters';
+    }
+
+    if (trimmed.detailPath) {
+      const detailPathPattern = /^\/[a-z0-9-/]+$/;
+      if (!detailPathPattern.test(trimmed.detailPath)) {
+        errors.detailPath = 'Detail path must start with / and only contain lowercase URL-safe text';
+      }
+    }
+
+    if (trimmed.lockedTitle && trimmed.lockedTitle.length < 3) {
+      errors.lockedTitle = 'Locked title must be at least 3 characters';
+    }
+
+    if (trimmed.lockedDescription && trimmed.lockedDescription.length < 5) {
+      errors.lockedDescription = 'Locked description must be at least 5 characters';
+    }
+
+    if (trimmed.analystNotes && trimmed.analystNotes.length < 30) {
+      errors.analystNotes = 'Analyst notes should be at least 30 characters';
     }
 
     if (formData.compliancePoints.length === 0) {
       errors.compliancePoints = 'Add at least one compliance point';
+    } else {
+      const emptyPoint = formData.compliancePoints.some((point) => !point.trim());
+      if (emptyPoint) {
+        errors.compliancePoints = 'Compliance points cannot be blank';
+      }
     }
 
     if (!formData.complianceMetrics.length) {
@@ -224,6 +312,16 @@ export default function ShariahAdminPage() {
         if (missingCustomStatus) {
           errors.complianceMetrics = 'Manual metrics require a status selection';
         }
+        const invalidNumericMetric = formData.complianceMetrics.some(
+          (metric) =>
+            metric.comparisonType !== 'custom' &&
+            (parseNumericValue(metric.threshold) === null ||
+              parseNumericValue(metric.actual) === null)
+        );
+        if (invalidNumericMetric) {
+          errors.complianceMetrics =
+            'Numeric metrics must have parseable numbers in threshold and actual fields';
+        }
       }
     }
 
@@ -240,6 +338,17 @@ export default function ShariahAdminPage() {
     setSubmitting(true);
     const payload = {
       ...formData,
+      slug: formData.slug.trim(),
+      title: formData.title.trim(),
+      category: formData.category.trim(),
+      description: formData.description.trim(),
+      footerLeft: formData.footerLeft.trim(),
+      footerRight: formData.footerRight.trim(),
+      ctaLabel: formData.ctaLabel.trim(),
+      detailPath: formData.detailPath.trim(),
+      lockedTitle: formData.lockedTitle.trim(),
+      lockedDescription: formData.lockedDescription.trim(),
+      analystNotes: formData.analystNotes.trim(),
       compliancePoints: formData.compliancePoints.map((point) => point.trim()),
       complianceMetrics: formData.complianceMetrics.map((metric) => ({
         ...metric,
@@ -659,10 +768,10 @@ export default function ShariahAdminPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Footer Right Text *
+                    Footer Right Date *
                   </label>
                   <input
-                    type="text"
+                    type="date"
                     value={formData.footerRight}
                     onChange={(e) => setFormData({ ...formData, footerRight: e.target.value })}
                     className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
@@ -670,7 +779,6 @@ export default function ShariahAdminPage() {
                         ? 'border-red-500 focus:ring-red-500'
                         : 'border-slate-600 focus:ring-indigo-500'
                     }`}
-                    placeholder="May 15, 2023"
                   />
                   {validationErrors.footerRight && (
                     <p className="text-red-400 text-xs mt-1">{validationErrors.footerRight}</p>

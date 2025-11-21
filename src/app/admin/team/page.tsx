@@ -358,19 +358,23 @@ export default function TeamPage() {
                 </button>
               </div>
             </div>
-            <h3 className="text-lg font-semibold text-white">{member.name}</h3>
-            <p className="text-indigo-400 text-sm">{member.role}</p>
+            <h3 className="text-lg font-semibold text-white break-words">{member.name}</h3>
+            <p className="text-indigo-400 text-sm break-words">{member.role}</p>
             
             <div className="mt-2 space-y-2">
               <div>
                 <p className="text-xs text-gray-400 font-medium">General About:</p>
-                <p className="text-gray-300 text-sm">{member.about}</p>
+                <p className="text-gray-300 text-sm break-words whitespace-pre-line">
+                  {member.about}
+                </p>
               </div>
               
               {member.bootcampAbout && (
                 <div>
                   <p className="text-xs text-gray-400 font-medium">Bootcamp About:</p>
-                  <p className="text-gray-300 text-sm">{member.bootcampAbout}</p>
+                  <p className="text-gray-300 text-sm break-words whitespace-pre-line">
+                    {member.bootcampAbout}
+                  </p>
                 </div>
               )}
             </div>
@@ -378,7 +382,9 @@ export default function TeamPage() {
             <div className="mt-3">
               <p className="text-xs text-gray-500">ID: {member.id}</p>
               {member.calendar && (
-                <p className="text-xs text-gray-500 mt-1">Calendar: {member.calendar}</p>
+                <p className="text-xs text-gray-500 mt-1 break-all">
+                  Calendar: {member.calendar}
+                </p>
               )}
             </div>
           </div>

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 
 const actionCards = [
   {
@@ -156,7 +157,7 @@ function SuccessPageContent() {
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
       <Navbar />
-      
+
       {/* Mobile Gradients */}
       <div
         className="md:hidden opacity-100"
@@ -286,7 +287,10 @@ function SuccessPageContent() {
               className="text-sm sm:text-base leading-[145%] text-white/70 max-w-xl mx-auto"
               style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500 }}
             >
-              Manage your plan anytime in <span className="text-[#DE50EC]">Account → Billing</span>. Educational content only; not financial advice.
+              Manage your plan anytime in
+              <Link href={'/account'} className='cursor-pointer'>
+                <span className="text-[#DE50EC]" >Account → Billing</span>
+              </Link>. Educational content only; not financial advice.
             </p>
           </section>
         </div>
@@ -294,131 +298,134 @@ function SuccessPageContent() {
         {/* Desktop Layout */}
         <div className="hidden md:block w-full">
           <div className="w-full max-w-[952px] mx-auto flex flex-col items-center gap-8">
-          <div className="w-full flex flex-col items-center gap-6">
-            <div className="flex items-center justify-center">
-              <div className="relative">
-                <div className="w-10 h-10 relative">
-                  <div className="absolute inset-0 rounded-full border-2 border-[#78F17A]" />
-                  <div 
-                    className={`absolute inset-2 transition-all duration-500 ${showSuccess ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
-                    style={{
-                      backgroundImage: 'url("/logo/Tick.svg")',
-                      backgroundSize: 'contain',
-                      backgroundRepeat: 'no-repeat',
-                      backgroundPosition: 'center'
-                    }}
-                  />
+            <div className="w-full flex flex-col items-center gap-6">
+              <div className="flex items-center justify-center">
+                <div className="relative">
+                  <div className="w-10 h-10 relative">
+                    <div className="absolute inset-0 rounded-full border-2 border-[#78F17A]" />
+                    <div
+                      className={`absolute inset-2 transition-all duration-500 ${showSuccess ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+                      style={{
+                        backgroundImage: 'url("/logo/Tick.svg")',
+                        backgroundSize: 'contain',
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center'
+                      }}
+                    />
+                  </div>
                 </div>
+              </div>
+
+              <div className="w-full flex flex-col items-center gap-4">
+                <h1 className="text-[40px] font-semibold leading-[100%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 600 }}>
+                  Welcome to Inspired Analyst Premium
+                </h1>
+                <p className="text-[14px] font-medium leading-[120%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500 }}>
+                  Your subscription is active.
+                </p>
+                <p className="text-[14px] font-medium leading-[120%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500 }}>
+                  You now have full access to our research library, position sizing calculator, portfolio analytics, and Shariah-compliant investment details.
+                </p>
               </div>
             </div>
 
-            <div className="w-full flex flex-col items-center gap-4">
-              <h1 className="text-[40px] font-semibold leading-[100%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 600 }}>
-                Welcome to Inspired Analyst Premium
-              </h1>
-              <p className="text-[14px] font-medium leading-[120%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500 }}>
-                Your subscription is active.
-              </p>
-              <p className="text-[14px] font-medium leading-[120%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500 }}>
-                You now have full access to our research library, position sizing calculator, portfolio analytics, and Shariah-compliant investment details.
-              </p>
-            </div>
-          </div>
-
-          <div className="w-full flex flex-row items-start gap-5 mt-7">
+            <div className="w-full flex flex-row items-start gap-5 mt-7">
               {/* Card 1 */}
-            <div className="flex-1 max-w-[304px] bg-[#1F1F1F] rounded-2xl p-6 relative">
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  borderRadius: '16px',
-                  background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                  padding: '1px'
-                }}
-              >
+              <div className="flex-1 max-w-[304px] bg-[#1F1F1F] rounded-2xl p-6 relative">
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    borderRadius: '16px',
+                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                    padding: '1px'
+                  }}
+                >
                   <div className="w-full h-full rounded-[15px]" style={{ background: '#1F1F1F' }}></div>
-              </div>
-              <div className="relative z-10 flex flex-col items-center gap-4">
-                <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center">
+                </div>
+                <div className="relative z-10 flex flex-col items-center gap-4">
+                  <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center">
                     <Image src="/icons/Sparks--Streamline-Iconoir.svg" alt="Sparks Icon" width={20} height={20} className="w-5 h-5" />
-                </div>
-                <div className="flex flex-col items-center gap-4">
-                  <h3 className="text-2xl font-semibold leading-[100%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 600 }}>
-                    Browse Research
-                  </h3>
-                  <p className="text-base font-normal leading-[130%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 400 }}>
-                    Access in-depth reports and analysis.
-                  </p>
-                </div>
+                  </div>
+                  <div className="flex flex-col items-center gap-4">
+                    <h3 className="text-2xl font-semibold leading-[100%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 600 }}>
+                      Browse Research
+                    </h3>
+                    <p className="text-base font-normal leading-[130%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 400 }}>
+                      Access in-depth reports and analysis.
+                    </p>
+                  </div>
                   <a href="/research" className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity">
                     <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">Explore</span>
-                </a>
+                  </a>
+                </div>
               </div>
-            </div>
 
               {/* Card 2 */}
-            <div className="flex-1 max-w-[304px] bg-[#1F1F1F] rounded-2xl p-6 relative">
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  borderRadius: '16px',
-                  background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                  padding: '1px'
-                }}
-              >
+              <div className="flex-1 max-w-[304px] bg-[#1F1F1F] rounded-2xl p-6 relative">
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    borderRadius: '16px',
+                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                    padding: '1px'
+                  }}
+                >
                   <div className="w-full h-full rounded-[15px]" style={{ background: '#1F1F1F' }}></div>
-              </div>
-              <div className="relative z-10 flex flex-col items-center gap-4">
-                <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center">
-                    <Image src="/icons/Calculator--Streamline-Iconoir.svg" alt="Calculator Icon" width={20} height={20} className="w-5 h-5" />
                 </div>
-                <div className="flex flex-col items-center gap-4">
+                <div className="relative z-10 flex flex-col items-center gap-4">
+                  <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center">
+                    <Image src="/icons/Calculator--Streamline-Iconoir.svg" alt="Calculator Icon" width={20} height={20} className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col items-center gap-4">
                     <h3 className="text-2xl font-semibold leading-[100%] text-center text-white">Open Calculator</h3>
                     <p className="text-base font-normal leading-[130%] text-center text-white">Size positions based on your risk tolerance.</p>
-                </div>
+                  </div>
                   <a href="/tools/calculator" className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity">
                     <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">Get Started</span>
-                </a>
+                  </a>
+                </div>
               </div>
-            </div>
 
               {/* Card 3 */}
-            <div className="flex-1 max-w-[304px] bg-[#1F1F1F] rounded-2xl p-6 relative">
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  borderRadius: '16px',
-                  background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                  padding: '1px'
-                }}
-              >
+              <div className="flex-1 max-w-[304px] bg-[#1F1F1F] rounded-2xl p-6 relative">
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    borderRadius: '16px',
+                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                    padding: '1px'
+                  }}
+                >
                   <div className="w-full h-full rounded-[15px]" style={{ background: '#1F1F1F' }}></div>
-              </div>
-              <div className="relative z-10 flex flex-col items-center gap-4">
-                <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center">
-                    <Image src="/icons/User-Star--Streamline-Iconoir.svg" alt="User Star Icon" width={20} height={20} className="w-5 h-5" />
                 </div>
-                <div className="flex flex-col items-center gap-4">
+                <div className="relative z-10 flex flex-col items-center gap-4">
+                  <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center">
+                    <Image src="/icons/User-Star--Streamline-Iconoir.svg" alt="User Star Icon" width={20} height={20} className="w-5 h-5" />
+                  </div>
+                  <div className="flex flex-col items-center gap-4">
                     <h3 className="text-2xl font-semibold leading-[100%] text-center text-white">Set up Portfolio</h3>
                     <p className="text-base font-normal leading-[130%] text-center text-white">Track your investments and performance.</p>
-                </div>
+                  </div>
                   <a href="/portfolio" className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity">
                     <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">Start Tracking</span>
-                </a>
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="w-full flex flex-row justify-center items-center gap-2.5 mt-2">
-            <p className="text-[14px] font-medium leading-[120%] text-center text-white">
-              Manage your plan anytime in <span className="text-[#DE50EC]">Account → Billing</span>. Educational content only; not financial advice.
-            </p>
+            <div className="w-full flex flex-row justify-center items-center gap-2.5 mt-2">
+              <p className="text-[14px] font-medium leading-[120%] text-center text-white">
+                Manage your plan anytime in
+                <Link href={'/account'} className='cursor-pointer'>
+                  <span className="text-[#DE50EC]" >Account → Billing</span>
+                </Link>. Educational content only; not financial advice.
+              </p>
             </div>
           </div>
         </div>
 
         <div className="w-full max-w-[1100px] mx-auto mt-12 px-4">
-          <div 
+          <div
             className="newsletter-container relative bg-[#1F1F1F] rounded-2xl overflow-hidden w-full max-w-[1064px] mx-auto px-6 sm:px-8 lg:px-12 py-10 sm:py-12"
             style={{ isolation: 'isolate' }}
           >
@@ -476,9 +483,9 @@ function SuccessPageContent() {
 
             <div className="relative z-30 flex flex-col gap-6 max-w-[640px]">
               <h2 className="text-[24px] sm:text-[28px] font-semibold leading-[110%] text-white">
-                    What's Included in Your Subscription
-                  </h2>
-                  <div className="flex flex-col items-start gap-4 w-full">
+                What's Included in Your Subscription
+              </h2>
+              <div className="flex flex-col items-start gap-4 w-full">
                 {[
                   'Deep-dive reports with downloadable PDFs',
                   'Position sizing tailored to your risk',
@@ -486,10 +493,10 @@ function SuccessPageContent() {
                   'Shariah methodology & detailed screens'
                 ].map((feature) => (
                   <div key={feature} className="flex flex-row items-center gap-2 w-full">
-                      <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
+                    <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
                     <span className="text-[14px] sm:text-[16px] font-medium leading-[130%] text-white" style={{ fontFamily: 'Gilroy, sans-serif' }}>
                       {feature}
-                      </span>
+                    </span>
                   </div>
                 ))}
               </div>
@@ -497,7 +504,7 @@ function SuccessPageContent() {
           </div>
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );

@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import CollaborationForm from '@/components/sections/CollaborationForm';
 import Footer from '@/components/Footer';
+import Link from 'next/link';
 
 type Analyst = {
   id: number;
@@ -183,6 +184,9 @@ export default function AboutPage() {
     
     return () => clearTimeout(timer);
   }, []);
+
+  console.log("analysts", analysts)
+
   return (
     <div className="bg-[#0A0A0A] min-h-screen text-white relative overflow-hidden">
       {/* Top Right Gradient Ellipse */}
@@ -579,7 +583,7 @@ export default function AboutPage() {
           </div>
 
           {/* Group 12 - Content Below Belt */}
-          <div className="hidden lg:flex w-full flex-col items-center mt-16 mb-16">
+          <div className="hidden lg:flex w-full flex-col items-center mt-60 mb-16">
             <p
               className="text-center text-white"
               style={{
@@ -600,7 +604,7 @@ export default function AboutPage() {
           </div>
 
           {/* Frame 86 - Meet the Founder Section */}
-          <div className="w-full flex flex-col items-center justify-center mt-32" style={{
+          <div className="w-full flex flex-col items-center justify-center mt-60" style={{
             width: '846px',
             maxWidth: '100%',
             gap: '40px',
@@ -694,8 +698,8 @@ export default function AboutPage() {
                 </div>
 
                 {/* Frame 23 - Book Mentorship Button */}
-                <a
-                  href="/meetings"
+                <Link
+                  href={`/meetings?step=2&selectedAnalyst=${analysts.length > 0 ? analysts[0].id : 0}`}
                   className="flex flex-row justify-center items-center w-full md:w-auto md:max-w-[187px] mt-4 md:mt-0"
                   style={{
                     width: '100%',
@@ -728,13 +732,13 @@ export default function AboutPage() {
                   >
                     Book Mentorship
                   </span>
-                </a>
+                </Link>
               </div>
             </div>
           </div>
 
           {/* Frame 1000012164 - The Team Behind Inspired Analyst */}
-          <div className="w-full flex flex-col items-center mt-16 lg:mt-32">
+          <div className="w-full flex flex-col items-center mt-16 lg:mt-60">
             <div
               className="flex flex-col items-start gap-6"
               style={{

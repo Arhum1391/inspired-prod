@@ -52,7 +52,7 @@ export interface PublicUser {
 export async function createAdminUser(username: string, password: string): Promise<User> {
   const db = await getDatabase();
   const hashedPassword = await hashPassword(password);
-  
+
   const user: Omit<User, '_id'> = {
     username,
     password: hashedPassword,
@@ -102,11 +102,11 @@ export async function getUserById(id: string): Promise<User | null> {
 export async function createPublicUser(email: string, password: string, name?: string, emailVerificationToken?: string): Promise<PublicUser> {
   const db = await getDatabase();
   const hashedPassword = await hashPassword(password);
-  
-  const emailVerificationTokenExpiry = emailVerificationToken 
+
+  const emailVerificationTokenExpiry = emailVerificationToken
     ? new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours from now
     : null;
-  
+
   const user: Omit<PublicUser, '_id'> = {
     email,
     password: hashedPassword,
@@ -169,6 +169,57 @@ export async function getPublicUserById(id: string): Promise<PublicUser | null> 
   } : null;
 }
 
+// export async function updatePublicUser(
+//   id: string,
+//   updates: {
+//     name?: string | null;
+//     email?: string;
+//     isPaid?: boolean;
+//     subscriptionStatus?: string;
+//     lastPaymentAt?: Date | null;
+//     emailVerified?: boolean;
+//     emailVerificationToken?: string | null;
+//     emailVerificationTokenExpiry?: Date | null;
+//     passwordResetToken?: string | null;
+//     passwordResetTokenExpiry?: Date | null;
+//     password?: string;
+//   }
+// ): Promise<PublicUser | null> {
+//   const db = await getDatabase();
+//   const updateData: any = {
+//     ...updates,
+//     updatedAt: new Date()
+//   };
+
+//   const result = await db.collection('public_users').findOneAndUpdate(
+//     { _id: new ObjectId(id) },
+//     { $set: updateData },
+//     { returnDocument: 'after' }
+//   );
+
+//   if (!result) {
+//     return null;
+//   }
+
+//   return {
+//     _id: result._id.toString(),
+//     email: result.email,
+//     password: result.password,
+//     name: result.name || null,
+//     isPaid: result.isPaid ?? false,
+//     subscriptionStatus: result.subscriptionStatus ?? (result.isPaid ? 'active' : 'none'),
+//     lastPaymentAt: result.lastPaymentAt ?? null,
+//     emailVerified: result.emailVerified ?? false,
+//     emailVerificationToken: result.emailVerificationToken ?? null,
+//     emailVerificationTokenExpiry: result.emailVerificationTokenExpiry ?? null,
+//     passwordResetToken: result.passwordResetToken ?? null,
+//     passwordResetTokenExpiry: result.passwordResetTokenExpiry ?? null,
+//     createdAt: result.createdAt,
+//     updatedAt: result.updatedAt
+//   };
+// }
+
+
 export async function updatePublicUser(
   id: string,
   updates: {
@@ -186,6 +237,7 @@ export async function updatePublicUser(
   }
 ): Promise<PublicUser | null> {
   const db = await getDatabase();
+
   const updateData: any = {
     ...updates,
     updatedAt: new Date()
@@ -196,6 +248,7 @@ export async function updatePublicUser(
     { $set: updateData },
     { returnDocument: 'after' }
   );
+
 
   const updatedUser = result?.value;
 
@@ -218,8 +271,10 @@ export async function updatePublicUser(
     passwordResetTokenExpiry: updatedUser.passwordResetTokenExpiry ?? null,
     createdAt: updatedUser.createdAt,
     updatedAt: updatedUser.updatedAt
+
   };
 }
+
 
 // Generate a secure random token
 export function generateSecureToken(): string {
@@ -229,13 +284,13 @@ export function generateSecureToken(): string {
 // Get user by email verification token
 export async function getPublicUserByVerificationToken(token: string): Promise<PublicUser | null> {
   const db = await getDatabase();
-  const user = await db.collection('public_users').findOne({ 
+  const user = await db.collection('public_users').findOne({
     emailVerificationToken: token,
     emailVerificationTokenExpiry: { $gt: new Date() }
   });
-  
+
   if (!user) return null;
-  
+
   return {
     _id: user._id.toString(),
     email: user.email,
@@ -257,13 +312,13 @@ export async function getPublicUserByVerificationToken(token: string): Promise<P
 // Get user by password reset token
 export async function getPublicUserByPasswordResetToken(token: string): Promise<PublicUser | null> {
   const db = await getDatabase();
-  const user = await db.collection('public_users').findOne({ 
+  const user = await db.collection('public_users').findOne({
     passwordResetToken: token,
     passwordResetTokenExpiry: { $gt: new Date() }
   });
-  
+
   if (!user) return null;
-  
+
   return {
     _id: user._id.toString(),
     email: user.email,

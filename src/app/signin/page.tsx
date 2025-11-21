@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import { useAuth } from '@/contexts/AuthContext';
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { Eye, EyeOff } from 'lucide-react';
 import CustomInput from '@/components/CustomInput';
 
 
@@ -411,16 +411,9 @@ export default function SignIn() {
                       style={{ color: 'rgba(255, 255, 255, 0.3)' }}
                     >
                       {!showPassword ? (
-                        // <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        //   <path d="M2 2L14 14M6.5 6.5C6.18 6.82 6 7.26 6 7.75C6 8.99 7.01 10 8.25 10C8.74 10 9.18 9.82 9.5 9.5M10.5 10.5C9.5 11.17 8.25 11.5 7 11.5C4 11.5 1.5 9 1.5 7C1.5 5.75 2.17 4.5 3.5 3.5M13 5.5C13.83 6.17 14.5 7 14.5 7C14.5 9 12 11.5 9 11.5" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
-                        // </svg>
-                        <FaRegEyeSlash />
+                        <EyeOff size={16} />
                       ) : (
-                        // <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        //   <path d="M1 8C1 8 3.5 3.5 8 3.5C12.5 3.5 15 8 15 8C15 8 12.5 12.5 8 12.5C3.5 12.5 1 8 1 8Z" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
-                        //   <circle cx="8" cy="8" r="2" stroke="white" strokeLinecap="round" strokeLinejoin="round" />
-                        // </svg>
-                        <FaRegEye />
+                        <Eye size={16} />
                       )}
                     </button>
                   </div>

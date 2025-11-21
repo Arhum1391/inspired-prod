@@ -26,6 +26,7 @@ type ReviewItem = {
 const DESKTOP_REVIEWS_PER_PAGE = 9;
 const MOBILE_REVIEWS_PER_PAGE = 6;
 const MIN_COMMENT_LENGTH = 10;
+const MAX_NAME_LENGTH = 25;
 
 const getTodayDate = () => new Date().toISOString().split('T')[0];
 
@@ -245,6 +246,11 @@ const ReviewsContent: React.FC = () => {
             return;
         }
 
+        if (reviewForm.reviewerName.trim().length > MAX_NAME_LENGTH) {
+            setReviewErrorMessage(`Name must not exceed ${MAX_NAME_LENGTH} characters.`);
+            return;
+        }
+
         try {
             setIsSubmittingReview(true);
             setReviewSuccessMessage('');
@@ -258,7 +264,7 @@ const ReviewsContent: React.FC = () => {
                     reviewerName: reviewForm.reviewerName.trim(),
                     rating: reviewForm.rating,
                     comment: reviewForm.comment.trim(),
-                    reviewDate: reviewForm.reviewDate || getTodayDate(),
+                    reviewDate: getTodayDate(),
                 }),
             });
 
@@ -1206,21 +1212,30 @@ const ReviewsContent: React.FC = () => {
                                 <input
                                     type="text"
                                     value={reviewForm.reviewerName}
-                                    onChange={(e) => handleReviewInputChange('reviewerName', e.target.value)}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        if (value.length <= MAX_NAME_LENGTH) {
+                                            handleReviewInputChange('reviewerName', value);
+                                        }
+                                    }}
+                                    maxLength={MAX_NAME_LENGTH}
                                     className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-0 focus-visible:outline-none focus:border-[#2A2A2A] focus:shadow-none focus-visible:shadow-none"
                                     style={{ boxShadow: 'none', outline: 'none', WebkitAppearance: 'none' }}
                                     placeholder="Enter your name"
                                     disabled={isSubmittingReview}
                                 />
+                                <p className="text-xs text-gray-500 mt-1">
+                                    {reviewForm.reviewerName.length}/{MAX_NAME_LENGTH} characters
+                                </p>
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm text-gray-300 mb-2">Review Date</label>
                                     <input
                                         type="date"
-                                        value={reviewForm.reviewDate}
-                                        onChange={(e) => handleReviewInputChange('reviewDate', e.target.value)}
-                                        className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-0 focus-visible:outline-none focus:border-[#2A2A2A] focus:shadow-none focus-visible:shadow-none"
+                                        value={getTodayDate()}
+                                        readOnly
+                                        className="w-full bg-[#0A0A0A] border border-[#2A2A2A] rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-0 focus-visible:outline-none focus:border-[#2A2A2A] focus:shadow-none focus-visible:shadow-none cursor-not-allowed opacity-70"
                                         style={{ boxShadow: 'none', outline: 'none', WebkitAppearance: 'none', appearance: 'none' }}
                                         disabled={isSubmittingReview}
                                     />

@@ -55,12 +55,6 @@ export default function ResearchPage() {
   const [reportsLoading, setReportsLoading] = useState(true);
 
   useEffect(() => {
-    if (!isLoading && !isSignedIn) {
-      router.replace('/signin?next=/research');
-    }
-  }, [isLoading, isSignedIn, router]);
-
-  useEffect(() => {
     const fetchReports = async () => {
       try {
         const response = await fetch('/api/research');
@@ -84,10 +78,6 @@ export default function ResearchPage() {
         <div>Loading...</div>
       </div>
     );
-  }
-
-  if (!isSignedIn) {
-    return null;
   }
 
   const previewCards = researchCards.slice(0, 3);

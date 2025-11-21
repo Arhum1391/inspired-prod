@@ -1834,7 +1834,10 @@ export default function ShariahPage() {
                   margin: 0,
                 }}
               >
-                Detailed screening is available with Premium. Subscribe to unlock full compliance analysis.
+                {isAuthenticated 
+                  ? 'Explore verified projects, screening criteria, and detailed compliance rationales.'
+                  : 'Detailed screening is available with Premium. Subscribe to unlock full compliance analysis.'
+                }
               </p>
             </div>
             

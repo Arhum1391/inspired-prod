@@ -604,7 +604,7 @@ export default function AboutPage() {
           </div>
 
           {/* Frame 86 - Meet the Founder Section */}
-          <div className="w-full flex flex-col items-center justify-center mt-60" style={{
+          <div className="w-full flex flex-col items-center justify-center mt-24 md:mt-60" style={{
             width: '846px',
             maxWidth: '100%',
             gap: '40px',

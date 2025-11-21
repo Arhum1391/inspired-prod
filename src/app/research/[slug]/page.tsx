@@ -234,9 +234,9 @@ export default function ResearchDetailPage() {
             align-items: center !important;
             padding: 0 !important;
             gap: 16px !important;
-            width: 100% !important;
+            width: 415px !important;
             height: 24px !important;
-            overflow-x: auto !important;
+            overflow-y: auto !important;
             -webkit-overflow-scrolling: touch !important;
           }
           .research-detail-meta .dot {

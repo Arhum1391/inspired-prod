@@ -2241,9 +2241,6 @@ export default function CalculatorPage() {
 
           .calculator-page .calculator-inputs-tile {
 
-            min-height: 520px !important;
-
-            height: 520px !important;
 
             border-radius: 10px !important;
 
@@ -2252,8 +2249,6 @@ export default function CalculatorPage() {
           .calculator-page .calculator-inputs-tile.is-crypto {
 
             min-height: 380px !important;
-
-            height: 380px !important;
 
           }
 
@@ -2423,7 +2418,6 @@ export default function CalculatorPage() {
 
             gap: 24px !important;
 
-            height: 480px !important;
 
           }
 
@@ -3042,8 +3036,6 @@ export default function CalculatorPage() {
           }
 
           .calculator-page .calculator-saved-mobile-title-block h3 {
-
-            font-family: 'Gilroy-SemiBold' !important;
 
             font-style: normal !important;
 
@@ -4966,8 +4958,6 @@ export default function CalculatorPage() {
 
                   width: '846px',
 
-                  minHeight: '326px',
-
                   borderRadius: '16px',
 
                   background: '#1F1F1F',
@@ -5495,6 +5485,8 @@ export default function CalculatorPage() {
                         gap: '24px',
 
                         width: '798px',
+
+
 
                         flex: 'none',
 
@@ -8444,7 +8436,9 @@ export default function CalculatorPage() {
 
                         <div className="calculator-saved-mobile-title-block">
 
-                          <h3>Saved Scenarios</h3>
+                          <h3 style={{
+                            fontFamily: 'Gilroy-semibold'
+                          }}>Saved Scenarios</h3>
 
                         </div>
 

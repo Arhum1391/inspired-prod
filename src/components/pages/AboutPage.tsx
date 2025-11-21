@@ -892,12 +892,12 @@ export default function AboutPage() {
                         >
                           {/* Rectangle 440 - Image */}
                           <div
-                            className="relative w-full overflow-hidden rounded-2xl"
+                            className="relative overflow-hidden rounded-full mx-auto"
                             style={{
-                              width: '301px',
-                              height: '200px',
+                              width: '160px',
+                              height: '160px',
                               background: '#1F1F1F',
-                              borderRadius: '16px',
+                              borderRadius: '50%',
                               userSelect: 'none',
                               WebkitUserSelect: 'none',
                               MozUserSelect: 'none',
@@ -910,7 +910,7 @@ export default function AboutPage() {
                                 src={analyst.image}
                                 alt={analyst.name}
                                 fill
-                                className="object-cover"
+                                className="object-cover rounded-full"
                                 draggable={false}
                                 onError={(e) => {
                                   e.currentTarget.style.display = 'none';
@@ -925,11 +925,12 @@ export default function AboutPage() {
                                   MozUserSelect: 'none',
                                   msUserSelect: 'none',
                                   pointerEvents: 'none',
+                                  borderRadius: '50%',
                                 }}
                               />
                             ) : null}
                             <div 
-                              className="w-full h-full bg-gray-600 rounded-2xl flex items-center justify-center text-gray-300 text-lg font-bold"
+                              className="w-full h-full bg-gray-600 rounded-full flex items-center justify-center text-gray-300 text-lg font-bold"
                               style={{display: analyst.image && analyst.image.trim() !== '' ? 'none' : 'flex'}}
                             >
                               {analyst.name.charAt(0)}

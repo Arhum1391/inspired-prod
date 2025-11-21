@@ -303,8 +303,25 @@ export default function BootcampRegisterPage() {
         email: email.trim().toLowerCase(),
         notes: notes.trim()
       };
+      
+      // Store bootcamp details for success page (before Stripe redirect)
+      const bootcampDetails = {
+        bootcamp: params.id,
+        name: fullName.trim(),
+        email: email.trim().toLowerCase(),
+        notes: notes.trim() || '',
+        paymentCompleted: true,
+        // Store full bootcamp details for success page
+        bootcampTitle: bootcamp?.title || '',
+        mentors: bootcamp?.mentors || [],
+        bootcampStartDate: bootcamp?.bootcampStartDate ? new Date(bootcamp.bootcampStartDate).toISOString() : null,
+        duration: bootcamp?.duration || '',
+        format: bootcamp?.format || 'Online'
+      };
+      
       if (typeof window !== 'undefined') {
         sessionStorage.setItem(formDataKey, JSON.stringify(formData));
+        sessionStorage.setItem('bootcampDetails', JSON.stringify(bootcampDetails));
       }
 
       // Create Stripe checkout session for bootcamp payment
@@ -386,7 +403,13 @@ export default function BootcampRegisterPage() {
         name: fullName.trim(),
         email: email.trim().toLowerCase(),
         notes: notes.trim() || '',
-        paymentCompleted: true
+        paymentCompleted: true,
+        // Store full bootcamp details for success page
+        bootcampTitle: bootcamp?.title || '',
+        mentors: bootcamp?.mentors || [],
+        bootcampStartDate: bootcamp?.bootcampStartDate ? new Date(bootcamp.bootcampStartDate).toISOString() : null,
+        duration: bootcamp?.duration || '',
+        format: bootcamp?.format || 'Online'
       };
       
       if (typeof window !== 'undefined') {

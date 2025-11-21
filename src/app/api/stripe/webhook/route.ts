@@ -385,6 +385,40 @@ async function processWebhookAsync(event: any) {
           } else {
             console.log('✅ Registration verified in database');
           }
+
+          // Send enrollment confirmation email to existing user
+          try {
+            const { sendBootcampEnrollmentEmail } = await import('@/lib/email');
+            console.log('📧 [WEBHOOK] Attempting to send bootcamp enrollment email...', {
+              customerEmail: metadata.customerEmail,
+              customerName: metadata.customerName || '',
+              bootcampTitle: bootcampTitle,
+              bootcampId: metadata.bootcampId
+            });
+            
+            await sendBootcampEnrollmentEmail(
+              metadata.customerEmail || '',
+              metadata.customerName || '',
+              bootcampTitle,
+              metadata.bootcampId,
+              bootcamp?.description
+            );
+            
+            console.log(`✅ [WEBHOOK] Enrollment email sent successfully to ${metadata.customerEmail}`, {
+              email: metadata.customerEmail,
+              bootcampTitle: bootcampTitle,
+              bootcampId: metadata.bootcampId
+            });
+          } catch (emailError: any) {
+            console.error('❌ [WEBHOOK] Failed to send enrollment email:', {
+              error: emailError?.message || emailError,
+              stack: emailError?.stack,
+              customerEmail: metadata.customerEmail,
+              bootcampTitle: bootcampTitle,
+              bootcampId: metadata.bootcampId
+            });
+            // Don't fail the webhook if email fails - registration is still saved
+          }
           
         } else if (type === 'booking') {
           // Check if this session already exists to prevent duplicates

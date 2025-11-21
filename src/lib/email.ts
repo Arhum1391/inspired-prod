@@ -258,3 +258,86 @@ export async function sendBootcampSignupRequiredEmail(
   }
 }
 
+// Bootcamp enrollment email - for existing users
+export async function sendBootcampEnrollmentEmail(
+  email: string,
+  customerName: string,
+  bootcampTitle: string,
+  bootcampId: string,
+  bootcampDescription?: string
+): Promise<void> {
+  console.log('📧 [BOOTCAMP ENROLLMENT EMAIL] Preparing bootcamp enrollment email...', {
+    email,
+    customerName,
+    bootcampTitle,
+    bootcampId
+  });
+
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+  
+  const bootcampUrl = `${baseUrl}/bootcamp/${bootcampId}/progress`;
+
+  console.log('📧 [BOOTCAMP ENROLLMENT EMAIL] Email configuration:', {
+    baseUrl,
+    bootcampUrl
+  });
+
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Welcome to ${bootcampTitle}</title>
+      </head>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
+          <h1 style="color: white; margin: 0;">Welcome to ${bootcampTitle}!</h1>
+        </div>
+        <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
+          <p style="font-size: 16px; margin-bottom: 20px;">Hi ${customerName || 'there'},</p>
+          <p style="font-size: 16px; margin-bottom: 20px;">Congratulations! Your enrollment in <strong>${bootcampTitle}</strong> has been confirmed.</p>
+          <p style="margin-bottom: 30px;">You now have full access to all bootcamp content. Click the button below to start your learning journey:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${bootcampUrl}" style="display: inline-block; background: #3813F3; color: white; padding: 15px 30px; text-decoration: none; border-radius: 100px; font-weight: 600; font-size: 16px;">Access Bootcamp</a>
+          </div>
+          <p style="font-size: 14px; color: #666; margin-top: 30px;">Or copy and paste this link into your browser:</p>
+          <p style="font-size: 12px; color: #999; word-break: break-all;">${bootcampUrl}</p>
+          <p style="font-size: 14px; color: #666; margin-top: 30px;">As an enrolled student, you have access to:</p>
+          <ul style="font-size: 14px; color: #666; margin-top: 15px; padding-left: 20px;">
+            <li>All video lessons and tutorials</li>
+            <li>Course materials and resources</li>
+            <li>Progress tracking and analytics</li>
+            <li>Community access and support</li>
+          </ul>
+          <p style="font-size: 14px; color: #666; margin-top: 30px;">If you have any questions, feel free to reach out to our support team.</p>
+          <p style="font-size: 14px; color: #666; margin-top: 20px;">Happy learning!<br>The Inspired Analyst Team</p>
+        </div>
+      </body>
+    </html>
+  `;
+
+  console.log('📧 [BOOTCAMP ENROLLMENT EMAIL] Calling sendEmail function...');
+  
+  try {
+    await sendEmail({
+      to: email,
+      subject: `Welcome to ${bootcampTitle} - Inspired Analyst`,
+      html,
+    });
+    console.log('✅ [BOOTCAMP ENROLLMENT EMAIL] Bootcamp enrollment email sent successfully!', {
+      email,
+      bootcampTitle
+    });
+  } catch (error: any) {
+    console.error('❌ [BOOTCAMP ENROLLMENT EMAIL] Failed to send bootcamp enrollment email:', {
+      error: error.message,
+      email,
+      bootcampTitle,
+      bootcampId
+    });
+    throw error;
+  }
+}
+

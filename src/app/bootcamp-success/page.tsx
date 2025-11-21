@@ -4,11 +4,14 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
+import { Bootcamp } from '@/types/admin';
+import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 
 const BootcampSuccessContent: React.FC = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [showSuccess, setShowSuccess] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [bootcampDetails, setBootcampDetails] = useState<{
         bootcamp: string;
         name: string;
@@ -16,52 +19,161 @@ const BootcampSuccessContent: React.FC = () => {
         notes: string;
         productName?: string;
         amount?: number;
+        bootcampTitle?: string;
+        mentors?: string[];
+        bootcampStartDate?: string | null;
+        duration?: string;
+        format?: string;
     } | null>(null);
+    const [bootcamp, setBootcamp] = useState<Bootcamp | null>(null);
 
     useEffect(() => {
         // Animate the success checkmark
         const timer = setTimeout(() => setShowSuccess(true), 300);
         
-        // Try to get bootcamp details from sessionStorage first (only on client-side)
-        if (typeof window !== 'undefined') {
-            const storedDetails = sessionStorage.getItem('bootcampDetails');
-            if (storedDetails) {
-                try {
-                    const details = JSON.parse(storedDetails);
-                    setBootcampDetails(details);
-                    // Clear sessionStorage after reading
-                    sessionStorage.removeItem('bootcampDetails');
-                } catch (error) {
-                    console.error('Failed to parse bootcamp details:', error);
-                    // Fall back to URL parameters
+        const fetchData = async () => {
+            // Try to get bootcamp details from sessionStorage first (only on client-side)
+            if (typeof window !== 'undefined') {
+                const storedDetails = sessionStorage.getItem('bootcampDetails');
+                if (storedDetails) {
+                    try {
+                        const details = JSON.parse(storedDetails);
+                        setBootcampDetails(details);
+                        
+                        // If we have bootcamp details from storage, use them
+                        if (details.bootcampTitle && details.mentors) {
+                            // Clear sessionStorage after reading
+                            sessionStorage.removeItem('bootcampDetails');
+                            setLoading(false);
+                            return;
+                        }
+                        
+                        // If we don't have full details, fetch from API
+                        const bootcampId = details.bootcamp || searchParams.get('bootcamp');
+                        if (bootcampId) {
+                            await fetchBootcamp(bootcampId);
+                        }
+                        // Clear sessionStorage after reading
+                        sessionStorage.removeItem('bootcampDetails');
+                    } catch (error) {
+                        console.error('Failed to parse bootcamp details:', error);
+                        // Fall back to URL parameters and fetch bootcamp
+                        const bootcampId = searchParams.get('bootcamp') || '';
+                        if (bootcampId) {
+                            await fetchBootcamp(bootcampId);
+                        }
+                        setBootcampDetails({
+                            bootcamp: bootcampId,
+                            name: searchParams.get('name') || '',
+                            email: searchParams.get('email') || '',
+                            notes: searchParams.get('notes') || '',
+                        });
+                    }
+                } else {
+                    // Fall back to URL parameters if sessionStorage is empty
+                    const bootcampId = searchParams.get('bootcamp') || '';
                     setBootcampDetails({
-                        bootcamp: searchParams.get('bootcamp') || '',
+                        bootcamp: bootcampId,
                         name: searchParams.get('name') || '',
                         email: searchParams.get('email') || '',
                         notes: searchParams.get('notes') || '',
                     });
+                    // Fetch bootcamp details from API
+                    if (bootcampId) {
+                        await fetchBootcamp(bootcampId);
+                    } else {
+                        setLoading(false);
+                    }
                 }
             } else {
-                // Fall back to URL parameters if sessionStorage is empty
+                // Server-side: only use URL parameters
+                const bootcampId = searchParams.get('bootcamp') || '';
                 setBootcampDetails({
-                    bootcamp: searchParams.get('bootcamp') || '',
+                    bootcamp: bootcampId,
                     name: searchParams.get('name') || '',
                     email: searchParams.get('email') || '',
                     notes: searchParams.get('notes') || '',
                 });
+                setLoading(false);
             }
-        } else {
-            // Server-side: only use URL parameters
-            setBootcampDetails({
-                bootcamp: searchParams.get('bootcamp') || '',
-                name: searchParams.get('name') || '',
-                email: searchParams.get('email') || '',
-                notes: searchParams.get('notes') || '',
-            });
-        }
+        };
+
+        fetchData();
         
         return () => clearTimeout(timer);
     }, [searchParams]);
+
+    const fetchBootcamp = async (id: string) => {
+        try {
+            const response = await fetch(`/api/bootcamp/${id}`);
+            if (response.ok) {
+                const data = await response.json();
+                setBootcamp(data);
+            } else if (response.status === 404) {
+                // Try to find in fallback data
+                const fallbackBootcamp = getFallbackBootcamps().find(b => b.id === id);
+                if (fallbackBootcamp) {
+                    setBootcamp(fallbackBootcamp);
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch bootcamp:', error);
+            // Try to find in fallback data
+            const fallbackBootcamp = getFallbackBootcamps().find(b => b.id === id);
+            if (fallbackBootcamp) {
+                setBootcamp(fallbackBootcamp);
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Format date helper (date only, no time)
+    const formatDate = (dateString: string | null | undefined): string => {
+        if (!dateString) return 'TBD';
+        
+        try {
+            const date = new Date(dateString);
+            const options: Intl.DateTimeFormatOptions = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            return date.toLocaleDateString('en-US', options);
+        } catch (error) {
+            console.error('Failed to format date:', error);
+            return 'TBD';
+        }
+    };
+
+    // Extract mentor names only (before " - ")
+    const extractMentorNames = (mentors: string[]): string[] => {
+        return mentors.map(mentor => mentor.split(' - ')[0].trim());
+    };
+
+    // Get bootcamp display data
+    const bootcampTitle = bootcampDetails?.bootcampTitle || bootcamp?.title || bootcampDetails?.bootcamp || 'Unknown Bootcamp';
+    const mentorsRaw = bootcampDetails?.mentors || bootcamp?.mentors || [];
+    const mentors = extractMentorNames(mentorsRaw);
+    const bootcampStartDate = bootcampDetails?.bootcampStartDate || (bootcamp?.bootcampStartDate ? new Date(bootcamp.bootcampStartDate).toISOString() : null);
+    const duration = bootcampDetails?.duration || bootcamp?.duration || '';
+    const format = bootcampDetails?.format || bootcamp?.format || 'Online';
+    const startDate = formatDate(bootcampStartDate || undefined);
+
+    if (loading) {
+        return (
+            <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative">
+                <Navbar variant="hero" />
+                <div className="flex items-center justify-center min-h-[80vh]">
+                    <div className="text-center">
+                        <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                        <p>Loading bootcamp details...</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative">
@@ -158,46 +270,50 @@ const BootcampSuccessContent: React.FC = () => {
                                             lineHeight: '100%'
                                         }}
                                     >
-                                        {bootcampDetails?.bootcamp === 'crypto-trading' ? 'Crypto Trading Bootcamp' : (bootcampDetails?.productName || bootcampDetails?.bootcamp || 'Unknown Bootcamp')}
+                                        {bootcampTitle}
                                     </p>
                                 </div>
                             </div>
-                            <div className="flex flex-row items-start gap-2" style={{ height: '24px' }}>
-                                <span 
-                                    className="inline-flex items-center justify-center rounded-full bg-[#05B0B3]/12 text-[#05B0B3]"
-                                    style={{
-                                        padding: '10px',
-                                        height: '24px',
-                                        border: '1px solid #05B0B3',
-                                        borderRadius: '40px',
-                                        fontFamily: 'Gilroy-Medium',
-                                        fontWeight: 400,
-                                        fontSize: '12px',
-                                        lineHeight: '100%'
-                                    }}
-                                >
-                                    6 Weeks
-                                </span>
-                                <span 
-                                    className="inline-flex items-center justify-center rounded-full bg-[#DE50EC]/12 text-[#DE50EC]"
-                                    style={{
-                                        padding: '10px',
-                                        height: '24px',
-                                        border: '1px solid #DE50EC',
-                                        borderRadius: '40px',
-                                        fontFamily: 'Gilroy-Medium',
-                                        fontWeight: 400,
-                                        fontSize: '12px',
-                                        lineHeight: '100%'
-                                    }}
-                                >
-                                    Online
-                                </span>
+                            <div className="flex flex-row items-start gap-2 flex-wrap" style={{ minHeight: '24px' }}>
+                                {duration && (
+                                    <span 
+                                        className="inline-flex items-center justify-center rounded-full bg-[#05B0B3]/12 text-[#05B0B3]"
+                                        style={{
+                                            padding: '10px',
+                                            height: '24px',
+                                            border: '1px solid #05B0B3',
+                                            borderRadius: '40px',
+                                            fontFamily: 'Gilroy-Medium',
+                                            fontWeight: 400,
+                                            fontSize: '12px',
+                                            lineHeight: '100%'
+                                        }}
+                                    >
+                                        {duration}
+                                    </span>
+                                )}
+                                {format && (
+                                    <span 
+                                        className="inline-flex items-center justify-center rounded-full bg-[#DE50EC]/12 text-[#DE50EC]"
+                                        style={{
+                                            padding: '10px',
+                                            height: '24px',
+                                            border: '1px solid #DE50EC',
+                                            borderRadius: '40px',
+                                            fontFamily: 'Gilroy-Medium',
+                                            fontWeight: 400,
+                                            fontSize: '12px',
+                                            lineHeight: '100%'
+                                        }}
+                                    >
+                                        {format}
+                                    </span>
+                                )}
                             </div>
                         </div>
 
                         {/* Your Mentors */}
-                        {bootcampDetails?.bootcamp === 'crypto-trading' && (
+                        {mentors.length > 0 && (
                             <div className="flex flex-col gap-3">
                                 <p 
                                     className="text-[#909090]"
@@ -219,25 +335,25 @@ const BootcampSuccessContent: React.FC = () => {
                                         lineHeight: '100%'
                                     }}
                                 >
-                                    Adnan, Assassin
+                                    {mentors.join(', ')}
                                 </p>
                             </div>
                         )}
 
                         {/* Starting From */}
-                        <div className="flex flex-col gap-3">
-                            <p 
-                                className="text-[#909090]"
-                                style={{
-                                    fontFamily: 'Gilroy-Medium',
-                                    fontWeight: 400,
-                                    fontSize: '14px',
-                                    lineHeight: '100%'
-                                }}
-                            >
-                                Starting From
-                            </p>
-                            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                        {(bootcampStartDate || startDate !== 'TBD') && (
+                            <div className="flex flex-col gap-3">
+                                <p 
+                                    className="text-[#909090]"
+                                    style={{
+                                        fontFamily: 'Gilroy-Medium',
+                                        fontWeight: 400,
+                                        fontSize: '14px',
+                                        lineHeight: '100%'
+                                    }}
+                                >
+                                    Starting From
+                                </p>
                                 <p 
                                     className="text-white"
                                     style={{
@@ -247,21 +363,10 @@ const BootcampSuccessContent: React.FC = () => {
                                         lineHeight: '100%'
                                     }}
                                 >
-                                    Wednesday, September 18
-                                </p>
-                                <p 
-                                    className="text-white"
-                                    style={{
-                                        fontFamily: 'Gilroy-Medium',
-                                        fontWeight: 400,
-                                        fontSize: '12px',
-                                        lineHeight: '100%'
-                                    }}
-                                >
-                                    11:30 AM (Berlin, Germany)
+                                    {startDate}
                                 </p>
                             </div>
-                        </div>
+                        )}
 
                         {/* User Details */}
                         {(bootcampDetails?.name || bootcampDetails?.email) && (

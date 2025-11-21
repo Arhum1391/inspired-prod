@@ -124,6 +124,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get bootcamp details for email
+    const bootcamp = await db.collection('bootcamps').findOne({
+      id: bootcampId,
+      isActive: true
+    });
+
+    const bootcampTitle = bootcamp?.title || bootcampId;
+
+    // Send enrollment confirmation email
+    try {
+      const { sendBootcampEnrollmentEmail } = await import('@/lib/email');
+      console.log('📧 [VERIFY-PAYMENT] Attempting to send bootcamp enrollment email...', {
+        customerEmail: user.email,
+        customerName: metadata.customerName || user.name || '',
+        bootcampTitle: bootcampTitle,
+        bootcampId: bootcampId
+      });
+      
+      await sendBootcampEnrollmentEmail(
+        user.email,
+        metadata.customerName || user.name || '',
+        bootcampTitle,
+        bootcampId,
+        bootcamp?.description
+      );
+      
+      console.log(`✅ [VERIFY-PAYMENT] Enrollment email sent successfully to ${user.email}`, {
+        email: user.email,
+        bootcampTitle: bootcampTitle,
+        bootcampId: bootcampId
+      });
+    } catch (emailError: any) {
+      console.error('❌ [VERIFY-PAYMENT] Failed to send enrollment email:', {
+        error: emailError?.message || emailError,
+        stack: emailError?.stack,
+        customerEmail: user.email,
+        bootcampTitle: bootcampTitle,
+        bootcampId: bootcampId
+      });
+      // Don't fail the request if email fails - registration is still saved
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Enrollment created successfully',

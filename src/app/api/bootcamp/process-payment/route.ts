@@ -178,7 +178,39 @@ export async function POST(request: NextRequest) {
         // Don't fail the request if email fails - registration is still saved
       }
     } else if (userId) {
-      console.log(`ℹ️ [PROCESS-PAYMENT] User exists, no signup email needed`);
+      console.log(`ℹ️ [PROCESS-PAYMENT] User exists, sending enrollment email...`, {
+        customerEmail,
+        bootcampTitle,
+        bootcampId
+      });
+
+      // Send enrollment confirmation email to existing user
+      try {
+        const { sendBootcampEnrollmentEmail } = await import('@/lib/email');
+        
+        await sendBootcampEnrollmentEmail(
+          customerEmail,
+          metadata.customerName || '',
+          bootcampTitle,
+          bootcampId,
+          bootcamp?.description
+        );
+        
+        console.log(`✅ [PROCESS-PAYMENT] Enrollment email sent successfully to ${customerEmail}`, {
+          email: customerEmail,
+          bootcampTitle,
+          bootcampId
+        });
+      } catch (emailError: any) {
+        console.error('❌ [PROCESS-PAYMENT] Failed to send enrollment email:', {
+          error: emailError?.message || emailError,
+          stack: emailError?.stack,
+          customerEmail,
+          bootcampTitle,
+          bootcampId
+        });
+        // Don't fail the request if email fails - registration is still saved
+      }
     }
 
     return NextResponse.json({

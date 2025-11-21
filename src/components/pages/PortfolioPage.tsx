@@ -157,12 +157,6 @@ export default function PortfolioPage() {
     };
   }, [isAuthenticated]);
 
-  useEffect(() => {
-    if (!isLoading && !isSignedIn) {
-      router.replace('/signin?next=/portfolio');
-    }
-  }, [isLoading, isSignedIn, router]);
-
   const toggleTile = (index: number) => {
     setExpandedTiles(prev => ({
       ...prev,
@@ -572,10 +566,6 @@ export default function PortfolioPage() {
         <div>Loading...</div>
       </div>
     );
-  }
-
-  if (!isSignedIn) {
-    return null;
   }
 
   const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {

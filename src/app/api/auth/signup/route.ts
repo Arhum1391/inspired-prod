@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPublicUser, getPublicUserByEmail, generateSecureToken } from '@/lib/auth';
 import { sendVerificationEmail } from '@/lib/email';
+import { getDatabase } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export async function POST(request: NextRequest) {
   try {
@@ -44,6 +46,44 @@ export async function POST(request: NextRequest) {
 
     // Create user with verification token
     const user = await createPublicUser(email, password, name, verificationToken);
+
+    // Link any pending bootcamp registrations for this email
+    try {
+      const db = await getDatabase();
+      const userObjectId = new ObjectId(user._id!);
+      const emailLower = email.toLowerCase().trim();
+      
+      // Find bootcamp registrations with this email but no userId
+      const pendingRegistrations = await db.collection('bootcamp_registrations').find({
+        customerEmail: { $regex: new RegExp(`^${emailLower}$`, 'i') },
+        userId: null,
+        paymentStatus: 'paid',
+        status: 'confirmed'
+      }).toArray();
+
+      if (pendingRegistrations.length > 0) {
+        // Link all pending registrations to this user
+        const result = await db.collection('bootcamp_registrations').updateMany(
+          {
+            customerEmail: { $regex: new RegExp(`^${emailLower}$`, 'i') },
+            userId: null,
+            paymentStatus: 'paid',
+            status: 'confirmed'
+          },
+          {
+            $set: {
+              userId: userObjectId,
+              requiresSignup: false,
+              updatedAt: new Date()
+            }
+          }
+        );
+        console.log(`✅ Linked ${result.modifiedCount} pending bootcamp registration(s) to new user account`);
+      }
+    } catch (linkError) {
+      console.error('Failed to link pending bootcamp registrations:', linkError);
+      // Don't fail signup if linking fails
+    }
 
     // Send verification email
     try {

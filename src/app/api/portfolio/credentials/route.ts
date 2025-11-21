@@ -106,7 +106,25 @@ export async function POST(request: NextRequest) {
     return respond({ success: true });
   } catch (err) {
     console.error('Failed to store Binance credentials', err);
-    return respond({ error: 'Failed to store Binance credentials' }, 500);
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+    const errorStack = err instanceof Error ? err.stack : undefined;
+    
+    // Log detailed error for debugging
+    console.error('Error details:', {
+      message: errorMessage,
+      stack: errorStack,
+      name: err instanceof Error ? err.name : typeof err,
+    });
+    
+    // Return a more informative error message in development, generic in production
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    return respond(
+      { 
+        error: 'Failed to store Binance credentials',
+        ...(isDevelopment && { details: errorMessage })
+      },
+      500
+    );
   }
 }
 

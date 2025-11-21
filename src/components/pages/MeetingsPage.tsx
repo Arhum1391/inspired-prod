@@ -1016,7 +1016,7 @@ const MeetingsPage = () => {
     // Fetch Calendly event types when an analyst with Calendly integration is selected
     useEffect(() => {
         const handleAnalystSelection = async () => {
-            if (selectedAnalyst !== null) {
+            if (selectedAnalyst !== null && currentStep !==2) {
                 // Check if we're returning from payment (with safety checks)
                 if (typeof window === 'undefined') return;
                 
@@ -1324,6 +1324,7 @@ const MeetingsPage = () => {
         if (stepParam) {
             const step = parseInt(stepParam);
             if (step >= 1 && step <= 3) {
+                console.log("setting current step", step)
                 setCurrentStep(step);
             }
         }
@@ -2040,6 +2041,9 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
         return '60 USD';
     };
 
+    console.log("selectedAnalyst", selectedAnalyst)
+    console.log("current step", currentStep)
+
     return (
         <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative overflow-hidden" style={{ fontFamily: 'Gilroy-Medium, sans-serif' }}>
             {/* Lower Corner Gradients - Hidden on step 2 (booking section) */}
@@ -2659,7 +2663,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                             onFocus={(e) => e.target.blur()}
                         >
                         <ChevronLeft size={20} className="mr-1" />
-                        Back
+                        Back...
                     </button>
                     </div>
 

@@ -121,226 +121,324 @@ export default function ResearchPage() {
     chunkedCards.push(filteredCards.slice(i, i + 3));
   }
 
+  // const renderResearchCard = (card: ResearchReport, key: string) => (
+  //   <div
+  //     key={key}
+  //     className="relative overflow-hidden research-card"
+  //     style={{
+  //       boxSizing: 'border-box',
+  //       display: 'flex',
+  //       flexDirection: 'column',
+  //       alignItems: 'flex-start',
+  //       padding: '24px',
+  //       gap: '24px',
+  //       isolation: 'isolate',
+  //       width: '414px',
+  //       height: '281px',
+  //       background: '#1F1F1F',
+  //       borderRadius: '16px',
+  //     }}
+  //   >
+  //     <div
+  //       className="absolute pointer-events-none"
+  //       style={{
+  //         width: '588px',
+  //         height: '588px',
+  //         left: '399px',
+  //         top: '-326px',
+  //         background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+  //         filter: 'blur(100px)',
+  //         transform: 'rotate(90deg)',
+  //         zIndex: 0,
+  //         borderRadius: '50%',
+  //       }}
+  //     ></div>
+
+  //     <div
+  //       style={{
+  //         display: 'flex',
+  //         flexDirection: 'column',
+  //         alignItems: 'flex-start',
+  //         justifyContent: 'space-between',
+  //         gap: '16px',
+  //         width: '366px',
+  //         height: '173px',
+  //         zIndex: 1,
+  //       }}
+  //       className="card-inner"
+  //     >
+  //       <div
+  //         style={{
+  //           display: 'flex',
+  //           flexDirection: 'row',
+  //           alignItems: 'flex-start',
+  //           gap: '8px',
+  //         }}
+  //       >
+  //         <div
+  //           style={{
+  //             boxSizing: 'border-box',
+  //             display: 'flex',
+  //             flexDirection: 'row',
+  //             justifyContent: 'center',
+  //             alignItems: 'center',
+  //             padding: '10px',
+  //             gap: '10px',
+  //             background: 'rgba(5, 176, 179, 0.12)',
+  //             border: '1px solid #05B0B3',
+  //             borderRadius: '40px',
+  //           }}
+  //         >
+  //           <span
+  //             style={{
+  //               fontFamily: 'Gilroy-Medium',
+  //               fontStyle: 'normal',
+  //               fontWeight: 400,
+  //               fontSize: '12px',
+  //               lineHeight: '100%',
+  //               color: '#05B0B3',
+  //               whiteSpace: 'nowrap',
+  //             }}
+  //           >
+  //             {card.category}
+  //           </span>
+  //         </div>
+  //       </div>
+
+  //       <h3
+  //         style={{
+  //           fontFamily: 'Gilroy-SemiBold',
+  //           fontStyle: 'normal',
+  //           fontWeight: 400,
+  //           fontSize: '24px',
+  //           lineHeight: '100%',
+  //           color: '#FFFFFF',
+  //           margin: 0,
+  //         }}
+  //         className="card-title"
+  //       >
+  //         {card.title}
+  //       </h3>
+
+  //       <p
+  //         style={{
+  //           fontFamily: 'Gilroy-Regular',
+  //           fontStyle: 'normal',
+  //           fontWeight: 400,
+  //           fontSize: '16px',
+  //           lineHeight: '130%',
+  //           color: '#FFFFFF',
+  //           margin: 0,
+  //         }}
+  //         className="card-desc"
+  //       >
+  //         {card.description}
+  //       </p>
+
+  //       <div className='h-full flex flex-col justify-between'>
+  //         <div
+  //           style={{
+  //             display: 'flex',
+  //             flexDirection: 'row',
+  //             justifyContent: 'space-between',
+  //             alignItems: 'flex-start',
+  //             gap: '16px',
+  //             width: '366px',
+  //           }}
+  //           className="card-meta"
+  //         >
+  //           <span
+  //             style={{
+  //               fontFamily: 'Gilroy-Regular',
+  //               fontStyle: 'normal',
+  //               fontWeight: 400,
+  //               fontSize: '14px',
+  //               lineHeight: '100%',
+  //               color: '#FFFFFF',
+  //             }}
+  //           >
+  //             {formatResearchDate(card.date)}
+  //           </span>
+  //           <span
+  //             style={{
+  //               fontFamily: 'Gilroy-Regular',
+  //               fontStyle: 'normal',
+  //               fontWeight: 400,
+  //               fontSize: '14px',
+  //               lineHeight: '100%',
+  //               color: '#FFFFFF',
+  //             }}
+  //           >
+  //             {formatReadTime(card.readTime)}
+  //           </span>
+  //         </div>
+
+  //         <div
+  //           style={{
+  //             display: 'flex',
+  //             flexDirection: 'row',
+  //             alignItems: 'flex-start',
+  //             gap: '16px',
+  //             width: '366px',
+  //           }}
+  //           className="card-cta"
+  //         >
+  //           <button
+  //             type="button"
+  //             style={{
+  //               boxSizing: 'border-box',
+  //               display: 'flex',
+  //               flexDirection: 'row',
+  //               justifyContent: 'center',
+  //               alignItems: 'center',
+  //               padding: '10px 16px',
+  //               gap: '8px',
+  //               width: '366px',
+  //               height: '36px',
+  //               border: '1px solid #FFFFFF',
+  //               borderRadius: '100px',
+  //               background: 'transparent',
+  //               color: '#FFFFFF',
+  //               cursor: 'pointer',
+  //               fontFamily: 'Gilroy-SemiBold',
+  //               fontStyle: 'normal',
+  //               fontWeight: 400,
+  //               fontSize: '14px',
+  //               lineHeight: '100%',
+  //             }}
+  //             onMouseDown={event => {
+  //               event.preventDefault();
+  //               event.currentTarget.style.border = '1px solid #FFFFFF';
+  //             }}
+  //             onFocus={event => {
+  //               event.currentTarget.style.outline = 'none';
+  //               event.currentTarget.style.border = '1px solid #FFFFFF';
+  //             }}
+  //             onBlur={event => {
+  //               event.currentTarget.style.border = '1px solid #FFFFFF';
+  //             }}
+  //             onClick={() => router.push(`/research/${card.slug}`)}
+  //           >
+  //             Read More
+  //             <svg
+  //               width="16"
+  //               height="16"
+  //               viewBox="0 0 24 24"
+  //               fill="none"
+  //               xmlns="http://www.w3.org/2000/svg"
+  //             >
+  //               <path
+  //                 d="M7 17L17 7"
+  //                 stroke="white"
+  //                 strokeWidth="1.5"
+  //                 strokeLinecap="round"
+  //                 strokeLinejoin="round"
+  //               />
+  //               <path
+  //                 d="M10 7H17V14"
+  //                 stroke="white"
+  //                 strokeWidth="1.5"
+  //                 strokeLinecap="round"
+  //                 strokeLinejoin="round"
+  //               />
+  //             </svg>
+  //           </button>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   </div>
+  // );
+
+
   const renderResearchCard = (card: ResearchReport, key: string) => (
     <div
       key={key}
-      className="relative overflow-hidden research-card"
-      style={{
-        boxSizing: 'border-box',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-        padding: '24px',
-        gap: '24px',
-        isolation: 'isolate',
-        width: '414px',
-        height: '281px',
-        background: '#1F1F1F',
-        borderRadius: '16px',
-      }}
+      className="
+      relative overflow-hidden research-card
+      flex flex-col items-start
+      w-[414px] h-[315px] p-6 gap-6
+      bg-[#1F1F1F] rounded-2xl isolate
+    "
     >
+      {/* Glow background */}
       <div
-        className="absolute pointer-events-none"
-        style={{
-          width: '588px',
-          height: '588px',
-          left: '399px',
-          top: '-326px',
-          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-          filter: 'blur(100px)',
-          transform: 'rotate(90deg)',
-          zIndex: 0,
-          borderRadius: '50%',
-        }}
+        className="
+        absolute pointer-events-none
+        w-[588px] h-[588px]
+        left-[399px] top-[-326px]
+        research-gradient
+        blur-[100px] rotate-90 rounded-full z-0
+      "
       ></div>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          gap: '16px',
-          width: '366px',
-          height: '173px',
-          zIndex: 1,
-        }}
-        className="card-inner"
-      >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            gap: '8px',
-          }}
-        >
-          <div
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '10px',
-              gap: '10px',
-              background: 'rgba(5, 176, 179, 0.12)',
-              border: '1px solid #05B0B3',
-              borderRadius: '40px',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: 'Gilroy-Medium',
-                fontStyle: 'normal',
-                fontWeight: 400,
-                fontSize: '12px',
-                lineHeight: '100%',
-                color: '#05B0B3',
-                whiteSpace: 'nowrap',
-              }}
-            >
+      <div className="flex flex-col justify-between gap-4 w-[366px] h-full z-[1]">
+
+        {/* Category */}
+        <div className="flex flex-row gap-2">
+          <div className="flex justify-center items-center px-3 py-2 bg-[#05B0B320] border border-[#05B0B3] rounded-full">
+            <span className="text-[12px] text-[#05B0B3] font-medium whitespace-nowrap">
               {card.category}
             </span>
           </div>
         </div>
 
-        <h3
-          style={{
-            fontFamily: 'Gilroy-SemiBold',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '24px',
-            lineHeight: '100%',
-            color: '#FFFFFF',
-            margin: 0,
-          }}
-          className="card-title"
-        >
+        {/* Title */}
+        <h3 className="text-white text-[24px] font-semibold leading-none">
           {card.title}
         </h3>
 
-        <p
-          style={{
-            fontFamily: 'Gilroy-Regular',
-            fontStyle: 'normal',
-            fontWeight: 400,
-            fontSize: '16px',
-            lineHeight: '130%',
-            color: '#FFFFFF',
-            margin: 0,
-          }}
-          className="card-desc"
-        >
+        {/* Description */}
+        <p className="text-white text-[16px] leading-[130%]">
           {card.description}
         </p>
 
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'flex-start',
-            gap: '16px',
-            width: '366px',
-          }}
-          className="card-meta"
-        >
-          <span
-            style={{
-              fontFamily: 'Gilroy-Regular',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '100%',
-              color: '#FFFFFF',
-            }}
-          >
-            {formatResearchDate(card.date)}
-          </span>
-          <span
-            style={{
-              fontFamily: 'Gilroy-Regular',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '100%',
-              color: '#FFFFFF',
-            }}
-          >
-            {formatReadTime(card.readTime)}
-          </span>
-        </div>
+        {/* Spacer to push CTA down */}
+        <div className="flex flex-col justify-between h-full">
+          {/* Meta */}
+          <div className="flex justify-between items-start w-full text-white text-[14px]">
+            <span>{formatResearchDate(card.date)}</span>
+            <span>{formatReadTime(card.readTime)}</span>
+          </div>
 
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'flex-start',
-            gap: '16px',
-            width: '366px',
-          }}
-          className="card-cta"
-        >
-          <button
-            type="button"
-            style={{
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: '10px 16px',
-              gap: '8px',
-              width: '366px',
-              height: '36px',
-              border: '1px solid #FFFFFF',
-              borderRadius: '100px',
-              background: 'transparent',
-              color: '#FFFFFF',
-              cursor: 'pointer',
-              fontFamily: 'Gilroy-SemiBold',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '100%',
-            }}
-            onMouseDown={event => {
-              event.preventDefault();
-              event.currentTarget.style.border = '1px solid #FFFFFF';
-            }}
-            onFocus={event => {
-              event.currentTarget.style.outline = 'none';
-              event.currentTarget.style.border = '1px solid #FFFFFF';
-            }}
-            onBlur={event => {
-              event.currentTarget.style.border = '1px solid #FFFFFF';
-            }}
-            onClick={() => router.push(`/research/${card.slug}`)}
-          >
-            Read More
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
+          {/* CTA Button (always at bottom) */}
+          <div className="w-full">
+            <button
+              type="button"
+              className="
+              w-full h-[36px]
+              flex justify-center items-center gap-2
+              border border-white rounded-full
+              bg-transparent text-white cursor-pointer
+              font-semibold text-[14px]
+              focus:outline-none
+            "
+              onClick={() => router.push(`/research/${card.slug}`)}
             >
-              <path
-                d="M7 17L17 7"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M10 7H17V14"
-                stroke="white"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+              Read More
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7 17L17 7"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M10 7H17V14"
+                  stroke="white"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -352,7 +450,8 @@ export default function ResearchPage() {
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         button:focus,
         button:active,
         button:focus-visible {
@@ -627,9 +726,9 @@ export default function ResearchPage() {
         }
       `}} />
       <Navbar />
-      
+
       {/* Background SVG Gradient */}
-      <svg className="absolute pointer-events-none shariah-background-svg" viewBox="0 0 635 728" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style={{left: '-500px', top: '-80px', width: '1686.4px', height: '934.41px', rotate: '-12deg', zIndex: 0}}>
+      <svg className="absolute pointer-events-none shariah-background-svg" viewBox="0 0 635 728" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style={{ left: '-500px', top: '-80px', width: '1686.4px', height: '934.41px', rotate: '-12deg', zIndex: 0 }}>
         <g filter="url(#filter0_f_shariah)">
           <path d="M-323.419 -963.166C-339.01 -913.804 -341.542 -793.642 -219.641 -721.835C68.1756 -552.293 47.4452 -238.748 50.2608 -183.474C54.8056 -94.2532 60.7748 113.384 232.274 209.929C361.298 282.563 423.638 276.679 416.511 277.203L434.837 526.531C384.709 530.216 273.76 520.175 109.635 427.781C-199.701 253.642 -196.356 -110.679 -199.416 -170.757C-204.206 -264.783 -195.12 -417.24 -346.527 -506.428C-604.593 -658.445 -598.186 -923.295 -561.811 -1038.46L-323.419 -963.166Z" fill="url(#paint0_linear_shariah)" opacity="1"></path>
         </g>
@@ -648,7 +747,7 @@ export default function ResearchPage() {
           </linearGradient>
         </defs>
       </svg>
-      
+
       {/* Main Content */}
       <div className="relative z-10">
         <div className={`min-h-screen pt-32 pb-32 px-4 sm:px-6 lg:px-8 flex items-start research-hero-container ${isAuthenticated ? 'is-auth' : 'is-guest'}`}>
@@ -671,21 +770,21 @@ export default function ResearchPage() {
               className="research-hero-logo"
             >
               <g opacity="0.5">
-                <path d="M485.003 448.627C449.573 580.853 314.193 659.464 182.624 624.21C51.0543 588.956 -26.8824 453.187 8.54736 320.961C43.9772 188.735 179.378 110.129 310.947 145.383L478.648 190.318C517.106 200.623 558.36 174.855 558.36 174.855L485.003 448.627ZM266.707 306.134C223.047 294.435 178.123 320.521 166.366 364.399C154.609 408.277 180.471 453.33 224.131 465.029C267.791 476.727 312.715 450.641 324.472 406.763L345.76 327.316L266.707 306.134Z" fill="url(#paint0_linear_vector_logo_research)"/>
-                <path d="M417.104 61.0593C428.861 17.1816 473.785 -8.90461 517.445 2.79402C561.105 14.4926 586.967 59.5461 575.21 103.424C563.453 147.301 518.529 173.388 474.869 161.689L395.816 140.507L417.104 61.0593Z" fill="url(#paint1_linear_vector_logo_research)"/>
+                <path d="M485.003 448.627C449.573 580.853 314.193 659.464 182.624 624.21C51.0543 588.956 -26.8824 453.187 8.54736 320.961C43.9772 188.735 179.378 110.129 310.947 145.383L478.648 190.318C517.106 200.623 558.36 174.855 558.36 174.855L485.003 448.627ZM266.707 306.134C223.047 294.435 178.123 320.521 166.366 364.399C154.609 408.277 180.471 453.33 224.131 465.029C267.791 476.727 312.715 450.641 324.472 406.763L345.76 327.316L266.707 306.134Z" fill="url(#paint0_linear_vector_logo_research)" />
+                <path d="M417.104 61.0593C428.861 17.1816 473.785 -8.90461 517.445 2.79402C561.105 14.4926 586.967 59.5461 575.21 103.424C563.453 147.301 518.529 173.388 474.869 161.689L395.816 140.507L417.104 61.0593Z" fill="url(#paint1_linear_vector_logo_research)" />
               </g>
               <defs>
                 <linearGradient id="paint0_linear_vector_logo_research" x1="541.13" y1="2.97459" x2="237.63" y2="468.975" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#333333"/>
-                  <stop offset="1" stopColor="#1F1F1F"/>
+                  <stop stopColor="#333333" />
+                  <stop offset="1" stopColor="#1F1F1F" />
                 </linearGradient>
                 <linearGradient id="paint1_linear_vector_logo_research" x1="541.13" y1="2.97459" x2="237.63" y2="468.975" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#333333"/>
-                  <stop offset="1" stopColor="#1F1F1F"/>
+                  <stop stopColor="#333333" />
+                  <stop offset="1" stopColor="#1F1F1F" />
                 </linearGradient>
               </defs>
             </svg>
-            
+
             {/* Title - Left Middle */}
             <h1
               style={{
@@ -707,7 +806,7 @@ export default function ResearchPage() {
               }}
               className="research-title"
             >
-              {isAuthenticated 
+              {isAuthenticated
                 ? 'Latest Research - Clear, Actionable & Data-Backed'
                 : 'Unlock the full experience with Inspired Analyst Premium'
               }
@@ -735,178 +834,166 @@ export default function ResearchPage() {
             {/* Mobile-only gradient ellipses were removed in favor of shared SVG background */}
             {/* Bullet Points */}
             {!isAuthenticated && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '16px',
-                width: '630px',
-                height: '112px',
-                flex: 'none',
-                order: 2,
-                alignSelf: 'stretch',
-                flexGrow: 0,
-                marginTop: '24px',
-              }}
-              className="research-bullets"
-            >
-              {[
-                'Deep-dive reports with downloadable PDFs',
-                'Position sizing tailored to your risk',
-                'Portfolio allocation & P/L tracking',
-                'Shariah methodology & detailed screens'
-              ].map((bullet, index) => (
-                <div
-                  key={index}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '630px',
-                    height: '16px',
-                    flex: 'none',
-                    order: index,
-                    alignSelf: 'stretch',
-                    flexGrow: 0,
-                  }}
-                  className="research-bullet-row"
-                >
-                  <div
-                    style={{
-                      width: '8px',
-                      height: '8px',
-                      background: '#FFFFFF',
-                      borderRadius: '50%',
-                      flex: 'none',
-                      order: 0,
-                      flexGrow: 0,
-                    }}
-                  />
-                  <span
-                    style={{
-                      width: 'auto',
-                      height: '16px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                      lineHeight: '100%',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 1,
-                      flexGrow: 0,
-                    }}
-                    className="research-bullet-text"
-                  >
-                    {bullet}
-                  </span>
-                </div>
-              ))}
-            </div>
-            )}
-            {/* Buttons Container */}
-            {!isAuthenticated && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '20px',
-                width: '414px',
-                height: '50px',
-                flex: 'none',
-                order: 3,
-                flexGrow: 0,
-                marginTop: '32px',
-              }}
-              className="research-cta"
-            >
-              {/* Button 1 */}
-              <button
-                style={{
-                  padding: '12px 32px',
-                  background: '#FFFFFF',
-                  color: '#0A0A0A',
-                  borderRadius: '100px',
-                  fontFamily: 'Gilroy-SemiBold',
-                  fontSize: '14px',
-                  fontWeight: 400,
-                  border: 'none',
-                  cursor: 'pointer',
-                  flex: 'none',
-                  minWidth: '180px',
-                  whiteSpace: 'nowrap',
-                  outline: 'none',
-                }}
-                onMouseDown={(e) => e.preventDefault()}
-                onFocus={(e) => e.currentTarget.style.outline = 'none'}
-                onClick={() => router.push('/pricing')}
-              >
-                Start Subscription
-              </button>
-              {/* Button 2 */}
-              <button
-                style={{
-                  padding: '12px 32px',
-                  background: '#000000',
-                  color: '#FFFFFF',
-                  borderRadius: '100px',
-                  fontFamily: 'Gilroy-SemiBold',
-                  fontSize: '14px',
-                  fontWeight: 400,
-                  border: '1px solid #FFFFFF',
-                  cursor: 'pointer',
-                  flex: 'none',
-                  minWidth: '180px',
-                  whiteSpace: 'nowrap',
-                  outline: 'none',
-                }}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  e.currentTarget.style.border = '1px solid #FFFFFF';
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.outline = 'none';
-                  e.currentTarget.style.border = '1px solid #FFFFFF';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.border = '1px solid #FFFFFF';
-                }}
-              >
-                Watch Free Videos
-              </button>
-            </div>
-            )}
-            
-            {/* Latest Research Authenticated Section */}
-            {isAuthenticated && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '64px',
-                width: '100%',
-                marginTop: '220px',
-              }}
-              className="research-body"
-            >
               <div
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-start',
-                  gap: '24px',
-                  width: '100%',
-                  maxWidth: '1282px',
-                  margin: '0 auto',
+                  padding: '0px',
+                  gap: '16px',
+                  width: '630px',
+                  height: '112px',
+                  flex: 'none',
+                  order: 2,
+                  alignSelf: 'stretch',
+                  flexGrow: 0,
+                  marginTop: '24px',
                 }}
-                className="research-body-inner"
+                className="research-bullets"
+              >
+                {[
+                  'Deep-dive reports with downloadable PDFs',
+                  'Position sizing tailored to your risk',
+                  'Portfolio allocation & P/L tracking',
+                  'Shariah methodology & detailed screens'
+                ].map((bullet, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      padding: '0px',
+                      gap: '8px',
+                      width: '630px',
+                      height: '16px',
+                      flex: 'none',
+                      order: index,
+                      alignSelf: 'stretch',
+                      flexGrow: 0,
+                    }}
+                    className="research-bullet-row"
+                  >
+                    <div
+                      style={{
+                        width: '8px',
+                        height: '8px',
+                        background: '#FFFFFF',
+                        borderRadius: '50%',
+                        flex: 'none',
+                        order: 0,
+                        flexGrow: 0,
+                      }}
+                    />
+                    <span
+                      style={{
+                        width: 'auto',
+                        height: '16px',
+                        fontFamily: 'Gilroy-Medium',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '16px',
+                        lineHeight: '100%',
+                        color: '#FFFFFF',
+                        flex: 'none',
+                        order: 1,
+                        flexGrow: 0,
+                      }}
+                      className="research-bullet-text"
+                    >
+                      {bullet}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+            {/* Buttons Container */}
+            {!isAuthenticated && (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  padding: '0px',
+                  gap: '20px',
+                  width: '414px',
+                  height: '50px',
+                  flex: 'none',
+                  order: 3,
+                  flexGrow: 0,
+                  marginTop: '32px',
+                }}
+                className="research-cta"
+              >
+                {/* Button 1 */}
+                <button
+                  style={{
+                    padding: '12px 32px',
+                    background: '#FFFFFF',
+                    color: '#0A0A0A',
+                    borderRadius: '100px',
+                    fontFamily: 'Gilroy-SemiBold',
+                    fontSize: '14px',
+                    fontWeight: 400,
+                    border: 'none',
+                    cursor: 'pointer',
+                    flex: 'none',
+                    minWidth: '180px',
+                    whiteSpace: 'nowrap',
+                    outline: 'none',
+                  }}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onFocus={(e) => e.currentTarget.style.outline = 'none'}
+                  onClick={() => router.push('/pricing')}
+                >
+                  Start Subscription
+                </button>
+                {/* Button 2 */}
+                <button
+                  style={{
+                    padding: '12px 32px',
+                    background: '#000000',
+                    color: '#FFFFFF',
+                    borderRadius: '100px',
+                    fontFamily: 'Gilroy-SemiBold',
+                    fontSize: '14px',
+                    fontWeight: 400,
+                    border: '1px solid #FFFFFF',
+                    cursor: 'pointer',
+                    flex: 'none',
+                    minWidth: '180px',
+                    whiteSpace: 'nowrap',
+                    outline: 'none',
+                  }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.style.border = '1px solid #FFFFFF';
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.outline = 'none';
+                    e.currentTarget.style.border = '1px solid #FFFFFF';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.border = '1px solid #FFFFFF';
+                  }}
+                >
+                  Watch Free Videos
+                </button>
+              </div>
+            )}
+
+            {/* Latest Research Authenticated Section */}
+            {isAuthenticated && (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: '64px',
+                  width: '100%',
+                  marginTop: '220px',
+                }}
+                className="research-body"
               >
                 <div
                   style={{
@@ -915,8 +1002,383 @@ export default function ResearchPage() {
                     alignItems: 'flex-start',
                     gap: '24px',
                     width: '100%',
+                    maxWidth: '1282px',
+                    margin: '0 auto',
                   }}
-                  className="research-body-head"
+                  className="research-body-inner"
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: '24px',
+                      width: '100%',
+                    }}
+                    className="research-body-head"
+                  >
+                    <h2
+                      style={{
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '36px',
+                        lineHeight: '130%',
+                        color: '#FFFFFF',
+                        margin: 0,
+                      }}
+                    >
+                      Latest Research
+                    </h2>
+                    <p
+                      style={{
+                        fontFamily: 'Gilroy-Medium',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '16px',
+                        lineHeight: '100%',
+                        color: '#FFFFFF',
+                        margin: 0,
+                      }}
+                    >
+                      You have full access - explore detailed reports, data visuals, and premium analysis.
+                    </p>
+                  </div>
+
+                  <div
+                    style={{
+                      width: '100%',
+                      maxWidth: '522px',
+                      borderRadius: '8px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        padding: '12px',
+                        gap: '8px',
+                        width: '100%',
+                        background: '#0A0A0A',
+                        borderRadius: '7px',
+                        border: '1px solid #1F1F1F',
+                      }}
+                      className="research-search"
+                    >
+                      <svg
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style={{ flexShrink: 0 }}
+                      >
+                        <path
+                          d="M11 4C7.13401 4 4 7.13401 4 11C4 14.866 7.13401 18 11 18C12.933 18 14.683 17.214 15.964 15.964C17.214 14.683 18 12.933 18 11C18 7.13401 14.866 4 11 4Z"
+                          stroke="#909090"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M20 20L17 17"
+                          stroke="#909090"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <input
+                        type="text"
+                        placeholder="Search reports..."
+                        style={{
+                          width: '100%',
+                          border: 'none',
+                          outline: 'none',
+                          background: 'transparent',
+                          fontFamily: 'Gilroy-Medium',
+                          fontStyle: 'normal',
+                          fontWeight: 400,
+                          fontSize: '14px',
+                          lineHeight: '100%',
+                          color: '#FFFFFF',
+                        }}
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'flex-start',
+                      gap: '24px',
+                      width: '100%',
+                    }}
+                    className="research-filter-row"
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        gap: '16px',
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: '8px',
+                        }}
+                        className="research-filters-group"
+                      >
+                        {FILTER_OPTIONS.map(option => {
+                          const isActive = activeFilter === option;
+                          return (
+                            <button
+                              key={option}
+                              type="button"
+                              onClick={() => setActiveFilter(option)}
+                              style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                padding: '14px 12px',
+                                gap: '16px',
+                                width:
+                                  option === 'All'
+                                    ? '40px'
+                                    : option === 'Latest Uploaded'
+                                      ? '132px'
+                                      : '81px',
+                                height: '32px',
+                                background: isActive ? '#FFFFFF' : 'transparent',
+                                borderRadius: '80px',
+                                border: isActive ? 'none' : '1px solid #909090',
+                                cursor: 'pointer',
+                                fontFamily: 'Gilroy-Medium',
+                                fontSize: '14px',
+                                lineHeight: '100%',
+                                color: isActive ? '#1F1F1F' : '#9D9D9D',
+                                transition: 'all 0.2s ease',
+                              }}
+                            >
+                              {option}
+                            </button>
+                          );
+                        })}
+                      </div>
+
+                      <button
+                        type="button"
+                        role="switch"
+                        aria-checked={shariahOnly}
+                        onClick={() => setShariahOnly(prev => !prev)}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'row',
+                          alignItems: 'center',
+                          gap: '8px',
+                          background: 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          padding: 0,
+                        }}
+                      >
+                        <div
+                          style={{
+                            position: 'relative',
+                            width: '36px',
+                            height: '18px',
+                            borderRadius: '30px',
+                            background: shariahOnly ? '#05B0B3' : 'rgba(255, 255, 255, 0.1)',
+                            border: shariahOnly ? '1px solid #05B0B3' : '1px solid rgba(255, 255, 255, 0.1)',
+                            transition: 'background 0.2s ease, border 0.2s ease',
+                          }}
+                        >
+                          <div
+                            style={{
+                              position: 'absolute',
+                              width: '12px',
+                              height: '12px',
+                              left: shariahOnly ? '21px' : '3px',
+                              top: '50%',
+                              transform: 'translateY(-50%)',
+                              background: '#FFFFFF',
+                              borderRadius: '50%',
+                              transition: 'left 0.2s ease',
+                            }}
+                          ></div>
+                        </div>
+                        <span
+                          style={{
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            color: '#9D9D9D',
+                            textAlign: 'center',
+                            whiteSpace: 'nowrap',
+                          }}
+                          className="research-toggle-label"
+                        >
+                          Shariah-compliant only
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: '40px',
+                    width: '100%',
+                    maxWidth: '1282px',
+                    margin: '0 auto',
+                  }}
+                >
+                  {chunkedCards.length > 0 ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        gap: '20px',
+                        width: '100%',
+                      }}
+                    >
+                      {chunkedCards.map((rowCards, rowIndex) => (
+                        <div
+                          key={`research-row-${rowIndex}`}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'stretch',
+                            gap: '20px',
+                            width: '100%',
+                            flexWrap: 'nowrap',
+                            justifyContent: rowCards.length === 3 ? 'space-between' : 'flex-start',
+                          }}
+                          className="research-cards-row"
+                        >
+                          {rowCards.map((card, cardIndex) =>
+                            renderResearchCard(card, `${rowIndex}-${cardIndex}-${card.title}`)
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '12px',
+                        width: '100%',
+                        padding: '48px 0',
+                      }}
+                    >
+                      <h3
+                        style={{
+                          fontFamily: 'Gilroy-SemiBold',
+                          fontStyle: 'normal',
+                          fontWeight: 400,
+                          fontSize: '24px',
+                          lineHeight: '100%',
+                          color: '#FFFFFF',
+                          margin: 0,
+                          textAlign: 'center',
+                        }}
+                      >
+                        No reports found
+                      </h3>
+                      <p
+                        style={{
+                          fontFamily: 'Gilroy-Medium',
+                          fontStyle: 'normal',
+                          fontWeight: 400,
+                          fontSize: '16px',
+                          lineHeight: '130%',
+                          color: '#9D9D9D',
+                          margin: 0,
+                          textAlign: 'center',
+                        }}
+                      >
+                        Try adjusting your filters or search terms.
+                      </p>
+                    </div>
+                  )}
+
+                  {filteredCards.length > 0 && (
+                    <button
+                      type="button"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '18px 12px',
+                        gap: '10px',
+                        width: '197px',
+                        height: '50px',
+                        background: '#FFFFFF',
+                        borderRadius: '100px',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '14px',
+                        lineHeight: '100%',
+                        color: '#0A0A0A',
+                      }}
+                      className="research-load-more"
+                    >
+                      Load More
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Latest Research Preview Section */}
+            {!isAuthenticated && (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  gap: '64px',
+                  width: '100%',
+                  marginTop: '220px',
+                }}
+                className="research-body"
+              >
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'flex-start',
+                    gap: '24px',
+                    width: '100%',
+                    maxWidth: '1282px',
+                    margin: '0 auto',
+                  }}
+                  className="research-body-inner research-body-head"
                 >
                   <h2
                     style={{
@@ -942,852 +1404,489 @@ export default function ResearchPage() {
                       margin: 0,
                     }}
                   >
-                    You have full access - explore detailed reports, data visuals, and premium analysis.
+                    You&apos;re viewing a preview. Subscribe to unlock full reports and detailed analysis.
                   </p>
-                </div>
-
-                <div
-                  style={{
-                    width: '100%',
-                    maxWidth: '522px',
-                    borderRadius: '8px',
-                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                    padding: '1px',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      padding: '12px',
-                      gap: '8px',
-                      width: '100%',
-                      background: '#0A0A0A',
-                      borderRadius: '7px',
-                      border: '1px solid #1F1F1F',
-                    }}
-                    className="research-search"
-                  >
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      style={{ flexShrink: 0 }}
-                    >
-                      <path
-                        d="M11 4C7.13401 4 4 7.13401 4 11C4 14.866 7.13401 18 11 18C12.933 18 14.683 17.214 15.964 15.964C17.214 14.683 18 12.933 18 11C18 7.13401 14.866 4 11 4Z"
-                        stroke="#909090"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M20 20L17 17"
-                        stroke="#909090"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <input
-                      type="text"
-                      placeholder="Search reports..."
-                      style={{
-                        width: '100%',
-                        border: 'none',
-                        outline: 'none',
-                        background: 'transparent',
-                        fontFamily: 'Gilroy-Medium',
-                        fontStyle: 'normal',
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        color: '#FFFFFF',
-                      }}
-                      value={searchQuery}
-                      onChange={handleSearchChange}
-                    />
-                  </div>
                 </div>
 
                 <div
                   style={{
                     display: 'flex',
                     flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'flex-start',
-                    gap: '24px',
+                    alignItems: 'stretch',
+                    gap: '20px',
                     width: '100%',
+                    maxWidth: '1282px',
+                    margin: '0 auto',
+                    flexWrap: 'nowrap',
+                    justifyContent: 'space-between',
+                    overflowX: 'auto',
                   }}
-                  className="research-filter-row"
+                  className="research-cards-row"
                 >
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      gap: '16px',
-                    }}
-                  >
+                  {previewCards.map((card, index) => (
                     <div
+                      key={card.title}
+                      className="relative overflow-hidden research-card"
                       style={{
+                        boxSizing: 'border-box',
                         display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: '8px',
-                      }}
-                      className="research-filters-group"
-                    >
-                      {FILTER_OPTIONS.map(option => {
-                        const isActive = activeFilter === option;
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            onClick={() => setActiveFilter(option)}
-                            style={{
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              padding: '14px 12px',
-                              gap: '16px',
-                              width:
-                                option === 'All'
-                                  ? '40px'
-                                  : option === 'Latest Uploaded'
-                                  ? '132px'
-                                  : '81px',
-                              height: '32px',
-                              background: isActive ? '#FFFFFF' : 'transparent',
-                              borderRadius: '80px',
-                              border: isActive ? 'none' : '1px solid #909090',
-                              cursor: 'pointer',
-                              fontFamily: 'Gilroy-Medium',
-                              fontSize: '14px',
-                              lineHeight: '100%',
-                              color: isActive ? '#1F1F1F' : '#9D9D9D',
-                              transition: 'all 0.2s ease',
-                            }}
-                          >
-                            {option}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <button
-                      type="button"
-                      role="switch"
-                      aria-checked={shariahOnly}
-                      onClick={() => setShariahOnly(prev => !prev)}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: '8px',
-                        background: 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: 0,
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        padding: '24px',
+                        gap: '24px',
+                        isolation: 'isolate',
+                        width: '414px',
+                        height: '281px',
+                        borderRadius: '16px',
+                        background: '#1F1F1F',
                       }}
                     >
                       <div
+                        className="absolute pointer-events-none"
                         style={{
-                          position: 'relative',
-                          width: '36px',
-                          height: '18px',
-                          borderRadius: '30px',
-                          background: shariahOnly ? '#05B0B3' : 'rgba(255, 255, 255, 0.1)',
-                          border: shariahOnly ? '1px solid #05B0B3' : '1px solid rgba(255, 255, 255, 0.1)',
-                          transition: 'background 0.2s ease, border 0.2s ease',
+                          width: '588px',
+                          height: '588px',
+                          left: index === 0 ? '399px' : index === 1 ? '350px' : '300px',
+                          top: '-326px',
+                          background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                          filter: 'blur(100px)',
+                          transform: 'rotate(90deg)',
+                          zIndex: 0,
+                          borderRadius: '50%',
+                        }}
+                      />
+
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'flex-start',
+                          gap: '16px',
+                          width: '366px',
+                          height: '173px',
+                          zIndex: 1,
                         }}
                       >
                         <div
                           style={{
-                            position: 'absolute',
-                            width: '12px',
-                            height: '12px',
-                            left: shariahOnly ? '21px' : '3px',
-                            top: '50%',
-                            transform: 'translateY(-50%)',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                            transition: 'left 0.2s ease',
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'flex-start',
+                            gap: '8px',
                           }}
-                        ></div>
+                        >
+                          <div
+                            style={{
+                              boxSizing: 'border-box',
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              padding: '10px',
+                              gap: '10px',
+                              background: 'rgba(5, 176, 179, 0.12)',
+                              border: '1px solid #05B0B3',
+                              borderRadius: '40px',
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontFamily: 'Gilroy-Medium',
+                                fontStyle: 'normal',
+                                fontWeight: 400,
+                                fontSize: '12px',
+                                lineHeight: '100%',
+                                color: '#05B0B3',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {card.category}
+                            </span>
+                          </div>
+                        </div>
+
+                        <h3
+                          style={{
+                            fontFamily: 'Gilroy-SemiBold',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '24px',
+                            lineHeight: '100%',
+                            color: '#FFFFFF',
+                            margin: 0,
+                          }}
+                        >
+                          {card.title}
+                        </h3>
+
+                        <p
+                          style={{
+                            fontFamily: 'Gilroy-Regular',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '16px',
+                            lineHeight: '130%',
+                            color: '#FFFFFF',
+                            margin: 0,
+                          }}
+                        >
+                          {card.description}
+                        </p>
+
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
+                            gap: '16px',
+                            width: '366px',
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontFamily: 'Gilroy-Regular',
+                              fontStyle: 'normal',
+                              fontWeight: 400,
+                              fontSize: '14px',
+                              lineHeight: '100%',
+                              color: '#FFFFFF',
+                            }}
+                          >
+                            {formatResearchDate(card.date)}
+                          </span>
+                          <span
+                            style={{
+                              fontFamily: 'Gilroy-Regular',
+                              fontStyle: 'normal',
+                              fontWeight: 400,
+                              fontSize: '14px',
+                              lineHeight: '100%',
+                              color: '#FFFFFF',
+                            }}
+                          >
+                            {formatReadTime(card.readTime)}
+                          </span>
+                        </div>
+
+                        <div
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'row',
+                            alignItems: 'flex-start',
+                            gap: '16px',
+                            width: '366px',
+                          }}
+                        >
+                          <button
+                            style={{
+                              boxSizing: 'border-box',
+                              display: 'flex',
+                              flexDirection: 'row',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              padding: '10px 16px',
+                              gap: '8px',
+                              width: '366px',
+                              height: '36px',
+                              border: '1px solid #FFFFFF',
+                              borderRadius: '100px',
+                              background: 'transparent',
+                              color: '#FFFFFF',
+                              cursor: 'default',
+                              fontFamily: 'Gilroy-SemiBold',
+                              fontStyle: 'normal',
+                              fontWeight: 400,
+                              fontSize: '14px',
+                              lineHeight: '100%',
+                            }}
+                          >
+                            Read More
+                            <svg
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M7 17L17 7"
+                                stroke="white"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                              <path
+                                d="M10 7H17V14"
+                                stroke="white"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
-                      <span
+
+                      <div
                         style={{
-                          fontFamily: 'Gilroy-Medium',
-                          fontStyle: 'normal',
-                          fontWeight: 400,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#9D9D9D',
-                          textAlign: 'center',
-                          whiteSpace: 'nowrap',
+                          position: 'absolute',
+                          inset: 0,
+                          background: 'rgba(31, 31, 31, 0.8)',
+                          backdropFilter: 'blur(4px)',
+                          borderRadius: '16px',
+                          zIndex: 2,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '12px',
+                          pointerEvents: 'none',
                         }}
-                        className="research-toggle-label"
                       >
-                        Shariah-compliant only
-                      </span>
-                    </button>
-                  </div>
+                        <h3
+                          style={{
+                            fontFamily: 'Gilroy-SemiBold',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '20px',
+                            lineHeight: '100%',
+                            color: '#FFFFFF',
+                            margin: 0,
+                            textAlign: 'center',
+                          }}
+                        >
+                          Preview Only
+                        </h3>
+                        <p
+                          style={{
+                            fontFamily: 'Gilroy-Regular',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '130%',
+                            color: '#FFFFFF',
+                            margin: 0,
+                            textAlign: 'center',
+                          }}
+                        >
+                          Subscribe to access full reports
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+            )}
 
+            {/* Big Gap */}
+            <div style={{ marginTop: isAuthenticated ? '220px' : '160px' }}></div>
+
+            {/* Ready to unlock full access Tile */}
+            {!isAuthenticated && (
               <div
+                className="relative overflow-hidden guest-cta-tile"
                 style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  gap: '40px',
-                  width: '100%',
-                  maxWidth: '1282px',
-                  margin: '0 auto',
+                  width: '1064px',
+                  height: '247px',
+                  borderRadius: '16px',
+                  background: '#1F1F1F',
+                  padding: '40px',
+                  gap: '10px',
+                  boxSizing: 'border-box',
+                  marginTop: '0px',
+                  marginBottom: '220px',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
                 }}
               >
-                {chunkedCards.length > 0 ? (
+                {/* Curved Gradient Border */}
+                <div
+                  className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
+                  style={{
+                    borderRadius: '16px',
+                    background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
+                  }}
+                >
+                  <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
+                </div>
+
+                {/* Gradient Ellipse - Top Left */}
+                <div
+                  className="absolute pointer-events-none guest-cta-ellipse"
+                  style={{
+                    width: '588px',
+                    height: '588px',
+                    left: '-403px',
+                    top: '-510px',
+                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                    filter: 'blur(200px)',
+                    transform: 'rotate(90deg)',
+                    flex: 'none',
+                    flexGrow: 0,
+                    zIndex: 0,
+                    borderRadius: '50%'
+                  }}
+                ></div>
+
+                {/* Gradient Ellipse - Bottom Right */}
+                <div
+                  className="absolute pointer-events-none guest-cta-ellipse"
+                  style={{
+                    width: '588px',
+                    height: '588px',
+                    left: '739px',
+                    bottom: '-510px',
+                    background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+                    filter: 'blur(200px)',
+                    transform: 'rotate(90deg)',
+                    flex: 'none',
+                    flexGrow: 0,
+                    zIndex: 1,
+                    borderRadius: '50%'
+                  }}
+                ></div>
+
+                {/* Content */}
+                <div className="relative z-10 w-full h-full flex flex-col items-center justify-center guest-cta-inner" style={{ gap: '10px' }}>
+                  {/* Frame 81 */}
                   <div
+                    className="guest-cta-text"
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
                       alignItems: 'flex-start',
-                      gap: '20px',
-                      width: '100%',
+                      padding: '0px',
+                      gap: '24px',
+                      width: '461px',
+                      height: '77px',
+                      flex: 'none',
+                      order: 0,
+                      flexGrow: 0,
                     }}
                   >
-                    {chunkedCards.map((rowCards, rowIndex) => (
-                      <div
-                        key={`research-row-${rowIndex}`}
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'stretch',
-                          gap: '20px',
-                          width: '100%',
-                          flexWrap: 'nowrap',
-                          justifyContent: rowCards.length === 3 ? 'space-between' : 'flex-start',
-                        }}
-                        className="research-cards-row"
-                      >
-                        {rowCards.map((card, cardIndex) =>
-                          renderResearchCard(card, `${rowIndex}-${cardIndex}-${card.title}`)
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '12px',
-                      width: '100%',
-                      padding: '48px 0',
-                    }}
-                  >
-                    <h3
+                    {/* Title */}
+                    <h2
                       style={{
+                        width: '461px',
+                        height: '32px',
                         fontFamily: 'Gilroy-SemiBold',
                         fontStyle: 'normal',
                         fontWeight: 400,
-                        fontSize: '24px',
+                        fontSize: '32px',
                         lineHeight: '100%',
-                        color: '#FFFFFF',
-                        margin: 0,
                         textAlign: 'center',
+                        color: '#FFFFFF',
+                        flex: 'none',
+                        order: 0,
+                        alignSelf: 'stretch',
+                        flexGrow: 0,
+                        margin: 0,
                       }}
                     >
-                      No reports found
-                    </h3>
+                      Ready to unlock full access?
+                    </h2>
+
+                    {/* Description */}
                     <p
                       style={{
+                        width: '461px',
+                        height: '21px',
                         fontFamily: 'Gilroy-Medium',
                         fontStyle: 'normal',
                         fontWeight: 400,
                         fontSize: '16px',
                         lineHeight: '130%',
-                        color: '#9D9D9D',
-                        margin: 0,
                         textAlign: 'center',
+                        color: '#FFFFFF',
+                        flex: 'none',
+                        order: 1,
+                        alignSelf: 'stretch',
+                        flexGrow: 0,
+                        margin: 0,
                       }}
                     >
-                      Try adjusting your filters or search terms.
+                      Join thousands of informed investors making better decisions.
                     </p>
                   </div>
-                )}
 
-                {filteredCards.length > 0 && (
-                  <button
-                    type="button"
+                  {/* Buttons Container */}
+                  <div
+                    className="guest-cta-actions"
                     style={{
                       display: 'flex',
                       flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      padding: '18px 12px',
-                      gap: '10px',
-                      width: '197px',
-                      height: '50px',
-                      background: '#FFFFFF',
-                      borderRadius: '100px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      color: '#0A0A0A',
-                    }}
-                    className="research-load-more"
-                  >
-                    Load More
-                  </button>
-                )}
-              </div>
-            </div>
-            )}
-
-            {/* Latest Research Preview Section */}
-            {!isAuthenticated && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                gap: '64px',
-                width: '100%',
-                marginTop: '220px',
-              }}
-              className="research-body"
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  gap: '24px',
-                  width: '100%',
-                  maxWidth: '1282px',
-                  margin: '0 auto',
-                }}
-                className="research-body-inner research-body-head"
-              >
-                <h2
-                  style={{
-                    fontFamily: 'Gilroy-SemiBold',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '36px',
-                    lineHeight: '130%',
-                    color: '#FFFFFF',
-                    margin: 0,
-                  }}
-                >
-                  Latest Research
-                </h2>
-                <p
-                  style={{
-                    fontFamily: 'Gilroy-Medium',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '16px',
-                    lineHeight: '100%',
-                    color: '#FFFFFF',
-                    margin: 0,
-                  }}
-                >
-                  You&apos;re viewing a preview. Subscribe to unlock full reports and detailed analysis.
-                </p>
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'stretch',
-                  gap: '20px',
-                  width: '100%',
-                  maxWidth: '1282px',
-                  margin: '0 auto',
-                  flexWrap: 'nowrap',
-                  justifyContent: 'space-between',
-                  overflowX: 'auto',
-                }}
-                className="research-cards-row"
-              >
-                {previewCards.map((card, index) => (
-                  <div
-                    key={card.title}
-                    className="relative overflow-hidden research-card"
-                    style={{
-                      boxSizing: 'border-box',
-                      display: 'flex',
-                      flexDirection: 'column',
                       alignItems: 'flex-start',
-                      padding: '24px',
-                      gap: '24px',
-                      isolation: 'isolate',
+                      padding: '0px',
+                      gap: '20px',
                       width: '414px',
-                      height: '281px',
-                      borderRadius: '16px',
-                      background: '#1F1F1F',
+                      height: '50px',
+                      flex: 'none',
+                      flexGrow: 0,
+                      marginTop: '24px',
+                      marginLeft: 'auto',
+                      marginRight: 'auto',
                     }}
                   >
-                    <div
-                      className="absolute pointer-events-none"
+                    {/* Button 1 */}
+                    <button
                       style={{
-                        width: '588px',
-                        height: '588px',
-                        left: index === 0 ? '399px' : index === 1 ? '350px' : '300px',
-                        top: '-326px',
-                        background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                        filter: 'blur(100px)',
-                        transform: 'rotate(90deg)',
-                        zIndex: 0,
-                        borderRadius: '50%',
+                        padding: '12px 32px',
+                        background: '#FFFFFF',
+                        color: '#0A0A0A',
+                        borderRadius: '100px',
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontSize: '14px',
+                        fontWeight: 400,
+                        border: 'none',
+                        cursor: 'pointer',
+                        flex: 'none',
+                        minWidth: '180px',
+                        whiteSpace: 'nowrap',
+                        outline: 'none',
                       }}
-                    />
-
-                    <div
+                      onMouseDown={(e) => e.preventDefault()}
+                      onFocus={(e) => e.currentTarget.style.outline = 'none'}
+                      onClick={() => router.push('/pricing')}
+                    >
+                      Start Subscription
+                    </button>
+                    {/* Button 2 */}
+                    <button
                       style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        gap: '16px',
-                        width: '366px',
-                        height: '173px',
-                        zIndex: 1,
+                        padding: '12px 32px',
+                        background: 'transparent',
+                        color: '#FFFFFF',
+                        borderRadius: '100px',
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontSize: '14px',
+                        fontWeight: 400,
+                        border: '1px solid #FFFFFF',
+                        cursor: 'pointer',
+                        flex: 'none',
+                        minWidth: '180px',
+                        whiteSpace: 'nowrap',
+                        outline: 'none',
+                      }}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.border = '1px solid #FFFFFF';
+                      }}
+                      onFocus={(e) => {
+                        e.currentTarget.style.outline = 'none';
+                        e.currentTarget.style.border = '1px solid #FFFFFF';
+                      }}
+                      onBlur={(e) => {
+                        e.currentTarget.style.border = '1px solid #FFFFFF';
                       }}
                     >
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'flex-start',
-                          gap: '8px',
-                        }}
-                      >
-                        <div
-                          style={{
-                            boxSizing: 'border-box',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            padding: '10px',
-                            gap: '10px',
-                            background: 'rgba(5, 176, 179, 0.12)',
-                            border: '1px solid #05B0B3',
-                            borderRadius: '40px',
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontFamily: 'Gilroy-Medium',
-                              fontStyle: 'normal',
-                              fontWeight: 400,
-                              fontSize: '12px',
-                              lineHeight: '100%',
-                              color: '#05B0B3',
-                              whiteSpace: 'nowrap',
-                            }}
-                          >
-                            {card.category}
-                          </span>
-                        </div>
-                      </div>
-
-                      <h3
-                        style={{
-                          fontFamily: 'Gilroy-SemiBold',
-                          fontStyle: 'normal',
-                          fontWeight: 400,
-                          fontSize: '24px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF',
-                          margin: 0,
-                        }}
-                      >
-                        {card.title}
-                      </h3>
-
-                      <p
-                        style={{
-                          fontFamily: 'Gilroy-Regular',
-                          fontStyle: 'normal',
-                          fontWeight: 400,
-                          fontSize: '16px',
-                          lineHeight: '130%',
-                          color: '#FFFFFF',
-                          margin: 0,
-                        }}
-                      >
-                        {card.description}
-                      </p>
-
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                          gap: '16px',
-                          width: '366px',
-                        }}
-                      >
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          {formatResearchDate(card.date)}
-                        </span>
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy-Regular',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          {formatReadTime(card.readTime)}
-                        </span>
-                      </div>
-
-                      <div
-                        style={{
-                          display: 'flex',
-                          flexDirection: 'row',
-                          alignItems: 'flex-start',
-                          gap: '16px',
-                          width: '366px',
-                        }}
-                      >
-                        <button
-                          style={{
-                            boxSizing: 'border-box',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            padding: '10px 16px',
-                            gap: '8px',
-                            width: '366px',
-                            height: '36px',
-                            border: '1px solid #FFFFFF',
-                            borderRadius: '100px',
-                            background: 'transparent',
-                            color: '#FFFFFF',
-                            cursor: 'default',
-                            fontFamily: 'Gilroy-SemiBold',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            fontSize: '14px',
-                            lineHeight: '100%',
-                          }}
-                        >
-                          Read More
-                          <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M7 17L17 7"
-                              stroke="white"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M10 7H17V14"
-                              stroke="white"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        position: 'absolute',
-                        inset: 0,
-                        background: 'rgba(31, 31, 31, 0.8)',
-                        backdropFilter: 'blur(4px)',
-                        borderRadius: '16px',
-                        zIndex: 2,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '12px',
-                        pointerEvents: 'none',
-                      }}
-                    >
-                      <h3
-                        style={{
-                          fontFamily: 'Gilroy-SemiBold',
-                          fontStyle: 'normal',
-                          fontWeight: 400,
-                          fontSize: '20px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF',
-                          margin: 0,
-                          textAlign: 'center',
-                        }}
-                      >
-                        Preview Only
-                      </h3>
-                      <p
-                        style={{
-                          fontFamily: 'Gilroy-Regular',
-                          fontStyle: 'normal',
-                          fontWeight: 400,
-                          fontSize: '14px',
-                          lineHeight: '130%',
-                          color: '#FFFFFF',
-                          margin: 0,
-                          textAlign: 'center',
-                        }}
-                      >
-                        Subscribe to access full reports
-                      </p>
-                    </div>
+                      Watch Free Videos
+                    </button>
                   </div>
-                ))}
-              </div>
-            </div>
-            )}
-
-            {/* Big Gap */}
-            <div style={{ marginTop: isAuthenticated ? '220px' : '160px' }}></div>
-            
-            {/* Ready to unlock full access Tile */}
-            {!isAuthenticated && (
-            <div
-              className="relative overflow-hidden guest-cta-tile"
-              style={{
-                width: '1064px',
-                height: '247px',
-                borderRadius: '16px',
-                background: '#1F1F1F',
-                padding: '40px',
-                gap: '10px',
-                boxSizing: 'border-box',
-                marginTop: '0px',
-                marginBottom: '220px',
-                marginLeft: 'auto',
-                marginRight: 'auto',
-              }}
-            >
-              {/* Curved Gradient Border */}
-              <div 
-                className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
-                style={{
-                  borderRadius: '16px',
-                  background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)'
-                }}
-              >
-                <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
-              </div>
-
-              {/* Gradient Ellipse - Top Left */}
-              <div 
-                className="absolute pointer-events-none guest-cta-ellipse"
-                style={{
-                  width: '588px',
-                  height: '588px',
-                  left: '-403px',
-                  top: '-510px',
-                  background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                  filter: 'blur(200px)',
-                  transform: 'rotate(90deg)',
-                  flex: 'none',
-                  flexGrow: 0,
-                  zIndex: 0,
-                  borderRadius: '50%'
-                }}
-              ></div>
-
-              {/* Gradient Ellipse - Bottom Right */}
-              <div 
-                className="absolute pointer-events-none guest-cta-ellipse"
-                style={{
-                  width: '588px',
-                  height: '588px',
-                  left: '739px',
-                  bottom: '-510px',
-                  background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
-                  filter: 'blur(200px)',
-                  transform: 'rotate(90deg)',
-                  flex: 'none',
-                  flexGrow: 0,
-                  zIndex: 1,
-                  borderRadius: '50%'
-                }}
-              ></div>
-              
-              {/* Content */}
-              <div className="relative z-10 w-full h-full flex flex-col items-center justify-center guest-cta-inner" style={{ gap: '10px' }}>
-                {/* Frame 81 */}
-                <div
-                  className="guest-cta-text"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '24px',
-                    width: '461px',
-                    height: '77px',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 0,
-                  }}
-                >
-                  {/* Title */}
-                  <h2
-                    style={{
-                      width: '461px',
-                      height: '32px',
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '32px',
-                      lineHeight: '100%',
-                      textAlign: 'center',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                      margin: 0,
-                    }}
-                  >
-                    Ready to unlock full access?
-                  </h2>
-                  
-                  {/* Description */}
-                  <p
-                    style={{
-                      width: '461px',
-                      height: '21px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                      lineHeight: '130%',
-                      textAlign: 'center',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 1,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                      margin: 0,
-                    }}
-                  >
-                    Join thousands of informed investors making better decisions.
-                  </p>
-                </div>
-                
-                {/* Buttons Container */}
-                <div
-                  className="guest-cta-actions"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '20px',
-                    width: '414px',
-                    height: '50px',
-                    flex: 'none',
-                    flexGrow: 0,
-                    marginTop: '24px',
-                    marginLeft: 'auto',
-                    marginRight: 'auto',
-                  }}
-                >
-                  {/* Button 1 */}
-                  <button
-                    style={{
-                      padding: '12px 32px',
-                      background: '#FFFFFF',
-                      color: '#0A0A0A',
-                      borderRadius: '100px',
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontSize: '14px',
-                      fontWeight: 400,
-                      border: 'none',
-                      cursor: 'pointer',
-                      flex: 'none',
-                      minWidth: '180px',
-                      whiteSpace: 'nowrap',
-                      outline: 'none',
-                    }}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onFocus={(e) => e.currentTarget.style.outline = 'none'}
-                    onClick={() => router.push('/pricing')}
-                  >
-                    Start Subscription
-                  </button>
-                  {/* Button 2 */}
-                  <button
-                    style={{
-                      padding: '12px 32px',
-                      background: 'transparent',
-                      color: '#FFFFFF',
-                      borderRadius: '100px',
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontSize: '14px',
-                      fontWeight: 400,
-                      border: '1px solid #FFFFFF',
-                      cursor: 'pointer',
-                      flex: 'none',
-                      minWidth: '180px',
-                      whiteSpace: 'nowrap',
-                      outline: 'none',
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.outline = 'none';
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.border = '1px solid #FFFFFF';
-                    }}
-                  >
-                    Watch Free Videos
-                  </button>
                 </div>
               </div>
-            </div>
             )}
-            
+
             {/* Frequently Asked Questions Section */}
             <div
               style={{
@@ -1829,7 +1928,7 @@ export default function ResearchPage() {
               >
                 Frequently Asked Questions
               </h2>
-              
+
               {/* Description */}
               <p
                 style={{
@@ -1853,7 +1952,7 @@ export default function ResearchPage() {
                 Everything you need to know about your subscription.
               </p>
             </div>
-            
+
             {/* FAQ Tiles Container */}
             <div
               style={{
@@ -1865,7 +1964,7 @@ export default function ResearchPage() {
                 marginLeft: 'auto',
                 marginRight: 'auto',
               }}
-            className="research-faq-container"
+              className="research-faq-container"
             >
               {[
                 { question: 'Can I cancel anytime?', answer: 'Yes - your access continues until your period ends.' },
@@ -1889,7 +1988,7 @@ export default function ResearchPage() {
                   onClick={() => toggleTile(index)}
                 >
                   {/* Curved Gradient Border */}
-                  <div 
+                  <div
                     className="absolute inset-0 pointer-events-none rounded-2xl"
                     style={{
                       borderRadius: '16px',
@@ -1899,7 +1998,7 @@ export default function ResearchPage() {
                   >
                     <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
                   </div>
-                  
+
                   <div className="relative z-10 flex items-center justify-between" style={{ width: '100%' }}>
                     <h3
                       style={{
@@ -1947,16 +2046,16 @@ export default function ResearchPage() {
               ))}
             </div>
 
-          {/* Newsletter Subscription */}
-          {isAuthenticated && (
-            <div className="mt-16 mb-16 w-full" style={{ marginTop: '220px' }}>
-              <NewsletterSubscription />
-            </div>
-          )}
+            {/* Newsletter Subscription */}
+            {isAuthenticated && (
+              <div className="mt-16 mb-16 w-full" style={{ marginTop: '220px' }}>
+                <NewsletterSubscription />
+              </div>
+            )}
           </div>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );

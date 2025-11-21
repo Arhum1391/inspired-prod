@@ -2457,10 +2457,12 @@ export default function PortfolioPage() {
         inset: 0,
         background: 'rgba(10, 10, 10, 0.85)',
         display: 'flex',
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
-        zIndex: 1000,
-        padding: '24px',
+        zIndex: 10000,
+        padding: '16px',
+        paddingTop: '88px',
+        overflowY: 'auto',
       }}
       onClick={closeAddHoldingModal}
     >
@@ -2468,25 +2470,32 @@ export default function PortfolioPage() {
         style={{
           width: '100%',
           maxWidth: '480px',
+          maxHeight: 'calc(100vh - 120px)',
           background: '#1F1F1F',
           borderRadius: '16px',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           boxShadow: '0px 24px 80px rgba(0, 0, 0, 0.6)',
-          padding: '32px',
+          padding: 'clamp(20px, 5vw, 24px)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '24px',
+          gap: '20px',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          marginTop: '16px',
+          marginBottom: '16px',
+          marginLeft: 'auto',
+          marginRight: 'auto',
         }}
         onClick={event => event.stopPropagation()}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flexShrink: 0 }}>
           <h2
             id="add-holding-modal-title"
             style={{
               fontFamily: 'Gilroy-SemiBold',
               fontStyle: 'normal',
               fontWeight: 400,
-              fontSize: '24px',
+              fontSize: 'clamp(20px, 5vw, 24px)',
               lineHeight: '130%',
               color: '#FFFFFF',
               margin: 0,
@@ -2499,7 +2508,7 @@ export default function PortfolioPage() {
               fontFamily: 'Gilroy-Medium',
               fontStyle: 'normal',
               fontWeight: 400,
-              fontSize: '16px',
+              fontSize: 'clamp(14px, 3.5vw, 16px)',
               lineHeight: '130%',
               color: '#9D9D9D',
               margin: 0,
@@ -2517,178 +2526,187 @@ export default function PortfolioPage() {
               border: '1px solid rgba(255, 0, 0, 0.4)',
               color: '#FFB3B3',
               fontFamily: 'Gilroy-Medium',
-              fontSize: '14px',
+              fontSize: 'clamp(12px, 3vw, 14px)',
+              flexShrink: 0,
             }}
           >
             {credentialError}
           </div>
         ) : null}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', flex: '1 1 auto', minHeight: 0, overflowY: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label
+              htmlFor="portfolio-api-key-input"
+              style={{
+                fontFamily: 'Gilroy-SemiBold',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                lineHeight: '130%',
+                color: '#FFFFFF',
+              }}
+            >
+              API Key
+            </label>
+            <input
+              id="portfolio-api-key-input"
+              type="text"
+              value={apiKeyValue}
+              onChange={handleApiKeyChange}
+              placeholder="Enter your API key"
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: '#0A0A0A',
+                color: '#FFFFFF',
+                fontFamily: 'Gilroy-Medium',
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                lineHeight: '130%',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label
+              htmlFor="portfolio-api-secret-input"
+              style={{
+                fontFamily: 'Gilroy-SemiBold',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                lineHeight: '130%',
+                color: '#FFFFFF',
+              }}
+            >
+              API Secret
+            </label>
+            <input
+              id="portfolio-api-secret-input"
+              type="password"
+              value={apiSecretValue}
+              onChange={handleApiSecretChange}
+              placeholder="Enter your API secret"
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: '#0A0A0A',
+                color: '#FFFFFF',
+                fontFamily: 'Gilroy-Medium',
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                lineHeight: '130%',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              autoComplete="off"
+            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label
+              htmlFor="portfolio-passphrase-input"
+              style={{
+                fontFamily: 'Gilroy-SemiBold',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                lineHeight: '130%',
+                color: '#FFFFFF',
+              }}
+            >
+              Passphrase (optional)
+            </label>
+            <input
+              id="portfolio-passphrase-input"
+              type="password"
+              value={passphraseValue}
+              onChange={handlePassphraseChange}
+              placeholder="Enter if your key requires a passphrase"
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: '#0A0A0A',
+                color: '#FFFFFF',
+                fontFamily: 'Gilroy-Medium',
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                lineHeight: '130%',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              autoComplete="off"
+            />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <label
+              htmlFor="portfolio-label-input"
+              style={{
+                fontFamily: 'Gilroy-SemiBold',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                lineHeight: '130%',
+                color: '#FFFFFF',
+              }}
+            >
+              Label (optional)
+            </label>
+            <input
+              id="portfolio-label-input"
+              type="text"
+              value={labelValue}
+              onChange={handleLabelChange}
+              placeholder="e.g. Personal account"
+              style={{
+                width: '100%',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                background: '#0A0A0A',
+                color: '#FFFFFF',
+                fontFamily: 'Gilroy-Medium',
+                fontSize: 'clamp(12px, 3vw, 14px)',
+                lineHeight: '130%',
+                outline: 'none',
+                boxSizing: 'border-box',
+              }}
+              autoComplete="off"
+            />
+          </div>
           <label
-            htmlFor="portfolio-api-key-input"
+            htmlFor="portfolio-use-testnet-toggle"
             style={{
-              fontFamily: 'Gilroy-SemiBold',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '130%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginTop: '4px',
+              fontFamily: 'Gilroy-Medium',
+              fontSize: 'clamp(12px, 3vw, 14px)',
               color: '#FFFFFF',
             }}
           >
-            API Key
+            <input
+              id="portfolio-use-testnet-toggle"
+              type="checkbox"
+              checked={useTestnetValue}
+              onChange={handleUseTestnetToggle}
+              style={{ width: '16px', height: '16px', flexShrink: 0 }}
+            />
+            Use Binance testnet
           </label>
-          <input
-            id="portfolio-api-key-input"
-            type="text"
-            value={apiKeyValue}
-            onChange={handleApiKeyChange}
-            placeholder="Enter your API key"
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              background: '#0A0A0A',
-              color: '#FFFFFF',
-              fontFamily: 'Gilroy-Medium',
-              fontSize: '14px',
-              lineHeight: '130%',
-              outline: 'none',
-            }}
-          />
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label
-            htmlFor="portfolio-api-secret-input"
-            style={{
-              fontFamily: 'Gilroy-SemiBold',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '130%',
-              color: '#FFFFFF',
-            }}
-          >
-            API Secret
-          </label>
-          <input
-            id="portfolio-api-secret-input"
-            type="password"
-            value={apiSecretValue}
-            onChange={handleApiSecretChange}
-            placeholder="Enter your API secret"
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              background: '#0A0A0A',
-              color: '#FFFFFF',
-              fontFamily: 'Gilroy-Medium',
-              fontSize: '14px',
-              lineHeight: '130%',
-              outline: 'none',
-            }}
-            autoComplete="off"
-          />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label
-            htmlFor="portfolio-passphrase-input"
-            style={{
-              fontFamily: 'Gilroy-SemiBold',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '130%',
-              color: '#FFFFFF',
-            }}
-          >
-            Passphrase (optional)
-          </label>
-          <input
-            id="portfolio-passphrase-input"
-            type="password"
-            value={passphraseValue}
-            onChange={handlePassphraseChange}
-            placeholder="Enter if your key requires a passphrase"
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              background: '#0A0A0A',
-              color: '#FFFFFF',
-              fontFamily: 'Gilroy-Medium',
-              fontSize: '14px',
-              lineHeight: '130%',
-              outline: 'none',
-            }}
-            autoComplete="off"
-          />
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <label
-            htmlFor="portfolio-label-input"
-            style={{
-              fontFamily: 'Gilroy-SemiBold',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '130%',
-              color: '#FFFFFF',
-            }}
-          >
-            Label (optional)
-          </label>
-          <input
-            id="portfolio-label-input"
-            type="text"
-            value={labelValue}
-            onChange={handleLabelChange}
-            placeholder="e.g. Personal account"
-            style={{
-              width: '100%',
-              padding: '14px 16px',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              background: '#0A0A0A',
-              color: '#FFFFFF',
-              fontFamily: 'Gilroy-Medium',
-              fontSize: '14px',
-              lineHeight: '130%',
-              outline: 'none',
-            }}
-            autoComplete="off"
-          />
-        </div>
-        <label
-          htmlFor="portfolio-use-testnet-toggle"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            marginTop: '4px',
-            fontFamily: 'Gilroy-Medium',
-            fontSize: '14px',
-            color: '#FFFFFF',
-          }}
-        >
-          <input
-            id="portfolio-use-testnet-toggle"
-            type="checkbox"
-            checked={useTestnetValue}
-            onChange={handleUseTestnetToggle}
-            style={{ width: '16px', height: '16px' }}
-          />
-          Use Binance testnet
-        </label>
         <div
           style={{
             display: 'flex',
             flexDirection: 'row',
             justifyContent: 'flex-end',
             gap: '12px',
+            flexShrink: 0,
+            paddingTop: '4px',
           }}
         >
           <button
@@ -2700,8 +2718,9 @@ export default function PortfolioPage() {
               borderRadius: '100px',
               border: '1px solid rgba(255, 255, 255, 0.24)',
               fontFamily: 'Gilroy-SemiBold',
-              fontSize: '14px',
+              fontSize: 'clamp(12px, 3vw, 14px)',
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
             }}
             onClick={closeAddHoldingModal}
             disabled={isSavingCredentials}
@@ -2717,8 +2736,9 @@ export default function PortfolioPage() {
               borderRadius: '100px',
               border: 'none',
               fontFamily: 'Gilroy-SemiBold',
-              fontSize: '14px',
+              fontSize: 'clamp(12px, 3vw, 14px)',
               cursor: 'pointer',
+              whiteSpace: 'nowrap',
             }}
             onClick={handleConfirmAddHolding}
             disabled={isSavingCredentials}

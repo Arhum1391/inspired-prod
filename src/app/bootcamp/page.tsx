@@ -638,7 +638,7 @@ export default function BootcampPage() {
 
 
       {/* Navigation Header */}
-      <div className="relative z-10">
+      <div className="relative z-[9999]">
         <Navbar variant="hero" />
       </div>
 
@@ -661,7 +661,7 @@ export default function BootcampPage() {
               </div>
             )}
             {enrolledBootcamps.length > 0 && (
-              <div className="relative z-10 w-full px-0 sm:px-2 -mt-16">
+              <div className="relative z-[1] w-full px-0 sm:px-2 -mt-16">
                 <div className="flex flex-col gap-6 w-full max-w-[1280px] mx-auto">
                   <div className="flex flex-col gap-4">
                     <p
@@ -682,7 +682,7 @@ export default function BootcampPage() {
       </section>
 
       {showEnrolledHero && (
-        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-6 mt-32">
+        <div className="relative z-[1] w-full px-4 sm:px-6 lg:px-6 mt-32">
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col gap-3">
 

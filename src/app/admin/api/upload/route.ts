@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/middleware';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { uploadFile, getFileUrl } from '@/lib/s3';
 
 async function uploadImage(req: NextRequest, userId: string) {
   try {
@@ -34,26 +32,20 @@ async function uploadImage(req: NextRequest, userId: string) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
-    // Generate unique filename
+    // Generate unique filename for S3
     const timestamp = Date.now();
-    const filename = `${timestamp}-${file.name}`;
-    const filepath = join(uploadsDir, filename);
+    const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+    const s3Key = `uploads/${timestamp}-${sanitizedFileName}`;
 
-    console.log('📁 Upload: Saving file to:', filepath);
+    console.log('📁 Upload: Uploading to S3 with key:', s3Key);
 
-    // Write file to disk
-    await writeFile(filepath, buffer);
+    // Upload file to S3
+    await uploadFile(buffer, s3Key, file.type);
 
-    // Return the public URL
-    const url = `/uploads/${filename}`;
+    // Get the public URL for the uploaded file
+    const url = getFileUrl(s3Key);
     
-    console.log('✅ Upload: File uploaded successfully:', url);
+    console.log('✅ Upload: File uploaded successfully to S3:', url);
     return NextResponse.json({ url });
   } catch (error) {
     console.error('Upload error:', error);

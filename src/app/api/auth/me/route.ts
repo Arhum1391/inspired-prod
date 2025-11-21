@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
       id: user._id!,
       email: user.email,
       name: user.name || null,
+      image: user.image || null,
       isPaid: user.isPaid,
       subscriptionStatus: user.subscriptionStatus,
     };

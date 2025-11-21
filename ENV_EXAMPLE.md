@@ -41,6 +41,12 @@ SMTP_PASS=your-app-password
 # Base URL (OPTIONAL - defaults to localhost:3000 in development, VERCEL_URL in production)
 # Set this if you need a custom base URL for email links
 # NEXT_PUBLIC_BASE_URL=https://yourdomain.com
+
+# AWS S3 Configuration (REQUIRED for file uploads)
+AWS_S3_BUCKET_NAME=your-bucket-name
+AWS_S3_REGION=us-east-1
+AWS_ACCESS_KEY_ID=your-access-key-id
+AWS_SECRET_ACCESS_KEY=your-secret-access-key
 ```
 
 ## ❌ NO LONGER NEEDED:

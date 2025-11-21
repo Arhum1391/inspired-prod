@@ -146,27 +146,27 @@ export default function BootcampDetailPage() {
                 {/* Text Content */}
                 <div className="flex flex-col gap-6">
                   {/* Main Heading */}
-                  <h1 className="text-3xl sm:text-4xl lg:text-5xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '120%'}}>
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '120%' }}>
                     {bootcamp.title}
                   </h1>
 
                   {/* Subheading */}
                   {bootcamp.heroSubheading && (
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
+                    <p className="text-base text-white leading-[130%]" style={{ fontFamily: 'Gilroy', fontWeight: 350 }}>
                       {bootcamp.heroSubheading}
                     </p>
                   )}
 
                   {/* Description Paragraphs */}
                   {bootcamp.heroDescription && bootcamp.heroDescription.map((paragraph, index) => (
-                    <p key={index} className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
+                    <p key={index} className="text-base text-white leading-[130%]" style={{ fontFamily: 'Gilroy', fontWeight: 350 }}>
                       {paragraph}
                     </p>
                   ))}
 
                   {/* Fallback to basic description if no hero description */}
                   {!bootcamp.heroDescription && bootcamp.description && (
-                    <p className="text-base text-white leading-[130%]" style={{fontFamily: 'Gilroy', fontWeight: 350}}>
+                    <p className="text-base text-white leading-[130%]" style={{ fontFamily: 'Gilroy', fontWeight: 350 }}>
                       {bootcamp.description}
                     </p>
                   )}
@@ -177,7 +177,7 @@ export default function BootcampDetailPage() {
                   <button
                     onClick={() => router.push(`/bootcamp/${bootcamp.id}/register`)}
                     className="bg-white rounded-full px-6 py-4 text-sm text-[#0A0A0A] hover:bg-gray-100 transition-colors"
-                    style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}
+                    style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}
                   >
                     Register Now - {bootcamp.price}
                   </button>
@@ -227,10 +227,10 @@ export default function BootcampDetailPage() {
 
                     {/* Text */}
                     <div className="flex flex-col gap-3 relative z-10">
-                      <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                      <h3 className="text-xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
                         {bootcamp.infoCards?.duration?.value || bootcamp.duration}
                       </h3>
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                      <p className="text-base text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
                         {bootcamp.infoCards?.duration?.label || 'Duration'}
                       </p>
                     </div>
@@ -275,10 +275,10 @@ export default function BootcampDetailPage() {
 
                     {/* Text */}
                     <div className="flex flex-col gap-3 relative z-10">
-                      <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                      <h3 className="text-xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
                         {bootcamp.infoCards?.mode?.value || bootcamp.format}
                       </h3>
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                      <p className="text-base text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
                         {bootcamp.infoCards?.mode?.label || 'Mode'}
                       </p>
                     </div>
@@ -326,10 +326,10 @@ export default function BootcampDetailPage() {
 
                     {/* Text */}
                     <div className="flex flex-col gap-2 relative z-10">
-                      <h3 className="text-lg text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                      <h3 className="text-lg text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
                         {bootcamp.infoCards?.interactive?.value || 'Live Sessions'}
                       </h3>
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                      <p className="text-base text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
                         {bootcamp.infoCards?.interactive?.label || 'Interactive'}
                       </p>
                     </div>
@@ -374,10 +374,10 @@ export default function BootcampDetailPage() {
 
                     {/* Text */}
                     <div className="flex flex-col gap-2 relative z-10">
-                      <h3 className="text-lg text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                      <h3 className="text-lg text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
                         {bootcamp.infoCards?.certificate?.value || 'Certificate'}
                       </h3>
-                      <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                      <p className="text-base text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
                         {bootcamp.infoCards?.certificate?.label || 'Completion'}
                       </p>
                     </div>
@@ -418,19 +418,25 @@ export default function BootcampDetailPage() {
 
                   {/* Text */}
                   <div className="flex flex-col gap-2 flex-1 relative z-10">
-                    <h3 className="text-lg text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
-                      Registration Open
+                    <h3 className="text-lg text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
+                      {new Date(bootcamp.registrationEndDate) < new Date() ? (
+                        <>
+                          Registration Closed
+                        </>
+                      ) : (
+                        <>Registration Open</>
+                      )}
                     </h3>
-                    <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                      {bootcamp.infoCards?.registrationText || 
-                        `${new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', { 
-                          day: 'numeric', 
-                          month: 'long', 
-                          year: 'numeric' 
-                        })} - ${new Date(bootcamp.registrationEndDate).toLocaleDateString('en-US', { 
-                          day: 'numeric', 
-                          month: 'long', 
-                          year: 'numeric' 
+                    <p className="text-sm text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
+                      {bootcamp.infoCards?.registrationText ||
+                        `${new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })} - ${new Date(bootcamp.registrationEndDate).toLocaleDateString('en-US', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
                         })}`
                       }
                     </p>
@@ -453,12 +459,12 @@ export default function BootcampDetailPage() {
               {/* Section Header */}
               <div className="flex flex-col items-center gap-6 w-full">
                 {/* Title */}
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white text-center w-full" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
                   Meet Your Mentors
                 </h2>
 
                 {/* Subtitle */}
-                <p className="text-sm sm:text-base text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                <p className="text-sm sm:text-base text-white text-center w-full" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
                   Learn from industry experts with proven track records
                 </p>
               </div>
@@ -507,19 +513,19 @@ export default function BootcampDetailPage() {
                       {/* Mentor Info */}
                       <div className="flex flex-col items-start gap-2 w-full relative z-10">
                         {/* Name */}
-                        <h3 className="text-lg sm:text-xl text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                        <h3 className="text-lg sm:text-xl text-white text-center w-full" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
                           {mentor.name}
                         </h3>
 
                         {/* Details */}
                         <div className="flex flex-col items-center gap-4 w-full">
                           {/* Title */}
-                          <p className="text-sm text-[#909090] text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
+                          <p className="text-sm text-[#909090] text-center w-full" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%' }}>
                             {mentor.role}
                           </p>
 
                           {/* Description */}
-                          <p className="text-sm text-[#909090] text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
+                          <p className="text-sm text-[#909090] text-center w-full" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%' }}>
                             {mentor.description}
                           </p>
                         </div>
@@ -570,7 +576,7 @@ export default function BootcampDetailPage() {
                         {/* Mentor Info */}
                         <div className="flex flex-col items-start gap-2 w-full relative z-10">
                           {/* Name */}
-                          <h3 className="text-lg sm:text-xl text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                          <h3 className="text-lg sm:text-xl text-white text-center w-full" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
                             {mentor}
                           </h3>
 
@@ -578,7 +584,7 @@ export default function BootcampDetailPage() {
                           <div className="flex flex-col items-center gap-4 w-full">
                             {/* Description */}
                             {teamMember && (
-                              <p className="text-sm text-[#909090] text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
+                              <p className="text-sm text-[#909090] text-center w-full" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%' }}>
                                 {getTeamMemberAbout(teamMember, 'bootcamp')}
                               </p>
                             )}
@@ -606,12 +612,12 @@ export default function BootcampDetailPage() {
               {/* Section Header */}
               <div className="flex flex-col items-center gap-6 w-full">
                 {/* Title */}
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white text-center max-w-[888px]" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '130%'}}>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white text-center max-w-[888px]" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '130%' }}>
                   What You&apos;ll Learn
                 </h2>
 
                 {/* Subtitle */}
-                <p className="text-sm sm:text-base text-white text-center w-full" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
+                <p className="text-sm sm:text-base text-white text-center w-full" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%' }}>
                   Our comprehensive curriculum is designed to take you from beginner to advanced level
                 </p>
               </div>
@@ -662,10 +668,10 @@ export default function BootcampDetailPage() {
 
                           {/* Title */}
                           <div className="flex flex-col gap-2 flex-1">
-                            <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                            <p className="text-sm text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
                               {section.weekRange}
                             </p>
-                            <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
+                            <h3 className="text-xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em' }}>
                               {section.title}
                             </h3>
                           </div>
@@ -676,7 +682,7 @@ export default function BootcampDetailPage() {
                           {section.items.map((item, itemIndex) => (
                             <div key={itemIndex} className="flex items-center gap-2">
                               <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                              <p className="text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                              <p className="text-base text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
                                 {item}
                               </p>
                             </div>
@@ -734,12 +740,12 @@ export default function BootcampDetailPage() {
               {/* Content */}
               <div className="flex flex-col gap-6 relative z-10">
                 {/* Title */}
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}>
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
                   {bootcamp.targetAudience?.title || 'Who Should Join?'}
                 </h2>
 
                 {/* Subtitle */}
-                <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%'}}>
+                <p className="text-sm sm:text-base text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '130%' }}>
                   {bootcamp.targetAudience?.subtitle || 'This bootcamp is perfect for:'}
                 </p>
 
@@ -749,7 +755,7 @@ export default function BootcampDetailPage() {
                     bootcamp.targetAudience.items.map((item, index) => (
                       <div key={index} className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-white rounded-full flex-shrink-0" />
-                        <p className="text-sm sm:text-base text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        <p className="text-sm sm:text-base text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
                           {item}
                         </p>
                       </div>

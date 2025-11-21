@@ -725,3 +725,14 @@ section, main, div[id^="social-"], div[id^="latest-"], div[id^="partners"], div[
 .flip-card-description-scroll::-webkit-scrollbar-thumb:active {
   background: rgba(255, 255, 255, 0.6);
 }
+
+.research-gradient {
+  background: linear-gradient(
+    107.68deg,
+    #3813f3 9.35%,
+    #05b0b3 34.7%,
+    #4b25fd 60.06%,
+    #b9b9e9 72.73%,
+    #de50ec 88.58%
+  );
+}

@@ -30,15 +30,10 @@ export default function BootcampRegisterPage() {
     }
   }, [params.id]);
 
-  // Check authentication and populate form with user data
+  // Pre-populate form with authenticated user's data (if available)
+  // Authentication is optional - users can purchase without signing up
   useEffect(() => {
-    if (!authLoading) {
-      if (!isAuthenticated || !user) {
-        // User not authenticated - redirect to sign in
-        router.push(`/signin?redirect=/bootcamp/${params.id}/register`);
-        return;
-      }
-
+    if (!authLoading && isAuthenticated && user) {
       // Pre-populate form with authenticated user's data
       if (user.name && !fullName) {
         setFullName(user.name);
@@ -47,7 +42,7 @@ export default function BootcampRegisterPage() {
         setEmail(user.email);
       }
     }
-  }, [authLoading, isAuthenticated, user, params.id, router]);
+  }, [authLoading, isAuthenticated, user]);
 
   // Check payment status and restore form data on mount
   useEffect(() => {
@@ -124,7 +119,8 @@ export default function BootcampRegisterPage() {
     try {
       console.log('🔍 Verifying payment and creating enrollment for session:', sessionId);
       
-      const response = await fetch('/api/bootcamp/verify-payment', {
+      // First try the process-payment endpoint (works for both authenticated and guest users)
+      let response = await fetch('/api/bootcamp/process-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -136,7 +132,7 @@ export default function BootcampRegisterPage() {
         }),
       });
 
-      const data = await response.json();
+      let data = await response.json();
 
       if (response.ok && data.success) {
         console.log('✅ Enrollment verified/created successfully:', data);
@@ -146,14 +142,48 @@ export default function BootcampRegisterPage() {
             window.dispatchEvent(new CustomEvent('bootcamp-enrollment-updated'));
           }, 500);
         }
-      } else {
-        console.error('⚠️ Failed to verify/create enrollment:', data);
-        // Don't show error to user - webhook might process later
-        // But try again after a delay
-        setTimeout(() => {
-          verifyPaymentAndCreateEnrollment(sessionId);
-        }, 5000);
+        return; // Success, no need to retry
       }
+
+      // If process-payment fails, try verify-payment (requires auth)
+      if (response.status !== 200) {
+        console.log('⚠️ process-payment failed, trying verify-payment endpoint...');
+        response = await fetch('/api/bootcamp/verify-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            sessionId: sessionId,
+            bootcampId: params.id
+          }),
+        });
+
+        data = await response.json();
+
+        if (response.ok && data.success) {
+          console.log('✅ Enrollment verified/created via verify-payment:', data);
+          if (typeof window !== 'undefined') {
+            setTimeout(() => {
+              window.dispatchEvent(new CustomEvent('bootcamp-enrollment-updated'));
+            }, 500);
+          }
+          return;
+        } else if (response.status === 401) {
+          // User is not authenticated - that's fine, webhook will handle it
+          console.log('ℹ️ User not authenticated - webhook will handle registration');
+          // Don't retry for 401 errors - webhook will process it
+          return;
+        }
+      }
+
+      console.error('⚠️ Failed to verify/create enrollment:', data);
+      // Don't show error to user - webhook might process later
+      // But try again after a delay (only if not 401)
+      setTimeout(() => {
+        verifyPaymentAndCreateEnrollment(sessionId);
+      }, 5000);
     } catch (error) {
       console.error('Error verifying payment:', error);
       // Try again after delay
@@ -244,12 +274,8 @@ export default function BootcampRegisterPage() {
   };
 
   const handleStripePayment = async () => {
-    // Check authentication
-    if (!isAuthenticated || !user) {
-      setPaymentError('Please sign in to purchase a bootcamp.');
-      router.push(`/signin?redirect=/bootcamp/${params.id}/register`);
-      return;
-    }
+    // Authentication is optional - users can purchase without signing up
+    // They will receive an email to sign up after payment
 
     if (!fullName.trim()) {
       setEmailError('Please enter your name');
@@ -330,10 +356,8 @@ export default function BootcampRegisterPage() {
         setPaymentError(errorMessage || 'Failed to create payment session. Please try again.');
         setPaymentInitiating(false);
         
-        // If authentication error, redirect to sign in
-        if (response.status === 401) {
-          router.push(`/signin?redirect=/bootcamp/${params.id}/register`);
-        }
+        // Note: Authentication is optional, so 401 shouldn't occur for bootcamp purchases
+        // But if it does, just show the error message
       }
     } catch (error) {
       console.error('Error creating Stripe checkout session:', error);
@@ -393,17 +417,8 @@ export default function BootcampRegisterPage() {
     );
   }
 
-  // Check authentication - if not authenticated, show message (redirect happens in useEffect)
-  if (!isAuthenticated || !user) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
-        <Navbar variant="hero" />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-white">Redirecting to sign in...</div>
-        </div>
-      </div>
-    );
-  }
+  // Authentication is optional - users can purchase without signing up
+  // No need to block the page if user is not authenticated
 
   if (!bootcamp) {
     return (

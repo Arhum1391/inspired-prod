@@ -249,28 +249,29 @@ export async function updatePublicUser(
     { returnDocument: 'after' }
   );
 
-  // result.value is the updated document
-  const doc = result.value;
 
-  if (!doc) return null;
+  const updatedUser = result?.value;
+
+  if (!updatedUser) {
+    return null;
+  }
 
   return {
-    _id: doc._id.toString(),
-    email: doc.email,
-    password: doc.password,
-    name: doc.name || null,
-    isPaid: doc.isPaid ?? false,
-    subscriptionStatus:
-      doc.subscriptionStatus ??
-      (doc.isPaid ? 'active' : 'none'),
-    lastPaymentAt: doc.lastPaymentAt ?? null,
-    emailVerified: doc.emailVerified ?? false,
-    emailVerificationToken: doc.emailVerificationToken ?? null,
-    emailVerificationTokenExpiry: doc.emailVerificationTokenExpiry ?? null,
-    passwordResetToken: doc.passwordResetToken ?? null,
-    passwordResetTokenExpiry: doc.passwordResetTokenExpiry ?? null,
-    createdAt: doc.createdAt,
-    updatedAt: doc.updatedAt
+    _id: updatedUser._id.toString(),
+    email: updatedUser.email,
+    password: updatedUser.password,
+    name: updatedUser.name || null,
+    isPaid: updatedUser.isPaid ?? false,
+    subscriptionStatus: updatedUser.subscriptionStatus ?? (updatedUser.isPaid ? 'active' : 'none'),
+    lastPaymentAt: updatedUser.lastPaymentAt ?? null,
+    emailVerified: updatedUser.emailVerified ?? false,
+    emailVerificationToken: updatedUser.emailVerificationToken ?? null,
+    emailVerificationTokenExpiry: updatedUser.emailVerificationTokenExpiry ?? null,
+    passwordResetToken: updatedUser.passwordResetToken ?? null,
+    passwordResetTokenExpiry: updatedUser.passwordResetTokenExpiry ?? null,
+    createdAt: updatedUser.createdAt,
+    updatedAt: updatedUser.updatedAt
+
   };
 }
 

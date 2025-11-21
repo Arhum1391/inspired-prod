@@ -6,6 +6,7 @@ interface User {
   id: string;
   email: string;
   name?: string;
+  image?: string;
   isPaid: boolean;
   subscriptionStatus?: string | null;
 }
@@ -40,6 +41,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     id: rawUser.id,
     email: rawUser.email,
     name: rawUser.name ?? undefined,
+    image: rawUser.image ?? undefined,
     isPaid: rawUser.isPaid ?? false,
     subscriptionStatus: rawUser.subscriptionStatus ?? (rawUser.isPaid ? 'active' : 'none'),
   });

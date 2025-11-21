@@ -37,6 +37,7 @@ export interface PublicUser {
   email: string;
   password: string;
   name?: string | null;
+  image?: string | null;
   isPaid: boolean;
   subscriptionStatus: string;
   lastPaymentAt?: Date | null;
@@ -135,6 +136,7 @@ export async function getPublicUserByEmail(email: string): Promise<PublicUser | 
     email: user.email,
     password: user.password,
     name: user.name || null,
+    image: user.image || null,
     isPaid: user.isPaid ?? false,
     subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
     lastPaymentAt: user.lastPaymentAt ?? null,
@@ -156,6 +158,7 @@ export async function getPublicUserById(id: string): Promise<PublicUser | null> 
     email: user.email,
     password: user.password,
     name: user.name || null,
+    image: user.image || null,
     isPaid: user.isPaid ?? false,
     subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
     lastPaymentAt: user.lastPaymentAt ?? null,
@@ -225,6 +228,7 @@ export async function updatePublicUser(
   updates: {
     name?: string | null;
     email?: string;
+    image?: string | null;
     isPaid?: boolean;
     subscriptionStatus?: string;
     lastPaymentAt?: Date | null;
@@ -261,6 +265,7 @@ export async function updatePublicUser(
     email: updatedUser.email,
     password: updatedUser.password,
     name: updatedUser.name || null,
+    image: updatedUser.image || null,
     isPaid: updatedUser.isPaid ?? false,
     subscriptionStatus: updatedUser.subscriptionStatus ?? (updatedUser.isPaid ? 'active' : 'none'),
     lastPaymentAt: updatedUser.lastPaymentAt ?? null,
@@ -296,6 +301,7 @@ export async function getPublicUserByVerificationToken(token: string): Promise<P
     email: user.email,
     password: user.password,
     name: user.name || null,
+    image: user.image || null,
     isPaid: user.isPaid ?? false,
     subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
     lastPaymentAt: user.lastPaymentAt ?? null,
@@ -324,6 +330,7 @@ export async function getPublicUserByPasswordResetToken(token: string): Promise<
     email: user.email,
     password: user.password,
     name: user.name || null,
+    image: user.image || null,
     isPaid: user.isPaid ?? false,
     subscriptionStatus: user.subscriptionStatus ?? (user.isPaid ? 'active' : 'none'),
     lastPaymentAt: user.lastPaymentAt ?? null,

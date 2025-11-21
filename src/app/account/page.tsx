@@ -2,19 +2,22 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 
 const AccountPage = () => {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, login } = useAuth();
   const router = useRouter();
   const [subscription, setSubscription] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState<any>(null);
   const [billingHistory, setBillingHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -86,9 +89,69 @@ const AccountPage = () => {
     : 'text-[#05B0B3]';
   const planStatusLabel = hasActiveSubscription ? 'Active' : 'Free Access';
 
+  const handleImageClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await fetch('/api/user/profile-picture', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to upload image');
+      }
+
+      // Refresh user data from server
+      const userResponse = await fetch('/api/auth/me', {
+        credentials: 'include',
+        cache: 'no-store',
+      });
+
+      if (userResponse.ok) {
+        const userData = await userResponse.json();
+        if (userData.user) {
+          login(userData.user);
+        }
+      }
+
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error: any) {
+      console.error('Error uploading profile picture:', error);
+      setUploadError(error.message || 'Failed to upload profile picture');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
       <Navbar />
+      {/* Hidden file input for profile picture upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
       {/* Mobile Layout */}
       <div className="lg:hidden relative w-full pt-24 pb-24">
         <div className="max-w-[420px] mx-auto px-4 flex flex-col gap-10">
@@ -113,14 +176,80 @@ const AccountPage = () => {
             />
 
             <div className="relative z-10 flex flex-col gap-10">
-              <div className="flex items-center justify-between gap-4">
-                <h2 className="text-white text-[20px] font-normal leading-none gilroy-semibold">
-                  Profile Settings
-                </h2>
-                <button className="hover:opacity-80 transition-opacity bg-white text-[#1F1F1F] px-3 py-2 rounded-full text-sm font-normal gilroy-semibold whitespace-nowrap">
+              <h2 className="text-white text-[20px] font-normal leading-none gilroy-semibold">
+                Profile Settings
+              </h2>
+
+              {/* Image Section */}
+              <div className="flex flex-row items-center gap-4 w-full">
+                <div className="relative w-[63px] h-[64px] flex-shrink-0">
+                  <div className="absolute w-[64px] h-[64px] left-[-1px] top-0 rounded-full bg-[#D9D9D9] overflow-hidden">
+                    {uploading ? (
+                      <div className="w-full h-full flex items-center justify-center bg-[#D9D9D9]">
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    ) : user?.image ? (
+                      <img 
+                        src={user.image} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#D9D9D9]" />
+                    )}
+                  </div>
+                  <button
+                    onClick={handleImageClick}
+                    disabled={uploading}
+                    className="absolute right-0 bottom-0 w-6 h-6 cursor-pointer hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="absolute left-0 right-0 top-0 h-6 bg-white rounded-[32px]" />
+                    <div className="absolute right-0 bottom-0 w-6 h-6 flex items-center justify-center">
+                      <svg width="12.5" height="10" viewBox="0 0 12.5 10" fill="none" className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+                        <rect x="2.5" y="2.5" width="7.5" height="5" rx="1" fill="#0A0A0A"/>
+                        <circle cx="6.25" cy="5" r="1.5" fill="white"/>
+                        <rect x="9.5" y="3.5" width="1.5" height="1" rx="0.25" fill="#0A0A0A"/>
+                      </svg>
+                    </div>
+                  </button>
+                </div>
+                <div className="flex flex-col items-start gap-0.5 flex-1 min-w-0">
+                  <span className="text-white text-lg font-normal leading-[140%] tracking-[0.01em] gilroy-semibold w-full">
+                    {user?.name || 'John Doe'}
+                  </span>
+                  <span className="text-[#656565] text-xs font-normal leading-[140%] tracking-[0.01em] gilroy-medium w-full">
+                    {user?.email || 'John.doe24@gmail.com'}
+                  </span>
+                </div>
+                <button 
+                  className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center flex-shrink-0"
+                  style={{
+                    boxSizing: 'border-box',
+                    padding: '10px 16px',
+                    gap: '8px',
+                    width: '120px',
+                    height: '38px',
+                    background: '#FFFFFF',
+                    border: '1px solid #FFFFFF',
+                    borderRadius: '100px',
+                    fontFamily: 'Gilroy-SemiBold',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    fontSize: '14px',
+                    lineHeight: '100%',
+                    textAlign: 'center',
+                    color: '#1F1F1F'
+                  }}
+                >
                   Edit Profile
                 </button>
               </div>
+
+              {uploadError && (
+                <div className="text-red-400 text-sm gilroy-medium">
+                  {uploadError}
+                </div>
+              )}
 
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-1">
@@ -797,18 +926,80 @@ const AccountPage = () => {
             />
 
             <div className="relative z-10 w-full flex flex-col items-start gap-10">
-              <div className="w-full flex flex-row items-start justify-between gap-6">
-                <div className="flex flex-col items-start gap-3 flex-1">
-                  <h1 className="text-white text-4xl font-normal leading-none gilroy-semibold">
-                    Profile Settings
-                  </h1>
+              <h1 className="text-white text-4xl font-normal leading-none gilroy-semibold">
+                Profile Settings
+              </h1>
+
+              {/* Image Section */}
+              <div className="flex flex-row items-center gap-4 w-full h-16 relative">
+                <div className="relative w-[63px] h-16 flex-shrink-0">
+                  <div className="absolute w-16 h-16 left-[-1px] top-0 rounded-full bg-[#D9D9D9] overflow-hidden">
+                    {uploading ? (
+                      <div className="w-full h-full flex items-center justify-center bg-[#D9D9D9]">
+                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    ) : user?.image ? (
+                      <img 
+                        src={user.image} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-[#D9D9D9]" />
+                    )}
+                  </div>
+                  <button
+                    onClick={handleImageClick}
+                    disabled={uploading}
+                    className="absolute right-0 bottom-0 w-6 h-6 cursor-pointer hover:opacity-80 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="absolute left-0 right-0 top-0 h-6 bg-white rounded-[32px]" />
+                    <div className="absolute right-0 bottom-0 w-6 h-6 flex items-center justify-center">
+                      <svg width="12.5" height="10" viewBox="0 0 12.5 10" fill="none" className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
+                        <rect x="2.5" y="2.5" width="7.5" height="5" rx="1" fill="#0A0A0A"/>
+                        <circle cx="6.25" cy="5" r="1.5" fill="white"/>
+                        <rect x="9.5" y="3.5" width="1.5" height="1" rx="0.25" fill="#0A0A0A"/>
+                      </svg>
+                    </div>
+                  </button>
                 </div>
-                <CustomButton
-                  className="hover:opacity-80 transition-opacity bg-white text-[#1F1F1F] px-4 py-2.5 rounded-full text-sm font-normal gilroy-semibold whitespace-nowrap"
+                <div className="flex flex-col items-start gap-0.5 flex-1 min-w-0">
+                  <span className="text-white text-lg font-normal leading-[140%] tracking-[0.01em] gilroy-semibold w-full">
+                    {user?.name || 'John Doe'}
+                  </span>
+                  <span className="text-[#656565] text-xs font-normal leading-[140%] tracking-[0.01em] gilroy-medium w-full">
+                    {user?.email || 'John.doe24@gmail.com'}
+                  </span>
+                </div>
+                <button 
+                  className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center flex-shrink-0 absolute right-0"
+                  style={{
+                    boxSizing: 'border-box',
+                    padding: '10px 16px',
+                    gap: '8px',
+                    width: '120px',
+                    height: '38px',
+                    background: '#FFFFFF',
+                    border: '1px solid #FFFFFF',
+                    borderRadius: '100px',
+                    fontFamily: 'Gilroy-SemiBold',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    fontSize: '14px',
+                    lineHeight: '100%',
+                    textAlign: 'center',
+                    color: '#1F1F1F'
+                  }}
                 >
                   Edit Profile
-                </CustomButton>
+                </button>
               </div>
+
+              {uploadError && (
+                <div className="text-red-400 text-sm gilroy-medium">
+                  {uploadError}
+                </div>
+              )}
 
               <div className="w-full flex flex-col items-start gap-6">
                 <div className="w-full flex flex-col sm:flex-row items-start gap-6">

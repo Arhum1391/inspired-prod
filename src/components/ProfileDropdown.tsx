@@ -91,14 +91,22 @@ const ProfileDropdown = () => {
       {/* Profile Icon Button */}
       <button
         onClick={handleToggle}
-        className="w-[38px] h-[38px] rounded-full flex items-center justify-center hover:opacity-80 transition-opacity"
+        className="w-[38px] h-[38px] rounded-full flex items-center justify-center hover:opacity-80 transition-opacity overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
+          background: user?.image ? 'transparent' : 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
         }}
       >
-        <span className="text-white font-semibold text-sm">
-          {initials[0]}
-        </span>
+        {user?.image ? (
+          <img 
+            src={user.image} 
+            alt="Profile" 
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <span className="text-white font-semibold text-sm">
+            {initials[0]}
+          </span>
+        )}
       </button>
 
       {/* Dropdown Arrow - Next to the profile icon */}
@@ -212,16 +220,24 @@ const ProfileDropdown = () => {
 
                   {/* Profile Avatar */}
                   <div 
-                    className="rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center"
+                    className="rounded-full flex items-center justify-center overflow-hidden"
                     style={{
                       width: '48px',
                       height: '48px',
-                      background: 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
+                      background: user?.image ? 'transparent' : 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
                     }}
                   >
-                    <span className="text-white font-semibold text-lg">
-                      {initials[0]}
-                    </span>
+                    {user?.image ? (
+                      <img 
+                        src={user.image} 
+                        alt="Profile" 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-white font-semibold text-lg">
+                        {initials[0]}
+                      </span>
+                    )}
                   </div>
                 </div>
               

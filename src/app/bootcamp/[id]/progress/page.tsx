@@ -319,7 +319,7 @@ const BootcampProgressPage = () => {
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
             <div className="flex flex-col gap-8">
-              <div className="flex">
+              {/* <div className="flex">
                 <button
                   onClick={() => router.back()}
                   className="flex items-center text-white hover:text-white/80 transition-colors focus:outline-none focus-visible:ring-0 focus-visible:outline-none"
@@ -327,7 +327,7 @@ const BootcampProgressPage = () => {
                   <ChevronLeft size={20} className="mr-2" />
                   Back
                 </button>
-              </div>
+              </div> */}
               {/* Heading */}
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-4">
@@ -602,7 +602,7 @@ const LessonCard = ({ lesson, onPlay }: LessonCardProps) => {
           {lesson.title}
         </p>
 
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-row-reverse justify-between gap-3">
           <div className="flex items-center gap-3">
             <ProgressCircle value={lesson.progress} />
             <p className="text-base text-white" style={{ fontFamily: 'Gilroy-Regular' }}>
@@ -616,7 +616,7 @@ const LessonCard = ({ lesson, onPlay }: LessonCardProps) => {
                 {formatDuration(lesson.duration)}
               </span>
             )}
-            <div className="inline-flex items-center gap-2 text-sm text-white font-semibold transition-colors">
+            <div className="flex items-center gap-2 text-sm text-white font-semibold transition-colors">
               <span className="hover:text-indigo-400">
                 {isCompleted ? 'Watch Again' : 'Continue Learning'}
               </span>

@@ -354,25 +354,24 @@ export default function ResearchPage() {
     <div
       key={key}
       className="
-      relative overflow-hidden research-card
+      relative overflow-hidden 
       flex flex-col items-start
-      w-[414px] h-[315px] p-6 gap-6
-      bg-[#1F1F1F] rounded-2xl isolate
+      w-full h-[330px] md:h-[315px] p-6 gap-6
+      bg-[#1F1F1F] rounded-2xl
     "
     >
       {/* Glow background */}
       <div
-        className="
+      className="
         absolute pointer-events-none
         w-[588px] h-[588px]
         left-[399px] top-[-326px]
         research-gradient
         blur-[100px] rotate-90 rounded-full z-0
       "
-      ></div>
+    ></div>
 
-      <div className="flex flex-col justify-between gap-4 w-[366px] h-full z-[1]">
-
+      <div className="flex flex-col justify-between gap-4 h-full z-10">
         {/* Category */}
         <div className="flex flex-row gap-2">
           <div className="flex justify-center items-center px-3 py-2 bg-[#05B0B320] border border-[#05B0B3] rounded-full">
@@ -443,6 +442,7 @@ export default function ResearchPage() {
       </div>
     </div>
   );
+
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
@@ -584,8 +584,8 @@ export default function ResearchPage() {
             width: 339px !important;
           }
           .research-load-more {
-            width: 373px !important;
-            min-width: 343px !important;
+            width: 100% !important;
+            max-width: 343px !important;
           }
           /* Guest CTA tile mobile responsive */
           .research-hero-container.is-guest .guest-cta-tile {
@@ -1239,40 +1239,16 @@ export default function ResearchPage() {
                   </div>
                 </div>
 
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '40px',
-                    width: '100%',
-                    maxWidth: '1282px',
-                    margin: '0 auto',
-                  }}
-                >
+                <div className="flex flex-col items-center gap-10 w-full max-w-[1282px] mx-auto">
                   {chunkedCards.length > 0 ? (
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
-                        gap: '20px',
-                        width: '100%',
-                      }}
-                    >
+                    <div className="flex flex-col items-start gap-5 w-full">
                       {chunkedCards.map((rowCards, rowIndex) => (
                         <div
                           key={`research-row-${rowIndex}`}
-                          style={{
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'stretch',
-                            gap: '20px',
-                            width: '100%',
-                            flexWrap: 'nowrap',
-                            justifyContent: rowCards.length === 3 ? 'space-between' : 'flex-start',
-                          }}
-                          className="research-cards-row"
+                          className="
+                            grid grid-cols-1 md:grid-cols-3 gap-5 w-full
+                            
+                          "
                         >
                           {rowCards.map((card, cardIndex) =>
                             renderResearchCard(card, `${rowIndex}-${cardIndex}-${card.title}`)
@@ -1281,43 +1257,11 @@ export default function ResearchPage() {
                       ))}
                     </div>
                   ) : (
-                    <div
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '12px',
-                        width: '100%',
-                        padding: '48px 0',
-                      }}
-                    >
-                      <h3
-                        style={{
-                          fontFamily: 'Gilroy-SemiBold',
-                          fontStyle: 'normal',
-                          fontWeight: 400,
-                          fontSize: '24px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF',
-                          margin: 0,
-                          textAlign: 'center',
-                        }}
-                      >
+                    <div className="flex flex-col items-center justify-center gap-3 w-full py-12">
+                      <h3 className="font-Gilroy-SemiBold font-normal text-[24px] leading-[100%] text-white text-center m-0">
                         No reports found
                       </h3>
-                      <p
-                        style={{
-                          fontFamily: 'Gilroy-Medium',
-                          fontStyle: 'normal',
-                          fontWeight: 400,
-                          fontSize: '16px',
-                          lineHeight: '130%',
-                          color: '#9D9D9D',
-                          margin: 0,
-                          textAlign: 'center',
-                        }}
-                      >
+                      <p className="font-Gilroy-Medium font-normal text-[16px] leading-[130%] text-[#9D9D9D] text-center m-0">
                         Try adjusting your filters or search terms.
                       </p>
                     </div>
@@ -1326,27 +1270,13 @@ export default function ResearchPage() {
                   {filteredCards.length > 0 && (
                     <button
                       type="button"
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        padding: '18px 12px',
-                        gap: '10px',
-                        width: '197px',
-                        height: '50px',
-                        background: '#FFFFFF',
-                        borderRadius: '100px',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontFamily: 'Gilroy-SemiBold',
-                        fontStyle: 'normal',
-                        fontWeight: 400,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        color: '#0A0A0A',
-                      }}
-                      className="research-load-more"
+                      className="
+                        flex justify-center items-center gap-2.5
+                        max-w-[197px] w-full h-[50px] px-3 py-4
+                        bg-white rounded-full border-none cursor-pointer
+                        font-Gilroy-SemiBold font-normal text-[14px] leading-[100%] text-black
+                        research-load-more
+                      "
                     >
                       Load More
                     </button>

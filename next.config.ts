@@ -38,14 +38,21 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   // Configure allowed image domains for Next.js Image component
-  images: {
-    remotePatterns: getS3ImageConfig(),
-  },
-  // Optimize for Vercel deployment
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
-  // Reduce memory usage during build and improve chunking
+  images: {
+    remotePatterns: [
+      // If getS3ImageConfig() returns an array of remotePatterns, spread it here
+      ...(getS3ImageConfig() || []),
+      {
+        protocol: "https",
+        hostname: "inspired-analyst.s3.us-east-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
   webpack: (config: any, { isServer }: { isServer: boolean }) => {
     if (!isServer) {
       config.optimization = {

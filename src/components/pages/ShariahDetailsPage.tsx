@@ -381,12 +381,12 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
       </div>
     );
   };
-  
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -414,14 +414,14 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
 
     fetchTile();
   }, [fundId]);
-  
+
   // Close modal when screen size changes from mobile to desktop
   useEffect(() => {
     if (!isMobile && isMobileComplianceModalOpen) {
       setIsMobileComplianceModalOpen(false);
     }
   }, [isMobile, isMobileComplianceModalOpen]);
-  
+
   // Lock body scroll when modal is open
   useEffect(() => {
     if (isMobileComplianceModalOpen) {
@@ -429,12 +429,12 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
       const originalPosition = window.getComputedStyle(document.body).position;
       const originalTop = window.getComputedStyle(document.body).top;
       const originalWidth = window.getComputedStyle(document.body).width;
-      
+
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.top = `-${window.scrollY}px`;
       document.body.style.width = '100%';
-      
+
       return () => {
         const scrollY = document.body.style.top;
         document.body.style.overflow = originalStyle;
@@ -447,7 +447,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
       };
     }
   }, [isMobileComplianceModalOpen]);
-  
+
   const handleBack = () => {
     router.push('/shariah');
   };
@@ -472,10 +472,11 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
     tile.complianceMetrics && tile.complianceMetrics.length > 0
       ? tile.complianceMetrics
       : fallbackComplianceMetrics;
-  
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
-      <style dangerouslySetInnerHTML={{__html: `
+      <style dangerouslySetInnerHTML={{
+        __html: `
         /* Desktop View All Icon - Point Right */
         .shariah-details-compliance-viewall-icon {
           transform: rotate(180deg) !important;
@@ -591,7 +592,6 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
           /* Compliance Breakdown Tile Mobile Styles */
           .shariah-details-compliance-container {
             position: absolute !important;
-            width: 100% !important;
             max-width: 375px !important;
             height: 794px !important;
             left: 50% !important;
@@ -609,7 +609,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             display: none !important;
           }
           .shariah-details-compliance-tile {
-            width: 343px !important;
+            width: 100% !important;
             max-width: 343px !important;
             height: 794px !important;
             padding: 20px 12px !important;
@@ -625,7 +625,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             border: none !important;
           }
           .shariah-details-compliance-content {
-            width: 319px !important;
+            width: 100% !important;
             height: 754px !important;
             gap: 24px !important;
             padding: 0px !important;
@@ -635,7 +635,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             z-index: 0 !important;
           }
           .shariah-details-compliance-header {
-            width: 319px !important;
+            width: 100% !important;
             height: 50px !important;
             gap: 24px !important;
             padding: 0px !important;
@@ -644,7 +644,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             align-items: center !important;
           }
           .shariah-details-compliance-title-block {
-            width: 232px !important;
+            width: 100% !important;
             height: 50px !important;
             gap: 12px !important;
             padding: 0px !important;
@@ -654,7 +654,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             flex: 1 !important;
           }
           .shariah-details-compliance-title {
-            width: 150px !important;
+            width: 100% !important;
             height: auto !important;
             min-height: 50px !important;
             font-family: 'Gilroy-SemiBold' !important;
@@ -710,7 +710,6 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
-            width: 100vw !important;
             height: 100vh !important;
             background: rgba(0, 0, 0, 0.6) !important;
             display: flex !important;
@@ -720,7 +719,6 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             padding: 16px !important;
           }
           .shariah-details-compliance-mobile-modal-content {
-            width: 343px !important;
             max-height: calc(100vh - 64px) !important;
             background: #1F1F1F !important;
             border-radius: 16px !important;
@@ -911,7 +909,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
         }
       `}} />
       <Navbar />
-      
+
       {/* Background Gradient SVG - Top Right */}
       <svg
         width="507"
@@ -928,24 +926,24 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
         }}
       >
         <g filter="url(#filter0_f_1639_1215)">
-          <circle cx="594.064" cy="118.608" r="294" transform="rotate(-153.197 594.064 118.608)" fill="url(#paint0_linear_1639_1215)"/>
+          <circle cx="594.064" cy="118.608" r="294" transform="rotate(-153.197 594.064 118.608)" fill="url(#paint0_linear_1639_1215)" />
         </g>
         <defs>
           <filter id="filter0_f_1639_1215" x="0" y="-475.457" width="1188.13" height="1188.13" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-            <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
-            <feGaussianBlur stdDeviation="150" result="effect1_foregroundBlur_1639_1215"/>
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="150" result="effect1_foregroundBlur_1639_1215" />
           </filter>
           <linearGradient id="paint0_linear_1639_1215" x1="362.934" y1="-145.173" x2="920.636" y2="32.5919" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#3813F3"/>
-            <stop offset="0.32" stopColor="#05B0B3"/>
-            <stop offset="0.64" stopColor="#4B25FD"/>
-            <stop offset="0.8" stopColor="#B9B9E9"/>
-            <stop offset="1" stopColor="#DE50EC"/>
+            <stop stopColor="#3813F3" />
+            <stop offset="0.32" stopColor="#05B0B3" />
+            <stop offset="0.64" stopColor="#4B25FD" />
+            <stop offset="0.8" stopColor="#B9B9E9" />
+            <stop offset="1" stopColor="#DE50EC" />
           </linearGradient>
         </defs>
       </svg>
-      
+
       <div className="relative z-10 flex flex-col items-start justify-center px-4 sm:px-6 lg:px-8" style={{ minHeight: '1400px', paddingBottom: '150px' }}>
         {/* Content Container */}
         <div
@@ -997,7 +995,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               <ChevronLeft size={16} className="shariah-details-back-icon" />
               <span className="shariah-details-back-text">Back</span>
             </button>
-            
+
             {/* Heading */}
             <h1
               className="shariah-details-heading"
@@ -1018,7 +1016,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             >
               {tile.title}
             </h1>
-            
+
             {/* Description */}
             <p
               className="shariah-details-description"
@@ -1039,7 +1037,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             >
               {tile.description}
             </p>
-            
+
             {/* Footer Row */}
             <div
               className="shariah-details-footer"
@@ -1074,7 +1072,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               >
                 {tile.footerLeft}
               </span>
-              
+
               {/* Dot Separator */}
               <div
                 className="shariah-details-footer-dot"
@@ -1088,7 +1086,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   flexGrow: 0,
                 }}
               />
-              
+
               {/* Footer Right */}
               <span
                 className="shariah-details-footer-right"
@@ -1109,7 +1107,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             </div>
           </div>
         </div>
-        
+
         {/* Compliance Breakdown Tile */}
         <div
           className="shariah-details-compliance-container"
@@ -1130,7 +1128,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
           }}
         >
           {/* Curved Gradient Border - Desktop */}
-          <div 
+          <div
             style={{
               position: 'absolute',
               top: 0,
@@ -1147,7 +1145,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
           >
             <div style={{ width: '100%', height: '100%', borderRadius: '15px', background: '#1F1F1F' }}></div>
           </div>
-          
+
           <div
             className="shariah-details-compliance-tile"
             style={{
@@ -1165,7 +1163,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               zIndex: 1,
             }}
           >
-            
+
             <div
               className="shariah-details-compliance-content"
               style={{
@@ -1188,7 +1186,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             >
               {/* Header with Title and View All */}
               <div
-                className="shariah-details-compliance-header"
+                // className="shariah-details-compliance-header"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -1224,7 +1222,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                       zIndex: 1,
                     }}
                   >
-                    Compliance Breakdown
+                    Compliance Breakdown...
                   </h2>
                 </div>
                 <button
@@ -1251,7 +1249,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   <ChevronLeft size={16} className="shariah-details-compliance-viewall-icon" />
                 </button>
               </div>
-              
+
               {/* Desktop Table Header */}
               <div
                 className="shariah-details-compliance-table-header"
@@ -1273,1102 +1271,1102 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                   flexGrow: 0,
                 }}
               >
-              {/* Criteria Column */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '0px',
-                  gap: '8px',
-                  width: '230px',
-                  height: '14px',
-                  flex: 'none',
-                  order: 0,
-                  flexGrow: 1,
-                }}
-              >
-                <span
+                {/* Criteria Column */}
+                <div
                   style={{
-                    width: '230px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '0px',
+                    gap: '8px',
+                    width: '100%',
                     height: '14px',
-                    fontFamily: 'Gilroy-Medium',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '100%',
-                    color: '#FFFFFF',
                     flex: 'none',
                     order: 0,
-                    alignSelf: 'stretch',
-                    flexGrow: 0,
+                    flexGrow: 1,
                   }}
                 >
-                  Criteria
-                </span>
+                  <span
+                    style={{
+                      width: '230px',
+                      height: '14px',
+                      fontFamily: 'Gilroy-Medium',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      color: '#FFFFFF',
+                      flex: 'none',
+                      order: 0,
+                      alignSelf: 'stretch',
+                      flexGrow: 0,
+                    }}
+                  >
+                    Criteria
+                  </span>
+                </div>
+
+                {/* Threshold Column */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    padding: '0px',
+                    gap: '8px',
+                    width: '100%',
+                    height: '14px',
+                    flex: 'none',
+                    order: 1,
+                    flexGrow: 1,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '230px',
+                      height: '14px',
+                      fontFamily: 'Gilroy-Medium',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      textAlign: 'right',
+                      color: '#FFFFFF',
+                      flex: 'none',
+                      order: 0,
+                      alignSelf: 'stretch',
+                      flexGrow: 0,
+                    }}
+                  >
+                    Threshold
+                  </span>
+                </div>
+
+                {/* Actual Column */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    padding: '0px',
+                    gap: '8px',
+                    width: '100%',
+                    height: '14px',
+                    flex: 'none',
+                    order: 2,
+                    flexGrow: 1,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '230px',
+                      height: '14px',
+                      fontFamily: 'Gilroy-Medium',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      textAlign: 'right',
+                      color: '#FFFFFF',
+                      flex: 'none',
+                      order: 0,
+                      alignSelf: 'stretch',
+                      flexGrow: 0,
+                    }}
+                  >
+                    Actual
+                  </span>
+                </div>
+
+                {/* Status Column */}
+                <div
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'flex-start',
+                    padding: '0px',
+                    gap: '8px',
+                    width: '100%',
+                    height: '14px',
+                    flex: 'none',
+                    order: 3,
+                    flexGrow: 1,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '230px',
+                      height: '14px',
+                      fontFamily: 'Gilroy-Medium',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      textAlign: 'right',
+                      color: '#FFFFFF',
+                      flex: 'none',
+                      order: 0,
+                      alignSelf: 'stretch',
+                      flexGrow: 0,
+                    }}
+                  >
+                    Status
+                  </span>
+                </div>
               </div>
-              
-              {/* Threshold Column */}
+
+              {false && (
+                <>
+                  {/* Mobile Cards Container */}
+                  <div
+                    className="shariah-details-compliance-cards-container"
+                    style={{
+                      display: 'none',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      padding: '0px',
+                      gap: '16px',
+                      width: '319px',
+                    }}
+                  >
+                    {/* Card 1: Debt to Market Cap */}
+                    <div
+                      className="shariah-details-compliance-card"
+                      style={{
+                        display: 'none',
+                        boxSizing: 'border-box',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '16px 12px',
+                        gap: '16px',
+                        width: '319px',
+                        height: '152px',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      {/* Status Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Status</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value status">Pass</span>
+                      </div>
+                      {/* Divider */}
+                      <div className="shariah-details-compliance-card-divider" />
+                      {/* Criteria Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Criteria</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">Debt to Market Cap</span>
+                      </div>
+                      {/* Threshold Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Threshold</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">&lt; 33%</span>
+                      </div>
+                      {/* Actual Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Actual</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">0%</span>
+                      </div>
+                    </div>
+
+                    {/* Card 2: Interest Income */}
+                    <div
+                      className="shariah-details-compliance-card"
+                      style={{
+                        display: 'none',
+                        boxSizing: 'border-box',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '16px 12px',
+                        gap: '16px',
+                        width: '319px',
+                        height: '152px',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      {/* Status Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Status</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value status">Pass</span>
+                      </div>
+                      {/* Divider */}
+                      <div className="shariah-details-compliance-card-divider" />
+                      {/* Criteria Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Criteria</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">Interest Income</span>
+                      </div>
+                      {/* Threshold Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Threshold</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">&lt; 5%</span>
+                      </div>
+                      {/* Actual Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Actual</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">0%</span>
+                      </div>
+                    </div>
+
+                    {/* Card 3: Business Activity */}
+                    <div
+                      className="shariah-details-compliance-card"
+                      style={{
+                        display: 'none',
+                        boxSizing: 'border-box',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '16px 12px',
+                        gap: '16px',
+                        width: '319px',
+                        height: '152px',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      {/* Status Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Status</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value status">Pass</span>
+                      </div>
+                      {/* Divider */}
+                      <div className="shariah-details-compliance-card-divider" />
+                      {/* Criteria Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Criteria</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">Business Activity</span>
+                      </div>
+                      {/* Threshold Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Threshold</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">Halal</span>
+                      </div>
+                      {/* Actual Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Actual</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">Permissible</span>
+                      </div>
+                    </div>
+
+                    {/* Card 4: Cash Holdings */}
+                    <div
+                      className="shariah-details-compliance-card"
+                      style={{
+                        display: 'none',
+                        boxSizing: 'border-box',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '16px 12px',
+                        gap: '16px',
+                        width: '319px',
+                        height: '152px',
+                        border: '1px solid rgba(255, 255, 255, 0.3)',
+                        borderRadius: '8px',
+                      }}
+                    >
+                      {/* Status Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Status</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value status">Pass</span>
+                      </div>
+                      {/* Divider */}
+                      <div className="shariah-details-compliance-card-divider" />
+                      {/* Criteria Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Criteria</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">Cash Holdings</span>
+                      </div>
+                      {/* Threshold Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Threshold</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">&lt; 33%</span>
+                      </div>
+                      {/* Actual Row */}
+                      <div className="shariah-details-compliance-card-row">
+                        <div className="shariah-details-compliance-card-label-group">
+                          <span className="shariah-details-compliance-card-label">Actual</span>
+                        </div>
+                        <span className="shariah-details-compliance-card-value">N/A</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Desktop Data Rows Container */}
+                  <div
+                    className="shariah-details-compliance-table-rows"
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      padding: '0px',
+                      gap: '8px',
+                      width: '100%',
+                      maxWidth: '1024px',
+                      height: '208px',
+                      flex: 'none',
+                      order: 1,
+                      alignSelf: 'stretch',
+                      flexGrow: 0,
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    {/* Row 1: Debt to Market Cap */}
+                    <div
+                      className="shariah-details-compliance-table-row"
+                      style={{
+                        boxSizing: 'border-box',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '16px',
+                        gap: '24px',
+                        width: '100%',
+                        maxWidth: '1024px',
+                        height: '46px',
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                        flex: 'none',
+                        order: 0,
+                        alignSelf: 'stretch',
+                        flexGrow: 0,
+                      }}
+                    >
+                      {/* Criteria */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 0,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Debt to Market Cap
+                        </span>
+                      </div>
+
+                      {/* Threshold */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 1,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          &lt; 33%
+                        </span>
+                      </div>
+
+                      {/* Actual */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 2,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          0%
+                        </span>
+                      </div>
+
+                      {/* Status */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 3,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#05B353',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Pass
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Row 2: Interest Income */}
+                    <div
+                      className="shariah-details-compliance-table-row"
+                      style={{
+                        boxSizing: 'border-box',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '16px',
+                        gap: '24px',
+                        width: '100%',
+                        maxWidth: '1024px',
+                        height: '46px',
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                        flex: 'none',
+                        order: 1,
+                        alignSelf: 'stretch',
+                        flexGrow: 0,
+                      }}
+                    >
+                      {/* Criteria */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 0,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Interest Income
+                        </span>
+                      </div>
+
+                      {/* Threshold */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 1,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          &lt; 5%
+                        </span>
+                      </div>
+
+                      {/* Actual */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 2,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          0%
+                        </span>
+                      </div>
+
+                      {/* Status */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 3,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#05B353',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Pass
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Row 3: Business Activity */}
+                    <div
+                      className="shariah-details-compliance-table-row"
+                      style={{
+                        boxSizing: 'border-box',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '16px',
+                        gap: '24px',
+                        width: '100%',
+                        maxWidth: '1024px',
+                        height: '46px',
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                        flex: 'none',
+                        order: 2,
+                        alignSelf: 'stretch',
+                        flexGrow: 0,
+                      }}
+                    >
+                      {/* Criteria */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 0,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Business Activity
+                        </span>
+                      </div>
+
+                      {/* Threshold */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 1,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Halal
+                        </span>
+                      </div>
+
+                      {/* Actual */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 2,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Permissible
+                        </span>
+                      </div>
+
+                      {/* Status */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 3,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#05B353',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Pass
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Row 4: Cash Holdings */}
+                    <div
+                      className="shariah-details-compliance-table-row"
+                      style={{
+                        boxSizing: 'border-box',
+                        display: 'flex',
+                        flexDirection: 'row',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        padding: '16px',
+                        gap: '24px',
+                        width: '100%',
+                        maxWidth: '1024px',
+                        height: '46px',
+                        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                        flex: 'none',
+                        order: 3,
+                        alignSelf: 'stretch',
+                        flexGrow: 0,
+                      }}
+                    >
+                      {/* Criteria */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 0,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Cash Holdings
+                        </span>
+                      </div>
+
+                      {/* Threshold */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 1,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          &lt; 33%
+                        </span>
+                      </div>
+
+                      {/* Actual */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 2,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#909090',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          N/A
+                        </span>
+                      </div>
+
+                      {/* Status */}
+                      <div
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'flex-start',
+                          padding: '0px',
+                          gap: '8px',
+                          width: '230px',
+                          height: '14px',
+                          flex: 'none',
+                          order: 3,
+                          flexGrow: 1,
+                        }}
+                      >
+                        <span
+                          style={{
+                            width: '230px',
+                            height: '14px',
+                            fontFamily: 'Gilroy-Medium',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            fontSize: '14px',
+                            lineHeight: '100%',
+                            textAlign: 'right',
+                            color: '#05B353',
+                            flex: 'none',
+                            order: 0,
+                            alignSelf: 'stretch',
+                            flexGrow: 0,
+                          }}
+                        >
+                          Pass
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+              {/* Mobile Cards Container */}
               <div
+                className="shariah-details-compliance-cards-container"
+                style={{
+                  display: 'none',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  padding: '0px',
+                  gap: '16px',
+                  width: '319px',
+                }}
+              >
+                {complianceMetrics.map((metric, index) => renderMobileComplianceCard(metric, index))}
+              </div>
+
+              {/* Desktop Data Rows Container */}
+              <div
+                className="shariah-details-compliance-table-rows"
                 style={{
                   display: 'flex',
                   flexDirection: 'column',
-                  justifyContent: 'center',
                   alignItems: 'flex-start',
                   padding: '0px',
                   gap: '8px',
-                  width: '230px',
-                  height: '14px',
+                  width: '100%',
+                  maxWidth: '1024px',
+                  height: 'auto',
                   flex: 'none',
                   order: 1,
-                  flexGrow: 1,
-                }}
-              >
-                <span
-                  style={{
-                    width: '230px',
-                    height: '14px',
-                    fontFamily: 'Gilroy-Medium',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '100%',
-                    textAlign: 'right',
-                    color: '#FFFFFF',
-                    flex: 'none',
-                    order: 0,
-                    alignSelf: 'stretch',
-                    flexGrow: 0,
-                  }}
-                >
-                  Threshold
-                </span>
-              </div>
-              
-              {/* Actual Column */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'flex-start',
-                  padding: '0px',
-                  gap: '8px',
-                  width: '230px',
-                  height: '14px',
-                  flex: 'none',
-                  order: 2,
-                  flexGrow: 1,
-                }}
-              >
-                <span
-                  style={{
-                    width: '230px',
-                    height: '14px',
-                    fontFamily: 'Gilroy-Medium',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '100%',
-                    textAlign: 'right',
-                    color: '#FFFFFF',
-                    flex: 'none',
-                    order: 0,
-                    alignSelf: 'stretch',
-                    flexGrow: 0,
-                  }}
-                >
-                  Actual
-                </span>
-              </div>
-              
-              {/* Status Column */}
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'flex-start',
-                  padding: '0px',
-                  gap: '8px',
-                  width: '230px',
-                  height: '14px',
-                  flex: 'none',
-                  order: 3,
-                  flexGrow: 1,
-                }}
-              >
-                <span
-                  style={{
-                    width: '230px',
-                    height: '14px',
-                    fontFamily: 'Gilroy-Medium',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '100%',
-                    textAlign: 'right',
-                    color: '#FFFFFF',
-                    flex: 'none',
-                    order: 0,
-                    alignSelf: 'stretch',
-                    flexGrow: 0,
-                  }}
-                >
-                  Status
-                </span>
-              </div>
-            </div>
-            
-            {false && (
-              <>
-            {/* Mobile Cards Container */}
-            <div
-              className="shariah-details-compliance-cards-container"
-              style={{
-                display: 'none',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '16px',
-                width: '319px',
-              }}
-            >
-              {/* Card 1: Debt to Market Cap */}
-              <div
-                className="shariah-details-compliance-card"
-                style={{
-                  display: 'none',
-                  boxSizing: 'border-box',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px 12px',
-                  gap: '16px',
-                  width: '319px',
-                  height: '152px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                }}
-              >
-                {/* Status Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Status</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value status">Pass</span>
-                </div>
-                {/* Divider */}
-                <div className="shariah-details-compliance-card-divider" />
-                {/* Criteria Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Criteria</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Debt to Market Cap</span>
-                </div>
-                {/* Threshold Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Threshold</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">&lt; 33%</span>
-                </div>
-                {/* Actual Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Actual</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">0%</span>
-                </div>
-              </div>
-              
-              {/* Card 2: Interest Income */}
-              <div
-                className="shariah-details-compliance-card"
-                style={{
-                  display: 'none',
-                  boxSizing: 'border-box',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px 12px',
-                  gap: '16px',
-                  width: '319px',
-                  height: '152px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                }}
-              >
-                {/* Status Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Status</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value status">Pass</span>
-                </div>
-                {/* Divider */}
-                <div className="shariah-details-compliance-card-divider" />
-                {/* Criteria Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Criteria</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Interest Income</span>
-                </div>
-                {/* Threshold Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Threshold</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">&lt; 5%</span>
-                </div>
-                {/* Actual Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Actual</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">0%</span>
-                </div>
-              </div>
-              
-              {/* Card 3: Business Activity */}
-              <div
-                className="shariah-details-compliance-card"
-                style={{
-                  display: 'none',
-                  boxSizing: 'border-box',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px 12px',
-                  gap: '16px',
-                  width: '319px',
-                  height: '152px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                }}
-              >
-                {/* Status Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Status</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value status">Pass</span>
-                </div>
-                {/* Divider */}
-                <div className="shariah-details-compliance-card-divider" />
-                {/* Criteria Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Criteria</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Business Activity</span>
-                </div>
-                {/* Threshold Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Threshold</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Halal</span>
-                </div>
-                {/* Actual Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Actual</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Permissible</span>
-                </div>
-              </div>
-              
-              {/* Card 4: Cash Holdings */}
-              <div
-                className="shariah-details-compliance-card"
-                style={{
-                  display: 'none',
-                  boxSizing: 'border-box',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px 12px',
-                  gap: '16px',
-                  width: '319px',
-                  height: '152px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                }}
-              >
-                {/* Status Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Status</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value status">Pass</span>
-                </div>
-                {/* Divider */}
-                <div className="shariah-details-compliance-card-divider" />
-                {/* Criteria Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Criteria</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Cash Holdings</span>
-                </div>
-                {/* Threshold Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Threshold</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">&lt; 33%</span>
-                </div>
-                {/* Actual Row */}
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Actual</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">N/A</span>
-                </div>
-              </div>
-            </div>
-            
-            {/* Desktop Data Rows Container */}
-            <div
-              className="shariah-details-compliance-table-rows"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '8px',
-                width: '100%',
-                maxWidth: '1024px',
-                height: '208px',
-                flex: 'none',
-                order: 1,
-                alignSelf: 'stretch',
-                flexGrow: 0,
-                boxSizing: 'border-box',
-              }}
-            >
-              {/* Row 1: Debt to Market Cap */}
-              <div
-                className="shariah-details-compliance-table-row"
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px',
-                  gap: '24px',
-                  width: '100%',
-                  maxWidth: '1024px',
-                  height: '46px',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                  flex: 'none',
-                  order: 0,
                   alignSelf: 'stretch',
                   flexGrow: 0,
-                }}
-              >
-                {/* Criteria */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Debt to Market Cap
-                  </span>
-                </div>
-                
-                {/* Threshold */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 1,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    &lt; 33%
-                  </span>
-                </div>
-                
-                {/* Actual */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 2,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    0%
-                  </span>
-                </div>
-                
-                {/* Status */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 3,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#05B353',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Pass
-                  </span>
-                </div>
-              </div>
-              
-              {/* Row 2: Interest Income */}
-              <div
-                className="shariah-details-compliance-table-row"
-                style={{
                   boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px',
-                  gap: '24px',
-                  width: '100%',
-                  maxWidth: '1024px',
-                  height: '46px',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                  flex: 'none',
-                  order: 1,
-                  alignSelf: 'stretch',
-                  flexGrow: 0,
                 }}
               >
-                {/* Criteria */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Interest Income
-                  </span>
-                </div>
-                
-                {/* Threshold */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 1,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    &lt; 5%
-                  </span>
-                </div>
-                
-                {/* Actual */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 2,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    0%
-                  </span>
-                </div>
-                
-                {/* Status */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 3,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#05B353',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Pass
-                  </span>
-                </div>
+                {complianceMetrics.map((metric, index) => renderDesktopComplianceRow(metric, index))}
               </div>
-              
-              {/* Row 3: Business Activity */}
-              <div
-                className="shariah-details-compliance-table-row"
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px',
-                  gap: '24px',
-                  width: '100%',
-                  maxWidth: '1024px',
-                  height: '46px',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                  flex: 'none',
-                  order: 2,
-                  alignSelf: 'stretch',
-                  flexGrow: 0,
-                }}
-              >
-                {/* Criteria */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Business Activity
-                  </span>
-                </div>
-                
-                {/* Threshold */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 1,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Halal
-                  </span>
-                </div>
-                
-                {/* Actual */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 2,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Permissible
-                  </span>
-                </div>
-                
-                {/* Status */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 3,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#05B353',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Pass
-                  </span>
-                </div>
-              </div>
-              
-              {/* Row 4: Cash Holdings */}
-              <div
-                className="shariah-details-compliance-table-row"
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px',
-                  gap: '24px',
-                  width: '100%',
-                  maxWidth: '1024px',
-                  height: '46px',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                  flex: 'none',
-                  order: 3,
-                  alignSelf: 'stretch',
-                  flexGrow: 0,
-                }}
-              >
-                {/* Criteria */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Cash Holdings
-                  </span>
-                </div>
-                
-                {/* Threshold */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 1,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    &lt; 33%
-                  </span>
-                </div>
-                
-                {/* Actual */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 2,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#909090',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    N/A
-                  </span>
-                </div>
-                
-                {/* Status */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '230px',
-                    height: '14px',
-                    flex: 'none',
-                    order: 3,
-                    flexGrow: 1,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#05B353',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
-                  >
-                    Pass
-                  </span>
-                </div>
-              </div>
-            </div>
-              </>
-            )}
-            {/* Mobile Cards Container */}
-            <div
-              className="shariah-details-compliance-cards-container"
-              style={{
-                display: 'none',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '16px',
-                width: '319px',
-              }}
-            >
-              {complianceMetrics.map((metric, index) => renderMobileComplianceCard(metric, index))}
-            </div>
-            
-            {/* Desktop Data Rows Container */}
-            <div
-              className="shariah-details-compliance-table-rows"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '8px',
-                width: '100%',
-                maxWidth: '1024px',
-                height: 'auto',
-                flex: 'none',
-                order: 1,
-                alignSelf: 'stretch',
-                flexGrow: 0,
-                boxSizing: 'border-box',
-              }}
-            >
-              {complianceMetrics.map((metric, index) => renderDesktopComplianceRow(metric, index))}
             </div>
           </div>
         </div>
-        </div>
-        
+
         {/* Analyst Notes Section */}
         <div
           className="shariah-details-analyst-notes"
@@ -2406,7 +2404,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
           >
             Analyst Notes
           </h2>
-          
+
           {/* Description */}
           <p
             style={{
@@ -2429,10 +2427,10 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
           </p>
         </div>
       </div>
-      
+
       {/* Mobile Spacer to prevent Footer overlap */}
       <div className="shariah-details-mobile-spacer" />
-      
+
       {/* Mobile Compliance Modal */}
       {isMobile && isMobileComplianceModalOpen && (
         <div
@@ -2449,185 +2447,185 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
               onClick={() => setIsMobileComplianceModalOpen(false)}
             >
               <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L7 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round"/>
-                <path d="M7 1L1 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round"/>
+                <path d="M1 1L7 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round" />
+                <path d="M7 1L1 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round" />
               </svg>
             </button>
-            <h2 className="shariah-details-compliance-mobile-modal-title">Compliance Breakdown</h2>
+            <h2 className="shariah-details-compliance-mobile-modal-title">Compliance Breakdown...</h2>
             {false && (
               <div className="shariah-details-compliance-mobile-modal-list">
-              {/* Card 1: Debt to Market Cap */}
-              <div
-                className="shariah-details-compliance-card"
-                style={{
-                  boxSizing: 'border-box',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px 12px',
-                  gap: '16px',
-                  width: '319px',
-                  height: '152px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                }}
-              >
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Status</span>
+                {/* Card 1: Debt to Market Cap */}
+                <div
+                  className="shariah-details-compliance-card"
+                  style={{
+                    boxSizing: 'border-box',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '16px 12px',
+                    gap: '16px',
+                    width: '319px',
+                    height: '152px',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Status</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value status">Pass</span>
                   </div>
-                  <span className="shariah-details-compliance-card-value status">Pass</span>
+                  <div className="shariah-details-compliance-card-divider" />
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Criteria</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">Debt to Market Cap</span>
+                  </div>
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Threshold</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">&lt; 33%</span>
+                  </div>
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Actual</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">0%</span>
+                  </div>
                 </div>
-                <div className="shariah-details-compliance-card-divider" />
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Criteria</span>
+
+                {/* Card 2: Interest Income */}
+                <div
+                  className="shariah-details-compliance-card"
+                  style={{
+                    boxSizing: 'border-box',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '16px 12px',
+                    gap: '16px',
+                    width: '319px',
+                    height: '152px',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Status</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value status">Pass</span>
                   </div>
-                  <span className="shariah-details-compliance-card-value">Debt to Market Cap</span>
+                  <div className="shariah-details-compliance-card-divider" />
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Criteria</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">Interest Income</span>
+                  </div>
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Threshold</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">&lt; 5%</span>
+                  </div>
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Actual</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">2%</span>
+                  </div>
                 </div>
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Threshold</span>
+
+                {/* Card 3: Business Activity */}
+                <div
+                  className="shariah-details-compliance-card"
+                  style={{
+                    boxSizing: 'border-box',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '16px 12px',
+                    gap: '16px',
+                    width: '319px',
+                    height: '152px',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Status</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value status">Pass</span>
                   </div>
-                  <span className="shariah-details-compliance-card-value">&lt; 33%</span>
+                  <div className="shariah-details-compliance-card-divider" />
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Criteria</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">Business Activity</span>
+                  </div>
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Threshold</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">No prohibited activities</span>
+                  </div>
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Actual</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">Compliant</span>
+                  </div>
                 </div>
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Actual</span>
+
+                {/* Card 4: Cash Holdings */}
+                <div
+                  className="shariah-details-compliance-card"
+                  style={{
+                    boxSizing: 'border-box',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: '16px 12px',
+                    gap: '16px',
+                    width: '319px',
+                    height: '152px',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '8px',
+                  }}
+                >
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Status</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value status">Pass</span>
                   </div>
-                  <span className="shariah-details-compliance-card-value">0%</span>
+                  <div className="shariah-details-compliance-card-divider" />
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Criteria</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">Cash Holdings</span>
+                  </div>
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Threshold</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">&lt; 33%</span>
+                  </div>
+                  <div className="shariah-details-compliance-card-row">
+                    <div className="shariah-details-compliance-card-label-group">
+                      <span className="shariah-details-compliance-card-label">Actual</span>
+                    </div>
+                    <span className="shariah-details-compliance-card-value">15%</span>
+                  </div>
                 </div>
               </div>
-              
-              {/* Card 2: Interest Income */}
-              <div
-                className="shariah-details-compliance-card"
-                style={{
-                  boxSizing: 'border-box',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px 12px',
-                  gap: '16px',
-                  width: '319px',
-                  height: '152px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                }}
-              >
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Status</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value status">Pass</span>
-                </div>
-                <div className="shariah-details-compliance-card-divider" />
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Criteria</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Interest Income</span>
-                </div>
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Threshold</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">&lt; 5%</span>
-                </div>
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Actual</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">2%</span>
-                </div>
-              </div>
-              
-              {/* Card 3: Business Activity */}
-              <div
-                className="shariah-details-compliance-card"
-                style={{
-                  boxSizing: 'border-box',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px 12px',
-                  gap: '16px',
-                  width: '319px',
-                  height: '152px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                }}
-              >
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Status</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value status">Pass</span>
-                </div>
-                <div className="shariah-details-compliance-card-divider" />
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Criteria</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Business Activity</span>
-                </div>
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Threshold</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">No prohibited activities</span>
-                </div>
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Actual</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Compliant</span>
-                </div>
-              </div>
-              
-              {/* Card 4: Cash Holdings */}
-              <div
-                className="shariah-details-compliance-card"
-                style={{
-                  boxSizing: 'border-box',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px 12px',
-                  gap: '16px',
-                  width: '319px',
-                  height: '152px',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  borderRadius: '8px',
-                }}
-              >
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Status</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value status">Pass</span>
-                </div>
-                <div className="shariah-details-compliance-card-divider" />
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Criteria</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">Cash Holdings</span>
-                </div>
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Threshold</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">&lt; 33%</span>
-                </div>
-                <div className="shariah-details-compliance-card-row">
-                  <div className="shariah-details-compliance-card-label-group">
-                    <span className="shariah-details-compliance-card-label">Actual</span>
-                  </div>
-                  <span className="shariah-details-compliance-card-value">15%</span>
-                </div>
-              </div>
-            </div>
             )}
             <div className="shariah-details-compliance-mobile-modal-list">
               {complianceMetrics.map((metric, index) => renderModalComplianceCard(metric, index))}
@@ -2635,7 +2633,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
           </div>
         </div>
       )}
-      
+
       <Footer />
     </div>
   );

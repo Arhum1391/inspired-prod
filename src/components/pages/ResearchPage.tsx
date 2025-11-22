@@ -635,7 +635,8 @@ export default function ResearchPage() {
           }
           /* Pricing-like FAQ mobile styles */
           .research-faq-header {
-            width: 373px !important;
+            max-width: 373px !important;
+            width: 100% !important;
             align-items: center !important;
             gap: 16px !important;
             padding-left: 0 !important;
@@ -657,7 +658,7 @@ export default function ResearchPage() {
           }
           .research-faq-header h2 {
             text-align: center !important;
-            font-size: 24px !important;
+            font-size: 32px !important;
             line-height: 130% !important;
             width: 100% !important;
             max-width: 373px !important;
@@ -687,7 +688,7 @@ export default function ResearchPage() {
             max-width: 373px !important;
             height: auto !important;
             min-height: 31px !important;
-            font-size: 24px !important;
+            font-size: 32px !important;
             line-height: 130% !important;
             text-align: center !important;
             margin: 0 !important;
@@ -991,9 +992,8 @@ export default function ResearchPage() {
                   alignItems: 'flex-start',
                   gap: '64px',
                   width: '100%',
-                  marginTop: '220px',
                 }}
-                className="research-body"
+                className="mt-8 md:mt-[320px] research-body"
               >
                 <div
                   style={{

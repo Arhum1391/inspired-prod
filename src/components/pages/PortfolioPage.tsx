@@ -845,7 +845,7 @@ export default function PortfolioPage() {
           }
           /* Move 'Your Portfolio' sections up on mobile */
           .portfolio-auth-section {
-            margin: 160px auto 0 auto !important;
+            margin: 60px auto 0 auto !important;
           }
           .portfolio-guest-section {
             margin: 48px auto 0 !important;

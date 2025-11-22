@@ -677,7 +677,6 @@ export default function ShariahPage() {
           .shariah-projects-heading {
             width: 343px !important;
             height: 84px !important;
-            font-family: 'Gilroy-SemiBold' !important;
             font-style: normal !important;
             font-weight: 400 !important;
             font-size: 32px !important;

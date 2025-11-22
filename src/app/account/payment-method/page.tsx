@@ -310,7 +310,8 @@ const PaymentMethodPage = () => {
               flex: 'none',
               order: 1,
               alignSelf: 'stretch',
-              flexGrow: 0
+              flexGrow: 0,
+              marginBottom: '24px'
             }}
           >
             <div

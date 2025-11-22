@@ -5,7 +5,7 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json ./
-RUN npm ci --legacy-peer-deps --omit=dev
+RUN npm ci --legacy-peer-deps
 
 # Build application
 FROM base AS builder

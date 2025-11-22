@@ -12,8 +12,13 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Add build-time environment variables
+ARG MONGODB_URI
+ENV MONGODB_URI=${MONGODB_URI}
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+
 RUN npm run build
 
 # Production image

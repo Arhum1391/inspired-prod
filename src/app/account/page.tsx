@@ -9,7 +9,7 @@ import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
 
 const AccountPage = () => {
-  const { isAuthenticated, user, login } = useAuth();
+  const { isAuthenticated, user, login, isLoading: authLoading } = useAuth();
   const router = useRouter();
   const [subscription, setSubscription] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState<any>(null);
@@ -18,8 +18,28 @@ const AccountPage = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Edit profile state
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
+    // Wait for auth to finish loading before checking authentication
+    if (authLoading) {
+      return;
+    }
+
     if (!isAuthenticated) {
       router.push('/signin');
       return;
@@ -65,9 +85,129 @@ const AccountPage = () => {
     };
 
     fetchAccountData();
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, authLoading, router]);
 
-  if (!user) {
+  // Initialize form fields when user data is available
+  useEffect(() => {
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email || '');
+    }
+  }, [user]);
+
+  const handleEditProfile = () => {
+    setIsEditMode(true);
+    setShowChangePassword(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setSaveError(null);
+    setSaveSuccess(false);
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditMode(false);
+    setShowChangePassword(false);
+    setName(user?.name || '');
+    setEmail(user?.email || '');
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    setSaveError(null);
+    setSaveSuccess(false);
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
+  };
+
+  const handleSaveProfile = async () => {
+    setSaveError(null);
+    setSaveSuccess(false);
+
+    // Validate password change if enabled
+    if (showChangePassword && newPassword) {
+      if (!currentPassword) {
+        setSaveError('Current password is required');
+        return;
+      }
+      if (newPassword.length < 6) {
+        setSaveError('New password must be at least 6 characters long');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setSaveError('New passwords do not match');
+        return;
+      }
+    }
+
+    setSaving(true);
+    try {
+      const updateData: any = {
+        name: name || null,
+        email: email,
+      };
+
+      if (showChangePassword && newPassword) {
+        updateData.currentPassword = currentPassword;
+        updateData.newPassword = newPassword;
+      }
+
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(updateData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to update profile');
+      }
+
+      // Update user in auth context
+      if (data.user) {
+        login(data.user);
+      }
+
+      setSaveSuccess(true);
+      setIsEditMode(false);
+      setShowChangePassword(false);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 3000);
+    } catch (error: any) {
+      console.error('Error updating profile:', error);
+      setSaveError(error.message || 'Failed to update profile');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // Show loading state while auth is being checked
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
+  // If not authenticated, the useEffect will redirect, but show nothing while redirecting
+  if (!user || !isAuthenticated) {
     return null;
   }
 
@@ -77,17 +217,21 @@ const AccountPage = () => {
     ['active', 'trialing', 'past_due'].includes(subscription.status)
   );
 
-  const planName = hasActiveSubscription ? subscription.planName : 'Free Plan';
-  const planPrice = hasActiveSubscription
+  const planName = loading ? 'Loading...' : (hasActiveSubscription ? subscription.planName : 'Free Plan');
+  const planPrice = loading ? '...' : (hasActiveSubscription
     ? subscription.displayPrice || subscription.price
-    : 'Free';
-  const planStatusClasses = hasActiveSubscription
-    ? 'bg-[rgba(222,80,236,0.12)] border border-[#DE50EC]'
-    : 'bg-[rgba(5,176,179,0.12)] border border-[#05B0B3]';
-  const planStatusTextClasses = hasActiveSubscription
-    ? 'text-[#DE50EC]'
-    : 'text-[#05B0B3]';
-  const planStatusLabel = hasActiveSubscription ? 'Active' : 'Free Access';
+    : 'Free');
+  const planStatusClasses = loading 
+    ? 'bg-[rgba(255,255,255,0.12)] border border-white/30'
+    : (hasActiveSubscription
+      ? 'bg-[rgba(222,80,236,0.12)] border border-[#DE50EC]'
+      : 'bg-[rgba(5,176,179,0.12)] border border-[#05B0B3]');
+  const planStatusTextClasses = loading
+    ? 'text-white/60'
+    : (hasActiveSubscription
+      ? 'text-[#DE50EC]'
+      : 'text-[#05B0B3]');
+  const planStatusLabel = loading ? 'Loading...' : (hasActiveSubscription ? 'Active' : 'Free Access');
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
@@ -176,9 +320,61 @@ const AccountPage = () => {
             />
 
             <div className="relative z-10 flex flex-col gap-10">
-              <h2 className="text-white text-[20px] font-normal leading-none gilroy-semibold">
-                Profile Settings
-              </h2>
+              <div className="flex flex-row items-center justify-between w-full">
+                <h2 className="text-white text-[20px] font-normal leading-none gilroy-semibold">
+                  Profile Settings
+                </h2>
+                {isEditMode && (
+                  <div className="flex flex-row gap-2 flex-shrink-0">
+                    <button 
+                      onClick={handleCancelEdit}
+                      disabled={saving}
+                      className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center disabled:opacity-50"
+                      style={{
+                        boxSizing: 'border-box',
+                        padding: '10px 16px',
+                        gap: '8px',
+                        height: '38px',
+                        background: 'transparent',
+                        border: '1px solid #FFFFFF',
+                        borderRadius: '100px',
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '14px',
+                        lineHeight: '100%',
+                        textAlign: 'center',
+                        color: '#FFFFFF'
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={handleSaveProfile}
+                      disabled={saving}
+                      className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center disabled:opacity-50"
+                      style={{
+                        boxSizing: 'border-box',
+                        padding: '10px 16px',
+                        gap: '8px',
+                        height: '38px',
+                        background: '#FFFFFF',
+                        border: '1px solid #FFFFFF',
+                        borderRadius: '100px',
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '14px',
+                        lineHeight: '100%',
+                        textAlign: 'center',
+                        color: '#1F1F1F'
+                      }}
+                    >
+                      {saving ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {/* Image Section */}
               <div className="flex flex-row items-center gap-4 w-full">
@@ -221,28 +417,31 @@ const AccountPage = () => {
                     {user?.email || 'John.doe24@gmail.com'}
                   </span>
                 </div>
-                <button 
-                  className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center flex-shrink-0"
-                  style={{
-                    boxSizing: 'border-box',
-                    padding: '10px 16px',
-                    gap: '8px',
-                    width: '120px',
-                    height: '38px',
-                    background: '#FFFFFF',
-                    border: '1px solid #FFFFFF',
-                    borderRadius: '100px',
-                    fontFamily: 'Gilroy-SemiBold',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '100%',
-                    textAlign: 'center',
-                    color: '#1F1F1F'
-                  }}
-                >
-                  Edit Profile
-                </button>
+                {!isEditMode && (
+                  <button 
+                    onClick={handleEditProfile}
+                    className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center flex-shrink-0"
+                    style={{
+                      boxSizing: 'border-box',
+                      padding: '10px 16px',
+                      gap: '8px',
+                      width: '120px',
+                      height: '38px',
+                      background: '#FFFFFF',
+                      border: '1px solid #FFFFFF',
+                      borderRadius: '100px',
+                      fontFamily: 'Gilroy-SemiBold',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      textAlign: 'center',
+                      color: '#1F1F1F'
+                    }}
+                  >
+                    Edit Profile
+                  </button>
+                )}
               </div>
 
               {uploadError && (
@@ -251,37 +450,196 @@ const AccountPage = () => {
                 </div>
               )}
 
+              {saveError && (
+                <div className="text-red-400 text-sm gilroy-medium">
+                  {saveError}
+                </div>
+              )}
+
+              {saveSuccess && (
+                <div className="text-green-400 text-sm gilroy-medium">
+                  Profile updated successfully!
+                </div>
+              )}
+
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-1">
                   <span className="text-white text-sm font-normal gilroy-medium">
                     Full Name (optional)
                   </span>
-                  <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
-                    <span className="text-white/60 text-sm gilroy-medium truncate">
-                      {user?.name || 'John Doe'}
-                    </span>
-                  </div>
+                  {isEditMode ? (
+                    <CustomInput
+                      type="text"
+                      placeholder="John Doe"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="w-full h-10"
+                    />
+                  ) : (
+                    <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
+                      <span className="text-white/60 text-sm gilroy-medium truncate">
+                        {user?.name || 'John Doe'}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="text-white text-sm font-normal gilroy-medium">
                     Email
                   </span>
-                  <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
-                    <span className="text-white/30 text-sm gilroy-medium truncate">
-                      {user?.email || 'john.doe@example.com'}
-                    </span>
-                  </div>
+                  {isEditMode ? (
+                    <CustomInput
+                      type="email"
+                      placeholder="john.doe@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full h-10"
+                    />
+                  ) : (
+                    <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
+                      <span className="text-white/30 text-sm gilroy-medium truncate">
+                        {user?.email || 'john.doe@example.com'}
+                      </span>
+                    </div>
+                  )}
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="text-white text-sm font-normal gilroy-medium">
-                    Password
-                  </span>
-                  <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
-                    <span className="text-white/30 text-sm gilroy-medium">
-                      ••••••••
+                {!isEditMode ? (
+                  <div className="flex flex-col gap-1">
+                    <span className="text-white text-sm font-normal gilroy-medium">
+                      Password
                     </span>
+                    <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
+                      <span className="text-white/30 text-sm gilroy-medium">
+                        ••••••••
+                      </span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <>
+                    {!showChangePassword ? (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-white text-sm font-normal gilroy-medium">
+                          Password
+                        </span>
+                        <button
+                          onClick={() => setShowChangePassword(true)}
+                          className="w-full h-10 border border-white/30 rounded-lg flex items-center justify-center px-4 hover:bg-white/5 transition-colors"
+                        >
+                          <span className="text-white/60 text-sm gilroy-medium">
+                            Click to change password
+                          </span>
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-white text-sm font-normal gilroy-medium">
+                            Current Password
+                          </span>
+                          <div className="relative w-full">
+                            <CustomInput
+                              type={showCurrentPassword ? "text" : "password"}
+                              placeholder="Enter current password"
+                              value={currentPassword}
+                              onChange={(e) => setCurrentPassword(e.target.value)}
+                              className="w-full h-10 pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/80 transition-colors"
+                            >
+                              {showCurrentPassword ? (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                </svg>
+                              ) : (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-white text-sm font-normal gilroy-medium">
+                            New Password
+                          </span>
+                          <div className="relative w-full">
+                            <CustomInput
+                              type={showNewPassword ? "text" : "password"}
+                              placeholder="Enter new password"
+                              value={newPassword}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              className="w-full h-10 pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/80 transition-colors"
+                            >
+                              {showNewPassword ? (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                </svg>
+                              ) : (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-1">
+                          <span className="text-white text-sm font-normal gilroy-medium">
+                            Confirm New Password
+                          </span>
+                          <div className="relative w-full">
+                            <CustomInput
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="Confirm new password"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              className="w-full h-10 pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/80 transition-colors"
+                            >
+                              {showConfirmPassword ? (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                </svg>
+                              ) : (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setShowChangePassword(false);
+                            setCurrentPassword('');
+                            setNewPassword('');
+                            setConfirmPassword('');
+                            setShowCurrentPassword(false);
+                            setShowNewPassword(false);
+                            setShowConfirmPassword(false);
+                          }}
+                          className="text-white/60 text-sm gilroy-medium hover:text-white/80 transition-colors self-start"
+                        >
+                          Cancel password change
+                        </button>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -311,26 +669,45 @@ const AccountPage = () => {
                 <h2 className="text-white text-[20px] font-normal leading-none gilroy-semibold">
                   Current Plan
                 </h2>
-                <div className={`flex flex-row justify-center items-center px-4 py-1.5 gap-2 rounded-full ${planStatusClasses}`}>
-                  <span className={`${planStatusTextClasses} text-xs font-normal gilroy-medium text-center`}>
-                    {planStatusLabel}
-                  </span>
-                </div>
+                {loading ? (
+                  <div className="flex flex-row justify-center items-center px-4 py-1.5 gap-2 rounded-full bg-[rgba(255,255,255,0.12)] border border-white/30">
+                    <div className="w-12 h-3 bg-white/20 rounded animate-pulse" />
+                  </div>
+                ) : (
+                  <div className={`flex flex-row justify-center items-center px-4 py-1.5 gap-2 rounded-full ${planStatusClasses}`}>
+                    <span className={`${planStatusTextClasses} text-xs font-normal gilroy-medium text-center`}>
+                      {planStatusLabel}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col gap-2">
                 <div className="flex flex-row items-center justify-between gap-4">
-                  <span className="text-white text-lg font-normal gilroy-semibold">
-                    {planName}
-                  </span>
-                  <span className="text-[#D4D737] text-lg font-normal gilroy-semibold">
-                    {planPrice}
-                  </span>
+                  {loading ? (
+                    <>
+                      <div className="h-5 w-32 bg-white/10 rounded animate-pulse" />
+                      <div className="h-5 w-16 bg-white/10 rounded animate-pulse" />
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-white text-lg font-normal gilroy-semibold">
+                        {planName}
+                      </span>
+                      <span className="text-[#D4D737] text-lg font-normal gilroy-semibold">
+                        {planPrice}
+                      </span>
+                    </>
+                  )}
                 </div>
-                {!hasActiveSubscription && (
-                  <p className="text-white/60 text-sm font-normal gilroy-medium">
-                    You have access to the free experience. Upgrade anytime to unlock premium research, tools, and community benefits.
-                  </p>
+                {loading ? (
+                  <div className="h-4 w-full bg-white/10 rounded animate-pulse" />
+                ) : (
+                  !hasActiveSubscription && (
+                    <p className="text-white/60 text-sm font-normal gilroy-medium">
+                      You have access to the free experience. Upgrade anytime to unlock premium research, tools, and community benefits.
+                    </p>
+                  )
                 )}
               </div>
 
@@ -971,33 +1348,97 @@ const AccountPage = () => {
                     {user?.email || 'John.doe24@gmail.com'}
                   </span>
                 </div>
-                <button 
-                  className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center flex-shrink-0 absolute right-0"
-                  style={{
-                    boxSizing: 'border-box',
-                    padding: '10px 16px',
-                    gap: '8px',
-                    width: '120px',
-                    height: '38px',
-                    background: '#FFFFFF',
-                    border: '1px solid #FFFFFF',
-                    borderRadius: '100px',
-                    fontFamily: 'Gilroy-SemiBold',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    fontSize: '14px',
-                    lineHeight: '100%',
-                    textAlign: 'center',
-                    color: '#1F1F1F'
-                  }}
-                >
-                  Edit Profile
-                </button>
+                {!isEditMode ? (
+                  <button 
+                    onClick={handleEditProfile}
+                    className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center flex-shrink-0 absolute right-0"
+                    style={{
+                      boxSizing: 'border-box',
+                      padding: '10px 16px',
+                      gap: '8px',
+                      width: '120px',
+                      height: '38px',
+                      background: '#FFFFFF',
+                      border: '1px solid #FFFFFF',
+                      borderRadius: '100px',
+                      fontFamily: 'Gilroy-SemiBold',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      textAlign: 'center',
+                      color: '#1F1F1F'
+                    }}
+                  >
+                    Edit Profile
+                  </button>
+                ) : (
+                  <div className="flex flex-row gap-2 flex-shrink-0 absolute right-0">
+                    <button 
+                      onClick={handleCancelEdit}
+                      disabled={saving}
+                      className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center disabled:opacity-50"
+                      style={{
+                        boxSizing: 'border-box',
+                        padding: '10px 16px',
+                        gap: '8px',
+                        height: '38px',
+                        background: 'transparent',
+                        border: '1px solid #FFFFFF',
+                        borderRadius: '100px',
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '14px',
+                        lineHeight: '100%',
+                        textAlign: 'center',
+                        color: '#FFFFFF'
+                      }}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      onClick={handleSaveProfile}
+                      disabled={saving}
+                      className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center disabled:opacity-50"
+                      style={{
+                        boxSizing: 'border-box',
+                        padding: '10px 16px',
+                        gap: '8px',
+                        height: '38px',
+                        background: '#FFFFFF',
+                        border: '1px solid #FFFFFF',
+                        borderRadius: '100px',
+                        fontFamily: 'Gilroy-SemiBold',
+                        fontStyle: 'normal',
+                        fontWeight: 400,
+                        fontSize: '14px',
+                        lineHeight: '100%',
+                        textAlign: 'center',
+                        color: '#1F1F1F'
+                      }}
+                    >
+                      {saving ? 'Saving...' : 'Save'}
+                    </button>
+                  </div>
+                )}
               </div>
 
               {uploadError && (
                 <div className="text-red-400 text-sm gilroy-medium">
                   {uploadError}
+                </div>
+              )}
+
+              {saveError && (
+                <div className="text-red-400 text-sm gilroy-medium">
+                  {saveError}
+                </div>
+              )}
+
+              {saveSuccess && (
+                <div className="text-green-400 text-sm gilroy-medium">
+                  Profile updated successfully!
                 </div>
               )}
 
@@ -1007,32 +1448,177 @@ const AccountPage = () => {
                     <label className="text-white text-sm font-normal gilroy-medium">
                       Full Name (optional)
                     </label>
-                    <CustomInput
-                      type="text"
-                      placeholder="John Doe"
-                      defaultValue={user?.name || ''}
-                    />
+                    {isEditMode ? (
+                      <CustomInput
+                        type="text"
+                        placeholder="John Doe"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    ) : (
+                      <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
+                        <span className="text-white/60 text-sm gilroy-medium truncate">
+                          {user?.name || 'John Doe'}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="w-full sm:w-1/2 flex flex-col items-start gap-1">
                     <label className="text-white text-sm font-normal gilroy-medium">
                       Email
                     </label>
-                    <CustomInput
-                      type="email"
-                      placeholder="John.doe24@gmail.com"
-                      defaultValue={user?.email || ''}
-                      readOnly
-                    />
+                    {isEditMode ? (
+                      <CustomInput
+                        type="email"
+                        placeholder="John.doe24@gmail.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    ) : (
+                      <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
+                        <span className="text-white/30 text-sm gilroy-medium truncate">
+                          {user?.email || 'John.doe24@gmail.com'}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                <div className="w-full flex flex-col items-start gap-1">
-                  <label className="text-white text-sm font-normal gilroy-medium">
-                    Password
-                  </label>
-                  <CustomInput type="password" placeholder="••••••••" />
-                </div>
+                {!isEditMode ? (
+                  <div className="w-full flex flex-col items-start gap-1">
+                    <label className="text-white text-sm font-normal gilroy-medium">
+                      Password
+                    </label>
+                    <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
+                      <span className="text-white/30 text-sm gilroy-medium">
+                        ••••••••
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {!showChangePassword ? (
+                      <div className="w-full flex flex-col items-start gap-1">
+                        <label className="text-white text-sm font-normal gilroy-medium">
+                          Password
+                        </label>
+                        <button
+                          onClick={() => setShowChangePassword(true)}
+                          className="w-full h-10 border border-white/30 rounded-lg flex items-center justify-center px-4 hover:bg-white/5 transition-colors"
+                        >
+                          <span className="text-white/60 text-sm gilroy-medium">
+                            Click to change password
+                          </span>
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="w-full flex flex-col items-start gap-1">
+                          <label className="text-white text-sm font-normal gilroy-medium">
+                            Current Password
+                          </label>
+                          <div className="relative w-full">
+                            <CustomInput
+                              type={showCurrentPassword ? "text" : "password"}
+                              placeholder="Enter current password"
+                              value={currentPassword}
+                              onChange={(e) => setCurrentPassword(e.target.value)}
+                              className="pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/80 transition-colors"
+                            >
+                              {showCurrentPassword ? (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                </svg>
+                              ) : (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="w-full flex flex-col items-start gap-1">
+                          <label className="text-white text-sm font-normal gilroy-medium">
+                            New Password
+                          </label>
+                          <div className="relative w-full">
+                            <CustomInput
+                              type={showNewPassword ? "text" : "password"}
+                              placeholder="Enter new password"
+                              value={newPassword}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              className="pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/80 transition-colors"
+                            >
+                              {showNewPassword ? (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                </svg>
+                              ) : (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <div className="w-full flex flex-col items-start gap-1">
+                          <label className="text-white text-sm font-normal gilroy-medium">
+                            Confirm New Password
+                          </label>
+                          <div className="relative w-full">
+                            <CustomInput
+                              type={showConfirmPassword ? "text" : "password"}
+                              placeholder="Confirm new password"
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              className="pr-10"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white/80 transition-colors"
+                            >
+                              {showConfirmPassword ? (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                </svg>
+                              ) : (
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setShowChangePassword(false);
+                            setCurrentPassword('');
+                            setNewPassword('');
+                            setConfirmPassword('');
+                          }}
+                          className="text-white/60 text-sm gilroy-medium hover:text-white/80 transition-colors"
+                        >
+                          Cancel password change
+                        </button>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -1063,27 +1649,46 @@ const AccountPage = () => {
                     </h2>
                   </div>
 
-                  <div className={`flex flex-row justify-center items-center px-6 py-1.5 gap-2.5 rounded-full ${planStatusClasses}`}>
-                    <span className={`${planStatusTextClasses} text-xs font-normal gilroy-medium text-center`}>
-                      {planStatusLabel}
-                    </span>
-                  </div>
+                  {loading ? (
+                    <div className="flex flex-row justify-center items-center px-6 py-1.5 gap-2.5 rounded-full bg-[rgba(255,255,255,0.12)] border border-white/30">
+                      <div className="w-16 h-3 bg-white/20 rounded animate-pulse" />
+                    </div>
+                  ) : (
+                    <div className={`flex flex-row justify-center items-center px-6 py-1.5 gap-2.5 rounded-full ${planStatusClasses}`}>
+                      <span className={`${planStatusTextClasses} text-xs font-normal gilroy-medium text-center`}>
+                        {planStatusLabel}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="w-full flex flex-row items-start justify-between gap-3">
-                  <span className="text-white text-xl font-normal gilroy-semibold flex-1">
-                    {planName}
-                  </span>
-                  <span className="text-[#D4D737] text-2xl font-normal gilroy-semibold">
-                    {planPrice}
-                  </span>
+                  {loading ? (
+                    <>
+                      <div className="h-6 w-40 bg-white/10 rounded animate-pulse flex-1" />
+                      <div className="h-7 w-20 bg-white/10 rounded animate-pulse" />
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-white text-xl font-normal gilroy-semibold flex-1">
+                        {planName}
+                      </span>
+                      <span className="text-[#D4D737] text-2xl font-normal gilroy-semibold">
+                        {planPrice}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {!hasActiveSubscription && (
-                <p className="text-white/60 text-sm font-normal gilroy-medium">
-                  You have access to the free experience. Upgrade anytime to unlock premium research, tools, and community benefits.
-                </p>
+              {loading ? (
+                <div className="h-4 w-full bg-white/10 rounded animate-pulse" />
+              ) : (
+                !hasActiveSubscription && (
+                  <p className="text-white/60 text-sm font-normal gilroy-medium">
+                    You have access to the free experience. Upgrade anytime to unlock premium research, tools, and community benefits.
+                  </p>
+                )
               )}
 
               <div className="w-full flex flex-row items-start gap-6">

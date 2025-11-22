@@ -36,7 +36,10 @@ export async function POST(request: NextRequest) {
     const existingUser = await getPublicUserByEmail(email);
     if (existingUser) {
       return NextResponse.json(
-        { error: 'User with this email already exists' },
+        { 
+          error: 'User with this email already exists',
+          emailExists: true
+        },
         { status: 409 }
       );
     }

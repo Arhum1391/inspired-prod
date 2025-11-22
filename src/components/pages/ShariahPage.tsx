@@ -2718,27 +2718,27 @@ export default function ShariahPage() {
                   display: 'flex',
                   flexDirection: 'column',
                   justifyContent: 'flex-start',
-                  alignItems: 'center',
+                  alignItems: 'flex-start',
                   padding: '20px',
                   gap: '16px',
                   width: '560px',
                   maxWidth: '560px',
-                  height: '252px',
+                  minHeight: '252px',
                   border: '1px solid rgba(255, 255, 255, 0.3)',
                   borderRadius: '8px',
                   flex: 'none',
                   order: 0,
                   alignSelf: 'center',
                   flexGrow: 0,
-                  overflow: 'hidden',
+                  overflow: 'visible',
                 }}
               >
                 {/* Heading */}
                 <h3
                   className="methodology-popup-section-title"
                   style={{
-                    width: '520px',
-                    height: '20px',
+                    width: '100%',
+                    minHeight: '20px',
                     fontFamily: 'Gilroy-SemiBold',
                     fontStyle: 'normal',
                     fontWeight: 400,
@@ -2761,10 +2761,10 @@ export default function ShariahPage() {
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
                     padding: '0px',
                     gap: '8px',
-                    width: '520px',
+                    width: '100%',
                     flex: 'none',
                     order: 1,
                     alignSelf: 'stretch',
@@ -2777,11 +2777,11 @@ export default function ShariahPage() {
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      alignItems: 'center',
+                      alignItems: 'flex-start',
                       padding: '0px',
                       gap: '8px',
-                      width: '520px',
-                      height: '36px',
+                      width: '100%',
+                      minHeight: '36px',
                       flex: 'none',
                       order: 0,
                       alignSelf: 'stretch',
@@ -2793,11 +2793,12 @@ export default function ShariahPage() {
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        alignItems: 'center',
+                        alignItems: 'flex-start',
+                        flexWrap: 'wrap',
                         padding: '0px',
                         gap: '8px',
-                        width: '520px',
-                        height: '14px',
+                        width: '100%',
+                        minHeight: '14px',
                         flex: 'none',
                         order: 0,
                         alignSelf: 'stretch',
@@ -2814,13 +2815,13 @@ export default function ShariahPage() {
                           flex: 'none',
                           order: 0,
                           flexGrow: 0,
+                          flexShrink: 0,
+                          marginTop: '3px',
                         }}
                       />
                       <span
                         className="methodology-popup-bullet-text"
                         style={{
-                          width: '129px',
-                          height: '14px',
                           fontFamily: 'Gilroy-Medium',
                           fontStyle: 'normal',
                           fontWeight: 400,
@@ -2830,6 +2831,8 @@ export default function ShariahPage() {
                           flex: 'none',
                           order: 1,
                           flexGrow: 0,
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
                         }}
                       >
                         Debt to Market Cap
@@ -2838,8 +2841,8 @@ export default function ShariahPage() {
                     <div
                       className="methodology-popup-bullet-description"
                       style={{
-                        width: '510px',
-                        height: '14px',
+                        width: '100%',
+                        minHeight: '14px',
                         position: 'relative',
                         flex: 'none',
                         order: 1,
@@ -2848,17 +2851,15 @@ export default function ShariahPage() {
                     >
                       <span
                         style={{
-                          position: 'absolute',
-                          width: '448px',
-                          height: '14px',
-                          left: '0px',
-                          top: '0px',
                           fontFamily: 'Gilroy-Medium',
                           fontStyle: 'normal',
                           fontWeight: 400,
                           fontSize: '14px',
-                          lineHeight: '100%',
+                          lineHeight: '140%',
                           color: 'rgba(255, 255, 255, 0.3)',
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
+                          display: 'block',
                         }}
                       >
                         Total debt should not exceed one-third of market capitalization
@@ -2871,11 +2872,11 @@ export default function ShariahPage() {
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      alignItems: 'center',
+                      alignItems: 'flex-start',
                       padding: '0px',
                       gap: '8px',
-                      width: '520px',
-                      height: '36px',
+                      width: '100%',
+                      minHeight: '36px',
                       flex: 'none',
                       order: 2,
                       alignSelf: 'stretch',
@@ -2886,11 +2887,12 @@ export default function ShariahPage() {
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        alignItems: 'center',
+                        alignItems: 'flex-start',
+                        flexWrap: 'wrap',
                         padding: '0px',
                         gap: '8px',
-                        width: '520px',
-                        height: '14px',
+                        width: '100%',
+                        minHeight: '14px',
                         flex: 'none',
                         order: 0,
                         alignSelf: 'stretch',
@@ -2906,12 +2908,12 @@ export default function ShariahPage() {
                           flex: 'none',
                           order: 0,
                           flexGrow: 0,
+                          flexShrink: 0,
+                          marginTop: '3px',
                         }}
                       />
                       <span
                         style={{
-                          width: '164px',
-                          height: '14px',
                           fontFamily: 'Gilroy-Medium',
                           fontStyle: 'normal',
                           fontWeight: 400,
@@ -2921,6 +2923,8 @@ export default function ShariahPage() {
                           flex: 'none',
                           order: 1,
                           flexGrow: 0,
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
                         }}
                       >
                         Cash & Interest Securities
@@ -2928,8 +2932,8 @@ export default function ShariahPage() {
                     </div>
                     <div
                       style={{
-                        width: '510px',
-                        height: '14px',
+                        width: '100%',
+                        minHeight: '14px',
                         position: 'relative',
                         flex: 'none',
                         order: 1,
@@ -2938,17 +2942,15 @@ export default function ShariahPage() {
                     >
                       <span
                         style={{
-                          position: 'absolute',
-                          width: '448px',
-                          height: '14px',
-                          left: '0px',
-                          top: '0px',
                           fontFamily: 'Gilroy-Medium',
                           fontStyle: 'normal',
                           fontWeight: 400,
                           fontSize: '14px',
-                          lineHeight: '100%',
+                          lineHeight: '140%',
                           color: 'rgba(255, 255, 255, 0.3)',
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
+                          display: 'block',
                         }}
                       >
                         Interest-bearing assets limited to one-third of total assets
@@ -2961,11 +2963,11 @@ export default function ShariahPage() {
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      alignItems: 'center',
+                      alignItems: 'flex-start',
                       padding: '0px',
                       gap: '8px',
-                      width: '520px',
-                      height: '36px',
+                      width: '100%',
+                      minHeight: '36px',
                       flex: 'none',
                       order: 3,
                       alignSelf: 'stretch',
@@ -2976,11 +2978,12 @@ export default function ShariahPage() {
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        alignItems: 'center',
+                        alignItems: 'flex-start',
+                        flexWrap: 'wrap',
                         padding: '0px',
                         gap: '8px',
-                        width: '520px',
-                        height: '14px',
+                        width: '100%',
+                        minHeight: '14px',
                         flex: 'none',
                         order: 0,
                         alignSelf: 'stretch',
@@ -2996,12 +2999,12 @@ export default function ShariahPage() {
                           flex: 'none',
                           order: 0,
                           flexGrow: 0,
+                          flexShrink: 0,
+                          marginTop: '3px',
                         }}
                       />
                       <span
                         style={{
-                          width: '135px',
-                          height: '14px',
                           fontFamily: 'Gilroy-Medium',
                           fontStyle: 'normal',
                           fontWeight: 400,
@@ -3011,6 +3014,8 @@ export default function ShariahPage() {
                           flex: 'none',
                           order: 1,
                           flexGrow: 0,
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
                         }}
                       >
                         Accounts Receivable
@@ -3018,8 +3023,8 @@ export default function ShariahPage() {
                     </div>
                     <div
                       style={{
-                        width: '510px',
-                        height: '14px',
+                        width: '100%',
+                        minHeight: '14px',
                         position: 'relative',
                         flex: 'none',
                         order: 1,
@@ -3028,17 +3033,15 @@ export default function ShariahPage() {
                     >
                       <span
                         style={{
-                          position: 'absolute',
-                          width: '448px',
-                          height: '14px',
-                          left: '0px',
-                          top: '0px',
                           fontFamily: 'Gilroy-Medium',
                           fontStyle: 'normal',
                           fontWeight: 400,
                           fontSize: '14px',
-                          lineHeight: '100%',
+                          lineHeight: '140%',
                           color: 'rgba(255, 255, 255, 0.3)',
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
+                          display: 'block',
                         }}
                       >
                         Receivables should be less than 49% of total assets
@@ -3051,11 +3054,11 @@ export default function ShariahPage() {
                     style={{
                       display: 'flex',
                       flexDirection: 'column',
-                      alignItems: 'center',
+                      alignItems: 'flex-start',
                       padding: '0px',
                       gap: '8px',
-                      width: '520px',
-                      height: '36px',
+                      width: '100%',
+                      minHeight: '36px',
                       flex: 'none',
                       order: 4,
                       alignSelf: 'stretch',
@@ -3066,11 +3069,12 @@ export default function ShariahPage() {
                       style={{
                         display: 'flex',
                         flexDirection: 'row',
-                        alignItems: 'center',
+                        alignItems: 'flex-start',
+                        flexWrap: 'wrap',
                         padding: '0px',
                         gap: '8px',
-                        width: '520px',
-                        height: '14px',
+                        width: '100%',
+                        minHeight: '14px',
                         flex: 'none',
                         order: 0,
                         alignSelf: 'stretch',
@@ -3086,12 +3090,12 @@ export default function ShariahPage() {
                           flex: 'none',
                           order: 0,
                           flexGrow: 0,
+                          flexShrink: 0,
+                          marginTop: '3px',
                         }}
                       />
                       <span
                         style={{
-                          width: '99px',
-                          height: '14px',
                           fontFamily: 'Gilroy-Medium',
                           fontStyle: 'normal',
                           fontWeight: 400,
@@ -3101,6 +3105,8 @@ export default function ShariahPage() {
                           flex: 'none',
                           order: 1,
                           flexGrow: 0,
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
                         }}
                       >
                         Interest Income
@@ -3108,8 +3114,8 @@ export default function ShariahPage() {
                     </div>
                     <div
                       style={{
-                        width: '510px',
-                        height: '14px',
+                        width: '100%',
+                        minHeight: '14px',
                         position: 'relative',
                         flex: 'none',
                         order: 1,
@@ -3118,17 +3124,15 @@ export default function ShariahPage() {
                     >
                       <span
                         style={{
-                          position: 'absolute',
-                          width: '448px',
-                          height: '14px',
-                          left: '0px',
-                          top: '0px',
                           fontFamily: 'Gilroy-Medium',
                           fontStyle: 'normal',
                           fontWeight: 400,
                           fontSize: '14px',
-                          lineHeight: '100%',
+                          lineHeight: '140%',
                           color: 'rgba(255, 255, 255, 0.3)',
+                          whiteSpace: 'normal',
+                          wordWrap: 'break-word',
+                          display: 'block',
                         }}
                       >
                         Income from interest sources must be below 5% of total revenue

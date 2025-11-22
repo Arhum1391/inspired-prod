@@ -79,13 +79,30 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
 
   // Handle scroll effect
   useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
+    const checkScrollPosition = () => {
+      const scrollTop = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
       setIsScrolled(scrollTop > 50);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Check initial scroll position on mount
+    checkScrollPosition();
+
+    // Use passive listener for better performance
+    window.addEventListener('scroll', checkScrollPosition, { passive: true });
+    
+    // Also listen for visibility changes to re-check scroll position when page becomes visible
+    // This handles cases where the browser might optimize rendering when the tab is inactive
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        checkScrollPosition();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('scroll', checkScrollPosition);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   // Prevent body scroll when sidebar is open
@@ -125,13 +142,16 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
   return (
     <>
       <div
-        className={`fixed top-0 left-0 right-0 z-[9999] w-full px-3 sm:px-4 lg:px-6 ${paddingClass} transition-all duration-300`}
+        className={`fixed top-0 left-0 right-0 z-[9999] w-full px-3 sm:px-4 lg:px-6 ${paddingClass}`}
         style={{
           background: isScrolled 
             ? 'linear-gradient(180deg, #0A0A0A 0%, rgba(10, 10, 10, 0.2) 80%, rgba(10, 10, 10, 0) 100%)'
             : 'transparent',
           backdropFilter: isScrolled ? 'blur(20px)' : 'none',
-          WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'none'
+          WebkitBackdropFilter: isScrolled ? 'blur(20px)' : 'none',
+          transition: 'background 300ms ease',
+          // Explicitly prevent backdrop-filter from transitioning to avoid visual glitches
+          // backdrop-filter should be instant to maintain blur effect when idle
         }}
       >
         {/* Mobile Layout - Toggle and Logo left, Button right */}

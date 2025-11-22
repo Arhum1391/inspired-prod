@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createReview, listReviewsByAnalyst } from '@/lib/reviews';
 import { getDatabase } from '@/lib/mongodb';
+import { getAuthenticatedUser } from '@/lib/authHelpers';
+import { getPublicUserById } from '@/lib/auth';
 
 const MIN_COMMENT_LENGTH = 10;
 
@@ -25,7 +27,33 @@ export async function GET(request: NextRequest) {
     }
 
     const reviews = await listReviewsByAnalyst(analystId);
-    return NextResponse.json({ reviews });
+    
+    // Enrich reviews with user profile pictures
+    const enrichedReviews = await Promise.all(
+      reviews.map(async (review) => {
+        if (review.userId) {
+          try {
+            const user = await getPublicUserById(review.userId);
+            return {
+              ...review,
+              userProfilePicture: user?.image || null,
+            };
+          } catch (error) {
+            console.error(`Failed to fetch user ${review.userId} for review:`, error);
+            return {
+              ...review,
+              userProfilePicture: null,
+            };
+          }
+        }
+        return {
+          ...review,
+          userProfilePicture: null,
+        };
+      })
+    );
+    
+    return NextResponse.json({ reviews: enrichedReviews });
   } catch (error) {
     console.error('Failed to fetch reviews:', error);
     return NextResponse.json(
@@ -81,6 +109,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get userId if user is logged in (optional)
+    const userId = await getAuthenticatedUser(request);
+
     const dateString =
       typeof reviewDate === 'string' && reviewDate.trim().length > 0
         ? reviewDate.trim()
@@ -90,6 +121,7 @@ export async function POST(request: NextRequest) {
       analystId,
       analystName: analyst.name,
       reviewerName: trimmedName,
+      userId: userId || null,
       rating: normalizedRating,
       comment: trimmedComment,
       reviewDate: dateString,

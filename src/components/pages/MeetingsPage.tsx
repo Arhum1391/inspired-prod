@@ -1016,70 +1016,79 @@ const MeetingsPage = () => {
     // Fetch Calendly event types when an analyst with Calendly integration is selected
     useEffect(() => {
         const handleAnalystSelection = async () => {
-            if (selectedAnalyst !== null && currentStep !==2) {
-                // Check if we're returning from payment (with safety checks)
-                if (typeof window === 'undefined') return;
+            if (selectedAnalyst === null) return;
+            
+            // Check if we're returning from payment (with safety checks)
+            if (typeof window === 'undefined') return;
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            const formDataKey = 'meetings-form';
+            const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
+            const isReturningFromPayment = (paymentStatus === 'success' || paymentStatus === 'cancelled') && savedFormData;
+            
+            // Detect URL-based redirects (coming from about page with step=2 in URL)
+            const stepParam = searchParams.get('step');
+            const isUrlRedirect = stepParam === '2' && searchParams.get('selectedAnalyst') !== null;
+            
+            // Allow fetching when:
+            // 1. Normal flow: currentStep !== 2 (user manually selected analyst from step 1)
+            // 2. URL redirect: currentStep === 2 but we detected step=2 in URL (coming from about page)
+            const shouldFetch = currentStep !== 2 || isUrlRedirect;
+            
+            if (!shouldFetch) return;
+            
+            // Ensure analysts array is loaded before fetching
+            if (!isTeamDataLoaded || analysts.length === 0) {
+                console.log('⏳ Waiting for team data to load before fetching meeting types...');
+                return;
+            }
+            
+            if (isReturningFromPayment) {
+                console.log(`✋ Returning from payment for analyst ${selectedAnalyst} - loading Calendly data WITHOUT reset`);
                 
-                const urlParams = new URLSearchParams(window.location.search);
-                const paymentStatus = urlParams.get('payment');
-                const formDataKey = 'meetings-form';
-                const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
-                const isReturningFromPayment = (paymentStatus === 'success' || paymentStatus === 'cancelled') && savedFormData;
-                
-                if (isReturningFromPayment) {
-                    console.log(`✋ Returning from payment for analyst ${selectedAnalyst} - loading Calendly data WITHOUT reset`);
-                    
-                    // Parse saved form data to get the selected date/meeting
-                    let savedDate = '';
-                    let savedMeeting = null;
-                    try {
-                        const formData = JSON.parse(savedFormData);
-                        savedDate = formData.selectedDate || '';
-                        savedMeeting = formData.selectedMeeting;
-                    } catch (error) {
-                        console.error('Error parsing saved form data:', error);
-                    }
-                    
-                    // Load Calendly data but don't reset the form
-                    setIsLoadingEventTypes(true);
-                    
-                    try {
-                        const hasCalendly = await checkSpecificAnalystCalendlyIntegration(selectedAnalyst);
-                        
-                        if (hasCalendly) {
-                            console.log(`📅 Analyst ${selectedAnalyst} has Calendly - fetching event types and availability`);
-                            await fetchCalendlyEventTypes();
-                            
-                            // If we have a saved date, fetch availability for that date
-                            if (savedDate && savedMeeting !== null) {
-                                console.log(`📆 Fetching Calendly availability for saved date: ${savedDate}`);
-                                // The availability will be fetched by the selectedDate useEffect
-                            }
-                        } else {
-                            console.log(`ℹ️ Analyst ${selectedAnalyst} has no Calendly integration`);
-                        }
-                    } catch (error) {
-                        console.error('Error loading Calendly data after payment:', error);
-                    } finally {
-                        setIsLoadingEventTypes(false);
-                    }
-                    
-                    // Don't reset form or step - just return after loading Calendly data
-                    return;
+                // Parse saved form data to get the selected date/meeting
+                let savedDate = '';
+                let savedMeeting = null;
+                try {
+                    const formData = JSON.parse(savedFormData);
+                    savedDate = formData.selectedDate || '';
+                    savedMeeting = formData.selectedMeeting;
+                } catch (error) {
+                    console.error('Error parsing saved form data:', error);
                 }
                 
-                // Reset ALL selections when analyst changes (normal flow only)
-                console.log(`🔄 Normal flow: Resetting all selections for new analyst ${selectedAnalyst}`);
-                setCalendlyMeetings([]);
-                setSelectedMeeting(null);
-                setSelectedDate('');
-                setSelectedTime('');
-                setSelectedTimezone('');
-                setAvailableDates([]);
-                setAvailableTimesByDate({});
-                setSlotUrlsByDateTime({});
-                setRawTimestampsByDateTime({});
-                setCurrentStep(1); // Reset to analyst selection step
+                // Load Calendly data but don't reset the form
+                setIsLoadingEventTypes(true);
+                
+                try {
+                    const hasCalendly = await checkSpecificAnalystCalendlyIntegration(selectedAnalyst);
+                    
+                    if (hasCalendly) {
+                        console.log(`📅 Analyst ${selectedAnalyst} has Calendly - fetching event types and availability`);
+                        await fetchCalendlyEventTypes();
+                        
+                        // If we have a saved date, fetch availability for that date
+                        if (savedDate && savedMeeting !== null) {
+                            console.log(`📆 Fetching Calendly availability for saved date: ${savedDate}`);
+                            // The availability will be fetched by the selectedDate useEffect
+                        }
+                    } else {
+                        console.log(`ℹ️ Analyst ${selectedAnalyst} has no Calendly integration`);
+                    }
+                } catch (error) {
+                    console.error('Error loading Calendly data after payment:', error);
+                } finally {
+                    setIsLoadingEventTypes(false);
+                }
+                
+                // Don't reset form or step - just return after loading Calendly data
+                return;
+            }
+            
+            // Handle URL redirect (coming from about page)
+            if (isUrlRedirect && currentStep === 2) {
+                console.log(`🔗 URL redirect detected: Fetching meeting types for analyst ${selectedAnalyst} at step 2`);
                 setIsLoadingEventTypes(true);
                 
                 try {
@@ -1087,7 +1096,7 @@ const MeetingsPage = () => {
                     const hasCalendly = await checkSpecificAnalystCalendlyIntegration(selectedAnalyst);
                     
                     if (hasCalendly) {
-                        console.log(`🎯 Analyst ${selectedAnalyst} has Calendly integration - fetching event types`);
+                        console.log(`🎯 Analyst ${selectedAnalyst} has Calendly integration - fetching event types from URL redirect`);
                         await fetchCalendlyEventTypes();
                     } else {
                         console.log(`📋 Analyst ${selectedAnalyst} does not have Calendly integration - no meetings available`);
@@ -1095,16 +1104,52 @@ const MeetingsPage = () => {
                         setCalendlyMeetings([]);
                     }
                 } catch (error) {
-                    console.error('Error handling analyst selection:', error);
+                    console.error('Error handling URL redirect analyst selection:', error);
                     setCalendlyMeetings([]);
                 } finally {
                     setIsLoadingEventTypes(false);
                 }
+                
+                // Don't reset step or selections - we're already at step 2 from URL
+                return;
+            }
+            
+            // Reset ALL selections when analyst changes (normal flow only)
+            console.log(`🔄 Normal flow: Resetting all selections for new analyst ${selectedAnalyst}`);
+            setCalendlyMeetings([]);
+            setSelectedMeeting(null);
+            setSelectedDate('');
+            setSelectedTime('');
+            setSelectedTimezone('');
+            setAvailableDates([]);
+            setAvailableTimesByDate({});
+            setSlotUrlsByDateTime({});
+            setRawTimestampsByDateTime({});
+            setCurrentStep(1); // Reset to analyst selection step
+            setIsLoadingEventTypes(true);
+            
+            try {
+                // Check if this specific analyst has Calendly integration
+                const hasCalendly = await checkSpecificAnalystCalendlyIntegration(selectedAnalyst);
+                
+                if (hasCalendly) {
+                    console.log(`🎯 Analyst ${selectedAnalyst} has Calendly integration - fetching event types`);
+                    await fetchCalendlyEventTypes();
+                } else {
+                    console.log(`📋 Analyst ${selectedAnalyst} does not have Calendly integration - no meetings available`);
+                    // Keep empty array - will show "no bookings available" message
+                    setCalendlyMeetings([]);
+                }
+            } catch (error) {
+                console.error('Error handling analyst selection:', error);
+                setCalendlyMeetings([]);
+            } finally {
+                setIsLoadingEventTypes(false);
             }
         };
         
         handleAnalystSelection();
-    }, [selectedAnalyst]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [selectedAnalyst, currentStep, searchParams, isTeamDataLoaded, analysts.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Fetch Calendly availability when meeting type, month, or timezone change
     useEffect(() => {
@@ -2740,7 +2785,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
 
                                 {/* About Tile */}
                                 <div
-                                    className="relative overflow-hidden group transition-all duration-300 flex flex-col items-start p-4 gap-4 w-full lg:flex-1 h-auto lg:h-[240px] bg-[#1F1F1F] rounded-2xl"
+                                    className="relative overflow-hidden overflow-x-hidden group transition-all duration-300 flex flex-col items-start p-4 gap-4 w-full lg:flex-1 h-auto lg:h-[240px] bg-[#1F1F1F] rounded-2xl"
                                 >
                                     {/* Curved Gradient Border */}
                                     <div 
@@ -2764,15 +2809,15 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                     ></div>
 
                                     {/* About Content */}
-                                    <div className="relative z-10 w-full h-full flex flex-col">
+                                    <div className="relative z-10 w-full h-full flex flex-col min-w-0">
                                         <h3 className="text-white text-lg font-semibold mb-3" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>About</h3>
-                                        <div className="flex-1 lg:overflow-y-auto">
+                                        <div className="flex-1 lg:overflow-y-auto min-w-0">
                                             {isLoadingAbout ? (
                                                 <div className="flex items-center justify-center py-8">
                                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
                                                 </div>
                                             ) : (
-                                                <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-line" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                                                <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-line break-words" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif', overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                                                     {analystAbout || 'No additional information available.'}
                                                 </p>
                                             )}

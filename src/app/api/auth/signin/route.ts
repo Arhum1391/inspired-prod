@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
     // Prepare cookie options
     const cookieOptions = {
       httpOnly: true as const,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict' as const,
+      secure: false, // Set to true when using HTTPS
+      sameSite: 'lax' as const,
       maxAge: 7 * 24 * 60 * 60,
       path: '/',
       ...(process.env.AUTH_COOKIE_DOMAIN

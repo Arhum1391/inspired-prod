@@ -201,6 +201,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
     setUser(null);
     localStorage.removeItem('user');
+    
+    // Redirect to landing page after logout
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
   };
 
   const value = {

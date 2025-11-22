@@ -10,6 +10,7 @@ export type CreateReviewInput = {
   analystId: number;
   analystName: string;
   reviewerName: string;
+  userId?: string | null;
   rating: number;
   comment: string;
   reviewDate: string;
@@ -80,6 +81,7 @@ export async function createReview(input: CreateReviewInput): Promise<Review> {
     reviewerName: input.reviewerName.trim(),
     comment: input.comment.trim(),
     rating: Math.min(Math.max(Math.round(input.rating), 1), 5),
+    userId: input.userId || null,
     status: 'pending',
     createdAt: now,
     updatedAt: now,

@@ -48,7 +48,13 @@ export default function SignIn() {
         const data = await response.json();
 
         if (!response.ok) {
-          setError(data.error || 'Failed to create account');
+          // Check if email already exists
+          if (data.emailExists || response.status === 409) {
+            setInfoMessage('Account already linked with this email. Would you like to login?');
+            setError(null);
+          } else {
+            setError(data.error || 'Failed to create account');
+          }
           setIsLoading(false);
           return;
         }
@@ -249,7 +255,32 @@ export default function SignIn() {
                     color: '#FFFFFF'
                   }}
                 >
-                  {infoMessage}
+                  {infoMessage.includes('Would you like to login?') ? (
+                    <>
+                      Account already linked with this email. Would you like to{' '}
+                      <button
+                        onClick={() => handleToggle(false)}
+                        type="button"
+                        className="hover:opacity-80 underline"
+                        style={{
+                          color: '#DE50EC',
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          fontFamily: 'inherit',
+                          fontSize: 'inherit',
+                          fontWeight: 'inherit',
+                          padding: 0,
+                          textDecoration: 'underline'
+                        }}
+                      >
+                        login
+                      </button>
+                      ?
+                    </>
+                  ) : (
+                    infoMessage
+                  )}
                 </p>
               </div>
             )}

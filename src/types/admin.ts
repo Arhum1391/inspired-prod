@@ -45,6 +45,7 @@ export interface Review {
   analystId: number;
   analystName: string;
   reviewerName: string;
+  userId?: string | null;
   rating: number;
   comment: string;
   reviewDate: string;

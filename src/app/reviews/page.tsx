@@ -17,6 +17,8 @@ type ReviewItem = {
     analystId: number;
     analystName: string;
     reviewerName: string;
+    userId?: string | null;
+    userProfilePicture?: string | null;
     rating: number;
     comment: string;
     reviewDate: string;
@@ -970,14 +972,24 @@ const ReviewsContent: React.FC = () => {
                                                     </p>
                                                     <div className="flex items-center justify-between w-full">
                                                         <div className="flex items-center gap-2">
-                                                            <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden">
-                                                                <Image 
-                                                                    src="/logo/review.svg" 
-                                                                    alt="Review avatar" 
-                                                                    width={24}
-                                                                    height={24}
-                                                                    className="w-full h-full object-cover"
-                                                                />
+                                                            <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden bg-gray-700">
+                                                                {review.userProfilePicture ? (
+                                                                    <Image 
+                                                                        src={review.userProfilePicture} 
+                                                                        alt={`${review.reviewerName}'s profile`} 
+                                                                        width={24}
+                                                                        height={24}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                ) : (
+                                                                    <Image 
+                                                                        src="/logo/anon.svg" 
+                                                                        alt="Anonymous user" 
+                                                                        width={24}
+                                                                        height={24}
+                                                                        className="w-full h-full object-cover"
+                                                                    />
+                                                                )}
                                                             </div>
                                                             <p className="text-white font-semibold text-sm truncate">
                                                                 {review.reviewerName}
@@ -1056,14 +1068,24 @@ const ReviewsContent: React.FC = () => {
                                                             </p>
                                                             <div className="flex items-center justify-between w-full">
                                                                 <div className="flex items-center gap-2">
-                                                                    <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden">
-                                                                        <Image 
-                                                                            src="/logo/review.svg" 
-                                                                            alt="Review avatar" 
-                                                                            width={24}
-                                                                            height={24}
-                                                                            className="w-full h-full object-cover"
-                                                                        />
+                                                                    <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden bg-gray-700">
+                                                                        {review.userProfilePicture ? (
+                                                                            <Image 
+                                                                                src={review.userProfilePicture} 
+                                                                                alt={`${review.reviewerName}'s profile`} 
+                                                                                width={24}
+                                                                                height={24}
+                                                                                className="w-full h-full object-cover"
+                                                                            />
+                                                                        ) : (
+                                                                            <Image 
+                                                                                src="/logo/anon.svg" 
+                                                                                alt="Anonymous user" 
+                                                                                width={24}
+                                                                                height={24}
+                                                                                className="w-full h-full object-cover"
+                                                                            />
+                                                                        )}
                                                                     </div>
                                                                     <p className="text-white font-semibold text-sm truncate">
                                                                         {review.reviewerName}

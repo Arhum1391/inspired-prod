@@ -42,6 +42,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
   const router = useRouter();
   const [isMobile, setIsMobile] = useState(false);
   const [isMobileComplianceModalOpen, setIsMobileComplianceModalOpen] = useState(false);
+  const [isDesktopComplianceModalOpen, setIsDesktopComplianceModalOpen] = useState(false);
   const [tile, setTile] = useState<ShariahTile | null>(null);
   const [tileLoading, setTileLoading] = useState(true);
   const [tileError, setTileError] = useState<string | null>(null);
@@ -111,49 +112,74 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
     return (
       <div
         key={`${metric.criteria}-${index}`}
-        className="shariah-details-compliance-card"
-        style={{
-          display: 'none',
-          boxSizing: 'border-box',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '16px 12px',
-          gap: '16px',
-          width: '319px',
-          height: '152px',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
-          borderRadius: '8px',
-        }}
+        className="w-full max-w-full p-4 sm:p-5 gap-5 border border-white/30 rounded-lg flex flex-col justify-center items-center box-border min-h-[180px] sm:min-h-[200px]"
       >
-        <div className="shariah-details-compliance-card-row">
-          <div className="shariah-details-compliance-card-label-group">
-            <span className="shariah-details-compliance-card-label">Status</span>
+        <div className="w-full flex flex-row justify-between items-center gap-4 p-0">
+          <div className="flex flex-row items-center gap-2 p-0 flex-1">
+            <span 
+              className="text-sm leading-none text-white"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              Status
+            </span>
           </div>
           <span
-            className={`shariah-details-compliance-card-value status ${isPass ? 'pass' : 'fail'}`}
+            className={`text-sm leading-none text-right flex-1 ${
+              isPass ? 'text-[#05B353]' : 'text-[#FF4D4D]'
+            }`}
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
           >
             {statusLabel}
           </span>
         </div>
-        <div className="shariah-details-compliance-card-divider" />
-        <div className="shariah-details-compliance-card-row">
-          <div className="shariah-details-compliance-card-label-group">
-            <span className="shariah-details-compliance-card-label">Criteria</span>
+        <div className="w-full h-px border-t border-[#404040]" />
+        <div className="w-full flex flex-row justify-between items-center gap-4 p-0">
+          <div className="flex flex-row items-center gap-2 p-0 flex-1">
+            <span 
+              className="text-sm leading-none text-white"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              Criteria
+            </span>
           </div>
-          <span className="shariah-details-compliance-card-value">{metric.criteria}</span>
+          <span 
+            className="text-sm leading-none text-[#909090] text-right flex-1"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+          >
+            {metric.criteria}
+          </span>
         </div>
-        <div className="shariah-details-compliance-card-row">
-          <div className="shariah-details-compliance-card-label-group">
-            <span className="shariah-details-compliance-card-label">Threshold</span>
+        <div className="w-full flex flex-row justify-between items-center gap-4 p-0">
+          <div className="flex flex-row items-center gap-2 p-0 flex-1">
+            <span 
+              className="text-sm leading-none text-white"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              Threshold
+            </span>
           </div>
-          <span className="shariah-details-compliance-card-value">{metric.threshold}</span>
+          <span 
+            className="text-sm leading-none text-[#909090] text-right flex-1"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+          >
+            {metric.threshold}
+          </span>
         </div>
-        <div className="shariah-details-compliance-card-row">
-          <div className="shariah-details-compliance-card-label-group">
-            <span className="shariah-details-compliance-card-label">Actual</span>
+        <div className="w-full flex flex-row justify-between items-center gap-4 p-0">
+          <div className="flex flex-row items-center gap-2 p-0 flex-1">
+            <span 
+              className="text-sm leading-none text-white"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              Actual
+            </span>
           </div>
-          <span className="shariah-details-compliance-card-value">{metric.actual}</span>
+          <span 
+            className="text-sm leading-none text-[#909090] text-right flex-1"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+          >
+            {metric.actual}
+          </span>
         </div>
       </div>
     );
@@ -166,48 +192,74 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
     return (
       <div
         key={`modal-${metric.criteria}-${index}`}
-        className="shariah-details-compliance-card"
-        style={{
-          boxSizing: 'border-box',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '16px 12px',
-          gap: '16px',
-          width: '319px',
-          height: '152px',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
-          borderRadius: '8px',
-        }}
+        className="shariah-details-compliance-card w-full max-w-full min-h-[152px] p-4 gap-4 border border-white/30 rounded-lg flex flex-col justify-center items-center box-border flex-shrink-0 overflow-hidden"
       >
-        <div className="shariah-details-compliance-card-row">
-          <div className="shariah-details-compliance-card-label-group">
-            <span className="shariah-details-compliance-card-label">Status</span>
+        <div className="w-full flex flex-row justify-between items-center gap-4 p-0 flex-shrink-0">
+          <div className="flex flex-row items-center gap-2 p-0 flex-1">
+            <span 
+              className="text-sm leading-none text-white flex-shrink-0"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              Status
+            </span>
           </div>
           <span
-            className={`shariah-details-compliance-card-value status ${isPass ? 'pass' : 'fail'}`}
+            className={`text-sm leading-none text-right flex-1 ${
+              isPass ? 'text-[#05B353]' : 'text-[#FF4D4D]'
+            }`}
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
           >
             {statusLabel}
           </span>
         </div>
-        <div className="shariah-details-compliance-card-divider" />
-        <div className="shariah-details-compliance-card-row">
-          <div className="shariah-details-compliance-card-label-group">
-            <span className="shariah-details-compliance-card-label">Criteria</span>
+        <div className="w-full h-px border-t border-[#404040] flex-shrink-0" />
+        <div className="w-full flex flex-row justify-between items-center gap-4 p-0 flex-shrink-0">
+          <div className="flex flex-row items-center gap-2 p-0 flex-1">
+            <span 
+              className="text-sm leading-none text-white flex-shrink-0"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              Criteria
+            </span>
           </div>
-          <span className="shariah-details-compliance-card-value">{metric.criteria}</span>
+          <span 
+            className="text-sm leading-none text-[#909090] text-right flex-1"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+          >
+            {metric.criteria}
+          </span>
         </div>
-        <div className="shariah-details-compliance-card-row">
-          <div className="shariah-details-compliance-card-label-group">
-            <span className="shariah-details-compliance-card-label">Threshold</span>
+        <div className="w-full flex flex-row justify-between items-center gap-4 p-0 flex-shrink-0">
+          <div className="flex flex-row items-center gap-2 p-0 flex-1">
+            <span 
+              className="text-sm leading-none text-white flex-shrink-0"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              Threshold
+            </span>
           </div>
-          <span className="shariah-details-compliance-card-value">{metric.threshold}</span>
+          <span 
+            className="text-sm leading-none text-[#909090] text-right flex-1"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+          >
+            {metric.threshold}
+          </span>
         </div>
-        <div className="shariah-details-compliance-card-row">
-          <div className="shariah-details-compliance-card-label-group">
-            <span className="shariah-details-compliance-card-label">Actual</span>
+        <div className="w-full flex flex-row justify-between items-center gap-4 p-0 flex-shrink-0">
+          <div className="flex flex-row items-center gap-2 p-0 flex-1">
+            <span 
+              className="text-sm leading-none text-white flex-shrink-0"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              Actual
+            </span>
           </div>
-          <span className="shariah-details-compliance-card-value">{metric.actual}</span>
+          <span 
+            className="text-sm leading-none text-[#909090] text-right flex-1"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+          >
+            {metric.actual}
+          </span>
         </div>
       </div>
     );
@@ -220,159 +272,39 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
     return (
       <div
         key={`${metric.criteria}-${index}`}
-        className="shariah-details-compliance-table-row"
-        style={{
-          boxSizing: 'border-box',
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'center',
-          alignItems: 'center',
-          padding: '16px',
-          gap: '24px',
-          width: '100%',
-          maxWidth: '1024px',
-          height: '46px',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          flex: 'none',
-          order: index,
-          alignSelf: 'stretch',
-          flexGrow: 0,
-        }}
+        className="hidden lg:grid lg:grid-cols-4 gap-6 w-full p-4 border-b border-white/10"
       >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            padding: '0px',
-            gap: '8px',
-            width: '230px',
-            height: '14px',
-            flex: 'none',
-            order: 0,
-            flexGrow: 1,
-          }}
-        >
+        <div className="flex flex-col justify-center items-start p-0">
           <span
-            style={{
-              width: '230px',
-              height: '14px',
-              fontFamily: 'Gilroy-Medium',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '100%',
-              color: '#909090',
-              flex: 'none',
-              order: 0,
-              alignSelf: 'stretch',
-              flexGrow: 0,
-            }}
+            className="text-sm leading-none text-[#909090]"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
           >
             {metric.criteria}
           </span>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            padding: '0px',
-            gap: '8px',
-            width: '230px',
-            height: '14px',
-            flex: 'none',
-            order: 1,
-            flexGrow: 1,
-          }}
-        >
+        <div className="flex flex-col justify-center items-end p-0">
           <span
-            style={{
-              width: '230px',
-              height: '14px',
-              fontFamily: 'Gilroy-Medium',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '100%',
-              textAlign: 'right',
-              color: '#909090',
-              flex: 'none',
-              order: 0,
-              alignSelf: 'stretch',
-              flexGrow: 0,
-            }}
+            className="text-sm leading-none text-[#909090] text-right"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
           >
             {metric.threshold}
           </span>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            padding: '0px',
-            gap: '8px',
-            width: '230px',
-            height: '14px',
-            flex: 'none',
-            order: 2,
-            flexGrow: 1,
-          }}
-        >
+        <div className="flex flex-col justify-center items-end p-0">
           <span
-            style={{
-              width: '230px',
-              height: '14px',
-              fontFamily: 'Gilroy-Medium',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '100%',
-              textAlign: 'right',
-              color: '#909090',
-              flex: 'none',
-              order: 0,
-              alignSelf: 'stretch',
-              flexGrow: 0,
-            }}
+            className="text-sm leading-none text-[#909090] text-right"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
           >
             {metric.actual}
           </span>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            padding: '0px',
-            gap: '8px',
-            width: '230px',
-            height: '14px',
-            flex: 'none',
-            order: 3,
-            flexGrow: 1,
-          }}
-        >
+        <div className="flex flex-col justify-center items-end p-0">
           <span
+            className="text-sm leading-none text-right"
             style={{
-              width: '230px',
-              height: '14px',
               fontFamily: 'Gilroy-Medium',
-              fontStyle: 'normal',
               fontWeight: 400,
-              fontSize: '14px',
-              lineHeight: '100%',
-              textAlign: 'right',
-              color: isPass ? '#05B353' : '#FF4D4D',
-              flex: 'none',
-              order: 0,
-              alignSelf: 'stretch',
-              flexGrow: 0,
+              color: isPass ? '#05B353' : '#FF4D4D'
             }}
           >
             {statusLabel}
@@ -424,7 +356,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
 
   // Lock body scroll when modal is open
   useEffect(() => {
-    if (isMobileComplianceModalOpen) {
+    if (isMobileComplianceModalOpen || isDesktopComplianceModalOpen) {
       const originalStyle = window.getComputedStyle(document.body).overflow;
       const originalPosition = window.getComputedStyle(document.body).position;
       const originalTop = window.getComputedStyle(document.body).top;
@@ -446,7 +378,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
         }
       };
     }
-  }, [isMobileComplianceModalOpen]);
+  }, [isMobileComplianceModalOpen, isDesktopComplianceModalOpen]);
 
   const handleBack = () => {
     router.push('/shariah');
@@ -473,253 +405,110 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
       ? tile.complianceMetrics
       : fallbackComplianceMetrics;
 
+  // Calculate mobile tile height based on number of visible cards (1-5)
+  const visibleCardsCount = Math.min(complianceMetrics.length, 5);
+  const cardHeight = 152;
+  const cardGap = 16;
+  const headerHeight = 50; // Title + View All button
+  const tilePadding = 32; // 20px top + 12px bottom
+  const extraSpacing = 40; // Increased for better spacing
+  const mobileTileHeight = headerHeight + tilePadding + (visibleCardsCount * cardHeight) + ((visibleCardsCount - 1) * cardGap) + extraSpacing;
+
+  // Calculate analyst notes position dynamically based on tile position and height
+  const mobileTileTop = 353; // Compliance tile top position on mobile
+  const mobileAnalystNotesSpacing = 40; // Spacing between tile and analyst notes on mobile
+  const mobileAnalystNotesTop = mobileTileTop + mobileTileHeight + mobileAnalystNotesSpacing;
+  
+  // For relative positioning on mobile, calculate margin-top from top of wrapper
+  // The wrapper has padding (px-4 = 16px on mobile), and the compliance tile is at top: 353px
+  // So margin-top should be: tile top + tile height + spacing
+  const mobileAnalystNotesMarginTop = mobileTileTop + mobileTileHeight + mobileAnalystNotesSpacing;
+
+  const desktopTileTop = 604; // Compliance tile top position on desktop
+  const desktopTileHeight = 384; // Fixed desktop tile height
+  const desktopAnalystNotesSpacing = 140; // Spacing between tile and analyst notes on desktop
+  const desktopAnalystNotesTop = desktopTileTop + desktopTileHeight + desktopAnalystNotesSpacing;
+
+  // Calculate analyst notes height dynamically
+  const analystNotesMinHeight = 145; // Minimum height for analyst notes section
+  const analystNotesHeadingHeight = isMobile ? 58 : 58; // Heading height (same for both)
+  const analystNotesTextMinHeight = 63; // Text min height
+  // Text height can vary, so we use min-height but account for potential expansion
+  const analystNotesGap = isMobile ? 8 : 24; // Gap between heading and text
+  const analystNotesPadding = isMobile ? 0 : 0; // Padding is 0px for both
+  // Use a reasonable estimate for analyst notes height (can expand if content is longer)
+  const analystNotesHeight = Math.max(
+    analystNotesMinHeight,
+    analystNotesHeadingHeight + analystNotesTextMinHeight + analystNotesGap + analystNotesPadding
+  );
+
+  // Calculate where analyst notes section ends (bottom position)
+  const mobileAnalystNotesBottom = mobileAnalystNotesTop + analystNotesHeight;
+  const desktopAnalystNotesBottom = desktopAnalystNotesTop + analystNotesHeight;
+
+  // Calculate footer spacing dynamically based on analyst notes
+  const mobileFooterSpacing = 16; // Minimal spacing between analyst notes and footer on mobile
+  const desktopFooterSpacing = 120; // Spacing between analyst notes and footer on desktop (marginBottom)
+
+  // Calculate minimum page height to accommodate all content + footer
+  // Footer component has its own padding (py-12 on mobile, py-16 on desktop), so we account for that
+  const footerApproxHeight = isMobile ? 150 : 250; // Approximate footer content height (excluding padding)
+  const footerPadding = isMobile ? 48 : 64; // Footer padding (py-12 = 48px, py-16 = 64px)
+  const mobilePageMinHeight = mobileAnalystNotesTop + analystNotesHeight + mobileFooterSpacing + footerApproxHeight + footerPadding;
+  const desktopPageMinHeight = desktopAnalystNotesTop + analystNotesHeight + desktopFooterSpacing + footerApproxHeight + footerPadding;
+
   return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
+    <div 
+      className="bg-[#0A0A0A] text-white relative min-h-screen w-full overflow-x-hidden"
+    >
       <style dangerouslySetInnerHTML={{
         __html: `
-        /* Desktop View All Icon - Point Right */
-        .shariah-details-compliance-viewall-icon {
-          transform: rotate(180deg) !important;
+        /* Custom Minimal Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
         }
-        /* Mobile Spacer - Hidden on Desktop */
-        .shariah-details-mobile-spacer {
-          display: none !important;
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
         }
-        @media (max-width: 768px) {
-          .shariah-details-header-container {
-            position: absolute !important;
-            width: 375px !important;
-            height: auto !important;
-            min-height: 227px !important;
-            left: 0px !important;
-            top: 94px !important;
-            padding: 0px 16px 24px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: flex-start !important;
-          }
-          .shariah-details-header-content {
-            width: 343px !important;
-            height: auto !important;
-            min-height: 203px !important;
-            gap: 24px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-          }
-          .shariah-details-back-button {
-            width: 343px !important;
-            height: 16px !important;
-            gap: 4px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: flex-start !important;
-          }
-          .shariah-details-back-icon {
-            width: 16px !important;
-            height: 16px !important;
-            transform: none !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-back-text {
-            width: 37px !important;
-            height: 16px !important;
-            font-family: 'Gilroy-Medium' !important;
-            font-size: 16px !important;
-            line-height: 100% !important;
-            color: #FFFFFF !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-heading {
-            width: 343px !important;
-            height: auto !important;
-            min-height: 38px !important;
-            font-family: 'Gilroy-SemiBold' !important;
-            font-size: 32px !important;
-            line-height: 120% !important;
-            color: #FFFFFF !important;
-            margin: 0 !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-description {
-            width: 343px !important;
-            height: auto !important;
-            min-height: 63px !important;
-            font-family: 'Gilroy-Medium' !important;
-            font-size: 16px !important;
-            line-height: 130% !important;
-            color: #FFFFFF !important;
-            margin: 0 !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-footer {
-            width: 343px !important;
-            height: 14px !important;
-            gap: 16px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-          }
-          .shariah-details-footer-left {
-            width: 162px !important;
-            height: 14px !important;
-            font-family: 'Gilroy-Medium' !important;
-            font-size: 14px !important;
-            line-height: 100% !important;
-            color: #FFFFFF !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-footer-dot {
-            width: 6px !important;
-            height: 6px !important;
-            background: #D9D9D9 !important;
-            border-radius: 50% !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-footer-right {
-            width: 121px !important;
-            height: 14px !important;
-            font-family: 'Gilroy-Medium' !important;
-            font-size: 14px !important;
-            line-height: 100% !important;
-            color: #FFFFFF !important;
-            flex-shrink: 0 !important;
-          }
-          /* Compliance Breakdown Tile Mobile Styles */
-          .shariah-details-compliance-container {
-            position: absolute !important;
-            max-width: 375px !important;
-            height: 794px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            top: 353px !important;
-            padding: 0px 16px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
-            box-sizing: border-box !important;
-            margin-bottom: 40px !important;
-          }
-          .shariah-details-compliance-container > div:first-child {
-            display: none !important;
-          }
-          .shariah-details-compliance-tile {
-            width: 100% !important;
-            max-width: 343px !important;
-            height: 794px !important;
-            padding: 20px 12px !important;
-            gap: 8px !important;
-            background: #1F1F1F !important;
-            border-radius: 10px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            isolation: isolate !important;
-            box-sizing: border-box !important;
-            overflow: hidden !important;
-            border: none !important;
-          }
-          .shariah-details-compliance-content {
-            width: 100% !important;
-            height: 754px !important;
-            gap: 24px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            z-index: 0 !important;
-          }
-          .shariah-details-compliance-header {
-            width: 100% !important;
-            height: 50px !important;
-            gap: 24px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-          }
-          .shariah-details-compliance-title-block {
-            width: 100% !important;
-            height: 50px !important;
-            gap: 12px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            flex: 1 !important;
-          }
-          .shariah-details-compliance-title {
-            width: 100% !important;
-            height: auto !important;
-            min-height: 50px !important;
-            font-family: 'Gilroy-SemiBold' !important;
-            font-style: normal !important;
-            font-weight: 400 !important;
-            font-size: 24px !important;
-            line-height: 125% !important;
-            color: #FFFFFF !important;
-            margin: 0 !important;
-            flex: none !important;
-            order: 0 !important;
-            flex-grow: 0 !important;
-            white-space: normal !important;
-            word-wrap: break-word !important;
-            overflow-wrap: break-word !important;
-          }
-          .shariah-details-compliance-viewall {
-            width: 63px !important;
-            height: 17px !important;
-            gap: 4px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            background: transparent !important;
-            border: none !important;
-            cursor: pointer !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-compliance-viewall span {
-            width: 43px !important;
-            height: 17px !important;
-            font-family: 'Gilroy-SemiBold' !important;
-            font-size: 12px !important;
-            line-height: 145% !important;
-            color: #FFFFFF !important;
-            text-align: center !important;
-            display: flex !important;
-            align-items: center !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-compliance-viewall-icon {
-            width: 16px !important;
-            height: 16px !important;
-            transform: rotate(180deg) !important;
-            flex-shrink: 0 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-          }
-          /* Compliance Modal Mobile Styles */
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+        /* Firefox */
+        .custom-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+        /* Compliance Modal Mobile Styles - Keep minimal styles for modal */
           .shariah-details-compliance-mobile-modal {
             position: fixed !important;
             top: 0 !important;
             left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            width: 100vw !important;
             height: 100vh !important;
+            max-width: 100vw !important;
             background: rgba(0, 0, 0, 0.6) !important;
+            backdrop-filter: blur(4px) !important;
+            -webkit-backdrop-filter: blur(4px) !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             z-index: 1000 !important;
             padding: 16px !important;
+            margin: 0 !important;
+            overflow-x: hidden !important;
+            box-sizing: border-box !important;
           }
           .shariah-details-compliance-mobile-modal-content {
-            max-height: calc(100vh - 64px) !important;
+            max-height: calc(100vh - 32px) !important;
+            max-width: calc(100vw - 32px) !important;
+            width: 100% !important;
+            min-width: 0 !important;
             background: #1F1F1F !important;
             border-radius: 16px !important;
             padding: 24px 12px !important;
@@ -728,6 +517,9 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             gap: 20px !important;
             box-sizing: border-box !important;
             position: relative !important;
+            margin: 0 auto !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
           }
           .shariah-details-compliance-mobile-modal-close {
             width: 24px !important;
@@ -760,6 +552,8 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             flex-direction: column !important;
             gap: 16px !important;
             width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
             overflow-y: auto !important;
             overflow-x: hidden !important;
             padding-right: 4px !important;
@@ -769,338 +563,123 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
           }
           .shariah-details-compliance-mobile-modal-list .shariah-details-compliance-card {
             display: flex !important;
-          }
-          .shariah-details-compliance-table-header {
-            display: none !important;
-          }
-          .shariah-details-compliance-table-rows {
-            display: none !important;
-          }
-          .shariah-details-compliance-table-row {
-            display: none !important;
-          }
-          .shariah-details-compliance-cards-container {
-            width: 319px !important;
-            max-width: 319px !important;
-            gap: 16px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            box-sizing: border-box !important;
-          }
-          .shariah-details-compliance-card {
-            box-sizing: border-box !important;
-            width: 319px !important;
-            max-width: 319px !important;
-            height: 152px !important;
-            padding: 16px 12px !important;
-            gap: 16px !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-            border-radius: 8px !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
-            flex-shrink: 0 !important;
-            overflow: hidden !important;
-          }
-          .shariah-details-compliance-card-row {
-            width: 295px !important;
-            height: 14px !important;
-            gap: 16px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: row !important;
-            justify-content: space-between !important;
-            align-items: center !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-compliance-card-label-group {
-            width: auto !important;
-            height: 14px !important;
-            gap: 8px !important;
-            padding: 0px !important;
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            flex: 1 !important;
-          }
-          .shariah-details-compliance-card-label {
-            font-family: 'Gilroy-Medium' !important;
-            font-size: 14px !important;
-            line-height: 100% !important;
-            color: #FFFFFF !important;
-            flex-shrink: 0 !important;
-          }
-          .shariah-details-compliance-card-value {
-            font-family: 'Gilroy-Medium' !important;
-            font-size: 14px !important;
-            line-height: 100% !important;
-            color: #909090 !important;
-            text-align: right !important;
-            flex: 1 !important;
-          }
-          .shariah-details-compliance-card-value.status {
-            color: #05B353 !important;
-          }
-          .shariah-details-compliance-card-divider {
-            width: 295px !important;
-            height: 0px !important;
-            border: 1px solid #404040 !important;
-            flex-shrink: 0 !important;
-          }
-          /* Analyst Notes Section Mobile Styles */
-          .shariah-details-analyst-notes {
-            position: absolute !important;
-            width: 343px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            top: 1187px !important;
-            height: auto !important;
-            min-height: 145px !important;
-            padding: 0px 16px !important;
-            margin-bottom: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 8px !important;
-            box-sizing: border-box !important;
-          }
-          /* Spacer to prevent Footer overlap on mobile */
-          .shariah-details-mobile-spacer {
-            display: block !important;
-            width: 100% !important;
-            height: 60px !important;
-            min-height: 60px !important;
-          }
-          .shariah-details-analyst-notes h2 {
-            width: 311px !important;
-            height: auto !important;
-            min-height: 58px !important;
-            font-family: 'Gilroy-SemiBold' !important;
-            font-style: normal !important;
-            font-weight: 400 !important;
-            font-size: 32px !important;
-            line-height: 120% !important;
-            color: #FFFFFF !important;
-            margin: 0 !important;
-            flex: none !important;
-            order: 0 !important;
-            align-self: stretch !important;
-            flex-grow: 0 !important;
-          }
-          .shariah-details-analyst-notes p {
-            width: 311px !important;
-            height: auto !important;
-            min-height: 63px !important;
-            font-family: 'Gilroy-Medium' !important;
-            font-style: normal !important;
-            font-weight: 400 !important;
-            font-size: 16px !important;
-            line-height: 130% !important;
-            color: #FFFFFF !important;
-            margin: 0 !important;
-            flex: none !important;
-            order: 1 !important;
-            align-self: stretch !important;
-            flex-grow: 0 !important;
-          }
         }
       `}} />
       <Navbar />
 
-      {/* Background Gradient SVG - Top Right */}
-      <svg
-        width="507"
-        height="713"
-        viewBox="0 0 507 713"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          zIndex: 0,
-          pointerEvents: 'none',
-        }}
-      >
-        <g filter="url(#filter0_f_1639_1215)">
-          <circle cx="594.064" cy="118.608" r="294" transform="rotate(-153.197 594.064 118.608)" fill="url(#paint0_linear_1639_1215)" />
-        </g>
-        <defs>
-          <filter id="filter0_f_1639_1215" x="0" y="-475.457" width="1188.13" height="1188.13" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-            <feFlood floodOpacity="0" result="BackgroundImageFix" />
-            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-            <feGaussianBlur stdDeviation="150" result="effect1_foregroundBlur_1639_1215" />
-          </filter>
-          <linearGradient id="paint0_linear_1639_1215" x1="362.934" y1="-145.173" x2="920.636" y2="32.5919" gradientUnits="userSpaceOnUse">
-            <stop stopColor="#3813F3" />
-            <stop offset="0.32" stopColor="#05B0B3" />
-            <stop offset="0.64" stopColor="#4B25FD" />
-            <stop offset="0.8" stopColor="#B9B9E9" />
-            <stop offset="1" stopColor="#DE50EC" />
-          </linearGradient>
-        </defs>
-      </svg>
-
-      <div className="relative z-10 flex flex-col items-start justify-center px-4 sm:px-6 lg:px-8" style={{ minHeight: '1400px', paddingBottom: '150px' }}>
-        {/* Content Container */}
-        <div
-          className="shariah-details-header-container"
+      {/* Background Gradient - Mobile (Original) */}
+      {isMobile && (
+        <svg
+          width="507"
+          height="713"
+          viewBox="0 0 507 713"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
           style={{
             position: 'absolute',
-            width: '630px',
-            left: '188px',
-            top: '262px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            padding: '0px',
-            gap: '24px',
+            top: 0,
+            right: 0,
+            zIndex: 0,
+            pointerEvents: 'none',
           }}
         >
+          <g filter="url(#filter0_f_1639_1215)">
+            <circle cx="594.064" cy="118.608" r="294" transform="rotate(-153.197 594.064 118.608)" fill="url(#paint0_linear_1639_1215)" />
+          </g>
+          <defs>
+            <filter id="filter0_f_1639_1215" x="0" y="-475.457" width="1188.13" height="1188.13" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+              <feFlood floodOpacity="0" result="BackgroundImageFix" />
+              <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+              <feGaussianBlur stdDeviation="150" result="effect1_foregroundBlur_1639_1215" />
+            </filter>
+            <linearGradient id="paint0_linear_1639_1215" x1="362.934" y1="-145.173" x2="920.636" y2="32.5919" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#3813F3" />
+              <stop offset="0.32" stopColor="#05B0B3" />
+              <stop offset="0.64" stopColor="#4B25FD" />
+              <stop offset="0.8" stopColor="#B9B9E9" />
+              <stop offset="1" stopColor="#DE50EC" />
+            </linearGradient>
+          </defs>
+        </svg>
+      )}
+
+      {/* Background Gradient - Desktop (Web Version) */}
+      {!isMobile && (
+        <div
+          style={{
+            position: 'absolute',
+            width: '588px',
+            height: '588px',
+            left: '1132.63px',
+            top: '-276.38px',
+            background: 'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+            filter: 'blur(150px)',
+            transform: 'rotate(-153.2deg)',
+            zIndex: 0,
+            pointerEvents: 'none',
+            borderRadius: '50%',
+          }}
+        />
+      )}
+
+      <div 
+        className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-start justify-start px-4 sm:px-6 lg:px-12 xl:px-16 pt-16 sm:pt-20 lg:pt-24 pb-8 sm:pb-12 lg:pb-24" 
+      >
+        {/* Content Container */}
+        <div
+          className="w-full max-w-4xl lg:max-w-5xl flex flex-col items-start gap-6 mb-8 sm:mb-12 lg:mb-16"
+        >
           <div
-            className="shariah-details-header-content"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              padding: '0px',
-              gap: '24px',
-            }}
+            className="w-full flex flex-col items-start gap-6"
           >
             {/* Back Button Row */}
             <button
               onClick={handleBack}
-              className="shariah-details-back-button flex items-center text-white hover:text-gray-300 transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20"
-              style={{
-                outline: 'none',
-                boxShadow: 'none',
-                background: 'transparent',
-                border: 'none',
-                cursor: 'pointer',
-                padding: 0,
-                fontFamily: 'Gilroy-Medium',
-                fontSize: '16px',
-                lineHeight: '100%',
-                color: '#FFFFFF',
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                gap: '4px',
-              }}
+              className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors focus:outline-none bg-transparent border-none cursor-pointer p-0 text-base leading-none relative z-20"
+              style={{ fontFamily: 'Gilroy-Medium' }}
               onFocus={(e) => e.target.blur()}
             >
-              <ChevronLeft size={16} className="shariah-details-back-icon" />
-              <span className="shariah-details-back-text">Back</span>
+              <ChevronLeft size={16} className="flex-shrink-0" />
+              <span>Back</span>
             </button>
 
             {/* Heading */}
             <h1
-              className="shariah-details-heading"
-              style={{
-                width: '630px',
-                fontFamily: 'Gilroy-SemiBold',
-                fontStyle: 'normal',
-                fontWeight: 400,
-                fontSize: '48px',
-                lineHeight: '120%',
-                color: '#FFFFFF',
-                flex: 'none',
-                order: 1,
-                alignSelf: 'stretch',
-                flexGrow: 0,
-                margin: 0,
-              }}
+              className="w-full text-3xl sm:text-4xl lg:text-5xl leading-[120%] text-white m-0"
+              style={{ fontFamily: 'Gilroy-SemiBold', fontWeight: 400 }}
             >
               {tile.title}
             </h1>
 
             {/* Description */}
             <p
-              className="shariah-details-description"
-              style={{
-                width: '630px',
-                fontFamily: 'Gilroy-Medium',
-                fontStyle: 'normal',
-                fontWeight: 400,
-                fontSize: '16px',
-                lineHeight: '130%',
-                color: '#FFFFFF',
-                flex: 'none',
-                order: 2,
-                alignSelf: 'stretch',
-                flexGrow: 0,
-                margin: 0,
-              }}
+              className="w-full text-base leading-[130%] text-white m-0"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
             >
               {tile.description}
             </p>
 
             {/* Footer Row */}
             <div
-              className="shariah-details-footer"
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                padding: '0px',
-                gap: '16px',
-                width: '630px',
-                height: '14px',
-                flex: 'none',
-                order: 3,
-                alignSelf: 'stretch',
-                flexGrow: 0,
-              }}
+              className="w-full flex flex-row items-center gap-4"
             >
               {/* Footer Left */}
               <span
-                className="shariah-details-footer-left"
-                style={{
-                  fontFamily: 'Gilroy-Medium',
-                  fontStyle: 'normal',
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  lineHeight: '100%',
-                  color: '#FFFFFF',
-                  flex: 'none',
-                  order: 0,
-                  flexGrow: 0,
-                }}
+                className="text-sm leading-none text-white"
+                style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
               >
                 {tile.footerLeft}
               </span>
 
               {/* Dot Separator */}
               <div
-                className="shariah-details-footer-dot"
-                style={{
-                  width: '6px',
-                  height: '6px',
-                  background: '#D9D9D9',
-                  borderRadius: '50%',
-                  flex: 'none',
-                  order: 1,
-                  flexGrow: 0,
-                }}
+                className="w-1.5 h-1.5 bg-[#D9D9D9] rounded-full flex-shrink-0"
               />
 
               {/* Footer Right */}
               <span
-                className="shariah-details-footer-right"
-                style={{
-                  fontFamily: 'Gilroy-Medium',
-                  fontStyle: 'normal',
-                  fontWeight: 400,
-                  fontSize: '14px',
-                  lineHeight: '100%',
-                  color: '#FFFFFF',
-                  flex: 'none',
-                  order: 2,
-                  flexGrow: 0,
-                }}
+                className="text-sm leading-none text-white"
+                style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
               >
                 {formatFooterDate(tile.footerRight)}
               </span>
@@ -1110,309 +689,93 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
 
         {/* Compliance Breakdown Tile */}
         <div
-          className="shariah-details-compliance-container"
-          style={{
-            position: 'absolute',
-            width: '1064px',
-            height: '384px',
-            top: '604px',
-            left: '188px',
-            gap: '24px',
-            borderRadius: '16px',
-            background: '#1F1F1F',
-            padding: '20px',
-            boxSizing: 'border-box',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-          }}
+          className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl mb-8 sm:mb-12 lg:mb-16 rounded-2xl bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 flex flex-col items-start gap-4 lg:gap-6 relative overflow-hidden"
         >
           {/* Curved Gradient Border - Desktop */}
           <div
+            className="hidden lg:block absolute inset-0 pointer-events-none rounded-2xl p-[1px] z-0"
             style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              pointerEvents: 'none',
-              borderRadius: '16px',
-              padding: '1px',
               background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-              boxSizing: 'border-box',
-              zIndex: 0,
             }}
           >
-            <div style={{ width: '100%', height: '100%', borderRadius: '15px', background: '#1F1F1F' }}></div>
+            <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
           </div>
 
           <div
-            className="shariah-details-compliance-tile"
-            style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: '16px',
-              background: 'transparent',
-              padding: '20px',
-              boxSizing: 'border-box',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              position: 'relative',
-              overflow: 'hidden',
-              zIndex: 1,
-            }}
+            className="w-full h-full rounded-2xl bg-transparent p-3 sm:p-4 lg:p-5 flex flex-col items-start relative overflow-hidden z-10"
           >
 
             <div
-              className="shariah-details-compliance-content"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '12px',
-                width: '100%',
-                maxWidth: '1024px',
-                height: '266px',
-                flex: 'none',
-                order: 1,
-                alignSelf: 'stretch',
-                flexGrow: 0,
-                position: 'relative',
-                zIndex: 1,
-                boxSizing: 'border-box',
-              }}
+              className="w-full flex flex-col items-start gap-3 lg:gap-3 p-0 relative z-10 box-border min-h-[200px] sm:min-h-[250px]"
             >
               {/* Header with Title and View All */}
               <div
-                // className="shariah-details-compliance-header"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  padding: '0px',
-                  gap: '24px',
-                  width: '100%',
-                  marginBottom: '15px',
-                  position: 'relative',
-                  zIndex: 1,
-                }}
+                className="w-full flex flex-row items-start justify-between gap-4 p-0 mb-2 lg:mb-4 relative z-10"
               >
                 <div
-                  className="shariah-details-compliance-title-block"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '12px',
-                    flex: 1,
-                  }}
+                  className="flex flex-col items-start gap-0 lg:gap-3 p-0 flex-1"
                 >
                   <h2
-                    className="shariah-details-compliance-title"
-                    style={{
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontSize: '24px',
-                      fontWeight: 400,
-                      color: '#FFFFFF',
-                      margin: 0,
-                      position: 'relative',
-                      zIndex: 1,
-                    }}
+                    className="w-full text-xl sm:text-2xl text-white m-0 relative z-10"
+                    style={{ fontFamily: 'Gilroy-SemiBold', fontWeight: 400 }}
                   >
-                    Compliance Breakdown...
+                    Compliance Breakdown
                   </h2>
                 </div>
                 <button
-                  className="shariah-details-compliance-viewall"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    padding: '0px',
-                    gap: '4px',
-                    background: 'transparent',
-                    border: 'none',
-                    cursor: 'pointer',
-                    position: 'relative',
-                    zIndex: 1,
-                  }}
+                  className="flex flex-row items-center gap-1 bg-transparent border-none cursor-pointer p-0 relative z-10 self-start mt-0"
                   onClick={() => {
                     if (isMobile) {
                       setIsMobileComplianceModalOpen(true);
+                    } else {
+                      setIsDesktopComplianceModalOpen(true);
                     }
                   }}
                 >
-                  <span>View All</span>
-                  <ChevronLeft size={16} className="shariah-details-compliance-viewall-icon" />
+                  <span className="text-xs sm:text-sm lg:text-sm text-white" style={{ fontFamily: 'Gilroy-SemiBold' }}>View All</span>
+                  <ChevronLeft size={16} className="rotate-180 text-white" />
                 </button>
               </div>
 
               {/* Desktop Table Header */}
               <div
-                className="shariah-details-compliance-table-header"
-                style={{
-                  boxSizing: 'border-box',
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: '16px',
-                  gap: '24px',
-                  width: '100%',
-                  maxWidth: '1024px',
-                  height: '46px',
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.3)',
-                  flex: 'none',
-                  order: 0,
-                  alignSelf: 'stretch',
-                  flexGrow: 0,
-                }}
+                className="hidden lg:grid lg:grid-cols-4 gap-6 w-full p-4 border-b border-white/30"
               >
                 {/* Criteria Column */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '100%',
-                    height: '14px',
-                    flex: 'none',
-                    order: 0,
-                    flexGrow: 1,
-                  }}
-                >
+                <div className="flex flex-col justify-center items-start p-0">
                   <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
+                    className="text-sm leading-none text-white"
+                    style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
                   >
                     Criteria
                   </span>
                 </div>
 
                 {/* Threshold Column */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '100%',
-                    height: '14px',
-                    flex: 'none',
-                    order: 1,
-                    flexGrow: 1,
-                  }}
-                >
+                <div className="flex flex-col justify-center items-end p-0">
                   <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
+                    className="text-sm leading-none text-white text-right"
+                    style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
                   >
                     Threshold
                   </span>
                 </div>
 
                 {/* Actual Column */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '100%',
-                    height: '14px',
-                    flex: 'none',
-                    order: 2,
-                    flexGrow: 1,
-                  }}
-                >
+                <div className="flex flex-col justify-center items-end p-0">
                   <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
+                    className="text-sm leading-none text-white text-right"
+                    style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
                   >
                     Actual
                   </span>
                 </div>
 
                 {/* Status Column */}
-                <div
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'flex-start',
-                    padding: '0px',
-                    gap: '8px',
-                    width: '100%',
-                    height: '14px',
-                    flex: 'none',
-                    order: 3,
-                    flexGrow: 1,
-                  }}
-                >
+                <div className="flex flex-col justify-center items-end p-0">
                   <span
-                    style={{
-                      width: '230px',
-                      height: '14px',
-                      fontFamily: 'Gilroy-Medium',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'right',
-                      color: '#FFFFFF',
-                      flex: 'none',
-                      order: 0,
-                      alignSelf: 'stretch',
-                      flexGrow: 0,
-                    }}
+                    className="text-sm leading-none text-white text-right"
+                    style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
                   >
                     Status
                   </span>
@@ -2328,39 +1691,12 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                 </>
               )}
               {/* Mobile Cards Container */}
-              <div
-                className="shariah-details-compliance-cards-container"
-                style={{
-                  display: 'none',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  padding: '0px',
-                  gap: '16px',
-                  width: '319px',
-                }}
-              >
-                {complianceMetrics.map((metric, index) => renderMobileComplianceCard(metric, index))}
+              <div className="lg:hidden flex flex-col items-start gap-4 w-full p-0">
+                {complianceMetrics.slice(0, visibleCardsCount).map((metric, index) => renderMobileComplianceCard(metric, index))}
               </div>
 
               {/* Desktop Data Rows Container */}
-              <div
-                className="shariah-details-compliance-table-rows"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
-                  padding: '0px',
-                  gap: '8px',
-                  width: '100%',
-                  maxWidth: '1024px',
-                  height: 'auto',
-                  flex: 'none',
-                  order: 1,
-                  alignSelf: 'stretch',
-                  flexGrow: 0,
-                  boxSizing: 'border-box',
-                }}
-              >
+              <div className="hidden lg:flex lg:flex-col lg:items-start gap-2 w-full p-0">
                 {complianceMetrics.map((metric, index) => renderDesktopComplianceRow(metric, index))}
               </div>
             </div>
@@ -2369,58 +1705,23 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
 
         {/* Analyst Notes Section */}
         <div
-          className="shariah-details-analyst-notes"
-          style={{
-            position: 'absolute',
-            width: '1064px',
-            height: '145px',
-            left: '188px',
-            top: '1128px',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            padding: '0px',
-            gap: '24px',
-            marginBottom: '120px',
-          }}
+          className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl flex flex-col items-start gap-6 lg:gap-6 mb-8 sm:mb-12 lg:mb-16"
         >
           {/* Heading */}
           <h2
-            style={{
-              width: '1064px',
-              height: '58px',
-              fontFamily: 'Gilroy-SemiBold',
-              fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '48px',
-              lineHeight: '120%',
-              color: '#FFFFFF',
-              flex: 'none',
-              order: 0,
-              alignSelf: 'stretch',
-              flexGrow: 0,
-              margin: 0,
-            }}
+            className="w-full text-3xl sm:text-4xl lg:text-5xl leading-[120%] text-white m-0"
+            style={{ fontFamily: 'Gilroy-SemiBold', fontWeight: 400 }}
           >
             Analyst Notes
           </h2>
 
           {/* Description */}
           <p
+            className="w-full text-base leading-[130%] text-white m-0"
             style={{
-              width: '1064px',
-              height: '63px',
               fontFamily: 'Gilroy-Medium',
               fontStyle: 'normal',
-              fontWeight: 400,
-              fontSize: '16px',
-              lineHeight: '130%',
-              color: '#FFFFFF',
-              flex: 'none',
-              order: 1,
-              alignSelf: 'stretch',
-              flexGrow: 0,
-              margin: 0,
+              fontWeight: 400
             }}
           >
             {tile.analystNotes}
@@ -2428,8 +1729,133 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
         </div>
       </div>
 
-      {/* Mobile Spacer to prevent Footer overlap */}
-      <div className="shariah-details-mobile-spacer" />
+      {/* Mobile Spacer - no longer needed with relative positioning */}
+      {!isMobile && (
+        <div className="shariah-details-mobile-spacer" />
+      )}
+
+      {/* Desktop Compliance Modal */}
+      {!isMobile && isDesktopComplianceModalOpen && (
+        <div
+          className="fixed inset-0 w-full h-full bg-black/60 backdrop-blur-sm flex items-center justify-center z-[1000] p-4 lg:p-8"
+          onClick={() => setIsDesktopComplianceModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl max-h-[90vh] bg-[#1F1F1F] rounded-2xl p-5 lg:p-6 flex flex-col gap-6 relative overflow-hidden"
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              className="absolute top-5 right-5 lg:top-6 lg:right-6 w-6 h-6 rounded-full border border-[#AFB9BF] bg-transparent flex items-center justify-center cursor-pointer p-0 z-10"
+              onClick={() => setIsDesktopComplianceModalOpen(false)}
+            >
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 1L7 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round" />
+                <path d="M7 1L1 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round" />
+              </svg>
+            </button>
+
+            {/* Title */}
+            <h2 
+              className="text-xl sm:text-2xl lg:text-2xl text-white m-0 pr-8"
+              style={{ fontFamily: 'Gilroy-SemiBold', fontWeight: 400 }}
+            >
+              Compliance Breakdown
+            </h2>
+
+            {/* Scrollable Table Container */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar">
+              {/* Table Header */}
+              <div className="grid grid-cols-4 gap-6 w-full p-4 border-b border-white/30 sticky top-0 bg-[#1F1F1F] z-10">
+                <div className="flex flex-col justify-center items-start p-0">
+                  <span
+                    className="text-sm leading-none text-white"
+                    style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                  >
+                    Criteria
+                  </span>
+                </div>
+                <div className="flex flex-col justify-center items-end p-0">
+                  <span
+                    className="text-sm leading-none text-white text-right"
+                    style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                  >
+                    Threshold
+                  </span>
+                </div>
+                <div className="flex flex-col justify-center items-end p-0">
+                  <span
+                    className="text-sm leading-none text-white text-right"
+                    style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                  >
+                    Actual
+                  </span>
+                </div>
+                <div className="flex flex-col justify-center items-end p-0">
+                  <span
+                    className="text-sm leading-none text-white text-right"
+                    style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                  >
+                    Status
+                  </span>
+                </div>
+              </div>
+
+              {/* Table Rows */}
+              <div className="flex flex-col items-start gap-2 w-full p-0">
+                {complianceMetrics.map((metric, index) => {
+                  const isPass = metricIsPass(metric);
+                  const statusLabel = metricStatusLabel(metric);
+                  return (
+                    <div
+                      key={`modal-${metric.criteria}-${index}`}
+                      className="grid grid-cols-4 gap-6 w-full p-4 border-b border-white/10"
+                    >
+                      <div className="flex flex-col justify-center items-start p-0">
+                        <span
+                          className="text-sm leading-none text-[#909090]"
+                          style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                        >
+                          {metric.criteria}
+                        </span>
+                      </div>
+                      <div className="flex flex-col justify-center items-end p-0">
+                        <span
+                          className="text-sm leading-none text-[#909090] text-right"
+                          style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                        >
+                          {metric.threshold}
+                        </span>
+                      </div>
+                      <div className="flex flex-col justify-center items-end p-0">
+                        <span
+                          className="text-sm leading-none text-[#909090] text-right"
+                          style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                        >
+                          {metric.actual}
+                        </span>
+                      </div>
+                      <div className="flex flex-col justify-center items-end p-0">
+                        <span
+                          className="text-sm leading-none text-right"
+                          style={{ 
+                            fontFamily: 'Gilroy-Medium', 
+                            fontWeight: 400,
+                            color: isPass ? '#05B353' : '#FF4D4D'
+                          }}
+                        >
+                          {statusLabel}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Mobile Compliance Modal */}
       {isMobile && isMobileComplianceModalOpen && (
@@ -2451,7 +1877,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                 <path d="M7 1L1 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round" />
               </svg>
             </button>
-            <h2 className="shariah-details-compliance-mobile-modal-title">Compliance Breakdown...</h2>
+            <h2 className="shariah-details-compliance-mobile-modal-title">Compliance Breakdown</h2>
             {false && (
               <div className="shariah-details-compliance-mobile-modal-list">
                 {/* Card 1: Debt to Market Cap */}

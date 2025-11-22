@@ -1,0 +1,82 @@
+name: Deploy to Ubuntu Server
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          rsync -avz -e "ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+            --exclude 'node_modules' \
+            --exclude '.next' \
+            --exclude '.git' \
+            --exclude '.env.local' \
+            inspired-analyst/ \
+            ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:~/app-deploy/
+
+      - name: Build and restart application
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            # Navigate to deployment directory
+            cd ~/inspired-analyst
+            
+            # Stop current container
+            docker compose down app
+            
+            # Remove old app directory
+            rm -rf app
+            
+            # Move new code
+            mv ~/app-deploy app/
+            
+            # Update .env file
+            cat > .env << 'EOF'
+            MONGODB_URI=${{ secrets.MONGODB_URI }}
+            CALENDLY_ACCESS_TOKEN=${{ secrets.CALENDLY_ACCESS_TOKEN }}
+            COLLAB_EMAIL=${{ secrets.COLLAB_EMAIL }}
+            SMTP_HOST=${{ secrets.SMTP_HOST }}
+            SMTP_PORT=${{ secrets.SMTP_PORT }}
+            SMTP_SECURE=${{ secrets.SMTP_SECURE }}
+            SMTP_USER=${{ secrets.SMTP_USER }}
+            SMTP_PASS=${{ secrets.SMTP_PASS }}
+            AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
+            AWS_S3_REGION=${{ secrets.AWS_S3_REGION }}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
+            STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
+            NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}
+            EOF
+            
+            # Rebuild and start
+            docker compose build app
+            docker compose up -d app
+            
+            # Clean up old images
+            docker image prune -f
+            
+            # Show status
+            docker compose ps
+            docker compose logs --tail=50 app
+

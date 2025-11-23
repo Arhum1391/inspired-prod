@@ -23,7 +23,7 @@ export async function GET() {
     const teamMembers = await collection.find({}).toArray();
     console.log(`📊 Team API: Found ${teamMembers.length} team members`);
 
-    // Transform TeamMember[] to Analyst[] format
+    // Transform TeamMember[] to Analyst[] formats
     const analysts: Analyst[] = teamMembers.map((member) => {
       // Validate and sanitize image URL
       let imageUrl = member.image;

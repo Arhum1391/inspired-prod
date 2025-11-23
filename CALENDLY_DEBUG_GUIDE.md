@@ -5,7 +5,7 @@ Meeting types are displaying correctly, but calendar dates and time slots are no
 
 ## ✅ What I've Fixed
 
-### 1. **Time Format Consistency**
+### 1. **Time Formatting Consistency**
 - Changed from `toLocaleTimeString()` to manual formatting
 - Ensures consistent "H:MM AM/PM" format (e.g., "9:00 AM", "2:30 PM")
 

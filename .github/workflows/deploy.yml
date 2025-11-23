@@ -27,7 +27,8 @@ jobs:
             --exclude '.next' \
             --exclude '.git' \
             --exclude '.env.local' \
-            inspired-analyst/ \
+            --exclude '.github' \
+            ./ \
             ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:~/app-deploy/
 
       - name: Build and restart application

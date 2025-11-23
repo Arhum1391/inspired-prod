@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useMemo, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { loadStripe } from '@stripe/stripe-js';
 import Navbar from '@/components/Navbar';
+import LoadingScreen from '@/components/LoadingScreen';
 import { useAuth } from '@/contexts/AuthContext';
 
 const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '';
@@ -246,11 +247,7 @@ function CheckoutContent() {
   );
 
   if (!hasCheckedCustomer || !customerEmail) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading..." />;
   }
 
   return (
@@ -689,14 +686,7 @@ function CheckoutPaymentForm({
 
 export default function Checkout() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
-        <Navbar />
-        <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 80px)' }}>
-          <div className="text-white">Loading...</div>
-        </div>
-      </div>
-    }>
+    <Suspense fallback={<LoadingScreen message="Loading..." />}>
       <CheckoutContent />
     </Suspense>
   );

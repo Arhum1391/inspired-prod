@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
+import LoadingScreen from '@/components/LoadingScreen';
 import { useAuth } from '@/contexts/AuthContext';
 import type { ResearchReport } from '@/data/researchReports';
 
@@ -73,11 +74,7 @@ export default function ResearchPage() {
   }, []);
 
   if (isLoading || reportsLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading..." />;
   }
 
   const previewCards = researchCards.slice(0, 3);

@@ -6,6 +6,9 @@ import { getPublicUserById } from '@/lib/auth';
 
 const MIN_COMMENT_LENGTH = 10;
 
+// Cache GET reviews responses for 60 seconds on the edge
+export const revalidate = 60;
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -52,8 +55,13 @@ export async function GET(request: NextRequest) {
         };
       })
     );
-    
-    return NextResponse.json({ reviews: enrichedReviews });
+
+    const response = NextResponse.json({ reviews: enrichedReviews });
+    response.headers.set(
+      'Cache-Control',
+      'public, max-age=0, s-maxage=60, stale-while-revalidate=300'
+    );
+    return response;
   } catch (error) {
     console.error('Failed to fetch reviews:', error);
     return NextResponse.json(

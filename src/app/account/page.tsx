@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import LoadingScreen from '@/components/LoadingScreen';
 import CustomInput from '@/components/CustomInput';
 import CustomButton from '@/components/CustomButton';
+import Image from 'next/image';
 
 const AccountPage = () => {
   const { isAuthenticated, user, login, isLoading: authLoading } = useAuth();
@@ -196,14 +198,7 @@ const AccountPage = () => {
 
   // Show loading state while auth is being checked
   if (authLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
-        <Navbar />
-        <div className="flex items-center justify-center min-h-screen">
-          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading..." />;
   }
 
   // If not authenticated, the useEffect will redirect, but show nothing while redirecting
@@ -385,9 +380,11 @@ const AccountPage = () => {
                         <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       </div>
                     ) : user?.image ? (
-                      <img 
+                      <Image 
                         src={user.image} 
                         alt="Profile" 
+                        fill
+                        sizes="64px"
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -1316,9 +1313,11 @@ const AccountPage = () => {
                         <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       </div>
                     ) : user?.image ? (
-                      <img 
+                      <Image 
                         src={user.image} 
                         alt="Profile" 
+                        fill
+                        sizes="64px"
                         className="w-full h-full object-cover"
                       />
                     ) : (

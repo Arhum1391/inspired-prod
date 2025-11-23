@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
+import LoadingScreen from '@/components/LoadingScreen';
 import { Bootcamp } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 
@@ -279,14 +280,7 @@ export default function CryptoTradingRegisterPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white relative overflow-hidden">
-        <Navbar variant="hero" />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-white">Loading bootcamp...</div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading bootcamp..." />;
   }
 
   if (!bootcamp) {

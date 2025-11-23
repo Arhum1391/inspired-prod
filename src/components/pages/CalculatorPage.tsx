@@ -12,6 +12,8 @@ import Footer from '@/components/Footer';
 
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 
+import LoadingScreen from '@/components/LoadingScreen';
+
 import { useAuth } from '@/contexts/AuthContext';
 
 
@@ -1802,19 +1804,7 @@ export default function CalculatorPage() {
 
 
   if (isLoading) {
-
-
-
-    return (
-
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-
-        <div>Loading...</div>
-
-      </div>
-
-    );
-
+    return <LoadingScreen message="Loading..." />;
   }
 
 
@@ -3175,13 +3165,13 @@ export default function CalculatorPage() {
 
             display: flex !important;
 
-            align-items: center !important;
+            align-items: flex-start !important;
 
             justify-content: center !important;
 
-            z-index: 1000 !important;
+            z-index: 10000 !important;
 
-            padding: 16px !important;
+            padding: 80px 16px 16px 16px !important;
 
           }
 
@@ -3209,11 +3199,15 @@ export default function CalculatorPage() {
 
           .calculator-page .calculator-saved-mobile-modal-close {
 
-            width: 24px !important;
+            width: 20px !important;
 
-            height: 24px !important;
+            height: 20px !important;
 
-            border-radius: 12px !important;
+            min-width: 20px !important;
+
+            min-height: 20px !important;
+
+            border-radius: 20px !important;
 
             border: 1px solid #AFB9BF !important;
 
@@ -3230,6 +3224,12 @@ export default function CalculatorPage() {
             padding: 0 !important;
 
             align-self: flex-end !important;
+
+            position: relative !important;
+
+            overflow: visible !important;
+
+            flex-shrink: 0 !important;
 
           }
 
@@ -10594,12 +10594,20 @@ export default function CalculatorPage() {
 
               >
 
-                <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-
-                  <path d="M1 1L7 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round"/>
-
-                  <path d="M7 1L1 7" stroke="#AFB9BF" strokeWidth="1.25" strokeLinecap="round"/>
-
+                <svg
+                  width="8"
+                  height="8"
+                  viewBox="0 0 8 8"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M1 1L7 7M7 1L1 7"
+                    stroke="#AFB9BF"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
 
               </button>

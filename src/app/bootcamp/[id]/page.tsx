@@ -6,6 +6,7 @@ import Navbar from '@/components/Navbar';
 import Image from 'next/image';
 import Footer from '@/components/Footer';
 import { NewsletterSubscription } from '@/components';
+import LoadingScreen from '@/components/LoadingScreen';
 import { Bootcamp, TeamMember } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 import { getTeamMemberAbout, getTeamMemberById } from '@/lib/teamUtils';
@@ -90,14 +91,7 @@ export default function BootcampDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
-        <Navbar variant="hero" />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-white">Loading bootcamp...</div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading bootcamp..." />;
   }
 
   if (error || !bootcamp) {

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { TeamMember } from '@/types/admin';
 
 export default function TeamPage() {
@@ -323,15 +324,21 @@ export default function TeamPage() {
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center overflow-hidden">
                 {member.image ? (
-                  <img 
+                  <Image 
                     src={member.image} 
                     alt={member.name}
+                    width={48}
+                    height={48}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
-                      if (nextElement) {
-                        nextElement.style.display = 'flex';
+                      // Fall back to text initial when image fails
+                      const target = e.target as HTMLImageElement;
+                      if (target) {
+                        target.style.display = 'none';
+                        const nextElement = target.nextElementSibling as HTMLElement;
+                        if (nextElement) {
+                          nextElement.style.display = 'flex';
+                        }
                       }
                     }}
                   />

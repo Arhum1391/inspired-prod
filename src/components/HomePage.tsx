@@ -289,71 +289,71 @@ export default function Home() {
               <div className="flex animate-carousel gap-16 items-center">
                 {/* All brand logos in a row that will scroll */}
                 <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/Gridlock.svg" alt="Gridlock" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/memotech.svg" alt="Memotech" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/memotech.svg" alt="Memotech" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/finvolution.svg" alt="Finvolution" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/creati.svg" alt="Creati" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/creati.svg" alt="Creati" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/binance.svg" alt="Binance" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/exness.svg" alt="Exness" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/capcut.svg" alt="CapCut" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/capcut.svg" alt="CapCut" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/algorand.svg" alt="Algorand" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/algorand.svg" alt="Algorand" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/wegic.svg" alt="Wegic" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/wegic.svg" alt="Wegic" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/lemfi.svg" alt="Lemfi" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/ledger.svg" alt="Ledger" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/ledger.svg" alt="Ledger" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 {/* Duplicate for seamless loop */}
                 <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/Gridlock.svg" alt="Gridlock" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/Gridlock.svg" alt="Gridlock" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/memotech.svg" alt="Memotech" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/memotech.svg" alt="Memotech" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/finvolution.svg" alt="Finvolution" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/finvolution.svg" alt="Finvolution" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/creati.svg" alt="Creati" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/creati.svg" alt="Creati" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/binance.svg" alt="Binance" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/exness.svg" alt="Exness" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/capcut.svg" alt="CapCut" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/capcut.svg" alt="CapCut" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/algorand.svg" alt="Algorand" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/algorand.svg" alt="Algorand" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/wegic.svg" alt="Wegic" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/wegic.svg" alt="Wegic" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/lemfi.svg" alt="Lemfi" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/lemfi.svg" alt="Lemfi" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
                 <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <img src="/brand_images/ledger.svg" alt="Ledger" className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                  <Image src="/brand_images/ledger.svg" alt="Ledger" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
               </div>
             </div>

@@ -32,6 +32,8 @@ const getS3ImageConfig = () => {
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  compress: true,
+  poweredByHeader: false,
   eslint: {
     ignoreDuringBuilds: true,
   },

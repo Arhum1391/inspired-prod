@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { ChevronLeft } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import LoadingScreen from '@/components/LoadingScreen';
 import { useState, useEffect } from 'react';
 import type { ShariahTile, ComplianceMetric } from '@/types/admin';
 
@@ -385,11 +386,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
   };
 
   if (tileLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading..." />;
   }
 
   if (tileError || !tile) {
@@ -496,10 +493,10 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             backdrop-filter: blur(4px) !important;
             -webkit-backdrop-filter: blur(4px) !important;
             display: flex !important;
-            align-items: center !important;
+            align-items: flex-start !important;
             justify-content: center !important;
-            z-index: 1000 !important;
-            padding: 16px !important;
+            z-index: 10000 !important;
+            padding: 80px 16px 16px 16px !important;
             margin: 0 !important;
             overflow-x: hidden !important;
             box-sizing: border-box !important;

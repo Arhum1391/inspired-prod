@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
+import LoadingScreen from '@/components/LoadingScreen';
 import { useAuth } from '@/contexts/AuthContext';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import type { ShariahTile } from '@/types/admin';
@@ -468,11 +469,7 @@ export default function ShariahPage() {
 
   // Conditional returns must come after all hooks
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading..." />;
   }
 
   return (

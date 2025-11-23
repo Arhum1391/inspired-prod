@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import  userIcon from "../../public/icons/user.svg"
 import logoutIcon from "../../public/icons/logout.svg"
 
@@ -91,15 +92,17 @@ const ProfileDropdown = () => {
       {/* Profile Icon Button */}
       <button
         onClick={handleToggle}
-        className="w-[38px] h-[38px] rounded-full flex items-center justify-center hover:opacity-80 transition-opacity overflow-hidden"
+        className="relative w-[38px] h-[38px] rounded-full flex items-center justify-center hover:opacity-80 transition-opacity overflow-hidden"
         style={{
           background: user?.image ? 'transparent' : 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
         }}
       >
         {user?.image ? (
-          <img 
+          <Image 
             src={user.image} 
             alt="Profile" 
+            fill
+            sizes="38px"
             className="w-full h-full object-cover"
           />
         ) : (
@@ -228,9 +231,11 @@ const ProfileDropdown = () => {
                     }}
                   >
                     {user?.image ? (
-                      <img 
+                      <Image 
                         src={user.image} 
                         alt="Profile" 
+                        width={48}
+                        height={48}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -270,7 +275,7 @@ const ProfileDropdown = () => {
                       }}
                     >
                       {/* User Icon */}
-                      <img src={userIcon.src} />
+                      <Image src={userIcon} alt="Profile icon" width={20} height={20} />
                       {/* <div 
                         className="relative"
                         style={{
@@ -338,7 +343,7 @@ const ProfileDropdown = () => {
                       }}
                     >
                       {/* Logout Icon */}
-                      <img src={logoutIcon.src} />
+                      <Image src={logoutIcon} alt="Logout icon" width={20} height={20} />
                       {/* <div 
                         className="relative"
                         style={{

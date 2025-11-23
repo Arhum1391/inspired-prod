@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import LoadingScreen from '@/components/LoadingScreen';
 
 interface Subscriber {
   _id: string;
@@ -58,15 +59,7 @@ export default function NewsletterAdmin() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <p className="text-gray-600 dark:text-gray-400">Loading subscribers...</p>
-          </div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading subscribers..." />;
   }
 
   return (

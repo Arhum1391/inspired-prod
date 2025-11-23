@@ -4,6 +4,7 @@ import { FormEvent, Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import LoadingScreen from '@/components/LoadingScreen';
 
 export default function ResetPasswordPage() {
   return (
@@ -433,13 +434,6 @@ function ResetPasswordContent() {
 }
 
 function ResetPasswordLoading() {
-  return (
-    <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-10 w-10 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-        <p className="text-sm text-white/70">Loading reset form...</p>
-      </div>
-    </div>
-  );
+  return <LoadingScreen message="Loading reset form..." />;
 }
 

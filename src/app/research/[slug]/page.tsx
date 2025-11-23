@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import LoadingScreen from '@/components/LoadingScreen';
 import type { ResearchReport } from '@/data/researchReports';
 
 const DATE_INPUT_REGEX = /^\d{4}-\d{2}-\d{2}$/;
@@ -87,11 +88,7 @@ export default function ResearchDetailPage() {
   }, [slug]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading..." />;
   }
 
   if (error || !report) {

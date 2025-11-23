@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import LoadingScreen from '@/components/LoadingScreen';
 import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target, LucideIcon } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -66,14 +67,7 @@ export default function CryptoTradingBootcampPage() {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
-        <Navbar variant="hero" />
-        <div className="flex items-center justify-center h-64">
-          <div className="text-white">Loading bootcamp...</div>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Loading bootcamp..." />;
   }
 
   // Error state

@@ -1,16 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import LoadingScreen from '@/components/LoadingScreen';
 import { Bootcamp } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 import { useAuth } from '@/contexts/AuthContext';
 import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target, ChevronLeft, LucideIcon } from 'lucide-react';
-import VideoPlayerModal from '@/components/bootcamp/VideoPlayerModal';
+
+const VideoPlayerModal = dynamic(
+  () => import('@/components/bootcamp/VideoPlayerModal'),
+  { ssr: false }
+);
 
 type LessonStatus = 'completed' | 'in-progress';
 
@@ -209,12 +215,7 @@ const BootcampProgressPage = () => {
   const lessons = progressData?.lessons || [];
 
   if (loading || authLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden flex items-center justify-center">
-        <Navbar variant="hero" />
-        <p className="text-white">Loading progress...</p>
-      </div>
-    );
+    return <LoadingScreen message="Loading progress..." />;
   }
 
   // Show error if not authenticated

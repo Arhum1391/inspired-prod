@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
+import LoadingScreen from '@/components/LoadingScreen';
 import { Bootcamp } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 
@@ -162,17 +163,7 @@ const BootcampSuccessContent: React.FC = () => {
     const startDate = formatDate(bootcampStartDate || undefined);
 
     if (loading) {
-        return (
-            <div className="bg-[#0D0D0D] min-h-screen text-white font-sans relative">
-                <Navbar variant="hero" />
-                <div className="flex items-center justify-center min-h-[80vh]">
-                    <div className="text-center">
-                        <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p>Loading bootcamp details...</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <LoadingScreen message="Loading bootcamp details..." />;
     }
 
     return (
@@ -501,12 +492,7 @@ const BootcampSuccessContent: React.FC = () => {
 const BootcampSuccessPage: React.FC = () => {
     return (
         <Suspense fallback={
-            <div className="bg-[#0D0D0D] min-h-screen text-white font-sans flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p>Loading...</p>
-                </div>
-            </div>
+            <LoadingScreen message="Loading..." />
         }>
             <BootcampSuccessContent />
         </Suspense>

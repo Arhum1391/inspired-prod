@@ -5,6 +5,7 @@ import type { ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import LoadingScreen from '@/components/LoadingScreen';
 import { useAuth } from '@/contexts/AuthContext';
 import Image from 'next/image';
 import HoldingsTable, { HoldingRow } from '@/components/HoldingsTable';
@@ -136,11 +137,7 @@ export default function PortfolioPage() {
   const [chartError, setChartError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Only load @nivo/pie when we actually need it (when user is authenticated and has data)
-    if (!isAuthenticated) {
-      return;
-    }
-
+    // Load @nivo/pie for both authenticated users and preview mode
     let mounted = true;
     import('@nivo/pie')
       .then(mod => {
@@ -155,7 +152,7 @@ export default function PortfolioPage() {
     return () => {
       mounted = false;
     };
-  }, [isAuthenticated]);
+  }, []);
 
   const toggleTile = (index: number) => {
     setExpandedTiles(prev => ({
@@ -561,11 +558,7 @@ export default function PortfolioPage() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-[#0A0A0A] text-white flex items-center justify-center">
-        <div>Loading...</div>
-      </div>
-    );
+    return <LoadingScreen message="Loading..." />;
   }
 
   const handleApiKeyChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -812,8 +805,10 @@ export default function PortfolioPage() {
         /* Portfolio hero mobile styles (match research page patterns) */
         @media (max-width: 768px) {
           .portfolio-hero-container {
-            padding-top: 112px !important;
-            padding-bottom: 64px !important;
+            padding-top: 94px !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            padding-bottom: 24px !important;
           }
           .portfolio-section-wrapper {
             width: 100% !important;
@@ -825,16 +820,64 @@ export default function PortfolioPage() {
             display: none !important;
           }
           .portfolio-title {
-            width: 343px !important;
+            width: 100% !important;
+            max-width: 343px !important;
             height: auto !important;
-            min-height: 38px !important;
+            min-height: 152px !important;
             margin-top: 0 !important;
             font-size: 32px !important;
             line-height: 120% !important;
+            text-align: left !important;
           }
           .portfolio-description {
-            width: 343px !important;
+            width: 100% !important;
+            max-width: 343px !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
             margin-top: 12px !important;
+            min-height: 63px !important;
+            text-align: left !important;
+          }
+          /* Buttons container mobile styles - match Shariah page */
+          .portfolio-hero-buttons {
+            flex-direction: column !important;
+            align-items: center !important;
+            width: 343px !important;
+            height: 120px !important;
+            gap: 20px !important;
+            margin-top: 24px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            margin-bottom: 0 !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .portfolio-hero-button-primary,
+          .portfolio-hero-button-secondary {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 343px !important;
+            height: 50px !important;
+            padding: 18px 12px !important;
+            gap: 10px !important;
+            border-radius: 100px !important;
+            font-size: 14px !important;
+            line-height: 100% !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-weight: 400 !important;
+            white-space: nowrap !important;
+            box-sizing: border-box !important;
+          }
+          .portfolio-hero-button-primary {
+            background: #FFFFFF !important;
+            color: #0A0A0A !important;
+            border: none !important;
+          }
+          .portfolio-hero-button-secondary {
+            border: 1px solid #FFFFFF !important;
+            color: #FFFFFF !important;
+            background: transparent !important;
           }
           .portfolio-background-svg {
             width: 1100px !important;
@@ -849,6 +892,10 @@ export default function PortfolioPage() {
           }
           .portfolio-guest-section {
             margin: 48px auto 0 !important;
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+            width: 100% !important;
+            max-width: 343px !important;
           }
           /* Make Binance connect panel a bit wider on mobile */
           .portfolio-connect-tile {
@@ -959,6 +1006,459 @@ export default function PortfolioPage() {
           .portfolio-manage-button,
           .portfolio-disconnect-button {
             width: 100% !important;
+            max-width: 343px !important;
+          }
+          /* Ready to Unlock Full Access Tile - Mobile Styles */
+          .portfolio-ready-tile {
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: flex-start !important;
+            padding: 20px 16px !important;
+            gap: 10px !important;
+            isolation: isolate !important;
+            width: 343px !important;
+            height: 330px !important;
+            border-radius: 10px !important;
+            margin-top: 60px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            margin-bottom: 24px !important;
+          }
+          .portfolio-ready-ellipse-left {
+            width: 588px !important;
+            height: 588px !important;
+            left: -492px !important;
+            top: -508px !important;
+            filter: blur(200px) !important;
+            transform: rotate(90deg) !important;
+          }
+          .portfolio-ready-ellipse-right {
+            width: 588px !important;
+            height: 588px !important;
+            left: 330px !important;
+            bottom: -370px !important;
+            filter: blur(200px) !important;
+            transform: rotate(90deg) !important;
+          }
+          .portfolio-ready-content {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            width: 311px !important;
+            height: 290px !important;
+            margin: 0 auto !important;
+            padding-top: 16px !important;
+            padding-bottom: 16px !important;
+          }
+          .portfolio-ready-header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0px !important;
+            gap: 16px !important;
+            width: 311px !important;
+            height: auto !important;
+            min-height: 77px !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 0 !important;
+          }
+          .portfolio-ready-header h2 {
+            width: 311px !important;
+            height: auto !important;
+            min-height: 29px !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 24px !important;
+            line-height: 120% !important;
+            text-align: center !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 0 !important;
+            align-self: stretch !important;
+            flex-grow: 0 !important;
+            margin: 0 !important;
+          }
+          .portfolio-ready-header p {
+            width: 311px !important;
+            height: auto !important;
+            min-height: 18px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 14px !important;
+            line-height: 130% !important;
+            text-align: center !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 1 !important;
+            align-self: stretch !important;
+            flex-grow: 0 !important;
+            margin: 0 !important;
+          }
+          .portfolio-ready-buttons {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0px !important;
+            gap: 12px !important;
+            width: 311px !important;
+            height: auto !important;
+            min-height: 106px !important;
+            flex: none !important;
+            flex-grow: 0 !important;
+            margin-top: 16px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .portfolio-ready-buttons button {
+            width: 311px !important;
+            height: 47px !important;
+            padding: 12px 32px !important;
+            gap: 10px !important;
+            border-radius: 100px !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            line-height: 100% !important;
+            flex: none !important;
+            white-space: nowrap !important;
+            outline: none !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+          }
+          /* Preview Visualization Section - Mobile Styles */
+          .portfolio-preview-visualization {
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 20px !important;
+            width: 100% !important;
+            max-width: 343px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .portfolio-preview-graph {
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 20px 12px !important;
+            gap: 24px !important;
+            isolation: isolate !important;
+            width: 343px !important;
+            height: 215px !important;
+            min-width: 343px !important;
+            max-width: 343px !important;
+            min-height: 215px !important;
+            max-height: 215px !important;
+            background: #1F1F1F !important;
+            border-radius: 10px !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 0 !important;
+            position: relative !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+          }
+          /* Override ALL inline styles on mobile - use attribute selector with higher specificity */
+          .portfolio-preview-graph[style],
+          .portfolio-preview-graph[style*="width: '847px'"],
+          .portfolio-preview-graph[style*="width: 847px"],
+          .portfolio-preview-graph[style*="847px"] {
+            width: 343px !important;
+            height: 215px !important;
+            min-width: 343px !important;
+            max-width: 343px !important;
+            min-height: 215px !important;
+            max-height: 215px !important;
+            background: #1F1F1F !important;
+            border-radius: 10px !important;
+            border: none !important;
+            padding: 20px 12px !important;
+          }
+          /* Force width override using all possible selectors */
+          div.portfolio-preview-graph.relative.overflow-hidden,
+          div.relative.overflow-hidden.portfolio-preview-graph {
+            width: 343px !important;
+            min-width: 343px !important;
+            max-width: 343px !important;
+            height: 215px !important;
+          }
+          /* Remove any potential border from the relative/overflow classes */
+          .portfolio-preview-graph.relative,
+          .portfolio-preview-graph.overflow-hidden {
+            border: none !important;
+            background: #1F1F1F !important;
+            width: 343px !important;
+            height: 215px !important;
+            border-radius: 10px !important;
+          }
+          /* Remove any pseudo-elements that might create borders */
+          .portfolio-preview-graph::before,
+          .portfolio-preview-graph::after {
+            display: none !important;
+            content: none !important;
+          }
+          /* Remove borders from all child elements */
+          .portfolio-preview-graph > * {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+          }
+          /* Remove any gradient border effect on mobile */
+          .portfolio-preview-graph .absolute,
+          .portfolio-preview-graph [class*="absolute"] {
+            display: none !important;
+          }
+          /* Ensure no border radius creates visible edge */
+          .portfolio-preview-graph * {
+            border: none !important;
+          }
+          /* Hide desktop image on mobile */
+          .portfolio-preview-graph .hidden {
+            display: none !important;
+          }
+          /* Mobile graph structure */
+          .portfolio-preview-graph-mobile {
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            padding: 0 !important;
+            gap: 24px !important;
+            width: 100% !important;
+            height: 100% !important;
+          }
+          /* Graph header with title and time range */
+          .portfolio-graph-header {
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 0 !important;
+            gap: 1.29px !important;
+            width: 319px !important;
+            height: 28px !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 0 !important;
+            z-index: 0 !important;
+          }
+          .portfolio-graph-title {
+            width: 107px !important;
+            height: 21px !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 0 !important;
+            margin: 0 !important;
+          }
+          .portfolio-graph-time-range {
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 4px !important;
+            gap: 0 !important;
+            width: 141px !important;
+            height: 28px !important;
+            background: rgba(222, 80, 236, 0.1) !important;
+            border: 1px solid #DE50EC !important;
+            border-radius: 100px !important;
+            flex: none !important;
+            order: 1 !important;
+            flex-grow: 0 !important;
+            margin-left: auto !important;
+          }
+          .portfolio-time-btn {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 4px 6px !important;
+            gap: 10px !important;
+            height: 20px !important;
+            border-radius: 4px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 12px !important;
+            line-height: 100% !important;
+            text-align: center !important;
+            color: #DE50EC !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 0 !important;
+            cursor: pointer !important;
+            background: transparent !important;
+            border: none !important;
+            margin: 0 !important;
+          }
+          .portfolio-time-btn:first-child { width: 29px !important; }
+          .portfolio-time-btn:nth-child(2) { width: 25px !important; }
+          .portfolio-time-btn:nth-child(3) { width: 29px !important; }
+          .portfolio-time-btn:nth-child(4) { 
+            width: 26px !important; 
+            background: #1F1F1F !important;
+            border-radius: 100px !important;
+          }
+          .portfolio-time-btn:last-child { width: 24px !important; }
+          /* Graph area */
+          .portfolio-graph-area {
+            position: relative !important;
+            width: 319px !important;
+            height: 123px !important;
+            flex: none !important;
+            order: 1 !important;
+            align-self: stretch !important;
+            flex-grow: 1 !important;
+            z-index: 1 !important;
+          }
+          /* Y-axis labels */
+          .portfolio-graph-y-axis {
+            position: absolute !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-end !important;
+            padding: 0 !important;
+            gap: 12.89px !important;
+            width: 37px !important;
+            height: 106.68px !important;
+            left: 0.55px !important;
+            top: 0.96px !important;
+            z-index: 2 !important;
+          }
+          .portfolio-graph-y-axis span {
+            width: 37px !important;
+            height: 17px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 12px !important;
+            line-height: 140% !important;
+            text-align: right !important;
+            letter-spacing: 0.02em !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 0 !important;
+          }
+          .portfolio-graph-y-axis span:nth-child(3) { width: 35px !important; }
+          .portfolio-graph-y-axis span:last-child { width: 15px !important; }
+          /* Grid lines */
+          .portfolio-graph-grid {
+            position: absolute !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 0 !important;
+            gap: 44px !important;
+            width: 274px !important;
+            height: 99.9px !important;
+            left: 6px !important;
+            top: 0px !important;
+            z-index: 1 !important;
+          }
+          .portfolio-grid-line {
+            width: 99.9px !important;
+            height: 0 !important;
+            border: 0.161184px dashed #909090 !important;
+            transform: matrix(0, -1, 1, 0, 0, 0) !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 0 !important;
+          }
+          /* Chart line - using SVG path */
+          .portfolio-chart-line {
+            position: absolute !important;
+            width: 266px !important;
+            height: 81px !important;
+            left: 46px !important;
+            top: 22px !important;
+            z-index: 3 !important;
+            pointer-events: none !important;
+          }
+          .portfolio-chart-line svg {
+            width: 100% !important;
+            height: 100% !important;
+            display: block !important;
+          }
+          /* X-axis labels */
+          .portfolio-graph-x-axis {
+            position: absolute !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            padding: 0 !important;
+            gap: 16px !important;
+            width: 270px !important;
+            height: 17px !important;
+            left: calc(50% - 270px/2 - 4.74px) !important;
+            top: 111.88px !important;
+            z-index: 2 !important;
+          }
+          .portfolio-graph-x-axis span {
+            width: auto !important;
+            height: 17px !important;
+            font-family: 'Gilroy-Medium' !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            font-size: 12px !important;
+            line-height: 140% !important;
+            letter-spacing: 0.02em !important;
+            color: #FFFFFF !important;
+            flex: none !important;
+            order: 0 !important;
+            flex-grow: 0 !important;
+          }
+          /* Gradient overlay */
+          .portfolio-graph-gradient {
+            position: absolute !important;
+            width: 343px !important;
+            height: 215px !important;
+            left: 0 !important;
+            top: 0 !important;
+            background: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, #0A0A0A 100%) !important;
+            border-radius: 10px !important;
+            flex: none !important;
+            order: 2 !important;
+            flex-grow: 0 !important;
+            z-index: 2 !important;
+            pointer-events: none !important;
+          }
+          .portfolio-preview-allocation {
+            width: 343px !important;
+            min-width: 343px !important;
+            max-width: 343px !important;
+            order: 1 !important;
+          }
+          .portfolio-preview-allocation > div {
+            width: 343px !important;
+            min-width: 343px !important;
+            max-width: 343px !important;
+            height: 316px !important;
+            border-radius: 10px !important;
+            padding: 20px 12px !important;
+          }
+          /* Ensure both tiles have exact same width */
+          .portfolio-preview-visualization > div {
+            width: 343px !important;
+            min-width: 343px !important;
             max-width: 343px !important;
           }
         }
@@ -1285,79 +1785,82 @@ export default function PortfolioPage() {
               </div>
             </div>
             )}
-            {/* Buttons Container */}
-            {!isAuthenticated && (
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                padding: '0px',
-                gap: '20px',
-                width: '414px',
-                height: '50px',
-                flex: 'none',
-                order: 3,
-                flexGrow: 0,
-                marginTop: '32px',
-              }}
-            >
-              {/* Button 1 */}
-              <button
-                style={{
-                  padding: '12px 32px',
-                  background: '#FFFFFF',
-                  color: '#0A0A0A',
-                  borderRadius: '100px',
-                  fontFamily: 'Gilroy-SemiBold',
-                  fontSize: '14px',
-                  fontWeight: 400,
-                  border: 'none',
-                  cursor: 'pointer',
-                  flex: 'none',
-                  minWidth: '180px',
-                  whiteSpace: 'nowrap',
-                  outline: 'none',
-                }}
-                onMouseDown={(e) => e.preventDefault()}
-                onFocus={(e) => e.currentTarget.style.outline = 'none'}
-                onClick={() => router.push('/pricing')}
-              >
-                Start Subscription
-              </button>
-              {/* Button 2 */}
-              <button
-                style={{
-                  padding: '12px 32px',
-                  background: '#000000',
-                  color: '#FFFFFF',
-                  borderRadius: '100px',
-                  fontFamily: 'Gilroy-SemiBold',
-                  fontSize: '14px',
-                  fontWeight: 400,
-                  border: '1px solid #FFFFFF',
-                  cursor: 'pointer',
-                  flex: 'none',
-                  minWidth: '180px',
-                  whiteSpace: 'nowrap',
-                  outline: 'none',
-                }}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  e.currentTarget.style.border = '1px solid #FFFFFF';
-                }}
-                onFocus={(e) => {
-                  e.currentTarget.style.outline = 'none';
-                  e.currentTarget.style.border = '1px solid #FFFFFF';
-                }}
-                onBlur={(e) => {
-                  e.currentTarget.style.border = '1px solid #FFFFFF';
-                }}
-              >
-                Watch Free Videos
-              </button>
-            </div>
-            )}
+             {/* Buttons Container */}
+             {!isAuthenticated && (
+             <div
+               className="portfolio-hero-buttons"
+               style={{
+                 display: 'flex',
+                 flexDirection: 'row',
+                 alignItems: 'flex-start',
+                 padding: '0px',
+                 gap: '20px',
+                 width: '414px',
+                 height: '50px',
+                 flex: 'none',
+                 order: 3,
+                 flexGrow: 0,
+                 marginTop: '32px',
+               }}
+             >
+               {/* Button 1 */}
+               <button
+                 className="portfolio-hero-button-primary"
+                 style={{
+                   padding: '12px 32px',
+                   background: '#FFFFFF',
+                   color: '#0A0A0A',
+                   borderRadius: '100px',
+                   fontFamily: 'Gilroy-SemiBold',
+                   fontSize: '14px',
+                   fontWeight: 400,
+                   border: 'none',
+                   cursor: 'pointer',
+                   flex: 'none',
+                   minWidth: '180px',
+                   whiteSpace: 'nowrap',
+                   outline: 'none',
+                 }}
+                 onMouseDown={(e) => e.preventDefault()}
+                 onFocus={(e) => e.currentTarget.style.outline = 'none'}
+                 onClick={() => router.push('/pricing')}
+               >
+                 Start Subscription
+               </button>
+               {/* Button 2 */}
+               <button
+                 className="portfolio-hero-button-secondary"
+                 style={{
+                   padding: '12px 32px',
+                   background: '#000000',
+                   color: '#FFFFFF',
+                   borderRadius: '100px',
+                   fontFamily: 'Gilroy-SemiBold',
+                   fontSize: '14px',
+                   fontWeight: 400,
+                   border: '1px solid #FFFFFF',
+                   cursor: 'pointer',
+                   flex: 'none',
+                   minWidth: '180px',
+                   whiteSpace: 'nowrap',
+                   outline: 'none',
+                 }}
+                 onMouseDown={(e) => {
+                   e.preventDefault();
+                   e.currentTarget.style.border = '1px solid #FFFFFF';
+                 }}
+                 onFocus={(e) => {
+                   e.currentTarget.style.outline = 'none';
+                   e.currentTarget.style.border = '1px solid #FFFFFF';
+                 }}
+                 onBlur={(e) => {
+                   e.currentTarget.style.border = '1px solid #FFFFFF';
+                 }}
+               >
+                 Watch Free Videos
+               </button>
+             </div>
+             )}
 
             {isAuthenticated && (
             <div
@@ -1799,6 +2302,7 @@ export default function PortfolioPage() {
               </div>
 
               <div
+                className="portfolio-preview-visualization"
                 style={{
                   display: 'flex',
                   flexDirection: 'row',
@@ -1809,31 +2313,91 @@ export default function PortfolioPage() {
                   maxWidth: '1280px',
                 }}
               >
-                <div
-                  className="relative overflow-hidden"
-                  style={{
-                    width: '847px',
-                    height: '344px',
-                    borderRadius: '16px',
-                    background: '#1F1F1F',
-                    position: 'relative',
-                  }}
-                >
-                  <Image
-                    src="/graph.svg"
-                    alt="Portfolio preview chart"
-                    width={847}
-                    height={344}
-                    priority
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                </div>
+                 <div
+                   className="relative overflow-hidden portfolio-preview-graph"
+                   style={{
+                     width: '847px',
+                     height: '344px',
+                     borderRadius: '16px',
+                     background: '#1F1F1F',
+                     position: 'relative',
+                   }}
+                 >
+                   {/* Desktop: Show SVG image */}
+                   <div className="hidden md:block w-full h-full">
+                     <Image
+                       src="/graph.svg"
+                       alt="Portfolio preview chart"
+                       width={847}
+                       height={344}
+                       priority
+                       style={{
+                         width: '100%',
+                         height: '100%',
+                         objectFit: 'cover',
+                       }}
+                     />
+                   </div>
+                   {/* Mobile: Show HTML/CSS graph */}
+                   <div className="md:hidden portfolio-preview-graph-mobile">
+                     {/* Header with title and time range buttons */}
+                     <div className="portfolio-graph-header">
+                       <span className="portfolio-graph-title">Portfolio Value</span>
+                       <div className="portfolio-graph-time-range">
+                         <div className="portfolio-time-btn">1Hr</div>
+                         <div className="portfolio-time-btn">1D</div>
+                         <div className="portfolio-time-btn">1W</div>
+                         <div className="portfolio-time-btn portfolio-time-btn-active">1M</div>
+                         <div className="portfolio-time-btn">1Y</div>
+                       </div>
+                     </div>
+                     {/* Graph area */}
+                     <div className="portfolio-graph-area">
+                       {/* Y-axis labels */}
+                       <div className="portfolio-graph-y-axis">
+                         <span>$6000</span>
+                         <span>$2000</span>
+                         <span>$1000</span>
+                         <span>$0</span>
+                       </div>
+                       {/* Grid lines */}
+                       <div className="portfolio-graph-grid">
+                         <div className="portfolio-grid-line"></div>
+                         <div className="portfolio-grid-line"></div>
+                         <div className="portfolio-grid-line"></div>
+                         <div className="portfolio-grid-line"></div>
+                         <div className="portfolio-grid-line"></div>
+                         <div className="portfolio-grid-line"></div>
+                         <div className="portfolio-grid-line"></div>
+                       </div>
+                       {/* Chart line */}
+                       <div className="portfolio-chart-line">
+                        <svg width="266" height="81" viewBox="0 0 266 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path
+                            d="M265 77.956C263.927 77.2002 261.412 75.7643 259.941 76.0667C258.101 76.4446 256.491 78.3338 255.111 79.4674C253.732 80.6009 251.892 79.8453 249.937 77.956C247.982 76.0666 245.913 76.4446 243.383 77.956C240.853 79.4674 239.244 76.4446 238.554 75.1851C237.864 73.9256 234.419 69.7691 231.37 76.0667C228.32 82.3642 225.561 78.3337 224.641 77.2002C223.721 76.0666 220.847 76.4444 219.467 77.2002C218.087 77.956 215.557 78.7118 213.718 75.1851C211.878 71.6584 208.198 72.0362 206.474 71.6584C204.749 71.2805 203.254 71.4064 201.759 67.8798C200.265 64.3532 198.31 63.8494 195.665 65.8646C193.021 67.8798 189.916 65.1089 188.996 61.7082C188.077 58.3076 185.547 57.8038 183.017 55.9145C180.488 54.0253 179.683 53.2696 178.188 47.7277C176.693 42.1859 173.359 38.0294 170.714 46.972C168.07 55.9145 167.344 60.7995 165.851 61.7082C161.711 64.2273 158.534 61.7082 154.847 55.9145C152.612 52.4037 152.202 43.8232 148.523 43.8232C144.843 43.8232 144.038 44.0751 141.969 36.644C139.899 29.2129 139.899 29.213 136.104 28.8351C132.31 28.4572 133 28.2053 131.735 18.3812C130.47 8.557 130.7 1 127.366 1C124.031 1 123.801 2.88926 123.571 7.67539C123.341 12.4615 122.077 19.3887 119.202 18.3812C116.327 17.3736 113.453 17.3736 112.418 22.1597C111.383 26.9459 110.348 31.4801 105.634 29.5908C100.92 27.7016 101.495 32.4877 99.77 34.8808C98.0452 37.2738 96.6654 38.6593 93.9059 37.6517C91.1463 36.644 92.2961 35.8884 88.6167 37.6517C84.9372 39.415 83.6724 40.4226 81.8327 43.8233C79.993 47.2239 79.1101 53.5658 75.6606 52.4323C72.2112 51.2987 72.1284 47.1139 70.733 45.849C67.2597 42.7002 67.2584 28.9104 65.9548 26.86C64.1629 24.0417 64.2404 15.5244 61.5958 17.9175C58.9512 20.3105 59.1811 19.5548 58.0313 22.5776C56.8815 25.6005 55.8467 27.2378 52.3972 26.86C48.9477 26.4821 48.6028 26.86 47.4529 29.379C46.3031 31.898 42.7387 37.6917 40.324 33.5354C37.9094 29.379 35.2648 24.8448 34.115 19.9327C32.9651 15.0206 31.7054 8.09331 28.7708 11.2421C25.8362 14.3908 25.3763 19.051 22.6167 17.9175C19.8571 16.7839 18.7073 15.7763 16.4076 19.177C14.108 22.5776 13.6481 24.4669 10.1986 22.5776C6.74912 20.6884 6.17421 21.8219 4.10452 24.341C2.03483 26.86 2.26482 26.86 1 26.86"
+                            stroke="#DE50EC"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                       </div>
+                       {/* X-axis labels */}
+                       <div className="portfolio-graph-x-axis">
+                         <span>16/6</span>
+                         <span>22/6</span>
+                         <span>28/6</span>
+                         <span>4/7</span>
+                         <span>10/7</span>
+                         <span>16/7</span>
+                         <span>22/7</span>
+                       </div>
+                     </div>
+                     {/* Gradient overlay */}
+                     <div className="portfolio-graph-gradient"></div>
+                   </div>
+                 </div>
 
-                <div className="relative">
+                <div className="relative portfolio-preview-allocation">
                   <AllocationDistributionCard
                     slices={allocationData.length ? allocationData : PREVIEW_ALLOCATION}
                     isLoading={false}
@@ -1869,7 +2433,7 @@ export default function PortfolioPage() {
             {/* Ready to unlock full access Tile */}
             {!isAuthenticated && (
             <div
-              className="relative overflow-hidden"
+              className="relative overflow-hidden portfolio-ready-tile"
               style={{
                 width: '1064px',
                 height: '247px',
@@ -1897,7 +2461,7 @@ export default function PortfolioPage() {
 
               {/* Gradient Ellipse - Top Left */}
               <div 
-                className="absolute pointer-events-none"
+                className="absolute pointer-events-none portfolio-ready-ellipse-left"
                 style={{
                   width: '588px',
                   height: '588px',
@@ -1915,7 +2479,7 @@ export default function PortfolioPage() {
 
               {/* Gradient Ellipse - Bottom Right */}
               <div 
-                className="absolute pointer-events-none"
+                className="absolute pointer-events-none portfolio-ready-ellipse-right"
                 style={{
                   width: '588px',
                   height: '588px',
@@ -1932,9 +2496,10 @@ export default function PortfolioPage() {
               ></div>
               
               {/* Content */}
-              <div className="relative z-10 w-full h-full flex flex-col items-center justify-center" style={{ gap: '10px' }}>
+              <div className="relative z-10 w-full h-full flex flex-col items-center justify-center portfolio-ready-content" style={{ gap: '10px' }}>
                 {/* Frame 81 */}
                 <div
+                  className="portfolio-ready-header"
                   style={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -1995,6 +2560,7 @@ export default function PortfolioPage() {
                 
                 {/* Buttons Container */}
                 <div
+                  className="portfolio-ready-buttons"
                   style={{
                     display: 'flex',
                     flexDirection: 'row',

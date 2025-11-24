@@ -20,7 +20,7 @@ const AccountPage = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Edit profile state
   const [isEditMode, setIsEditMode] = useState(false);
   const [name, setName] = useState('');
@@ -59,6 +59,8 @@ const AccountPage = () => {
         if (subRes.ok) {
           const subData = await subRes.json();
           setSubscription(subData.subscription || null);
+          console.log("subdata", subData?.subscription?.id);
+          localStorage.setItem('subscriptionId', subData.subscription ? subData.subscription.planName : '');
         } else {
           setSubscription(null);
         }
@@ -216,7 +218,7 @@ const AccountPage = () => {
   const planPrice = loading ? '...' : (hasActiveSubscription
     ? subscription.displayPrice || subscription.price
     : 'Free');
-  const planStatusClasses = loading 
+  const planStatusClasses = loading
     ? 'bg-[rgba(255,255,255,0.12)] border border-white/30'
     : (hasActiveSubscription
       ? 'bg-[rgba(222,80,236,0.12)] border border-[#DE50EC]'
@@ -319,9 +321,34 @@ const AccountPage = () => {
                 <h2 className="text-white text-[20px] font-normal leading-none gilroy-semibold">
                   Profile Settings
                 </h2>
+                {!isEditMode && (
+                  <button
+                    onClick={handleEditProfile}
+                    className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center flex-shrink-0"
+                    style={{
+                      boxSizing: 'border-box',
+                      padding: '10px 16px',
+                      gap: '8px',
+                      width: '120px',
+                      height: '38px',
+                      background: '#FFFFFF',
+                      border: '1px solid #FFFFFF',
+                      borderRadius: '100px',
+                      fontFamily: 'Gilroy-SemiBold',
+                      fontStyle: 'normal',
+                      fontWeight: 400,
+                      fontSize: '14px',
+                      lineHeight: '100%',
+                      textAlign: 'center',
+                      color: '#1F1F1F'
+                    }}
+                  >
+                    Edit Profile
+                  </button>
+                )}
                 {isEditMode && (
                   <div className="flex flex-row gap-2 flex-shrink-0">
-                    <button 
+                    <button
                       onClick={handleCancelEdit}
                       disabled={saving}
                       className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center disabled:opacity-50"
@@ -344,7 +371,7 @@ const AccountPage = () => {
                     >
                       Cancel
                     </button>
-                    <button 
+                    <button
                       onClick={handleSaveProfile}
                       disabled={saving}
                       className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center disabled:opacity-50"
@@ -380,9 +407,9 @@ const AccountPage = () => {
                         <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       </div>
                     ) : user?.image ? (
-                      <Image 
-                        src={user.image} 
-                        alt="Profile" 
+                      <Image
+                        src={user.image}
+                        alt="Profile"
                         fill
                         sizes="64px"
                         className="w-full h-full object-cover"
@@ -399,9 +426,9 @@ const AccountPage = () => {
                     <div className="absolute left-0 right-0 top-0 h-6 bg-white rounded-[32px]" />
                     <div className="absolute right-0 bottom-0 w-6 h-6 flex items-center justify-center">
                       <svg width="12.5" height="10" viewBox="0 0 12.5 10" fill="none" className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-                        <rect x="2.5" y="2.5" width="7.5" height="5" rx="1" fill="#0A0A0A"/>
-                        <circle cx="6.25" cy="5" r="1.5" fill="white"/>
-                        <rect x="9.5" y="3.5" width="1.5" height="1" rx="0.25" fill="#0A0A0A"/>
+                        <rect x="2.5" y="2.5" width="7.5" height="5" rx="1" fill="#0A0A0A" />
+                        <circle cx="6.25" cy="5" r="1.5" fill="white" />
+                        <rect x="9.5" y="3.5" width="1.5" height="1" rx="0.25" fill="#0A0A0A" />
                       </svg>
                     </div>
                   </button>
@@ -414,31 +441,6 @@ const AccountPage = () => {
                     {user?.email || 'John.doe24@gmail.com'}
                   </span>
                 </div>
-                {!isEditMode && (
-                  <button 
-                    onClick={handleEditProfile}
-                    className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center flex-shrink-0"
-                    style={{
-                      boxSizing: 'border-box',
-                      padding: '10px 16px',
-                      gap: '8px',
-                      width: '120px',
-                      height: '38px',
-                      background: '#FFFFFF',
-                      border: '1px solid #FFFFFF',
-                      borderRadius: '100px',
-                      fontFamily: 'Gilroy-SemiBold',
-                      fontStyle: 'normal',
-                      fontWeight: 400,
-                      fontSize: '14px',
-                      lineHeight: '100%',
-                      textAlign: 'center',
-                      color: '#1F1F1F'
-                    }}
-                  >
-                    Edit Profile
-                  </button>
-                )}
               </div>
 
               {uploadError && (
@@ -484,7 +486,7 @@ const AccountPage = () => {
                   <span className="text-white text-sm font-normal gilroy-medium">
                     Email
                   </span>
-                  {isEditMode ? (
+                  {/* {isEditMode ? (
                     <CustomInput
                       type="email"
                       placeholder="john.doe@example.com"
@@ -492,13 +494,13 @@ const AccountPage = () => {
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full h-10"
                     />
-                  ) : (
+                  ) : ( */}
                     <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
                       <span className="text-white/30 text-sm gilroy-medium truncate">
                         {user?.email || 'john.doe@example.com'}
                       </span>
                     </div>
-                  )}
+                  {/* )} */}
                 </div>
                 {!isEditMode ? (
                   <div className="flex flex-col gap-1">
@@ -548,12 +550,12 @@ const AccountPage = () => {
                             >
                               {showCurrentPassword ? (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
-                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                               ) : (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
                                 </svg>
                               )}
                             </button>
@@ -578,12 +580,12 @@ const AccountPage = () => {
                             >
                               {showNewPassword ? (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
-                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                               ) : (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
                                 </svg>
                               )}
                             </button>
@@ -608,12 +610,12 @@ const AccountPage = () => {
                             >
                               {showConfirmPassword ? (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
-                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                               ) : (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
                                 </svg>
                               )}
                             </button>
@@ -858,7 +860,7 @@ const AccountPage = () => {
                     Billing History
                   </h2>
                 </div>
-                <button
+                {/* <button
                   onClick={() => router.push('/account/billing-history')}
                   className="flex flex-row items-center gap-1 hover:opacity-80"
                   style={{
@@ -906,7 +908,7 @@ const AccountPage = () => {
                   >
                     ➜
                   </span>
-                </button>
+                </button> */}
               </div>
 
               <div className="flex flex-col gap-4 w-full">
@@ -1313,9 +1315,9 @@ const AccountPage = () => {
                         <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
                       </div>
                     ) : user?.image ? (
-                      <Image 
-                        src={user.image} 
-                        alt="Profile" 
+                      <Image
+                        src={user.image}
+                        alt="Profile"
                         fill
                         sizes="64px"
                         className="w-full h-full object-cover"
@@ -1332,9 +1334,9 @@ const AccountPage = () => {
                     <div className="absolute left-0 right-0 top-0 h-6 bg-white rounded-[32px]" />
                     <div className="absolute right-0 bottom-0 w-6 h-6 flex items-center justify-center">
                       <svg width="12.5" height="10" viewBox="0 0 12.5 10" fill="none" className="absolute" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%)' }}>
-                        <rect x="2.5" y="2.5" width="7.5" height="5" rx="1" fill="#0A0A0A"/>
-                        <circle cx="6.25" cy="5" r="1.5" fill="white"/>
-                        <rect x="9.5" y="3.5" width="1.5" height="1" rx="0.25" fill="#0A0A0A"/>
+                        <rect x="2.5" y="2.5" width="7.5" height="5" rx="1" fill="#0A0A0A" />
+                        <circle cx="6.25" cy="5" r="1.5" fill="white" />
+                        <rect x="9.5" y="3.5" width="1.5" height="1" rx="0.25" fill="#0A0A0A" />
                       </svg>
                     </div>
                   </button>
@@ -1348,7 +1350,7 @@ const AccountPage = () => {
                   </span>
                 </div>
                 {!isEditMode ? (
-                  <button 
+                  <button
                     onClick={handleEditProfile}
                     className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center flex-shrink-0 absolute right-0"
                     style={{
@@ -1373,7 +1375,7 @@ const AccountPage = () => {
                   </button>
                 ) : (
                   <div className="flex flex-row gap-2 flex-shrink-0 absolute right-0">
-                    <button 
+                    <button
                       onClick={handleCancelEdit}
                       disabled={saving}
                       className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center disabled:opacity-50"
@@ -1396,7 +1398,7 @@ const AccountPage = () => {
                     >
                       Cancel
                     </button>
-                    <button 
+                    <button
                       onClick={handleSaveProfile}
                       disabled={saving}
                       className="hover:opacity-80 transition-opacity flex flex-row justify-center items-center disabled:opacity-50"
@@ -1467,20 +1469,20 @@ const AccountPage = () => {
                     <label className="text-white text-sm font-normal gilroy-medium">
                       Email
                     </label>
-                    {isEditMode ? (
+                    {/* {isEditMode ? (
                       <CustomInput
                         type="email"
                         placeholder="John.doe24@gmail.com"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
-                    ) : (
+                    ) : ( */}
                       <div className="w-full h-10 border border-white/30 rounded-lg flex items-center px-4">
                         <span className="text-white/30 text-sm gilroy-medium truncate">
                           {user?.email || 'John.doe24@gmail.com'}
                         </span>
                       </div>
-                    )}
+                    {/* )} */}
                   </div>
                 </div>
 
@@ -1532,12 +1534,12 @@ const AccountPage = () => {
                             >
                               {showCurrentPassword ? (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
-                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                               ) : (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
                                 </svg>
                               )}
                             </button>
@@ -1562,12 +1564,12 @@ const AccountPage = () => {
                             >
                               {showNewPassword ? (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
-                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                               ) : (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
                                 </svg>
                               )}
                             </button>
@@ -1592,12 +1594,12 @@ const AccountPage = () => {
                             >
                               {showConfirmPassword ? (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
-                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
+                                  <path d="M2.5 2.5L17.5 17.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                               ) : (
                                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor"/>
+                                  <path d="M10 3C5 3 1.73 7.11 1 10C1.73 12.89 5 17 10 17C15 17 18.27 12.89 19 10C18.27 7.11 15 3 10 3ZM10 15C7.24 15 5 12.76 5 10C5 7.24 7.24 5 10 5C12.76 5 15 7.24 15 10C15 12.76 12.76 15 10 15ZM10 7C8.34 7 7 8.34 7 10C7 11.66 8.34 13 10 13C11.66 13 13 11.66 13 10C13 8.34 11.66 7 10 7Z" fill="currentColor" />
                                 </svg>
                               )}
                             </button>

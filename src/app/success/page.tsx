@@ -21,7 +21,7 @@ const actionCards = [
     title: 'Open Calculator',
     description: 'Size positions based on your risk tolerance.',
     icon: '/icons/Calculator--Streamline-Iconoir.svg',
-    href: '/tools/calculator',
+    href: '/calculator',
     cta: 'Get Started',
   },
   {
@@ -288,9 +288,8 @@ function SuccessPageContent() {
               className="text-sm sm:text-base leading-[145%] text-white/70 max-w-xl mx-auto"
               style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500 }}
             >
-              Manage your plan anytime in
-              <Link href={'/account'} className='cursor-pointer'>
-                <span className="text-[#DE50EC]" >Account → Billing</span>
+              Manage your plan anytime in <Link href={'/account'} className='cursor-pointer'>
+                <span className="text-[#DE50EC]" > Account → Billing</span>
               </Link>. Educational content only; not financial advice.
             </p>
           </section>
@@ -381,7 +380,7 @@ function SuccessPageContent() {
                     <h3 className="text-2xl font-semibold leading-[100%] text-center text-white">Open Calculator</h3>
                     <p className="text-base font-normal leading-[130%] text-center text-white">Size positions based on your risk tolerance.</p>
                   </div>
-                  <a href="/tools/calculator" className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity">
+                  <a href="/calculator" className="w-full bg-white border border-white rounded-full px-4 py-2.5 flex items-center justify-center hover:opacity-80 transition-opacity">
                     <span className="text-sm font-semibold leading-[100%] text-center text-[#1F1F1F]">Get Started</span>
                   </a>
                 </div>
@@ -418,7 +417,7 @@ function SuccessPageContent() {
               <p className="text-[14px] font-medium leading-[120%] text-center text-white">
                 Manage your plan anytime in
                 <Link href={'/account'} className='cursor-pointer'>
-                  <span className="text-[#DE50EC]" >Account → Billing</span>
+                  <span className="text-[#DE50EC]" > Account → Billing</span>
                 </Link>. Educational content only; not financial advice.
               </p>
             </div>

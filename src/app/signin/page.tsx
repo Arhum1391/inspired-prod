@@ -7,9 +7,14 @@ import Navbar from '@/components/Navbar';
 import { useAuth } from '@/contexts/AuthContext';
 import { Eye, EyeOff } from 'lucide-react';
 import CustomInput from '@/components/CustomInput';
+import { useSearchParams } from "next/navigation";
+
 
 
 export default function SignIn() {
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
+
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [formKey, setFormKey] = useState(0);
@@ -117,7 +122,11 @@ export default function SignIn() {
         });
 
         // Redirect to account page or home
-        router.push('/account');
+        if (redirect) {
+          router.push(redirect);
+        } else {
+          router.push('/account');
+        }
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

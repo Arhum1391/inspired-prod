@@ -285,7 +285,7 @@ export default function SignIn() {
                     gap: '10px',
                     background: '#FFFFFF',
                     borderRadius: '100px',
-                    fontFamily: 'Gilroy-SemiBold, sans-serif',
+                    fontFamily: 'Gilroy, sans-serif',
                     fontWeight: 500,
                     fontSize: '18px',
                     lineHeight: '100%',

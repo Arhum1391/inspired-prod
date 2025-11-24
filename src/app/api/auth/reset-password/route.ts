@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPublicUserByPasswordResetToken, updatePublicUser, hashPassword } from '@/lib/auth';
+import { getDatabase } from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export async function POST(request: NextRequest) {
   try {
+    const db = await getDatabase();
     const { token, password } = await request.json();
 
     if (!token || !password) {
@@ -33,12 +36,18 @@ export async function POST(request: NextRequest) {
     // Hash new password
     const hashedPassword = await hashPassword(password);
 
+    await db.collection('public_users').findOneAndUpdate(
+      { _id: new ObjectId(user._id) },
+      { $set: { password: hashedPassword, passwordResetToken: null, passwordResetTokenExpiry: null } },
+      { returnDocument: 'after' }
+    );
+
     // Update user password and clear reset token
-    await updatePublicUser(user._id!, {
-      password: hashedPassword,
-      passwordResetToken: null,
-      passwordResetTokenExpiry: null,
-    });
+    // await updatePublicUser(user._id!, {
+    //   password: hashedPassword,
+    //   passwordResetToken: null,
+    //   passwordResetTokenExpiry: null,
+    // });
 
     return NextResponse.json(
       { message: 'Password reset successfully' },

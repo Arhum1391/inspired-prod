@@ -1117,8 +1117,9 @@ export default function ResearchPage() {
                       justifyContent: 'flex-start',
                       gap: '24px',
                       width: '100%',
+                      flexWrap: 'wrap'
                     }}
-                    className="research-filter-row"
+                    // className="research-filter-row"
                   >
                     <div
                       style={{

@@ -74,6 +74,10 @@ const faqs: FAQ[] = [
 ];
 
 export default function Pricing() {
+
+  const subscriptionId = typeof window !== 'undefined' ? localStorage.getItem('subscriptionId') : null;
+
+  console.log("subscriptionId", subscriptionId);
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const router = useRouter();
 
@@ -187,85 +191,87 @@ export default function Pricing() {
           </header>
 
           <section className="mt-12 sm:mt-16 max-w-5xl mx-auto flex flex-col gap-6">
-            {plans.map((plan) => (
-              <div
-                key={plan.id}
-                className="relative flex flex-col gap-8 bg-[#1F1F1F] rounded-2xl p-8 sm:p-10 w-full overflow-visible"
-              >
+            {plans
+              .filter(plan => plan.name !== subscriptionId)
+              .map((plan) => (
                 <div
-                  className="absolute inset-0 pointer-events-none rounded-2xl"
-                  style={{
-                    background:
-                      'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                    padding: '1px',
-                  }}
+                  key={plan.id}
+                  className={`relative flex flex-col gap-8 bg-[#1F1F1F] rounded-2xl p-8 sm:p-10 w-full overflow-visible ${subscriptionId === plan.name ? "hidden" : ""}`}
                 >
-                  <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
-                </div>
-
-                {plan.isPopular && (
                   <div
-                    className="absolute -top-3 left-6 flex items-center justify-center px-3 py-1 text-xs rounded-full"
+                    className="absolute inset-0 pointer-events-none rounded-2xl"
                     style={{
-                      background: '#DE50EC',
-                      border: '1px solid #DE50EC',
-                      fontFamily: 'Gilroy, sans-serif',
-                      fontWeight: 500,
+                      background:
+                        'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px',
                     }}
                   >
-                    Best Value
+                    <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
                   </div>
-                )}
 
-                <div className="relative z-10 flex flex-col gap-6">
-                  <div className="space-y-3">
-                    <div className="space-y-2">
-                      <h3
-                        className="text-2xl text-white"
-                        style={headingStyle}
-                      >
-                        {plan.name}
-                      </h3>
-                      <p className="text-sm text-white/80" style={bodyStyle}>
-                        {plan.description}
-                      </p>
+                  {plan.isPopular && (
+                    <div
+                      className="absolute -top-3 left-6 flex items-center justify-center px-3 py-1 text-xs rounded-full"
+                      style={{
+                        background: '#DE50EC',
+                        border: '1px solid #DE50EC',
+                        fontFamily: 'Gilroy, sans-serif',
+                        fontWeight: 500,
+                      }}
+                    >
+                      Best Value
                     </div>
-                    <div className="space-y-1">
-                      <p
-                        className="text-2xl"
-                        style={{ ...headingStyle, color: plan.priceAccent }}
-                      >
-                        {plan.price}
-                      </p>
-                      {plan.billingNote && (
-                        <p className="text-sm text-white/70" style={bodyStyle}>
-                          {plan.billingNote}
+                  )}
+
+                  <div className="relative z-10 flex flex-col gap-6">
+                    <div className="space-y-3">
+                      <div className="space-y-2">
+                        <h3
+                          className="text-2xl text-white"
+                          style={headingStyle}
+                        >
+                          {plan.name}
+                        </h3>
+                        <p className="text-sm text-white/80" style={bodyStyle}>
+                          {plan.description}
                         </p>
-                      )}
+                      </div>
+                      <div className="space-y-1">
+                        <p
+                          className="text-2xl"
+                          style={{ ...headingStyle, color: plan.priceAccent }}
+                        >
+                          {plan.price}
+                        </p>
+                        {plan.billingNote && (
+                          <p className="text-sm text-white/70" style={bodyStyle}>
+                            {plan.billingNote}
+                          </p>
+                        )}
+                      </div>
                     </div>
+
+                    <ul className="space-y-4">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-3">
+                          <span className="mt-1 inline-block w-2 h-2 rounded-full bg-white"></span>
+                          <span className="text-base text-white" style={bodyStyle}>
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
 
-                  <ul className="space-y-4">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <span className="mt-1 inline-block w-2 h-2 rounded-full bg-white"></span>
-                        <span className="text-base text-white" style={bodyStyle}>
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
+                  <button
+                    onClick={() => handleCheckout(plan.id)}
+                    className="relative z-10 w-full h-12 rounded-full bg-white text-[#1F1F1F] text-sm font-semibold hover:opacity-90 transition-opacity"
+                    style={headingStyle}
+                  >
+                    Continue to Checkout
+                  </button>
                 </div>
-
-                <button
-                  onClick={() => handleCheckout(plan.id)}
-                  className="relative z-10 w-full h-12 rounded-full bg-white text-[#1F1F1F] text-sm font-semibold hover:opacity-90 transition-opacity"
-                  style={headingStyle}
-                >
-                  Continue to Checkout
-                </button>
-              </div>
-            ))}
+              ))}
           </section>
 
           <section className="mt-16 sm:mt-20 max-w-4xl mx-auto text-center space-y-4">
@@ -308,9 +314,8 @@ export default function Pricing() {
                       {faq.question}
                     </h3>
                     <div
-                      className={`flex h-5 w-5 items-center justify-center transition-transform duration-300 ${
-                        isOpen ? 'rotate-180' : ''
-                      }`}
+                      className={`flex h-5 w-5 items-center justify-center transition-transform duration-300 ${isOpen ? 'rotate-180' : ''
+                        }`}
                     >
                       <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M1 1L5 5L9 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -367,9 +372,9 @@ export default function Pricing() {
                 </p>
               </div>
 
-              <div className="flex flex-row items-center gap-5 w-full">
+              <div className="flex flex-row items-center justify-center gap-5 w-full">
                 <div
-                  className="flex flex-col justify-between items-start p-10 gap-10 relative"
+                  className={`flex flex-col justify-between items-start p-10 gap-10 relative ${subscriptionId === 'Premium Monthly' ? 'hidden' : ''}`}
                   style={{
                     width: '414px',
                     height: '418px',
@@ -555,7 +560,7 @@ export default function Pricing() {
                 </div>
 
                 <div
-                  className="flex flex-col justify-between items-start p-10 gap-10 relative"
+                  className={`flex flex-col justify-between items-start p-10 gap-10 relative ${subscriptionId === 'Premium Annual' ? 'hidden' : ''}`}
                   style={{
                     width: '414px',
                     height: '418px',

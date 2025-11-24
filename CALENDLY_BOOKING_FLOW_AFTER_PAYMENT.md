@@ -1,6 +1,6 @@
 # Calendly Booking Flow After Stripe Payment
 
-## Overviewss
+## Overviews s
 This document describes the complete booking flow from payment to final confirmation with Calendly integration. The Calendly popup automatically opens on the success page after payment.
 
 ## Complete User Journey

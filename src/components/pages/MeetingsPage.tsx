@@ -1149,7 +1149,7 @@ const MeetingsPage = () => {
         };
         
         handleAnalystSelection();
-    }, [selectedAnalyst, currentStep, searchParams, isTeamDataLoaded, analysts.length]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [selectedAnalyst, searchParams, isTeamDataLoaded, analysts.length]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Fetch Calendly availability when meeting type, month, or timezone change
     useEffect(() => {

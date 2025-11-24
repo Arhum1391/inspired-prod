@@ -16,6 +16,17 @@ For the Calendly integration to work on Vercel (or any production deployment), y
 - **Required**: Yes (for Assassin's meeting bookings)
 - **Used for**: Fetching Assassin's event types and availability
 
+### 3. `BINANCE_CREDENTIALS_ENCRYPTION_KEY` ⚠️ **CRITICAL FOR BINANCE INTEGRATION**
+- **Description**: 32-byte encryption key for encrypting Binance API credentials at rest
+- **Format**: Base64, hex, or 32-character UTF-8 string
+- **Required**: Yes (if using Binance portfolio integration)
+- **How to generate**: 
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+  ```
+- **Used for**: Encrypting user Binance API keys and secrets before storing in MongoDB
+- **⚠️ IMPORTANT**: This key must be the same across all deployments/environments if you want to decrypt existing credentials
+
 ---
 
 ## How to Add Environment Variables to Vercel
@@ -109,6 +120,24 @@ curl -X GET "https://api.calendly.com/organization_memberships?organization=YOUR
 2. Or: Update the environment variable and redeploy
 3. Wait 1-2 minutes for propagation
 
+### Issue: "Failed to store Binance credentials" Error
+**Cause**: `BINANCE_CREDENTIALS_ENCRYPTION_KEY` is not set in Vercel environment variables
+
+**Solution**:
+1. Generate a secure 32-byte key: `node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"`
+2. Add `BINANCE_CREDENTIALS_ENCRYPTION_KEY` to Vercel environment variables
+3. Ensure it's enabled for Production environment
+4. Redeploy the application
+5. **Note**: If you already have encrypted credentials in the database, you MUST use the same key that was used to encrypt them, or all existing credentials will be lost
+
+### Issue: "Failed to execute 'getRandomValues' on 'Crypto'" Error
+**Cause**: Node.js crypto module is being bundled into client-side code
+
+**Solution**:
+1. This should be fixed in the latest code with webpack configuration
+2. Ensure you're using the updated `next.config.ts` that externalizes crypto for client builds
+3. Rebuild and redeploy the application
+
 ---
 
 ## Local Development Setup
@@ -141,9 +170,11 @@ Before deploying to Vercel, ensure:
 
 - [ ] `CALENDLY_ACCESS_TOKEN` is added to Vercel
 - [ ] `CALENDLY_ANALYST_1_URI` is added to Vercel
-- [ ] Both variables are enabled for **Production** environment
+- [ ] `BINANCE_CREDENTIALS_ENCRYPTION_KEY` is added to Vercel (if using Binance integration)
+- [ ] All variables are enabled for **Production** environment
 - [ ] Application has been redeployed after adding variables
 - [ ] Test the Calendly integration on the deployed site
+- [ ] Test the Binance integration on the deployed site (if applicable)
 
 ---
 

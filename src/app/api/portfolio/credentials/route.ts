@@ -95,6 +95,17 @@ export async function POST(request: NextRequest) {
   const useTestnet = parseBoolean(body.useTestnet);
 
   try {
+    // Check if encryption key is configured before attempting to store credentials
+    if (!process.env.BINANCE_CREDENTIALS_ENCRYPTION_KEY) {
+      console.error('BINANCE_CREDENTIALS_ENCRYPTION_KEY environment variable is not set');
+      return respond(
+        { 
+          error: 'Server configuration error: Encryption key not configured. Please contact support.',
+        },
+        500
+      );
+    }
+
     await upsertBinanceCredentials(userId, {
       apiKey,
       apiSecret,
@@ -115,6 +126,16 @@ export async function POST(request: NextRequest) {
       stack: errorStack,
       name: err instanceof Error ? err.name : typeof err,
     });
+    
+    // Check if error is related to missing encryption key
+    if (errorMessage.includes('BINANCE_CREDENTIALS_ENCRYPTION_KEY')) {
+      return respond(
+        { 
+          error: 'Server configuration error: Encryption key not configured. Please contact support.',
+        },
+        500
+      );
+    }
     
     // Return a more informative error message in development, generic in production
     const isDevelopment = process.env.NODE_ENV === 'development';

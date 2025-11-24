@@ -47,6 +47,14 @@ AWS_S3_BUCKET_NAME=your-bucket-name
 AWS_S3_REGION=us-east-1
 AWS_ACCESS_KEY_ID=your-access-key-id
 AWS_SECRET_ACCESS_KEY=your-secret-access-key
+
+# Binance Portfolio Integration (REQUIRED for Binance API credential storage)
+# Generate a secure 32-byte key with: node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
+BINANCE_CREDENTIALS_ENCRYPTION_KEY=your-32-byte-encryption-key-base64-or-hex
+# Optional: Override default Binance API base URL
+# BINANCE_API_BASE_URL=https://testnet.binance.vision
+# Optional: Default to testnet for new credentials
+# BINANCE_USE_TESTNET_DEFAULT=false
 ```
 
 ## ❌ NO LONGER NEEDED:

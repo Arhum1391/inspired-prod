@@ -57,7 +57,16 @@ const nextConfig: NextConfig = {
     ],
   },
   webpack: (config: any, { isServer }: { isServer: boolean }) => {
+    // Externalize Node.js built-in modules for client-side builds
     if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        crypto: false,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+      
       config.optimization = {
         ...config.optimization,
         splitChunks: {

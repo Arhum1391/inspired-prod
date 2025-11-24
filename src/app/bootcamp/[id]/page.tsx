@@ -10,6 +10,7 @@ import LoadingScreen from '@/components/LoadingScreen';
 import { Bootcamp, TeamMember } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 import { getTeamMemberAbout, getTeamMemberById } from '@/lib/teamUtils';
+import { getCanonicalMentorImagePath } from '@/lib/mentorImages';
 import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target, LucideIcon } from 'lucide-react';
 
 // Helper function to get icon component dynamically
@@ -131,13 +132,23 @@ export default function BootcampDetailPage() {
     return teamMembers.find(member => member.name?.trim().toLowerCase() === mentorName) || null;
   };
 
-  const getMentorImage = (mentorName: string, providedImage?: string) => {
+  const getMentorImage = (
+    mentorName: string,
+    teamMemberImage?: string,
+    providedImage?: string,
+  ) => {
+    // 1) If bootcamp.mentorDetails provides an explicit image, always prefer it
     if (providedImage && providedImage.trim() !== '') {
       return providedImage.trim();
     }
 
-    const normalizedName = mentorName?.split(' - ')[0]?.trim();
-    return normalizedName ? `/team dark/${normalizedName}.png` : '/team dark/Adnan.png';
+    // 2) Otherwise, use the image coming from /api/team (same behavior as Book Mentorship)
+    if (teamMemberImage && teamMemberImage.trim() !== '') {
+      return teamMemberImage.trim();
+    }
+
+    // 3) Final fallback: use canonical static mapping + default
+    return getCanonicalMentorImagePath(mentorName);
   };
 
   if (loading) {
@@ -538,7 +549,7 @@ export default function BootcampDetailPage() {
                       {/* Profile Image */}
                       <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden relative z-10">
                         <Image
-                          src={getMentorImage(mentor.name, mentor.image)}
+                          src={getMentorImage(mentor.name, undefined, mentor.image)}
                           alt={mentor.name}
                           width={64}
                           height={64}
@@ -593,7 +604,7 @@ export default function BootcampDetailPage() {
                         {/* Profile Image */}
                         <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden relative z-10">
                           {(() => {
-                            const resolvedImage = teamMember?.image || getMentorImage(mentor);
+                            const resolvedImage = getMentorImage(mentor, teamMember?.image);
                             if (resolvedImage) {
                               return (
                                 <Image

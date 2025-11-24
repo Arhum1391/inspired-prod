@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
+import { getCanonicalMentorImagePath } from '@/lib/mentorImages';
 
 // Cache this route response for 60 seconds on the edge
 export const revalidate = 60;
@@ -28,7 +29,7 @@ export async function GET() {
       // Validate and sanitize image URL
       let imageUrl = member.image;
       if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'null' || imageUrl === 'undefined') {
-        imageUrl = `/team dark/${member.name}.png`;
+        imageUrl = getCanonicalMentorImagePath(member.name);
       }
 
       console.log('🔄 Mapping team member:', {

@@ -50,26 +50,6 @@ jobs:
             # Move new code
             mv ~/app-deploy app/
             
-            # Update .env file
-            cat > .env << 'EOF'
-            MONGODB_URI=${{ secrets.MONGODB_URI }}
-            CALENDLY_ACCESS_TOKEN=${{ secrets.CALENDLY_ACCESS_TOKEN }}
-            COLLAB_EMAIL=${{ secrets.COLLAB_EMAIL }}
-            SMTP_HOST=${{ secrets.SMTP_HOST }}
-            SMTP_PORT=${{ secrets.SMTP_PORT }}
-            SMTP_SECURE=${{ secrets.SMTP_SECURE }}
-            SMTP_USER=${{ secrets.SMTP_USER }}
-            SMTP_PASS=${{ secrets.SMTP_PASS }}
-            AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
-            AWS_S3_REGION=${{ secrets.AWS_S3_REGION }}
-            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
-            JWT_SECRET=${{ secrets.JWT_SECRET }}
-            STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}
-            STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}
-            NEXT_PUBLIC_BASE_URL=${{ secrets.NEXT_PUBLIC_BASE_URL }}
-            EOF
-            
             # Rebuild and start
             docker compose build app
             docker compose up -d app

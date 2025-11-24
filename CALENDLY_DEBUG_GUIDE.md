@@ -21,7 +21,7 @@ Meeting types are displaying correctly, but calendar dates and time slots are no
 
 ## 🧪 How to Debug
 
-### Step 1: Check Environment Variables
+### Step 1: Check Environment Variabless
 
 Make sure your `.env.local` file has:
 ```bash

@@ -206,17 +206,34 @@ export default function PortfolioPage() {
   const displayedTotalValue =
     totalPortfolioValue > 0 ? totalPortfolioValue : portfolioData?.summary?.totalValue ?? null;
   const activeChartData = chartDataByRange[selectedChartRange];
+  const calibratedChartData = useMemo(() => {
+    if (!activeChartData?.length || !displayedTotalValue || displayedTotalValue <= 0) {
+      return activeChartData;
+    }
+    const lastValue = activeChartData[activeChartData.length - 1]?.value ?? 0;
+    if (!lastValue || lastValue <= 0) {
+      return activeChartData;
+    }
+    const scalingRatio = displayedTotalValue / lastValue;
+    if (!Number.isFinite(scalingRatio) || Math.abs(scalingRatio - 1) <= 0.005) {
+      return activeChartData;
+    }
+    return activeChartData.map(point => ({
+      ...point,
+      value: Number((point.value * scalingRatio).toFixed(2)),
+    }));
+  }, [activeChartData, displayedTotalValue]);
   const chartChangePercent = useMemo(() => {
-    if (!activeChartData || activeChartData.length < 2) {
+    if (!calibratedChartData || calibratedChartData.length < 2) {
       return null;
     }
-    const first = activeChartData[0].value;
-    const last = activeChartData[activeChartData.length - 1].value;
+    const first = calibratedChartData[0].value;
+    const last = calibratedChartData[calibratedChartData.length - 1].value;
     if (!first || first <= 0) {
       return null;
     }
     return ((last - first) / first) * 100;
-  }, [activeChartData, selectedChartRange]);
+  }, [calibratedChartData, selectedChartRange]);
 
   const fetchCredentialsStatus = useCallback(async () => {
     if (!isAuthenticated) {
@@ -2091,7 +2108,7 @@ export default function PortfolioPage() {
                       <PortfolioBalanceCard
                         totalValue={displayedTotalValue}
                         changePercent={chartChangePercent ?? undefined}
-                        chartData={activeChartData}
+                        chartData={calibratedChartData}
                         isLoading={isFetchingPortfolio}
                         isChartLoading={chartLoadingRange === selectedChartRange}
                         lastUpdated={portfolioData?.summary?.computedAt ?? null}

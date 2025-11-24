@@ -57,7 +57,7 @@ export type KlinePoint = {
 
 export class BinanceApiError extends Error {
   public readonly status: number;
-  public readonly code?: number;
+  public readonly code?: number | string;
   public readonly data?: unknown;
   public readonly isRateLimit: boolean;
   public readonly retryAfterMs?: number;
@@ -65,7 +65,7 @@ export class BinanceApiError extends Error {
   constructor(options: {
     message: string;
     status: number;
-    code?: number;
+    code?: number | string;
     data?: unknown;
     isRateLimit?: boolean;
     retryAfterMs?: number;

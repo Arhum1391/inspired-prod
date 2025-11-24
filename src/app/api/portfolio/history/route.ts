@@ -10,6 +10,7 @@ import {
   AccountInformation,
   KlinePoint,
 } from '@/lib/binance';
+import type { BinanceClient } from '@/lib/binance';
 
 type HistoryRange = '1Hr' | '1D' | '1W' | '1M' | '1Y';
 
@@ -58,8 +59,9 @@ const RANGE_CONFIG: Record<HistoryRange, RangeConfig> = {
   },
 };
 
-const STABLE_COINS = new Set(['USDT', 'BUSD', 'USDC', 'FDUSD', 'TUSD', 'DAI']);
-const MAX_ASSETS = 6; // Reduced for better performance
+const STABLE_COINS = new Set(['USDT', 'BUSD', 'USDC', 'FDUSD', 'TUSD', 'DAI', 'EUR', 'GBP']);
+const MAX_PRICE_ASSETS = 6;
+const MIN_HOLDING_QUANTITY = 0.000001;
 
 const parseQuantity = (value: string): number => {
   const parsed = Number(value);
@@ -77,8 +79,17 @@ const generateTimeline = (config: RangeConfig): number[] => {
   });
 };
 
-const extractTopHoldings = (account: AccountInformation) => {
-  const holdings = account.balances
+type HoldingQuantity = {
+  asset: string;
+  quantity: number;
+};
+
+type PricedHolding = HoldingQuantity & {
+  usdValue: number;
+};
+
+const extractHoldings = (account: AccountInformation): HoldingQuantity[] => {
+  return account.balances
     .map(balance => {
       const total =
         parseQuantity(balance.free) + parseQuantity(balance.locked);
@@ -87,11 +98,76 @@ const extractTopHoldings = (account: AccountInformation) => {
         quantity: total,
       };
     })
-    .filter(item => item.quantity > 0.001); // Filter out dust amounts
+    .filter(item => item.quantity > MIN_HOLDING_QUANTITY);
+};
 
-  // Sort by quantity and take top assets only
-  holdings.sort((a, b) => b.quantity - a.quantity);
-  return holdings.slice(0, MAX_ASSETS);
+const buildPriceSymbols = (holdings: HoldingQuantity[]): string[] => {
+  const seen = new Set<string>();
+  const symbols: string[] = [];
+
+  holdings.forEach(holding => {
+    if (STABLE_COINS.has(holding.asset)) {
+      return;
+    }
+    const symbol = `${holding.asset}USDT`;
+    if (!seen.has(symbol)) {
+      seen.add(symbol);
+      symbols.push(symbol);
+    }
+  });
+
+  return symbols;
+};
+
+const fetchPriceMap = async (
+  client: BinanceClient,
+  symbols: string[]
+): Promise<{ priceMap: Map<string, number>; unsupportedSymbols: string[] }> => {
+  const priceMap = new Map<string, number>();
+  const unsupportedSymbols: string[] = [];
+
+  if (!symbols.length) {
+    return { priceMap, unsupportedSymbols };
+  }
+
+  const uniqueSymbols = Array.from(
+    new Set(symbols.map(symbol => symbol.toUpperCase()))
+  );
+  const MAX_SYMBOLS_PER_REQUEST = 100;
+
+  for (let i = 0; i < uniqueSymbols.length; i += MAX_SYMBOLS_PER_REQUEST) {
+    const chunk = uniqueSymbols.slice(i, i + MAX_SYMBOLS_PER_REQUEST);
+    // eslint-disable-next-line no-await-in-loop
+    await fetchChunk(chunk);
+  }
+
+  return { priceMap, unsupportedSymbols };
+
+  async function fetchChunk(chunk: string[]) {
+    try {
+      const response = await client.getTickerPrices(chunk);
+      response.data.forEach(price => {
+        const parsed = Number(price.price);
+        if (Number.isFinite(parsed)) {
+          priceMap.set(price.symbol.toUpperCase(), parsed);
+        }
+      });
+    } catch (error) {
+      if (error instanceof BinanceApiError && error.code === -1121) {
+        if (chunk.length === 1) {
+          unsupportedSymbols.push(chunk[0]);
+          return;
+        }
+        // eslint-disable-next-line no-await-in-loop
+        for (const symbol of chunk) {
+          // eslint-disable-next-line no-await-in-loop
+          await fetchChunk([symbol]);
+        }
+        return;
+      }
+      throw error;
+    }
+  }
 };
 
 const buildBaseTimeline = (klines: KlinePoint[]): number[] =>
@@ -161,14 +237,43 @@ export async function GET(request: NextRequest) {
     });
 
     const accountResponse = await client.getAccountInformation();
-    const holdings = extractTopHoldings(accountResponse.data);
+    const holdings = extractHoldings(accountResponse.data);
 
     if (!holdings.length) {
       return NextResponse.json({ data: [] });
     }
 
-    const priceAssets = holdings.filter(holding => !STABLE_COINS.has(holding.asset));
+    const priceAssetCandidates = holdings.filter(
+      holding => !STABLE_COINS.has(holding.asset)
+    );
     const stableAssets = holdings.filter(holding => STABLE_COINS.has(holding.asset));
+    let priceAssets: PricedHolding[] = [];
+    let unsupportedPriceSymbols: string[] = [];
+
+    if (priceAssetCandidates.length) {
+      const priceSymbols = buildPriceSymbols(priceAssetCandidates);
+      const { priceMap, unsupportedSymbols } = await fetchPriceMap(
+        client,
+        priceSymbols
+      );
+      unsupportedPriceSymbols = unsupportedSymbols;
+
+      priceAssets = priceAssetCandidates
+        .map(holding => {
+          const symbol = `${holding.asset}USDT`;
+          const price = priceMap.get(symbol);
+          if (!price || price <= 0) {
+            return null;
+          }
+          return {
+            ...holding,
+            usdValue: price * holding.quantity,
+          };
+        })
+        .filter((entry): entry is PricedHolding => entry !== null)
+        .sort((a, b) => b.usdValue - a.usdValue)
+        .slice(0, MAX_PRICE_ASSETS);
+    }
 
     let timelineCloses: number[] = [];
     let timelineValues: number[] = [];
@@ -316,6 +421,7 @@ export async function GET(request: NextRequest) {
         assetsProcessed: holdings.length,
         priceAssets: priceAssets.length,
         stableAssets: stableAssets.length,
+        unsupportedSymbols: unsupportedPriceSymbols,
         targetCurrentValue: targetCurrentValue,
         lastChartValue: validData[validData.length - 1]?.value ?? 0,
         alignmentApplied: targetCurrentValue && targetCurrentValue > 0 && validData.length > 0,
@@ -325,6 +431,7 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching portfolio history:', err);
     
     if (err instanceof BinanceApiError) {
+      const timeoutCode = err.code as unknown as string | undefined;
       // Handle rate limiting with retry information
       if (err.isRateLimit) {
         return NextResponse.json(
@@ -352,7 +459,7 @@ export async function GET(request: NextRequest) {
       }
       
       // Handle timeout errors
-      if (err.code === 'TIMEOUT' || err.code === 'CONNECTION_TIMEOUT') {
+      if (timeoutCode === 'TIMEOUT' || timeoutCode === 'CONNECTION_TIMEOUT') {
         return NextResponse.json(
           {
             error: err.message,

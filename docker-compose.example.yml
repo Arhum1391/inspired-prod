@@ -1,0 +1,52 @@
+# Example Docker Compose configuration
+# Copy this to docker-compose.yml and update with your values
+
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Database
+        MONGODB_URI: ${MONGODB_URI}
+        # AWS S3
+        AWS_S3_BUCKET_NAME: ${AWS_S3_BUCKET_NAME}
+        AWS_S3_REGION: ${AWS_S3_REGION}
+        AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+        AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+        # Stripe
+        STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+        STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+        NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+        # Auth
+        JWT_SECRET: ${JWT_SECRET}
+        # Calendly
+        CALENDLY_ACCESS_TOKEN: ${CALENDLY_ACCESS_TOKEN}
+        # Binance (REQUIRED for Binance integration)
+        BINANCE_CREDENTIALS_ENCRYPTION_KEY: ${BINANCE_CREDENTIALS_ENCRYPTION_KEY}
+        # Base URL
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL}
+    ports:
+      - "3000:3000"
+    environment:
+      # Pass environment variables to runtime
+      - MONGODB_URI=${MONGODB_URI}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+      - AWS_S3_REGION=${AWS_S3_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - CALENDLY_ACCESS_TOKEN=${CALENDLY_ACCESS_TOKEN}
+      - BINANCE_CREDENTIALS_ENCRYPTION_KEY=${BINANCE_CREDENTIALS_ENCRYPTION_KEY}
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+    restart: unless-stopped
+    # Uncomment if you need to mount volumes
+    # volumes:
+    #   - ./public:/app/public
+    #   - ./.next:/app/.next
+

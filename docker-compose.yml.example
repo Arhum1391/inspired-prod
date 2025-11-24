@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ./app
+      args:
+        - MONGODB_URI=${MONGODB_URI}
+        - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+        - AWS_S3_REGION=${AWS_S3_REGION}
+        - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+        - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+        - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+        - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+        - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+        - JWT_SECRET=${JWT_SECRET}
+        - CALENDLY_ACCESS_TOKEN=${CALENDLY_ACCESS_TOKEN}
+        - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+        - BINANCE_CREDENTIALS_ENCRYPTION_KEY=${BINANCE_CREDENTIALS_ENCRYPTION_KEY}
+    container_name: inspired-app
+    restart: unless-stopped
+    mem_limit: 512m
+    mem_reservation: 400m
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URI=${MONGODB_URI}
+      - CALENDLY_ACCESS_TOKEN=${CALENDLY_ACCESS_TOKEN}
+      - COLLAB_EMAIL=${COLLAB_EMAIL}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_SECURE=${SMTP_SECURE}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME}
+      - AWS_S3_REGION=${AWS_S3_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+      - STRIPE_PUBLISHABLE_KEY=${STRIPE_PUBLISHABLE_KEY}
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY}
+      - STRIPE_PRICE_ID_MONTHLY=${STRIPE_PRICE_ID_MONTHLY}
+      - STRIPE_PRICE_ID_ANNUAL=${STRIPE_PRICE_ID_ANNUAL}
+      - BINANCE_CREDENTIALS_ENCRYPTION_KEY=${BINANCE_CREDENTIALS_ENCRYPTION_KEY}
+      # Optional Binance overrides
+      # - BINANCE_API_BASE_URL=${BINANCE_API_BASE_URL}  # Override default mainnet (e.g., "https://testnet.binance.vision")
+      # - BINANCE_USE_TESTNET_DEFAULT=${BINANCE_USE_TESTNET_DEFAULT}  # Set to "true" to default new connections to testnet
+    ports:
+      - "127.0.0.1:3000:3000"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+

@@ -43,11 +43,50 @@ export default function BootcampDetailPage() {
 
   const fetchTeamMembers = async () => {
     try {
-      const response = await fetch('/admin/api/team');
-      if (response.ok) {
-        const data = await response.json();
-        setTeamMembers(data);
+      const response = await fetch('/api/team', {
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        console.error('Failed to fetch team members:', response.statusText);
+        return;
       }
+
+      const data = await response.json();
+      const rawTeam = Array.isArray(data?.rawTeam) ? data.rawTeam : [];
+      const publicTeam = Array.isArray(data?.team) ? data.team : [];
+
+      const normalizedMembers: TeamMember[] = rawTeam.map((member: any) => {
+        const name = typeof member.name === 'string' ? member.name.trim() : '';
+
+        const publicRecord = publicTeam.find(
+          (analyst: any) =>
+            (typeof analyst.id !== 'undefined' && analyst.id === member.id) ||
+            (typeof analyst.name === 'string' && analyst.name.trim() === name),
+        );
+
+        const image =
+          publicRecord?.image?.trim() ||
+          member.image?.trim() ||
+          (name ? `/team dark/${name}.png` : undefined);
+
+        return {
+          _id: member._id,
+          id: member.id,
+          name,
+          role: member.role,
+          about: member.about ?? '',
+          bootcampAbout: member.bootcampAbout?.trim()
+            ? member.bootcampAbout
+            : member.about ?? '',
+          calendar: member.calendar ?? '',
+          image,
+          createdAt: member.createdAt ? new Date(member.createdAt) : new Date(),
+          updatedAt: member.updatedAt ? new Date(member.updatedAt) : new Date(),
+        };
+      });
+
+      setTeamMembers(normalizedMembers);
     } catch (error) {
       console.error('Failed to fetch team members:', error);
     }
@@ -86,8 +125,19 @@ export default function BootcampDetailPage() {
 
   // Helper function to find team member by name (extract name from mentor string)
   const findTeamMemberByName = (mentorString: string): TeamMember | null => {
-    const mentorName = mentorString.split(' - ')[0]; // Extract name part before " - "
-    return teamMembers.find(member => member.name === mentorName) || null;
+    const mentorName = mentorString.split(' - ')[0]?.trim().toLowerCase(); // Extract name part before " - "
+    if (!mentorName) return null;
+
+    return teamMembers.find(member => member.name?.trim().toLowerCase() === mentorName) || null;
+  };
+
+  const getMentorImage = (mentorName: string, providedImage?: string) => {
+    if (providedImage && providedImage.trim() !== '') {
+      return providedImage.trim();
+    }
+
+    const normalizedName = mentorName?.split(' - ')[0]?.trim();
+    return normalizedName ? `/team dark/${normalizedName}.png` : '/team dark/Adnan.png';
   };
 
   if (loading) {
@@ -486,22 +536,14 @@ export default function BootcampDetailPage() {
                       </div>
 
                       {/* Profile Image */}
-                      <div className="w-16 h-16 rounded-full overflow-hidden relative z-10">
-                        {mentor.image ? (
-                          <Image
-                            src={mentor.image}
-                            alt={mentor.name}
-                            width={64}
-                            height={64}
-                            className="object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-600 flex items-center justify-center">
-                            <span className="text-white text-xs font-semibold">
-                              {mentor.name.charAt(0).toUpperCase()}
-                            </span>
-                          </div>
-                        )}
+                      <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden relative z-10">
+                        <Image
+                          src={getMentorImage(mentor.name, mentor.image)}
+                          alt={mentor.name}
+                          width={64}
+                          height={64}
+                          className="w-full h-full object-cover filter grayscale"
+                        />
                       </div>
 
                       {/* Mentor Info */}
@@ -549,22 +591,26 @@ export default function BootcampDetailPage() {
                         </div>
 
                         {/* Profile Image */}
-                        <div className="w-16 h-16 rounded-full overflow-hidden relative z-10">
-                          {teamMember && teamMember.image ? (
-                            <Image
-                              src={teamMember.image}
-                              alt={mentor}
-                              width={64}
-                              height={64}
-                              className="object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-gray-600 flex items-center justify-center">
-                              <span className="text-white text-xs font-semibold">
-                                {mentor.charAt(0).toUpperCase()}
-                              </span>
-                            </div>
-                          )}
+                        <div className="w-20 h-20 rounded-full bg-gray-700 flex items-center justify-center overflow-hidden relative z-10">
+                          {(() => {
+                            const resolvedImage = teamMember?.image || getMentorImage(mentor);
+                            if (resolvedImage) {
+                              return (
+                                <Image
+                                  src={resolvedImage}
+                                  alt={mentor}
+                                  width={64}
+                                  height={64}
+                                  className="w-full h-full object-cover filter grayscale"
+                                />
+                              );
+                            }
+                            return (
+                              <div className="w-full h-full flex items-center justify-center text-white text-base font-semibold">
+                                  {mentor.charAt(0).toUpperCase()}
+                              </div>
+                            );
+                          })()}
                         </div>
 
                         {/* Mentor Info */}

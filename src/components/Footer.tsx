@@ -10,7 +10,7 @@ const Footer = () => {
   return (
     <div className="md:mt-60 px-2 sm:px-4 md:px-6 lg:px-10 py-12 sm:py-14 lg:py-16 pb-6 sm:pb-8 lg:pb-10">
       <div className="max-w-7xl mx-auto">
-        <footer className="footer-container relative bg-[#141414] rounded-2xl p-10 overflow-hidden">
+        <footer className="footer-container relative bg-[#141414] rounded-2xl p-5 overflow-hidden">
           {/* Curved Gradient Border */}
           <div
             className="absolute inset-0 pointer-events-none"
@@ -61,7 +61,7 @@ const Footer = () => {
               <p className="text-gray-300  max-w-sm mb-6 font-[400]">
                 I simplify stocks, crypto, and data science with humor and clarity. My content turns complex ideas into practical tips-helping you stand out, level up, and crush your goals, without the boring jargon.
               </p>
-              <div className="flex space-x-3 relative z-30 pr-5">
+              <div className="flex space-x-3 relative z-30 flex-wrap">
                 <Link href="https://x.com/inspirdanalyst" target="_blank" rel="noopener noreferrer">
                   <div className="social-icon-box">
                     <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">

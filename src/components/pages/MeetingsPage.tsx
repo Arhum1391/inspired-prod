@@ -23,6 +23,11 @@ type Analyst = {
   image: string;
 };
 
+type ReviewStats = {
+  totalReviews: number;
+  averageRating: number | null;
+};
+
 // --- COMPONENT PROPS ---
 interface MeetingCardProps {
   meeting: Meeting;
@@ -447,6 +452,8 @@ const MeetingsPage = () => {
     const [selectedAnalyst, setSelectedAnalyst] = useState<number | null>(null); // No default selection
     const [selectedMeeting, setSelectedMeeting] = useState<number | null>(null); // No default selection
     const [selectedTimezone, setSelectedTimezone] = useState<string>('');
+    const [reviewStatsByAnalyst, setReviewStatsByAnalyst] = useState<Record<number, ReviewStats>>({});
+    const [isLoadingReviewStats, setIsLoadingReviewStats] = useState<boolean>(false);
     
     // Cache invalidation function
     const invalidateCache = () => {
@@ -1391,6 +1398,61 @@ const MeetingsPage = () => {
             }
         }
     }, [selectedAnalyst, analysts]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const hasReviewStatsForSelectedAnalyst = selectedAnalyst !== null && !!reviewStatsByAnalyst[selectedAnalyst];
+
+    useEffect(() => {
+        const analystId = selectedAnalyst;
+        if (analystId === null || hasReviewStatsForSelectedAnalyst) {
+            return;
+        }
+
+        let isSubscribed = true;
+        const controller = new AbortController();
+
+        const fetchReviewStats = async () => {
+            try {
+                setIsLoadingReviewStats(true);
+                const response = await fetch(`/api/reviews/stats?analystId=${analystId}`, {
+                    signal: controller.signal,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch review stats');
+                }
+
+                const data = await response.json();
+                if (!isSubscribed) return;
+
+                setReviewStatsByAnalyst(prev => ({
+                    ...prev,
+                    [analystId]: data.stats || { totalReviews: 0, averageRating: null },
+                }));
+            } catch (error) {
+                if ((error as Error).name === 'AbortError') {
+                    return;
+                }
+                console.error('Failed to load review stats:', error);
+                if (isSubscribed) {
+                    setReviewStatsByAnalyst(prev => ({
+                        ...prev,
+                        [analystId]: { totalReviews: 0, averageRating: null },
+                    }));
+                }
+            } finally {
+                if (isSubscribed) {
+                    setIsLoadingReviewStats(false);
+                }
+            }
+        };
+
+        fetchReviewStats();
+
+        return () => {
+            isSubscribed = false;
+            controller.abort();
+        };
+    }, [selectedAnalyst, hasReviewStatsForSelectedAnalyst]);
     
     // Reset selected time when timezone changes (times will be converted)
     useEffect(() => {
@@ -1635,7 +1697,7 @@ const MeetingsPage = () => {
                 });
                 
                 const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
-                const selectedMeetingData = meetings.find(m => m.id === selectedMeeting);
+                const selectedMeetingData = getSelectedMeetingData() || meetings.find(m => m.id === selectedMeeting);
                 
                 // Get Calendly scheduling URL if analyst has Calendly integration
                 let calendlyUrl = '';
@@ -2029,6 +2091,23 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
         return calendlyMeetings.find(meeting => meeting.id === selectedMeeting);
     };
 
+    const selectedMeetingDetails = getSelectedMeetingData();
+    const selectedAnalystStats = selectedAnalyst !== null ? reviewStatsByAnalyst[selectedAnalyst] : undefined;
+    const reviewTotalForSelectedAnalyst = selectedAnalystStats?.totalReviews ?? 0;
+    const hasReviewsForSelectedAnalyst = reviewTotalForSelectedAnalyst > 0;
+    const averageRatingDisplay =
+        hasReviewsForSelectedAnalyst &&
+        selectedAnalystStats &&
+        selectedAnalystStats.averageRating !== null
+            ? selectedAnalystStats.averageRating.toFixed(1)
+            : '—';
+    const reviewCountDisplay = hasReviewsForSelectedAnalyst
+        ? `(${reviewTotalForSelectedAnalyst} ${
+              reviewTotalForSelectedAnalyst === 1 ? 'review' : 'reviews'
+          })`
+        : '(No reviews yet)';
+    const reviewStatsLoadingState = isLoadingReviewStats && !selectedAnalystStats;
+
     const getSelectedTimezoneLabel = () => {
         const timezone = allTimezones.find(tz => tz.value === selectedTimezone);
         return timezone ? timezone.label : 'Unknown Timezone';
@@ -2078,13 +2157,20 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
     };
 
     const getMeetingPrice = () => {
-        const meeting = getSelectedMeetingData();
-        if (meeting) {
-            return meeting.price;
+        if (selectedMeetingDetails?.price) {
+            return selectedMeetingDetails.price;
         }
         // Default fallback - should not happen in normal flow
         return '60 USD';
     };
+
+    const isBookingSummaryReady = currentStep === 3 &&
+        selectedAnalyst !== null &&
+        selectedMeeting !== null &&
+        !!selectedMeetingDetails &&
+        !!selectedDate &&
+        !!selectedTime &&
+        !!selectedTimezone;
 
     console.log("selectedAnalyst", selectedAnalyst)
     console.log("current step", currentStep)
@@ -2756,7 +2842,7 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                     </p>
 
                                     {/* Rating Stars */}
-                                    <div className="flex flex-row items-center justify-center relative z-10 w-full gap-1">
+                                    <div className="flex flex-row items-center justify-center relative z-10 w-full gap-1 min-h-[20px]">
                                         {/* Star */}
                                         <div className="flex items-center justify-center w-3 h-3 flex-shrink-0">
                                             <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -2764,11 +2850,21 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                             </svg>
                                         </div>
                                         
-                                        {/* Rating Text */}
-                                        <span className="text-gray-400 text-sm" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>4.9</span>
-                                        
-                                        {/* Reviews Count */}
-                                        <span className="text-gray-400 text-sm" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>(21 reviews)</span>
+                                        {reviewStatsLoadingState ? (
+                                            <div className="flex items-center gap-2 w-full justify-center">
+                                                <span className="w-8 h-3 rounded-full bg-gray-600/70 animate-pulse" />
+                                                <span className="w-20 h-3 rounded-full bg-gray-600/70 animate-pulse" />
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span className="text-gray-400 text-sm" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                                                    {averageRatingDisplay}
+                                                </span>
+                                                <span className="text-gray-400 text-sm" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>
+                                                    {reviewCountDisplay}
+                                                </span>
+                                            </>
+                                        )}
                                     </div>
 
                                     {/* View All Reviews Button */}
@@ -3489,49 +3585,74 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                         {/* Separation Line */}
                                         <div className="mb-4 w-full h-px border-t border-[#404040]"></div>
                                         
-                                        {/* Meeting Type - Moved to top */}
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h4 className="text-xl font-bold text-white" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>{getSelectedMeetingData()?.title}</h4>
-                                                <span className={`inline-block px-3 py-1 text-xs rounded-full ${
-                                                    selectedMeeting === 1 ? 'bg-teal-400/12 border border-teal-400 text-teal-400' :
-                                                    selectedMeeting === 2 ? 'bg-purple-400/12 border border-purple-400 text-purple-400' :
-                                                    'bg-yellow-400/12 border border-yellow-400 text-yellow-400'
-                                                }`}>
-                                                    {getSelectedMeetingData()?.duration}
-                                                </span>
-                                        </div>
-                                        
-                                        <div className="space-y-4">
-                                            {/* Your Analyst */}
-                                            <div className="flex justify-between">
-                                                <span className="text-sm text-gray-300">Your Analyst</span>
-                                                <span className="text-sm text-white">{analysts.find(a => a.id === selectedAnalyst)?.name}</span>
-                                            </div>
-                                            
-                                            {/* Date and Time */}
-                                            <div>
-                                                <p className="text-lg text-white">{formatSelectedDate()}</p>
-                                                <p className="text-xs text-white">{selectedTime} ({getSelectedTimezoneLabel()})</p>
-                                            </div>
-                                            
-                                            {/* Price */}
-                                            <div className="pt-1">
-                                                <div className="flex justify-between text-sm mb-4">
-                                                    <span className="text-gray-300">Price</span>
-                                                    <span className="text-white">{getMeetingPrice()}</span>
+                                        {isBookingSummaryReady ? (
+                                            <>
+                                                {/* Meeting Type */}
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <h4 className="text-xl font-bold text-white" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>{selectedMeetingDetails?.title}</h4>
+                                                    <span className={`inline-block px-3 py-1 text-xs rounded-full ${
+                                                        selectedMeeting === 1 ? 'bg-teal-400/12 border border-teal-400 text-teal-400' :
+                                                        selectedMeeting === 2 ? 'bg-purple-400/12 border border-purple-400 text-purple-400' :
+                                                        'bg-yellow-400/12 border border-yellow-400 text-yellow-400'
+                                                    }`}>
+                                                        {selectedMeetingDetails?.duration}
+                                                    </span>
                                                 </div>
-                                                <div className="flex justify-between text-sm mb-2">
-                                                    <span className="text-gray-300">Tax</span>
-                                                    <span className="text-white">10%</span>
+                                                
+                                                <div className="space-y-4">
+                                                    {/* Your Analyst */}
+                                                    <div className="flex justify-between">
+                                                        <span className="text-sm text-gray-300">Your Analyst</span>
+                                                        <span className="text-sm text-white">{analysts.find(a => a.id === selectedAnalyst)?.name}</span>
+                                                    </div>
+                                                    
+                                                    {/* Date and Time */}
+                                                    <div>
+                                                        <p className="text-lg text-white">{formatSelectedDate()}</p>
+                                                        <p className="text-xs text-white">{selectedTime} ({getSelectedTimezoneLabel()})</p>
+                                                    </div>
+                                                    
+                                                    {/* Price */}
+                                                    <div className="pt-1">
+                                                        <div className="flex justify-between text-sm mb-4">
+                                                            <span className="text-gray-300">Price</span>
+                                                            <span className="text-white">{getMeetingPrice()}</span>
+                                                        </div>
+                                                        <div className="flex justify-between text-sm mb-2">
+                                                            <span className="text-gray-300">Tax</span>
+                                                            <span className="text-white">10%</span>
+                                                        </div>
+                                                        {/* Separation Line Above Total */}
+                                                        <div className="mb-2 w-full h-px border-t border-[#404040]"></div>
+                                                        <div className="flex justify-between text-base font-semibold">
+                                                            <span className="text-white">Total</span>
+                                                            <span className="text-white">{getMeetingPrice()}</span>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                                {/* Separation Line Above Total */}
-                                                <div className="mb-2 w-full h-px border-t border-[#404040]"></div>
-                                                <div className="flex justify-between text-base font-semibold">
-                                                    <span className="text-white">Total</span>
-                                                    <span className="text-white">{getMeetingPrice()}</span>
+                                            </>
+                                        ) : (
+                                            <div className="space-y-4 animate-pulse" aria-live="polite" aria-busy="true">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <div className="h-6 bg-gray-700/60 rounded w-32"></div>
+                                                    <div className="h-6 bg-gray-700/60 rounded w-20"></div>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <div className="h-4 bg-gray-700/60 rounded w-20"></div>
+                                                    <div className="h-4 bg-gray-700/60 rounded w-24"></div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <div className="h-4 bg-gray-700/60 rounded w-3/4"></div>
+                                                    <div className="h-4 bg-gray-700/60 rounded w-1/2"></div>
+                                                </div>
+                                                <div className="pt-1 space-y-3">
+                                                    <div className="h-4 bg-gray-700/60 rounded w-full"></div>
+                                                    <div className="h-4 bg-gray-700/60 rounded w-1/2"></div>
+                                                    <div className="h-px bg-[#404040]" />
+                                                    <div className="h-4 bg-gray-700/60 rounded w-full"></div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

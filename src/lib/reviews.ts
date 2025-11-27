@@ -11,6 +11,7 @@ export type CreateReviewInput = {
   analystName: string;
   reviewerName: string;
   userId?: string | null;
+  reviewerId?: string | null;
   rating: number;
   comment: string;
   reviewDate: string;
@@ -57,6 +58,39 @@ export async function listReviewsByAnalyst(
   return results.map(serializeReview);
 }
 
+export type ReviewStats = {
+  totalReviews: number;
+  averageRating: number | null;
+};
+
+export async function getReviewStatsForAnalyst(
+  analystId: number
+): Promise<ReviewStats> {
+  const collection = await getReviewsCollection();
+  const [stats] = await collection
+    .aggregate<{ totalReviews: number; averageRating: number | null }>([
+      { $match: { analystId, status: 'approved' } },
+      {
+        $group: {
+          _id: '$analystId',
+          totalReviews: { $sum: 1 },
+          averageRating: { $avg: '$rating' },
+        },
+      },
+    ])
+    .toArray();
+
+  if (!stats) {
+    return { totalReviews: 0, averageRating: null };
+  }
+
+  return {
+    totalReviews: stats.totalReviews ?? 0,
+    averageRating:
+      typeof stats.averageRating === 'number' ? stats.averageRating : null,
+  };
+}
+
 export async function listAllReviews(status?: ReviewStatus, analystId?: number): Promise<Review[]> {
   const collection = await getReviewsCollection();
   const query: Document = {};
@@ -82,6 +116,7 @@ export async function createReview(input: CreateReviewInput): Promise<Review> {
     comment: input.comment.trim(),
     rating: Math.min(Math.max(Math.round(input.rating), 1), 5),
     userId: input.userId || null,
+    reviewerId: input.reviewerId || null,
     status: 'pending',
     createdAt: now,
     updatedAt: now,

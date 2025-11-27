@@ -34,24 +34,29 @@ export async function GET(request: NextRequest) {
     // Enrich reviews with user profile pictures
     const enrichedReviews = await Promise.all(
       reviews.map(async (review) => {
-        if (review.userId) {
+        const existingPicture = review.userProfilePicture ?? null;
+        const reviewerId = review.reviewerId ?? review.userId ?? null;
+
+        if (reviewerId) {
           try {
-            const user = await getPublicUserById(review.userId);
+            const user = await getPublicUserById(reviewerId);
+            const resolvedImage = user?.image?.trim();
             return {
               ...review,
-              userProfilePicture: user?.image || null,
+              userProfilePicture: resolvedImage || existingPicture,
             };
           } catch (error) {
-            console.error(`Failed to fetch user ${review.userId} for review:`, error);
+            console.error(`Failed to fetch user ${reviewerId} for review:`, error);
             return {
               ...review,
-              userProfilePicture: null,
+              userProfilePicture: existingPicture,
             };
           }
         }
+
         return {
           ...review,
-          userProfilePicture: null,
+          userProfilePicture: existingPicture,
         };
       })
     );
@@ -130,6 +135,7 @@ export async function POST(request: NextRequest) {
       analystName: analyst.name,
       reviewerName: trimmedName,
       userId: userId || null,
+      reviewerId: userId || null,
       rating: normalizedRating,
       comment: trimmedComment,
       reviewDate: dateString,

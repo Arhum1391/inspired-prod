@@ -46,6 +46,8 @@ export interface Review {
   analystName: string;
   reviewerName: string;
   userId?: string | null;
+  reviewerId?: string | null;
+  userProfilePicture?: string | null;
   rating: number;
   comment: string;
   reviewDate: string;

@@ -2,7 +2,7 @@
 
 ## Issues Fixed
 
-### 1. Missing Environment Variable
+### 1. Missing Environment Variables
 **Problem**: The `BINANCE_CREDENTIALS_ENCRYPTION_KEY` environment variable was not configured in the deployed environment, causing credential storage to fail.
 
 **Fix**: 

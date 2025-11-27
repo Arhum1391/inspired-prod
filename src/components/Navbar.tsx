@@ -3,17 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import ProfileDropdown from './ProfileDropdown';
 
 interface NavbarProps {
   variant?: 'default' | 'hero';
 }
-
-type GuestNavItem =
-  | { label: string; sectionId: string }
-  | { label: string; href: string };
 
 interface AuthNavItem {
   label: string;
@@ -24,17 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
   const { isAuthenticated } = useAuth();
-
-  const guestNavItems: GuestNavItem[] = [
-    { label: 'About', sectionId: 'about' },
-    { label: 'Community', sectionId: 'social-stats' },
-    { label: 'Latest Video', sectionId: 'latest-videos' },
-    { label: 'Our Partners', sectionId: 'partners' },
-    { label: 'Contact Us', sectionId: 'collaboration' },
-    { label: 'Bootcamp', href: '/bootcamp' },
-  ];
 
   const authNavItems: AuthNavItem[] = [
     { label: 'Research', href: '/research' },
@@ -45,37 +31,10 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
     { label: 'Bootcamp', href: '/bootcamp' },
   ];
 
-  const handleGuestNavClick = (item: GuestNavItem) => {
-    if ('sectionId' in item) {
-      handleSectionClick(item.sectionId);
-    }
-  };
-
   const isActive = (path: string) => {
     if (path === '/') return pathname === '/';
     return pathname?.startsWith(path);
   };
-
-  // Handle navigation to section - works from any page
-  const handleSectionClick = (sectionId: string) => {
-    if (pathname === '/') {
-      // Already on homepage, just scroll
-      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      // On another page, navigate to homepage with hash
-      router.push(`/#${sectionId}`);
-    }
-  };
-
-  // Handle scroll on page load if there's a hash
-  useEffect(() => {
-    const hash = window.location.hash.substring(1);
-    if (hash && pathname === '/') {
-      setTimeout(() => {
-        document.getElementById(hash)?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    }
-  }, [pathname]);
 
   // Handle scroll effect
   useEffect(() => {
@@ -193,29 +152,20 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
 
           {/* CTA Button or Profile - Right */}
           <div className="flex items-center gap-2">
-            {isAuthenticated ? (
+            {!isAuthenticated && (
               <a
-                href="/meetings"
-                className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
+                href="/signin"
+                className="text-white px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:opacity-80 transition-opacity whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
               >
-                Book Mentorship
+                Sign In
               </a>
-            ) : (
-              <>
-                <a
-                  href="/signin"
-                  className="text-white px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:opacity-80 transition-opacity whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
-                >
-                  Sign In
-                </a>
-                <a
-                  href="/meetings"
-                  className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
-                >
-                  Book Mentorship
-                </a>
-              </>
             )}
+            <a
+              href="/meetings"
+              className="bg-white text-[#0A0A0A] px-4 sm:px-3 py-2.5 sm:py-2 rounded-full text-xs sm:text-xs font-semibold hover:bg-gray-100 transition-colors whitespace-nowrap h-10 sm:h-8 flex items-center cursor-pointer"
+            >
+              Book Mentorship
+            </a>
           </div>
           </div>
 
@@ -242,9 +192,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             </Link>
           </div>
 
-          {isAuthenticated ? (
-            <nav className="flex items-center justify-center flex-1 space-x-4 xl:space-x-6">
-              {authNavItems.map((item) => (
+          <nav className="flex items-center justify-center flex-1 space-x-4 xl:space-x-6">
+            {authNavItems.map((item) => (
               <Link
                   key={item.label}
                   href={item.href}
@@ -255,67 +204,26 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
               >
                   {item.label}
               </Link>
-              ))}
-            </nav>
-          ) : (
-            <nav className="flex flex-wrap items-center justify-center flex-1 gap-5 px-10">
-              {guestNavItems.map((item) =>
-                'sectionId' in item ? (
-                  <button
-                    key={item.label}
-                    type="button"
-                    onClick={() => handleGuestNavClick(item)}
-                    className="text-xs sm:text-sm font-medium text-white hover:text-gray-300 transition-colors focus:outline-none active:outline-none cursor-pointer"
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-              >
-
-                    {item.label}
-                  </button>
-                ) : (
-
-              <Link
-                    key={item.label}
-                    href={item.href}
-                    className={`text-xs sm:text-sm font-medium transition-colors focus:outline-none active:outline-none cursor-pointer ${
-                      isActive(item.href) ? 'text-[#667EEA]' : 'text-white hover:text-gray-300'
-                }`}
-                style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-              >
-                    {item.label}
-              </Link>
-                )
-              )}
+            ))}
           </nav>
-          )}
 
           {/* CTA Button or Profile */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            {isAuthenticated ? (
-              <>
-                <a
-                  href="/meetings"
-                  className="bg-white text-[#0A0A0A] px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer"
-                >
-                  Book Mentorship
-                </a>
-                <ProfileDropdown />
-              </>
-            ) : (
-              <>
-                <a
-                  href="/signin"
-                  className="text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer"
-                >
-                  Sign In
-                </a>
-                <a
-                  href="/meetings"
-                  className="bg-white text-[#0A0A0A] px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer"
-                >
-                  Book Mentorship
-                </a>
-              </>
+            {!isAuthenticated && (
+              <a
+                href="/signin"
+                className="text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer"
+              >
+                Sign In
+              </a>
             )}
+            <a
+              href="/meetings"
+              className="bg-white text-[#0A0A0A] px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-gray-100 transition-colors cursor-pointer"
+            >
+              Book Mentorship
+            </a>
+            {isAuthenticated && <ProfileDropdown />}
           </div>
         </div>
       </div>
@@ -368,56 +276,34 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
             {/* Navigation Links */}
             <nav className="flex-1 px-4 py-6">
               <div className="flex flex-col gap-2">
-                {isAuthenticated
-                  ? authNavItems.map((item) => (
-                      <Link
-                        key={item.label}
-                        href={item.href}
-                        className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none cursor-pointer ${
-                          isActive(item.href) ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                        }`}
-                        style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                        onClick={() => {
-                          setIsMobileMenuOpen(false);
-                        }}
-                      >
-                        {item.label}
-                      </Link>
-                    ))
-                  : guestNavItems.map((item) =>
-                      'sectionId' in item ? (
-                        <button
-                          key={item.label}
-                          type="button"
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                            handleGuestNavClick(item);
-                          }}
-                          className="flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none hover:bg-gray-700 text-left cursor-pointer"
-
-                          style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                        >
-                          {item.label}
-                        </button>
-                      ) : (
-                        <Link
-
-                          key={item.label}
-                          href={item.href}
-                          className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none cursor-pointer ${
-                            isActive(item.href) ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
-                          }`}
-                          style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
-                          onClick={() => {
-                            setIsMobileMenuOpen(false);
-                          }}
-                        >
-                          {item.label}
-                        </Link>
-                      )
-                    )}
+                {authNavItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className={`flex items-center justify-start px-3 py-3 text-sm text-white rounded-lg transition-colors focus:outline-none active:outline-none cursor-pointer ${
+                      isActive(item.href) ? 'bg-[#667EEA]' : 'hover:bg-gray-700'
+                    }`}
+                    style={{ outline: 'none', WebkitTapHighlightColor: 'transparent' }}
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
               </div>
             </nav>
+            {!isAuthenticated && (
+              <div className="px-6 pb-8">
+                <a
+                  href="/signin"
+                  className="block w-full text-center text-white px-4 py-2.5 rounded-full text-sm font-semibold hover:opacity-80 transition-opacity cursor-pointer border border-white/20"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Sign In
+                </a>
+              </div>
+            )}
           </div>
         </>
       )}

@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ChangeEvent } from 'react';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -12,6 +13,16 @@ import HoldingsTable, { HoldingRow } from '@/components/HoldingsTable';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import PortfolioBalanceCard, { TimeRange, ChartDatum } from '@/components/PortfolioBalanceCard';
 import type { ComputedDatum, PieCustomLayerProps, PieLayer } from '@nivo/pie';
+
+const ResponsivePieNoSSR = dynamic(
+  () => import('@nivo/pie').then(mod => mod.ResponsivePie),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-full w-full animate-pulse rounded-full bg-white/5" />
+    ),
+  }
+);
 
 type CredentialsStatus = {
   connected: boolean;
@@ -117,7 +128,6 @@ export default function PortfolioPage() {
   const isAuthenticated = isSignedIn;
   const [expandedTiles, setExpandedTiles] = useState<{ [key: number]: boolean }>({});
   const [isAddHoldingModalOpen, setAddHoldingModalOpen] = useState(false);
-  const [nivoComponents, setNivoComponents] = useState<typeof import('@nivo/pie') | null>(null);
   const [apiKeyValue, setApiKeyValue] = useState('');
   const [apiSecretValue, setApiSecretValue] = useState('');
   const [passphraseValue, setPassphraseValue] = useState('');
@@ -135,24 +145,6 @@ export default function PortfolioPage() {
   const [chartDataByRange, setChartDataByRange] = useState<Partial<Record<TimeRange, ChartDatum[]>>>({});
   const [chartLoadingRange, setChartLoadingRange] = useState<TimeRange | null>(null);
   const [chartError, setChartError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Load @nivo/pie for both authenticated users and preview mode
-    let mounted = true;
-    import('@nivo/pie')
-      .then(mod => {
-        if (mounted) {
-          setNivoComponents(mod);
-        }
-      })
-      .catch(error => {
-        console.error('Failed to load @nivo/pie', error);
-      });
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   const toggleTile = (index: number) => {
     setExpandedTiles(prev => ({
@@ -605,8 +597,7 @@ export default function PortfolioPage() {
     slices: AllocationSlice[];
     isLoading: boolean;
   }) => {
-    const ResponsivePie = nivoComponents?.ResponsivePie;
-    const isChartReady = ResponsivePie && !isLoading && slices.length > 0;
+    const isChartReady = !isLoading && slices.length > 0;
     const chartData = useMemo<AllocationDatum[]>(
       () =>
         slices.map(slice => ({
@@ -671,7 +662,7 @@ export default function PortfolioPage() {
       []
     );
 
-    if (isLoading || !nivoComponents) {
+    if (isLoading) {
       return (
         <div className="relative flex h-[344px] w-[413px] flex-col gap-6 overflow-hidden rounded-2xl bg-[#1F1F1F] p-5">
           <div className="absolute inset-0 pointer-events-none rounded-2xl border border-white/10" />
@@ -724,23 +715,23 @@ export default function PortfolioPage() {
           {/* Pie Chart */}
           <div className="flex-shrink-0 w-[180px] h-[180px]">
             {isChartReady ? (
-              React.createElement(ResponsivePie as any, {
-                data: chartData,
-                margin: { top: 10, right: 10, bottom: 10, left: 10 },
-                innerRadius: 0.35,
-                padAngle: 0.5,
-                cornerRadius: 1,
-                activeOuterRadiusOffset: 4,
-                sortByValue: false, // Keep original order to maintain consistency
-                enableArcLinkLabels: false,
-                enableArcLabels: false,
-                borderWidth: 2,
-                borderColor: '#1F1F1F',
-                colors: (datum: any) => datum.data.color,
-                startAngle: 0,
-                endAngle: 360,
-                fit: true,
-                theme: {
+              <ResponsivePieNoSSR
+                data={chartData}
+                margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                innerRadius={0.35}
+                padAngle={0.5}
+                cornerRadius={1}
+                activeOuterRadiusOffset={4}
+                sortByValue={false}
+                enableArcLinkLabels={false}
+                enableArcLabels={false}
+                borderWidth={2}
+                borderColor="#1F1F1F"
+                colors={(datum: any) => datum.data.color}
+                startAngle={0}
+                endAngle={360}
+                fit
+                theme={{
                   background: 'transparent',
                   tooltip: {
                     container: {
@@ -753,19 +744,19 @@ export default function PortfolioPage() {
                       padding: '8px 12px',
                     },
                   },
-                },
-                tooltip: ({ datum }: any) => (
+                }}
+                tooltip={({ datum }: any) => (
                   <div style={{ padding: '4px 8px' }}>
                     <strong>{datum.data.label}</strong>
                     <br />
                     {datum.data.displayValue} ({formatPercentValue(datum.data.percentage)})
                   </div>
-                ),
-                legends: [],
-              })
+                )}
+                legends={[]}
+              />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-sm text-white/60">
-                {ResponsivePie ? 'No data available' : 'Loading chart...'}
+                {'No data available'}
               </div>
             )}
           </div>

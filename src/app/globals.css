@@ -421,6 +421,61 @@ input:focus {
   outline-offset: 2px;
 }
 
+/* Remove focus outline from signin page inputs */
+.custom-input-focus-remove:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Handle autofill state for inputs - keep transparent background consistent, match normal text color */
+.custom-input-focus-remove:-webkit-autofill,
+.custom-input-focus-remove:-webkit-autofill:hover,
+.custom-input-focus-remove:-webkit-autofill:focus,
+.custom-input-focus-remove:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px transparent inset !important;
+  box-shadow: 0 0 0 30px transparent inset !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.6) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  transition: background-color 5000s ease-in-out 0s, background-image 5000s ease-in-out 0s !important;
+}
+
+/* Ensure password visibility toggle button is always visible on autofilled fields */
+input[type="password"]:-webkit-autofill ~ button,
+input[type="text"][name="password"]:-webkit-autofill ~ button {
+  z-index: 10 !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+
+/* Admin login page - remove focus border and handle autofill */
+.admin-login-input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.admin-login-input:-webkit-autofill,
+.admin-login-input:-webkit-autofill:hover,
+.admin-login-input:-webkit-autofill:focus,
+.admin-login-input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px rgb(51, 65, 85) inset !important;
+  box-shadow: 0 0 0 30px rgb(51, 65, 85) inset !important;
+  background-color: rgb(51, 65, 85) !important;
+  background-image: none !important;
+  -webkit-text-fill-color: rgb(255, 255, 255) !important;
+  color: rgb(255, 255, 255) !important;
+  transition: background-color 5000s ease-in-out 0s, background-image 5000s ease-in-out 0s !important;
+}
+
+/* Ensure password visibility toggle button is visible on autofilled admin login fields */
+.admin-login-input[type="password"]:-webkit-autofill ~ button,
+.admin-login-input[type="text"][name="password"]:-webkit-autofill ~ button {
+  z-index: 10 !important;
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+
 /* Remove focus styles from all buttons */
 button:focus,
 button:active,

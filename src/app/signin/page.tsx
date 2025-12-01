@@ -445,13 +445,21 @@ function SignInInner() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 transform -translate-y-1/2 w-4 h-4 flex items-center justify-center focus:outline-none"
-                      style={{ color: 'rgba(255, 255, 255, 0.3)' }}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 flex items-center justify-center focus:outline-none z-10"
+                      style={{ 
+                        color: 'rgba(255, 255, 255, 0.7)',
+                        cursor: 'pointer',
+                        backgroundColor: 'transparent',
+                        border: 'none',
+                        padding: 0,
+                        pointerEvents: 'auto'
+                      }}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {!showPassword ? (
-                        <EyeOff size={16} />
+                        <EyeOff size={18} style={{ color: 'rgba(255, 255, 255, 0.7)' }} />
                       ) : (
-                        <Eye size={16} />
+                        <Eye size={18} style={{ color: 'rgba(255, 255, 255, 0.7)' }} />
                       )}
                     </button>
                   </div>

@@ -56,6 +56,14 @@ const formatReadTimeDisplay = (value: string) => {
   return value;
 };
 
+const sanitizedSlug = (value: string) => {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+};
+
 interface ContentSection {
   heading: string;
   body: string[];
@@ -106,8 +114,11 @@ export default function ResearchAdminPage() {
   const openModal = (report?: ResearchReport & { _id?: string }) => {
     if (report) {
       setEditingReport(report);
+      // Auto-generate slug and PDF URL from title when editing
+      const generatedSlug = sanitizedSlug(report.title);
+      const generatedPdfUrl = `/research/${generatedSlug}.pdf`;
       setFormData({
-        slug: report.slug,
+        slug: generatedSlug,
         title: report.title,
         description: report.description,
         date: formatDateForInput(report.date),
@@ -115,7 +126,7 @@ export default function ResearchAdminPage() {
         category: report.category,
         shariahCompliant: report.shariahCompliant,
         summaryPoints: report.summaryPoints || [],
-        pdfUrl: report.pdfUrl || '',
+        pdfUrl: generatedPdfUrl,
         content: report.content || []
       });
     } else {
@@ -147,86 +158,74 @@ export default function ResearchAdminPage() {
 
   const validateForm = (): boolean => {
     const errors: {[key: string]: string} = {};
-    const trimmed = {
-      slug: formData.slug.trim(),
-      title: formData.title.trim(),
-      description: formData.description.trim(),
-      date: formData.date.trim(),
-      readTime: formData.readTime.trim(),
-      category: formData.category.trim(),
-      pdfUrl: formData.pdfUrl.trim(),
-    };
+    const trimmedTitle = formData.title.trim();
+    const trimmedDescription = formData.description.trim();
+    const trimmedCategory = formData.category.trim();
+    const trimmedDate = formData.date.trim();
+    const trimmedReadTime = formData.readTime.trim();
 
-    if (!trimmed.slug) {
-      errors.slug = 'Slug is required';
-    } else if (!/^[a-z0-9-]+$/.test(trimmed.slug)) {
-      errors.slug = 'Slug can only contain lowercase letters, numbers, and hyphens';
-    } else if (
-      reports.some(
-        (report) => report.slug === trimmed.slug && report._id !== editingReport?._id
-      )
-    ) {
-      errors.slug = 'A report with this slug already exists';
-    }
-
-    if (!trimmed.category) {
+    // Validate category (text only - alphanumeric and spaces)
+    if (!trimmedCategory) {
       errors.category = 'Category is required';
-    } else if (trimmed.category.length < 2) {
+    } else if (trimmedCategory.length < 2) {
       errors.category = 'Category must be at least 2 characters long';
+    } else if (!/^[a-zA-Z0-9\s]+$/.test(trimmedCategory)) {
+      errors.category = 'Category can only contain letters, numbers, and spaces';
     }
 
-    if (!trimmed.title) {
+    // Validate title (same as shariah form)
+    if (!trimmedTitle) {
       errors.title = 'Title is required';
-    } else if (trimmed.title.length < 4) {
-      errors.title = 'Title must be at least 4 characters long';
-    } else if (!/[a-zA-Z]/.test(trimmed.title)) {
-      errors.title = 'Enter a valid Title';
+    } else {
+      if (trimmedTitle.length < 4) {
+        errors.title = 'Title must be at least 4 characters long';
+      } else if (!/[a-zA-Z]/.test(trimmedTitle)) {
+        errors.title = 'Enter a valid Title';
+      } else {
+        // Generate slug from title and validate it
+        const generatedSlug = sanitizedSlug(trimmedTitle);
+        if (!generatedSlug) {
+          errors.title = 'Title must contain at least one letter or number';
+        } else if (!/^[a-z0-9-]+$/.test(generatedSlug)) {
+          errors.title = 'Title cannot be converted to a valid slug';
+        } else if (
+          reports.some(
+            (report) => report.slug === generatedSlug && report._id !== editingReport?._id
+          )
+        ) {
+          errors.title = 'A report with this title already exists (slug conflict)';
+        }
+      }
     }
 
-    if (!trimmed.description) {
+    // Validate description (same as shariah form)
+    if (!trimmedDescription) {
       errors.description = 'Description is required';
-    } else if (trimmed.description.length < 20) {
-      errors.description = 'Description must be at least 20 characters long';
-    } else if (!/[a-zA-Z]/.test(trimmed.description)) {
-      errors.description = 'Enter a valid Description';
+    } else {
+      if (trimmedDescription.length < 20) {
+        errors.description = 'Description must be at least 20 characters long';
+      } else if (!/[a-zA-Z]/.test(trimmedDescription)) {
+        errors.description = 'Enter a valid Description';
+      }
     }
 
-    if (!trimmed.date) {
+    if (!trimmedDate) {
       errors.date = 'Date is required';
-    } else if (!DATE_INPUT_REGEX.test(trimmed.date)) {
+    } else if (!DATE_INPUT_REGEX.test(trimmedDate)) {
       errors.date = 'Select a valid date';
     } else {
-      const parsed = new Date(`${trimmed.date}T00:00:00`);
+      const parsed = new Date(`${trimmedDate}T00:00:00`);
       if (Number.isNaN(parsed.getTime())) {
         errors.date = 'Select a valid date';
       }
     }
 
-    if (!trimmed.readTime) {
+    if (!trimmedReadTime) {
       errors.readTime = 'Read time is required';
     } else {
-      const readTimeValue = Number(trimmed.readTime);
+      const readTimeValue = Number(trimmedReadTime);
       if (Number.isNaN(readTimeValue) || readTimeValue <= 0) {
         errors.readTime = 'Enter a valid positive number';
-      }
-    }
-
-    if (trimmed.pdfUrl) {
-      const isRelativePath = trimmed.pdfUrl.startsWith('/');
-      let isValidUrl = false;
-      if (isRelativePath) {
-        isValidUrl = true;
-      } else {
-        try {
-          // eslint-disable-next-line no-new
-          new URL(trimmed.pdfUrl);
-          isValidUrl = true;
-        } catch {
-          isValidUrl = false;
-        }
-      }
-      if (!isValidUrl) {
-        errors.pdfUrl = 'Enter a valid URL (absolute or starting with /)';
       }
     }
 
@@ -272,15 +271,20 @@ export default function ResearchAdminPage() {
         }))
         .filter((section) => section.heading && section.body.length > 0);
 
+      // Auto-generate slug and PDF URL from title
+      const trimmedTitle = formData.title.trim();
+      const generatedSlug = sanitizedSlug(trimmedTitle);
+      const generatedPdfUrl = `/research/${generatedSlug}.pdf`;
+
       const payload = {
         ...formData,
-        slug: formData.slug.trim(),
-        title: formData.title.trim(),
+        slug: generatedSlug,
+        title: trimmedTitle,
         description: formData.description.trim(),
         date: formData.date.trim(),
         readTime: formData.readTime.trim(),
         category: formData.category.trim(),
-        pdfUrl: formData.pdfUrl.trim(),
+        pdfUrl: generatedPdfUrl,
         summaryPoints: trimmedSummaryPoints,
         content: trimmedContentSections,
       };
@@ -634,46 +638,28 @@ export default function ResearchAdminPage() {
                   Basic Information
                 </h3>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Slug * (URL-friendly identifier)
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.slug}
-                      onChange={(e) => setFormData({ ...formData, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') })}
-                      className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
-                        validationErrors.slug 
-                          ? 'border-red-500 focus:ring-red-500' 
-                          : 'border-slate-600 focus:ring-indigo-500'
-                      }`}
-                      placeholder="market-outlook-q2-2025"
-                    />
-                    {validationErrors.slug && (
-                      <p className="text-red-400 text-xs mt-1">{validationErrors.slug}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Category *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
-                        validationErrors.category 
-                          ? 'border-red-500 focus:ring-red-500' 
-                          : 'border-slate-600 focus:ring-indigo-500'
-                      }`}
-                      placeholder="Market Analysis"
-                    />
-                    {validationErrors.category && (
-                      <p className="text-red-400 text-xs mt-1">{validationErrors.category}</p>
-                    )}
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Category *
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.category}
+                    onChange={(e) => {
+                      // Only allow alphanumeric characters and spaces
+                      const value = e.target.value.replace(/[^a-zA-Z0-9\s]/g, '');
+                      setFormData({ ...formData, category: value });
+                    }}
+                    className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
+                      validationErrors.category 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-slate-600 focus:ring-indigo-500'
+                    }`}
+                    placeholder="Market Analysis"
+                  />
+                  {validationErrors.category && (
+                    <p className="text-red-400 text-xs mt-1">{validationErrors.category}</p>
+                  )}
                 </div>
 
                 <div>
@@ -683,7 +669,16 @@ export default function ResearchAdminPage() {
                   <input
                     type="text"
                     value={formData.title}
-                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    onChange={(e) => {
+                      const newTitle = e.target.value;
+                      const newSlug = sanitizedSlug(newTitle);
+                      setFormData({
+                        ...formData,
+                        title: newTitle,
+                        slug: newSlug,
+                        pdfUrl: `/research/${newSlug}.pdf`,
+                      });
+                    }}
                     className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
                       validationErrors.title 
                         ? 'border-red-500 focus:ring-red-500' 
@@ -716,7 +711,7 @@ export default function ResearchAdminPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">
                       Date *
@@ -755,22 +750,6 @@ export default function ResearchAdminPage() {
                     />
                     {validationErrors.readTime && (
                       <p className="text-red-400 text-xs mt-1">{validationErrors.readTime}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      PDF URL (optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.pdfUrl}
-                      onChange={(e) => setFormData({ ...formData, pdfUrl: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                      placeholder="/downloads/report.pdf"
-                    />
-                    {validationErrors.pdfUrl && (
-                      <p className="text-red-400 text-xs mt-1">{validationErrors.pdfUrl}</p>
                     )}
                   </div>
                 </div>

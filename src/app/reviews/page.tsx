@@ -970,9 +970,9 @@ const ReviewsContent: React.FC = () => {
                                                     <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 flex-1 mb-2">
                                                         {review.comment}
                                                     </p>
-                                                    <div className="flex items-center justify-between w-full">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden bg-gray-700">
+                                                    <div className="grid grid-cols-[1fr_auto] gap-2 w-full items-center">
+                                                        <div className="flex items-center gap-2 min-w-0">
+                                                            <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden bg-gray-700 flex-shrink-0">
                                                                 {review.userProfilePicture ? (
                                                                     <Image 
                                                                         src={review.userProfilePicture} 
@@ -991,11 +991,11 @@ const ReviewsContent: React.FC = () => {
                                                                     />
                                                                 )}
                                                             </div>
-                                                            <p className="text-white font-semibold text-sm truncate">
+                                                            <p className="text-white font-semibold text-sm break-words leading-tight">
                                                                 {review.reviewerName}
                                                             </p>
                                                         </div>
-                                                        <div className="flex items-center gap-0.5 flex-shrink-0">
+                                                        <div className="flex items-center gap-0.5 flex-shrink-0 w-[100px] justify-end">
                                                             {renderStars(review.rating)}
                                                         </div>
                                                     </div>
@@ -1066,9 +1066,9 @@ const ReviewsContent: React.FC = () => {
                                                             <p className="text-gray-400 text-sm leading-relaxed line-clamp-3 flex-1 mb-2">
                                                                 {review.comment}
                                                             </p>
-                                                            <div className="flex items-center justify-between w-full">
-                                                                <div className="flex items-center gap-2">
-                                                                    <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden bg-gray-700">
+                                                            <div className="grid grid-cols-[1fr_auto] gap-2 w-full items-center">
+                                                                <div className="flex items-center gap-2 min-w-0">
+                                                                    <div className="w-6 h-6 rounded-full flex items-center justify-center overflow-hidden bg-gray-700 flex-shrink-0">
                                                                         {review.userProfilePicture ? (
                                                                             <Image 
                                                                                 src={review.userProfilePicture} 
@@ -1087,11 +1087,11 @@ const ReviewsContent: React.FC = () => {
                                                                             />
                                                                         )}
                                                                     </div>
-                                                                    <p className="text-white font-semibold text-sm truncate">
+                                                                    <p className="text-white font-semibold text-sm break-words leading-tight">
                                                                         {review.reviewerName}
                                                                     </p>
                                                                 </div>
-                                                                <div className="flex items-center gap-0.5 flex-shrink-0">
+                                                                <div className="flex items-center gap-0.5 flex-shrink-0 w-[100px] justify-end">
                                                                     {renderStars(review.rating)}
                                                                 </div>
                                                             </div>

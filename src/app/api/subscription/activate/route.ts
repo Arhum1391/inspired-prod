@@ -87,6 +87,46 @@ export async function POST(request: NextRequest) {
       { upsert: true },
     );
 
+    // Check if initial billing history exists, if not create it
+    try {
+      const existingBilling = await db.collection('billing_history').findOne({
+        subscriptionId: subscription.id
+      });
+
+      if (!existingBilling) {
+        // Get the latest invoice for this subscription
+        const invoices = await stripe.invoices.list({
+          subscription: subscription.id,
+          limit: 1,
+        });
+
+        if (invoices.data.length > 0) {
+          const latestInvoice = invoices.data[0];
+          
+          // Only create billing history if invoice is paid
+          if (latestInvoice.status === 'paid' || latestInvoice.paid) {
+            const billingRecord = {
+              userId: userDoc._id,
+              subscriptionId: subscription.id,
+              invoiceId: latestInvoice.id,
+              amount: latestInvoice.amount_paid / 100,
+              currency: latestInvoice.currency || 'usd',
+              status: 'paid',
+              paidAt: new Date(latestInvoice.created * 1000),
+              invoiceUrl: latestInvoice.hosted_invoice_url || null,
+              createdAt: new Date()
+            };
+
+            await db.collection('billing_history').insertOne(billingRecord);
+            console.log(`✅ Initial billing history created for subscription ${subscription.id}`);
+          }
+        }
+      }
+    } catch (billingError) {
+      console.error('Error creating billing history in activation:', billingError);
+      // Don't fail the activation if billing history creation fails
+    }
+
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Subscription activation error:', error);

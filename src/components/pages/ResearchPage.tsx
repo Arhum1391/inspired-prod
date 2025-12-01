@@ -54,6 +54,7 @@ export default function ResearchPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [researchCards, setResearchCards] = useState<ResearchReport[]>([]);
   const [reportsLoading, setReportsLoading] = useState(true);
+  const [displayedTilesCount, setDisplayedTilesCount] = useState(9);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -72,6 +73,11 @@ export default function ResearchPage() {
 
     fetchReports();
   }, []);
+
+  // Reset displayed tiles count when filters or search change
+  useEffect(() => {
+    setDisplayedTilesCount(9);
+  }, [activeFilter, searchQuery, shariahOnly]);
 
   if (isLoading || reportsLoading) {
     return <LoadingScreen message="Loading..." />;
@@ -113,9 +119,13 @@ export default function ResearchPage() {
     filteredCards = [...baseFilteredCards].sort((a, b) => parseDate(a.date) - parseDate(b.date));
   }
 
+  // Slice to show only displayedTilesCount tiles initially
+  const tilesToShow = Math.min(displayedTilesCount, filteredCards.length);
+  const displayedCards = filteredCards.slice(0, tilesToShow);
+
   const chunkedCards: ResearchReport[][] = [];
-  for (let i = 0; i < filteredCards.length; i += 3) {
-    chunkedCards.push(filteredCards.slice(i, i + 3));
+  for (let i = 0; i < displayedCards.length; i += 3) {
+    chunkedCards.push(displayedCards.slice(i, i + 3));
   }
 
   // const renderResearchCard = (card: ResearchReport, key: string) => (
@@ -350,91 +360,229 @@ export default function ResearchPage() {
   const renderResearchCard = (card: ResearchReport, key: string) => (
     <div
       key={key}
-      className="
-      relative overflow-hidden 
-      flex flex-col items-start
-      w-full h-[330px] md:h-[315px] p-6 gap-6
-      bg-[#1F1F1F] rounded-2xl
-    "
+      className="relative overflow-hidden research-preview-tile"
+      style={{
+        boxSizing: 'border-box',
+        width: '414px',
+        height: '392px',
+        borderRadius: '16px',
+        flex: 'none',
+        flexGrow: 0,
+      }}
     >
-      {/* Glow background */}
       <div
-      className="
-        absolute pointer-events-none
-        w-[588px] h-[588px]
-        left-[399px] top-[-326px]
-        research-gradient
-        blur-[100px] rotate-90 rounded-full z-0
-      "
-    ></div>
+        className="absolute inset-0 pointer-events-none rounded-2xl p-[1px]"
+        style={{
+          borderRadius: '16px',
+          background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+        }}
+      >
+        <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
+      </div>
 
-      <div className="flex flex-col justify-between gap-4 h-full z-10">
-        {/* Category */}
-        <div className="flex flex-row gap-2">
-          <div className="flex justify-center items-center px-3 py-2 bg-[#05B0B320] border border-[#05B0B3] rounded-full">
-            <span className="text-[12px] text-[#05B0B3] font-medium whitespace-nowrap">
-              {card.category}
-            </span>
-          </div>
+      <div
+        className="absolute pointer-events-none research-preview-gradient"
+        style={{
+          width: '588px',
+          height: '588px',
+          left: '399px',
+          top: '-326px',
+          background:
+            'linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%)',
+          filter: 'blur(100px)',
+          transform: 'rotate(90deg)',
+          flex: 'none',
+          flexGrow: 0,
+          zIndex: 0,
+          borderRadius: '50%',
+        }}
+      ></div>
+
+      <div
+        className="relative z-10 research-preview-content"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-start',
+          padding: '24px',
+          gap: '8px',
+          isolation: 'isolate',
+          width: '100%',
+          height: '100%',
+          justifyContent: 'space-between',
+        }}
+      >
+        <div
+          className="research-preview-badge"
+          style={{
+            background: 'rgba(5, 176, 179, 0.12)',
+            border: '2px solid rgba(5, 176, 179, 0.72)',
+            borderRadius: '25px',
+            padding: '3px 12px',
+            textAlign: 'center',
+            display: 'inline-block',
+            flex: 'none',
+            flexShrink: 0,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: 'Gilroy-SemiBold, sans-serif',
+              color: 'rgba(5, 176, 179, 1)',
+              fontSize: '12px',
+            }}
+          >
+            {card.category}
+          </span>
         </div>
 
-        {/* Title */}
-        <h3 className="text-white text-[24px] font-semibold leading-none">
+        <h3
+          className="research-preview-heading"
+          style={{
+            width: '366px',
+            height: '48px',
+            fontFamily: 'Gilroy-SemiBold',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            fontSize: '24px',
+            lineHeight: '100%',
+            color: '#FFFFFF',
+            flex: 'none',
+            flexShrink: 0,
+            margin: 0,
+            marginTop: '4px',
+            overflow: 'hidden',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            textOverflow: 'ellipsis',
+          }}
+        >
           {card.title}
         </h3>
 
-        {/* Description */}
-        <p className="text-white text-[16px] leading-[130%]">
+        <p
+          className="research-preview-desc"
+          style={{
+            color: '#FFFFFF',
+            fontFamily: 'Gilroy-Medium, sans-serif',
+            fontSize: '16px',
+            lineHeight: '130%',
+            margin: 0,
+            marginTop: '5px',
+            width: '366px',
+            height: '96px',
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            flex: 'none',
+            wordWrap: 'break-word',
+            overflowWrap: 'break-word',
+          }}
+        >
           {card.description}
         </p>
 
-        {/* Spacer to push CTA down */}
-        <div className="flex flex-col justify-between h-full">
-          {/* Meta */}
-          <div className="flex justify-between items-start w-full text-white text-[14px]">
-            <span>{formatResearchDate(card.date)}</span>
-            <span>{formatReadTime(card.readTime)}</span>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: '15px',
+            width: '366px',
+            flex: 'none',
+            marginTop: 'auto',
+          }}
+        >
+          <div
+            className="research-preview-footer"
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              width: '366px',
+              marginTop: '0px',
+            }}
+          >
+            <span
+              style={{
+                fontFamily: 'Gilroy-Medium, sans-serif',
+                fontSize: '14px',
+                color: '#FFFFFF',
+              }}
+            >
+              {formatResearchDate(card.date)}
+            </span>
+            <span
+              style={{
+                fontFamily: 'Gilroy-Medium, sans-serif',
+                fontSize: '14px',
+                color: '#FFFFFF',
+              }}
+            >
+              {formatReadTime(card.readTime)}
+            </span>
           </div>
 
-          {/* CTA Button (always at bottom) */}
-          <div className="w-full">
-            <button
-              type="button"
-              className="
-              w-full h-[36px]
-              flex justify-center items-center gap-2
-              border border-white rounded-full
-              bg-transparent text-white cursor-pointer
-              font-semibold text-[14px]
-              focus:outline-none
-            "
-              onClick={() => router.push(`/research/${card.slug}`)}
+          <button
+            type="button"
+            style={{
+              boxSizing: 'border-box',
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              padding: '6px 16px',
+              gap: '8px',
+              width: '366px',
+              height: '36px',
+              border: '1px solid #FFFFFF',
+              borderRadius: '100px',
+              background: 'transparent',
+              color: '#FFFFFF',
+              cursor: 'pointer',
+              marginTop: '0px',
+              fontFamily: 'Gilroy-SemiBold, sans-serif',
+              fontSize: '14px',
+              outline: 'none',
+            }}
+            onClick={() => router.push(`/research/${card.slug}`)}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.currentTarget.style.border = '1px solid #FFFFFF';
+            }}
+            onFocus={(e) => {
+              e.currentTarget.style.outline = 'none';
+              e.currentTarget.style.border = '1px solid #FFFFFF';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.border = '1px solid #FFFFFF';
+            }}
+          >
+            Read More
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              Read More
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M7 17L17 7"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M10 7H17V14"
-                  stroke="white"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
+              <path
+                d="M7 17L17 7"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M10 7H17V14"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     </div>
@@ -459,6 +607,19 @@ export default function ResearchPage() {
         }
         button:active {
           border: inherit !important;
+        }
+        .research-preview-desc::-webkit-scrollbar {
+          width: 4px;
+        }
+        .research-preview-desc::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .research-preview-desc::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 2px;
+        }
+        .research-preview-desc::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.3);
         }
         /* Research hero mobile styles */
         @media (max-width: 768px) {
@@ -545,40 +706,136 @@ export default function ResearchPage() {
             flex-direction: column !important;
             align-items: center !important;
             gap: 20px !important;
-            width: 373px !important;
+            width: 343px !important;
           }
           /* Mobile card sizing */
-          .research-card {
-            width: 373px !important;
-            height: 273px !important;
-            padding: 20px 12px !important;
+          .research-preview-tile {
+            width: 343px !important;
+            height: 405px !important;
             border-radius: 10px !important;
+          }
+          .research-preview-content[style],
+          .research-preview-content {
+            padding: 20px 12px !important;
+            gap: 8px !important;
+            width: 319px !important;
+            max-width: 319px !important;
+            box-sizing: border-box !important;
+            height: 100% !important;
+            overflow: visible !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: space-between !important;
+          }
+          .research-preview-badge[style],
+          .research-preview-badge {
+            width: auto !important;
+            height: 24px !important;
+            padding: 3px 12px !important;
+            border: 2px solid #05B0B3 !important;
+            border-radius: 25px !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            background: rgba(5, 176, 179, 0.12) !important;
+            margin: 0 !important;
+            flex-shrink: 0 !important;
+          }
+          .research-preview-badge span {
+            font-size: 12px !important;
+            line-height: 100% !important;
+            font-family: 'Gilroy-SemiBold' !important;
+            text-align: center !important;
+            white-space: nowrap !important;
+          }
+          .research-preview-heading[style],
+          .research-preview-heading {
+            width: 319px !important;
+            height: 48px !important;
+            font-size: 24px !important;
+            line-height: 100% !important;
+            margin: 0 !important;
+            margin-top: 4px !important;
+            text-align: left !important;
+            flex-shrink: 0 !important;
+            overflow: hidden !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            text-overflow: ellipsis !important;
+          }
+          .research-preview-desc[style],
+          .research-preview-desc {
+            width: 319px !important;
+            height: 84px !important;
+            font-size: 16px !important;
+            line-height: 130% !important;
+            margin: 0 !important;
+            margin-top: 5px !important;
+            text-align: left !important;
+            flex-shrink: 0 !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+          }
+          .research-preview-desc::-webkit-scrollbar {
+            width: 4px !important;
+          }
+          .research-preview-desc::-webkit-scrollbar-track {
+            background: transparent !important;
+          }
+          .research-preview-desc::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-radius: 2px !important;
+          }
+          .research-preview-desc::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3) !important;
+          }
+          .research-preview-footer[style],
+          .research-preview-footer {
+            width: 319px !important;
+            height: auto !important;
+            min-height: 14px !important;
+            gap: 16px !important;
+            margin: 0 !important;
+            margin-top: 0 !important;
+            justify-content: space-between !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            flex-shrink: 0 !important;
+          }
+          .research-preview-footer > span {
+            font-size: 14px !important;
+            line-height: 100% !important;
+            width: auto !important;
+            font-family: 'Gilroy-Medium' !important;
+            text-align: left !important;
+          }
+          .research-preview-tile button[style],
+          .research-preview-tile button {
+            width: 319px !important;
+            height: 36px !important;
+            padding: 6px 16px !important;
+            gap: 8px !important;
+            border-radius: 100px !important;
+            margin: 0 !important;
+            margin-top: 0 !important;
+            box-sizing: border-box !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: center !important;
+            align-items: center !important;
           }
           /* Ensure cards container aligns to search width */
           .research-cards-container {
-            width: 373px !important;
+            width: 343px !important;
             margin-left: auto !important;
             margin-right: auto !important;
-          }
-          /* Fit card contents within 343x273 */
-          .card-inner {
-            width: 329px !important;
-            height: auto !important;
-            gap: 12px !important;
-          }
-          .card-title {
-            width: 339px !important;
-            white-space: normal !important;
-          }
-          .card-desc {
-            width: 339px !important;
-            white-space: normal !important;
-          }
-          .card-meta {
-            width: 339px !important;
-          }
-          .card-cta {
-            width: 339px !important;
           }
           .research-load-more {
             width: 100% !important;
@@ -1265,7 +1522,7 @@ export default function ResearchPage() {
                     </div>
                   )}
 
-                  {filteredCards.length > 0 && (
+                  {filteredCards.length > 9 && displayedTilesCount < filteredCards.length && (
                     <button
                       type="button"
                       className="
@@ -1275,6 +1532,9 @@ export default function ResearchPage() {
                         font-Gilroy-SemiBold font-normal text-[14px] leading-[100%] text-black
                         research-load-more
                       "
+                      onClick={() => {
+                        setDisplayedTilesCount(prev => Math.min(prev + 3, filteredCards.length));
+                      }}
                     >
                       Load More
                     </button>

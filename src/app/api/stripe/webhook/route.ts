@@ -53,6 +53,19 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Helper function to get subscription ID from invoice
+async function getSubscriptionFromInvoice(invoiceIdOrObject: string | any): Promise<string | null> {
+  try {
+    const invoice = typeof invoiceIdOrObject === 'string'
+      ? await stripe.invoices.retrieve(invoiceIdOrObject)
+      : invoiceIdOrObject;
+    return invoice.subscription as string | null;
+  } catch (error) {
+    console.error('Error getting subscription from invoice:', error);
+    return null;
+  }
+}
+
 async function processWebhookAsync(event: any) {
   console.log(`Processing webhook: ${event.type}`);
   
@@ -179,19 +192,51 @@ async function processWebhookAsync(event: any) {
             }
 
             // Create initial billing record for the subscription creation
+            // Try to get the actual invoice from Stripe
             try {
-              const invoice = {
-                userId: userId,
-                subscriptionId: subscriptionId,
-                invoiceId: `INV-${Date.now()}`,
-                amount: planType === 'annual' ? 120 : 30,
-                currency: 'bnb',
-                status: 'paid',
-                paidAt: new Date(),
-                createdAt: new Date()
-              };
-              await db.collection('billing_history').insertOne(invoice);
-              console.log(`✅ Initial billing record created for subscription ${subscriptionId}`);
+              // Get the latest invoice for this subscription
+              const invoices = await stripe.invoices.list({
+                subscription: subscriptionId,
+                limit: 1,
+              });
+
+              let invoiceId = `INV-${Date.now()}`;
+              let amount = planType === 'annual' ? 120 : 30;
+              let currency = 'usd';
+              let invoiceUrl = null;
+              let paidAt = new Date();
+
+              if (invoices.data.length > 0) {
+                const latestInvoice = invoices.data[0];
+                invoiceId = latestInvoice.id;
+                amount = latestInvoice.amount_paid / 100;
+                currency = latestInvoice.currency || 'usd';
+                invoiceUrl = latestInvoice.hosted_invoice_url || null;
+                paidAt = new Date(latestInvoice.created * 1000);
+              }
+
+              // Check if billing record already exists
+              const existingBilling = await db.collection('billing_history').findOne({
+                invoiceId: invoiceId
+              });
+
+              if (!existingBilling) {
+                const invoice = {
+                  userId: userId,
+                  subscriptionId: subscriptionId,
+                  invoiceId: invoiceId,
+                  amount: amount,
+                  currency: currency,
+                  status: 'paid',
+                  paidAt: paidAt,
+                  invoiceUrl: invoiceUrl,
+                  createdAt: new Date()
+                };
+                await db.collection('billing_history').insertOne(invoice);
+                console.log(`✅ Initial billing record created for subscription ${subscriptionId}`);
+              } else {
+                console.log(`ℹ️ Billing record already exists for invoice ${invoiceId}`);
+              }
             } catch (billingError) {
               console.error('Error creating billing record:', billingError);
               // Continue even if billing record creation fails
@@ -455,6 +500,92 @@ async function processWebhookAsync(event: any) {
         console.error('Database error in webhook:', dbError);
         await client.close();
       }
+    } else if (event.type === 'customer.subscription.created') {
+      // Handle subscription creation - create subscription record early
+      const subscription = event.data.object;
+      console.log(`✅ Subscription created: ${subscription.id}`);
+
+      try {
+        const metadata = subscription.metadata || {};
+        
+        // Get user ID from metadata or find by customer email
+        let userId = metadata.userId ? new ObjectId(metadata.userId) : null;
+        
+        if (!userId) {
+          // Try to find customer and get email
+          let customerEmail = metadata.customerEmail;
+          
+          if (!customerEmail && subscription.customer) {
+            try {
+              const customer = typeof subscription.customer === 'string'
+                ? await stripe.customers.retrieve(subscription.customer)
+                : subscription.customer;
+              customerEmail = customer.email || null;
+            } catch (error) {
+              console.error('Error retrieving customer:', error);
+            }
+          }
+
+          if (customerEmail) {
+            const user = await db.collection('public_users').findOne({ 
+              email: customerEmail.toLowerCase().trim() 
+            });
+            if (user) {
+              userId = user._id;
+              console.log(`✅ Found user by email: ${userId}`);
+            }
+          }
+        }
+
+        if (!userId) {
+          console.log('⚠️ Could not find user for subscription creation, will retry on invoice.payment_succeeded');
+          await client.close();
+          return;
+        }
+
+        // Check if subscription already exists
+        const existingSubscription = await db.collection('subscriptions').findOne({
+          stripeSubscriptionId: subscription.id
+        });
+
+        if (existingSubscription) {
+          console.log(`ℹ️ Subscription already exists for ${subscription.id}`);
+          await client.close();
+          return;
+        }
+
+        // Determine plan type from subscription items
+        const planInterval = subscription.items.data[0]?.price?.recurring?.interval;
+        const planType = planInterval === 'year' ? 'annual' : 'monthly';
+        const planName = planType === 'annual' ? 'Premium Annual' : 'Premium Monthly';
+        const price = planType === 'annual' ? '$120 USD' : '$30 USD';
+
+        // Create subscription record
+        const subscriptionRecord = {
+          userId: userId,
+          stripeSubscriptionId: subscription.id,
+          stripeCustomerId: typeof subscription.customer === 'string' 
+            ? subscription.customer 
+            : subscription.customer.id,
+          planName: planName,
+          planType: planType,
+          price: price,
+          status: subscription.status,
+          currentPeriodStart: new Date(subscription.current_period_start * 1000),
+          currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+          cancelAtPeriodEnd: subscription.cancel_at_period_end,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+
+        await db.collection('subscriptions').insertOne(subscriptionRecord);
+        console.log(`✅ Subscription record created for user ${userId}`);
+
+        await client.close();
+      } catch (error) {
+        console.error('Error processing customer.subscription.created:', error);
+        await client.close();
+      }
     } else if (event.type === 'customer.subscription.updated') {
       // Handle subscription updates (status changes, plan changes, etc.)
       const subscription = event.data.object;
@@ -559,61 +690,247 @@ async function processWebhookAsync(event: any) {
 
       await client.close();
     } else if (event.type === 'invoice.payment_succeeded') {
-      // Handle successful subscription renewal payments
+      // Handle successful subscription payments (initial + renewals)
       const invoice = event.data.object;
       
       if (invoice.subscription) {
         console.log(`✅ Invoice payment succeeded for subscription: ${invoice.subscription}`);
 
-        // Create billing history record
-        const billingRecord = {
-          userId: null, // Will be populated from subscription
-          subscriptionId: invoice.subscription,
-          invoiceId: invoice.id,
-          amount: invoice.amount_paid / 100,
-          currency: invoice.currency,
-          status: 'paid',
-          paidAt: new Date(invoice.created * 1000),
-          createdAt: new Date()
-        };
-
         // Get subscription to find userId
-        const subscription = await db.collection('subscriptions').findOne({
+        let subscription = await db.collection('subscriptions').findOne({
           stripeSubscriptionId: invoice.subscription
         });
 
-        if (subscription) {
-          billingRecord.userId = subscription.userId;
+        let userId = null;
+
+        // If subscription doesn't exist in database yet, create it
+        if (!subscription) {
+          console.log(`⚠️ Subscription not found in database, creating it from invoice...`);
           
-          // Add invoice URL if available
-          if (invoice.hosted_invoice_url) {
-            billingRecord.invoiceUrl = invoice.hosted_invoice_url;
+          try {
+            // Retrieve subscription from Stripe
+            const stripeSubscription = await stripe.subscriptions.retrieve(invoice.subscription);
+            const metadata = stripeSubscription.metadata || {};
+            
+            // Get user ID from metadata or find by customer email
+            userId = metadata.userId ? new ObjectId(metadata.userId) : null;
+            
+            if (!userId) {
+              // Try to get customer email
+              let customerEmail = metadata.customerEmail;
+              
+              if (!customerEmail && invoice.customer_email) {
+                customerEmail = invoice.customer_email;
+              } else if (!customerEmail && stripeSubscription.customer) {
+                try {
+                  const customer = typeof stripeSubscription.customer === 'string'
+                    ? await stripe.customers.retrieve(stripeSubscription.customer)
+                    : stripeSubscription.customer;
+                  customerEmail = customer.email || null;
+                } catch (error) {
+                  console.error('Error retrieving customer:', error);
+                }
+              }
+
+              if (customerEmail) {
+                const user = await db.collection('public_users').findOne({ 
+                  email: customerEmail.toLowerCase().trim() 
+                });
+                if (user) {
+                  userId = user._id;
+                  console.log(`✅ Found user by email: ${userId}`);
+                }
+              }
+            }
+
+            if (userId) {
+              // Determine plan type from subscription items
+              const planInterval = stripeSubscription.items.data[0]?.price?.recurring?.interval;
+              const planType = planInterval === 'year' ? 'annual' : 'monthly';
+              const planName = planType === 'annual' ? 'Premium Annual' : 'Premium Monthly';
+              const price = planType === 'annual' ? '$120 USD' : '$30 USD';
+
+              // Create subscription record
+              subscription = {
+                userId: userId,
+                stripeSubscriptionId: stripeSubscription.id,
+                stripeCustomerId: typeof stripeSubscription.customer === 'string' 
+                  ? stripeSubscription.customer 
+                  : stripeSubscription.customer.id,
+                planName: planName,
+                planType: planType,
+                price: price,
+                status: stripeSubscription.status,
+                currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
+                currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
+                cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
+                createdAt: new Date(),
+                updatedAt: new Date()
+              };
+
+              await db.collection('subscriptions').insertOne(subscription);
+              console.log(`✅ Subscription record created from invoice for user ${userId}`);
+            } else {
+              console.log('⚠️ Could not find user for subscription, skipping billing history');
+              await client.close();
+              return;
+            }
+          } catch (error) {
+            console.error('Error creating subscription from invoice:', error);
+            await client.close();
+            return;
           }
+        } else {
+          userId = subscription.userId instanceof ObjectId
+            ? subscription.userId
+            : new ObjectId(subscription.userId);
+        }
+
+        // Check if billing record already exists (idempotency)
+        const existingBilling = await db.collection('billing_history').findOne({
+          invoiceId: invoice.id
+        });
+
+        if (existingBilling) {
+          console.log(`ℹ️ Billing record already exists for invoice ${invoice.id}`);
+        } else {
+          // Create billing history record
+          const billingRecord = {
+            userId: userId,
+            subscriptionId: invoice.subscription,
+            invoiceId: invoice.id,
+            amount: invoice.amount_paid / 100,
+            currency: invoice.currency || 'usd',
+            status: 'paid',
+            paidAt: new Date(invoice.created * 1000),
+            invoiceUrl: invoice.hosted_invoice_url || null,
+            createdAt: new Date()
+          };
           
           await db.collection('billing_history').insertOne(billingRecord);
           console.log(`✅ Billing record created for subscription ${invoice.subscription}`);
-
-          const userId =
-            subscription.userId instanceof ObjectId
-              ? subscription.userId
-              : new ObjectId(subscription.userId);
-
-          await db.collection('public_users').updateOne(
-            { _id: userId },
-            {
-              $set: {
-                isPaid: true,
-                subscriptionStatus: subscription.status ?? 'active',
-                lastPaymentAt: new Date(),
-                updatedAt: new Date(),
-              },
-            }
-          );
-          console.log(`✅ Updated user ${userId} payment timestamp from invoice`);
         }
+
+        // Update user payment status
+        await db.collection('public_users').updateOne(
+          { _id: userId },
+          {
+            $set: {
+              isPaid: true,
+              subscriptionStatus: subscription.status ?? 'active',
+              lastPaymentAt: new Date(),
+              updatedAt: new Date(),
+            },
+          }
+        );
+        console.log(`✅ Updated user ${userId} payment timestamp from invoice`);
       }
 
       await client.close();
+    } else if (event.type === 'payment_intent.succeeded') {
+      // Fallback handler for payment success (in case invoice.payment_succeeded doesn't fire)
+      const paymentIntent = event.data.object;
+      console.log(`✅ Payment intent succeeded: ${paymentIntent.id}`);
+
+      try {
+        // Check if this payment is for a subscription
+        const subscriptionId = paymentIntent.metadata?.subscription_id || 
+                               (paymentIntent.invoice ? await getSubscriptionFromInvoice(paymentIntent.invoice) : null);
+
+        if (!subscriptionId) {
+          console.log('ℹ️ Payment intent not for subscription, skipping');
+          await client.close();
+          return;
+        }
+
+        // Get subscription to find userId
+        let subscription = await db.collection('subscriptions').findOne({
+          stripeSubscriptionId: subscriptionId
+        });
+
+        if (!subscription) {
+          console.log('ℹ️ Subscription not found for payment intent, invoice.payment_succeeded will handle it');
+          await client.close();
+          return;
+        }
+
+        const userId = subscription.userId instanceof ObjectId
+          ? subscription.userId
+          : new ObjectId(subscription.userId);
+
+        // Check if we need to get invoice details
+        let invoiceId = paymentIntent.metadata?.invoice_id;
+        let amount = paymentIntent.amount / 100;
+        let currency = paymentIntent.currency || 'usd';
+        let invoiceUrl = null;
+        let shouldCreateRecord = true;
+
+        if (paymentIntent.invoice) {
+          try {
+            const invoice = typeof paymentIntent.invoice === 'string'
+              ? await stripe.invoices.retrieve(paymentIntent.invoice)
+              : paymentIntent.invoice;
+            
+            invoiceId = invoice.id;
+            amount = invoice.amount_paid / 100;
+            currency = invoice.currency || 'usd';
+            invoiceUrl = invoice.hosted_invoice_url || null;
+
+            // Check if billing record already exists
+            const existingBilling = await db.collection('billing_history').findOne({
+              invoiceId: invoiceId
+            });
+
+            if (existingBilling) {
+              console.log(`ℹ️ Billing record already exists for invoice ${invoiceId}`);
+              shouldCreateRecord = false;
+            }
+          } catch (error) {
+            console.error('Error retrieving invoice:', error);
+            // Continue with payment intent data, use generated invoice ID if needed
+            if (!invoiceId) {
+              invoiceId = `pi_${paymentIntent.id}`;
+            }
+          }
+        } else {
+          // No invoice attached, use payment intent ID as fallback
+          if (!invoiceId) {
+            invoiceId = `pi_${paymentIntent.id}`;
+          }
+        }
+
+        // Create billing history record if needed
+        if (shouldCreateRecord && invoiceId) {
+          // Check one more time if record exists (in case invoiceId was generated)
+          const existingBilling = await db.collection('billing_history').findOne({
+            invoiceId: invoiceId
+          });
+
+          if (!existingBilling) {
+            const billingRecord = {
+              userId: userId,
+              subscriptionId: subscriptionId,
+              invoiceId: invoiceId,
+              amount: amount,
+              currency: currency,
+              status: 'paid',
+              paidAt: new Date(paymentIntent.created * 1000),
+              invoiceUrl: invoiceUrl,
+              createdAt: new Date()
+            };
+
+            await db.collection('billing_history').insertOne(billingRecord);
+            console.log(`✅ Billing record created from payment intent for subscription ${subscriptionId}`);
+          } else {
+            console.log(`ℹ️ Billing record already exists for ${invoiceId}`);
+          }
+        }
+
+        await client.close();
+      } catch (error) {
+        console.error('Error processing payment_intent.succeeded:', error);
+        await client.close();
+      }
     } else {
       // Log other events but don't process them
       console.log(`ℹ️ Event ${event.type} received but not processed`);

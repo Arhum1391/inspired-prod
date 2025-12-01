@@ -161,6 +161,7 @@ export default function ShariahPage() {
             height: '100%',
             filter: isAuthenticated ? 'none' : 'blur(8px)',
             pointerEvents: isAuthenticated ? 'auto' : 'none',
+            justifyContent: 'space-between',
           }}
         >
           <div
@@ -172,6 +173,8 @@ export default function ShariahPage() {
               padding: '3px 12px',
               textAlign: 'center',
               display: 'inline-block',
+              flex: 'none',
+              flexShrink: 0,
             }}
           >
             <span
@@ -197,6 +200,7 @@ export default function ShariahPage() {
               lineHeight: '100%',
               color: '#FFFFFF',
               flex: 'none',
+              flexShrink: 0,
               margin: 0,
               marginTop: '4px',
             }}
@@ -213,6 +217,14 @@ export default function ShariahPage() {
               lineHeight: '130%',
               margin: 0,
               marginTop: '5px',
+              width: '366px',
+              height: '48px',
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: 'vertical',
+              textOverflow: 'ellipsis',
+              flex: 'none',
             }}
           >
             {tile.description}
@@ -229,6 +241,7 @@ export default function ShariahPage() {
               width: '366px',
               height: '108px',
               flex: 'none',
+              flexShrink: 0,
               alignSelf: 'stretch',
               flexGrow: 0,
               marginTop: '8px',
@@ -261,11 +274,13 @@ export default function ShariahPage() {
                 padding: '0px',
                 gap: '8px',
                 width: '366px',
-                height: '80px',
+                height: '82px',
                 flex: 'none',
                 alignSelf: 'stretch',
                 flexGrow: 0,
-                marginTop: '5px',
+                marginTop: '0px',
+                overflowY: 'auto',
+                overflowX: 'hidden',
               }}
             >
               {tile.compliancePoints?.map((point, index) => (
@@ -314,6 +329,17 @@ export default function ShariahPage() {
           </div>
 
           <div
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'flex-start',
+              gap: '15px',
+              width: '366px',
+              flex: 'none',
+              marginTop: 'auto',
+            }}
+          >
+          <div
             className="shariah-preview-footer"
             style={{
               display: 'flex',
@@ -321,7 +347,7 @@ export default function ShariahPage() {
               alignItems: 'center',
               justifyContent: 'space-between',
               width: '366px',
-              marginTop: '15px',
+              marginTop: '0px',
             }}
           >
             <span
@@ -360,7 +386,7 @@ export default function ShariahPage() {
               background: 'transparent',
               color: '#FFFFFF',
               cursor: 'pointer',
-              marginTop: '15px',
+              marginTop: '0px',
               fontFamily: 'Gilroy-SemiBold, sans-serif',
               fontSize: '14px',
               outline: 'none',
@@ -391,6 +417,7 @@ export default function ShariahPage() {
               className="w-4 h-4"
             />
           </button>
+          </div>
         </div>
 
         {!isAuthenticated && (
@@ -498,6 +525,19 @@ export default function ShariahPage() {
         }
         .popup-content-scroll::-webkit-scrollbar-thumb:hover {
           background: rgba(255, 255, 255, 0.5);
+        }
+        .shariah-preview-bullets::-webkit-scrollbar {
+          width: 4px;
+        }
+        .shariah-preview-bullets::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .shariah-preview-bullets::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 2px;
+        }
+        .shariah-preview-bullets::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.3);
         }
         .methodology-popup-content::-webkit-scrollbar {
           width: 6px;
@@ -724,9 +764,7 @@ export default function ShariahPage() {
           }
           .shariah-preview-tile {
             width: 343px !important;
-            height: auto !important;
-            min-height: 405px !important;
-            max-height: 527px !important;
+            height: 405px !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
             opacity: 1 !important;
             transform: rotate(0deg) !important;
@@ -738,29 +776,29 @@ export default function ShariahPage() {
           }
           .shariah-preview-content[style] {
             padding: 20px 12px !important;
-            gap: 16px !important;
+            gap: 8px !important;
             width: 319px !important;
             max-width: 319px !important;
             box-sizing: border-box !important;
-            height: auto !important;
-            min-height: 365px !important;
+            height: 100% !important;
             overflow: visible !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: flex-start !important;
+            justify-content: space-between !important;
           }
           .shariah-preview-content {
             padding: 20px 12px !important;
-            gap: 16px !important;
+            gap: 8px !important;
             width: 319px !important;
             max-width: 319px !important;
             box-sizing: border-box !important;
-            height: auto !important;
-            min-height: 365px !important;
+            height: 100% !important;
             overflow: visible !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: flex-start !important;
+            justify-content: space-between !important;
           }
           .shariah-preview-badge[style] {
             width: 84px !important;
@@ -811,20 +849,26 @@ export default function ShariahPage() {
           .shariah-preview-desc[style],
           .shariah-preview-desc {
             width: 319px !important;
-            height: auto !important;
+            height: 42px !important;
             font-size: 16px !important;
             line-height: 130% !important;
             margin: 0 !important;
+            margin-top: 5px !important;
             text-align: left !important;
             flex-shrink: 0 !important;
+            overflow: hidden !important;
+            display: -webkit-box !important;
+            -webkit-line-clamp: 2 !important;
+            -webkit-box-orient: vertical !important;
+            text-overflow: ellipsis !important;
           }
           .shariah-preview-compliance[style],
           .shariah-preview-compliance {
             width: 319px !important;
             gap: 8px !important;
             margin: 0 !important;
-            height: auto !important;
-            flex-shrink: 1 !important;
+            height: 130px !important;
+            flex-shrink: 0 !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: flex-start !important;
@@ -832,8 +876,7 @@ export default function ShariahPage() {
           .shariah-preview-compliance-title[style],
           .shariah-preview-compliance-title {
             width: 319px !important;
-            height: auto !important;
-            min-height: 16px !important;
+            height: 18px !important;
             font-size: 16px !important;
             line-height: 100% !important;
             margin: 0 !important;
@@ -843,14 +886,33 @@ export default function ShariahPage() {
           }
           .shariah-preview-bullets[style],
           .shariah-preview-bullets {
+            height: 110px !important;
+          }
+          .shariah-preview-bullets::-webkit-scrollbar {
+            width: 4px !important;
+          }
+          .shariah-preview-bullets::-webkit-scrollbar-track {
+            background: transparent !important;
+          }
+          .shariah-preview-bullets::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2) !important;
+            border-radius: 2px !important;
+          }
+          .shariah-preview-bullets::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3) !important;
+          }
+          .shariah-preview-bullets[style],
+          .shariah-preview-bullets {
             width: 319px !important;
             gap: 8px !important;
             margin: 0 !important;
-            height: auto !important;
-            flex-shrink: 1 !important;
+            height: 110px !important;
+            flex-shrink: 0 !important;
             display: flex !important;
             flex-direction: column !important;
             align-items: flex-start !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
           }
           .shariah-preview-bullets > div {
             width: 319px !important;
@@ -923,6 +985,7 @@ export default function ShariahPage() {
             min-height: 14px !important;
             gap: 16px !important;
             margin: 0 !important;
+            margin-top: 0 !important;
             justify-content: space-between !important;
             display: flex !important;
             flex-direction: row !important;
@@ -957,6 +1020,7 @@ export default function ShariahPage() {
             gap: 8px !important;
             border-radius: 100px !important;
             margin: 0 !important;
+            margin-top: 0 !important;
             box-sizing: border-box !important;
             flex-shrink: 0 !important;
             display: flex !important;

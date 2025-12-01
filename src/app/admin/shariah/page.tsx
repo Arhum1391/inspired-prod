@@ -126,7 +126,7 @@ export default function ShariahAdminPage() {
   const removeComplianceMetric = (index: number) => {
     setFormData((prev) => ({
       ...prev,
-      complianceMetrics: prev.complianceMetrics.filter((_, i) => i !== index),
+      complianceMetrics: (prev.complianceMetrics || []).filter((_, i) => i !== index),
     }));
   };
 
@@ -160,8 +160,11 @@ export default function ShariahAdminPage() {
   const openModal = (tile?: TileResponse) => {
     if (tile) {
       setEditingTile(tile);
+      // Auto-generate slug and detailPath from title when editing
+      const generatedSlug = sanitizedSlug(tile.title);
+      const generatedDetailPath = `/shariah/${generatedSlug}`;
       setFormData({
-        slug: tile.slug,
+        slug: generatedSlug,
         title: tile.title,
         category: tile.category,
         description: tile.description,
@@ -169,10 +172,10 @@ export default function ShariahAdminPage() {
         complianceMetrics: tile.complianceMetrics || [],
         footerLeft: tile.footerLeft,
         footerRight: formatDateForInput(tile.footerRight),
-        ctaLabel: tile.ctaLabel,
-        detailPath: tile.detailPath,
-        lockedTitle: tile.lockedTitle,
-        lockedDescription: tile.lockedDescription,
+        ctaLabel: 'View Details',
+        detailPath: generatedDetailPath,
+        lockedTitle: 'Preview Only',
+        lockedDescription: 'Detailed Screening Available with Premium',
         analystNotes: tile.analystNotes,
       });
     } else {
@@ -194,92 +197,82 @@ export default function ShariahAdminPage() {
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
-    const trimmed = {
-      slug: formData.slug.trim(),
-      title: formData.title.trim(),
-      category: formData.category.trim(),
-      description: formData.description.trim(),
-      footerLeft: formData.footerLeft.trim(),
-      footerRight: formData.footerRight.trim(),
-      ctaLabel: formData.ctaLabel.trim(),
-      detailPath: formData.detailPath.trim(),
-      lockedTitle: formData.lockedTitle.trim(),
-      lockedDescription: formData.lockedDescription.trim(),
-      analystNotes: formData.analystNotes.trim(),
-    };
+    const trimmedTitle = formData.title.trim();
+    const trimmedCategory = formData.category.trim();
+    const trimmedDescription = formData.description.trim();
+    const trimmedFooterLeft = formData.footerLeft.trim();
+    const trimmedFooterRight = formData.footerRight.trim();
+    const trimmedAnalystNotes = formData.analystNotes.trim();
 
-    (Object.keys(trimmed) as (keyof typeof trimmed)[]).forEach((field) => {
-      if (!trimmed[field]) {
-        errors[field] = 'This field is required';
+    // Validate required fields
+    if (!trimmedTitle) {
+      errors.title = 'This field is required';
+    }
+    if (!trimmedCategory) {
+      errors.category = 'This field is required';
+    }
+    if (!trimmedDescription) {
+      errors.description = 'This field is required';
+    }
+    if (!trimmedFooterLeft) {
+      errors.footerLeft = 'This field is required';
+    }
+    if (!trimmedFooterRight) {
+      errors.footerRight = 'This field is required';
+    }
+    if (!trimmedAnalystNotes) {
+      errors.analystNotes = 'This field is required';
+    }
+
+    // Validate title and auto-generated slug
+    if (trimmedTitle) {
+      if (trimmedTitle.length < 4) {
+        errors.title = 'Title must be at least 4 characters long';
+      } else if (!/[a-zA-Z]/.test(trimmedTitle)) {
+        errors.title = 'Enter a valid Title';
+      } else {
+        // Generate slug from title and validate it
+        const generatedSlug = sanitizedSlug(trimmedTitle);
+        if (!generatedSlug) {
+          errors.title = 'Title must contain at least one letter or number';
+        } else if (!/^[a-z0-9-]+$/.test(generatedSlug)) {
+          errors.title = 'Title cannot be converted to a valid slug';
+        } else if (
+          tiles.some((tile) => tile.slug === generatedSlug && tile._id !== editingTile?._id)
+        ) {
+          errors.title = 'A tile with this title already exists (slug conflict)';
+        }
       }
-    });
-
-    if (trimmed.slug && !/^[a-z0-9-]+$/.test(trimmed.slug)) {
-      errors.slug = 'Slug can only contain lowercase letters, numbers, and hyphens';
     }
 
-    if (
-      trimmed.slug &&
-      tiles.some((tile) => tile.slug === trimmed.slug && tile._id !== editingTile?._id)
-    ) {
-      errors.slug = 'A tile with this slug already exists';
-    }
-
-    if (trimmed.category && trimmed.category.length < 2) {
+    if (trimmedCategory && trimmedCategory.length < 2) {
       errors.category = 'Category must be at least 2 characters long';
     }
 
-    if (trimmed.title) {
-      if (trimmed.title.length < 4) {
-        errors.title = 'Title must be at least 4 characters long';
-      } else if (!/[a-zA-Z]/.test(trimmed.title)) {
-        errors.title = 'Enter a valid Title';
-      }
-    }
-
-    if (trimmed.description) {
-      if (trimmed.description.length < 20) {
+    if (trimmedDescription) {
+      if (trimmedDescription.length < 20) {
         errors.description = 'Description must be at least 20 characters long';
-      } else if (!/[a-zA-Z]/.test(trimmed.description)) {
+      } else if (!/[a-zA-Z]/.test(trimmedDescription)) {
         errors.description = 'Enter a valid Description';
       }
     }
 
-    if (trimmed.footerLeft && trimmed.footerLeft.length < 3) {
+    if (trimmedFooterLeft && trimmedFooterLeft.length < 3) {
       errors.footerLeft = 'Footer left text must be at least 3 characters';
     }
 
-    if (trimmed.footerRight) {
-      if (!DATE_INPUT_REGEX.test(trimmed.footerRight)) {
+    if (trimmedFooterRight) {
+      if (!DATE_INPUT_REGEX.test(trimmedFooterRight)) {
         errors.footerRight = 'Select a valid date';
       } else {
-        const date = new Date(`${trimmed.footerRight}T00:00:00`);
+        const date = new Date(`${trimmedFooterRight}T00:00:00`);
         if (Number.isNaN(date.getTime())) {
           errors.footerRight = 'Select a valid date';
         }
       }
     }
 
-    if (trimmed.ctaLabel && trimmed.ctaLabel.length < 3) {
-      errors.ctaLabel = 'CTA label must be at least 3 characters';
-    }
-
-    if (trimmed.detailPath) {
-      const detailPathPattern = /^\/[a-z0-9-/]+$/;
-      if (!detailPathPattern.test(trimmed.detailPath)) {
-        errors.detailPath = 'Detail path must start with / and only contain lowercase URL-safe text';
-      }
-    }
-
-    if (trimmed.lockedTitle && trimmed.lockedTitle.length < 3) {
-      errors.lockedTitle = 'Locked title must be at least 3 characters';
-    }
-
-    if (trimmed.lockedDescription && trimmed.lockedDescription.length < 5) {
-      errors.lockedDescription = 'Locked description must be at least 5 characters';
-    }
-
-    if (trimmed.analystNotes && trimmed.analystNotes.length < 30) {
+    if (trimmedAnalystNotes && trimmedAnalystNotes.length < 30) {
       errors.analystNotes = 'Analyst notes should be at least 30 characters';
     }
 
@@ -292,7 +285,7 @@ export default function ShariahAdminPage() {
       }
     }
 
-    if (!formData.complianceMetrics.length) {
+    if (!formData.complianceMetrics || formData.complianceMetrics.length === 0) {
       errors.complianceMetrics = 'Add at least one compliance metric';
     } else {
       const missingData = formData.complianceMetrics.some(
@@ -336,21 +329,27 @@ export default function ShariahAdminPage() {
     }
 
     setSubmitting(true);
+    
+    // Auto-generate required fields
+    const trimmedTitle = formData.title.trim();
+    const generatedSlug = sanitizedSlug(trimmedTitle);
+    const generatedDetailPath = `/shariah/${generatedSlug}`;
+    
     const payload = {
       ...formData,
-      slug: formData.slug.trim(),
-      title: formData.title.trim(),
+      slug: generatedSlug,
+      title: trimmedTitle,
       category: formData.category.trim(),
       description: formData.description.trim(),
       footerLeft: formData.footerLeft.trim(),
       footerRight: formData.footerRight.trim(),
-      ctaLabel: formData.ctaLabel.trim(),
-      detailPath: formData.detailPath.trim(),
-      lockedTitle: formData.lockedTitle.trim(),
-      lockedDescription: formData.lockedDescription.trim(),
+      ctaLabel: 'View Details',
+      detailPath: generatedDetailPath,
+      lockedTitle: 'Preview Only',
+      lockedDescription: 'Detailed Screening Available with Premium',
       analystNotes: formData.analystNotes.trim(),
       compliancePoints: formData.compliancePoints.map((point) => point.trim()),
-      complianceMetrics: formData.complianceMetrics.map((metric) => ({
+      complianceMetrics: (formData.complianceMetrics || []).map((metric) => ({
         ...metric,
         criteria: metric.criteria.trim(),
         threshold: metric.threshold.trim(),
@@ -660,54 +659,24 @@ export default function ShariahAdminPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">Slug *</label>
-                  <input
-                    type="text"
-                    value={formData.slug}
-                    onChange={(e) => {
-                      const value = sanitizedSlug(e.target.value);
-                      setFormData((prev) => {
-                        const shouldSyncDetailPath =
-                          prev.detailPath === `/shariah/${prev.slug}` || !prev.detailPath;
-                        return {
-                          ...prev,
-                          slug: value,
-                          detailPath: shouldSyncDetailPath ? `/shariah/${value}` : prev.detailPath,
-                        };
-                      });
-                    }}
-                    className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
-                      validationErrors.slug
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-slate-600 focus:ring-indigo-500'
-                    }`}
-                    placeholder="ethical-tech-fund"
-                  />
-                  {validationErrors.slug && (
-                    <p className="text-red-400 text-xs mt-1">{validationErrors.slug}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Category Badge *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
-                      validationErrors.category
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-slate-600 focus:ring-indigo-500'
-                    }`}
-                    placeholder="Technology"
-                  />
-                  {validationErrors.category && (
-                    <p className="text-red-400 text-xs mt-1">{validationErrors.category}</p>
-                  )}
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Category Badge *
+                </label>
+                <input
+                  type="text"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
+                    validationErrors.category
+                      ? 'border-red-500 focus:ring-red-500'
+                      : 'border-slate-600 focus:ring-indigo-500'
+                  }`}
+                  placeholder="Technology"
+                />
+                {validationErrors.category && (
+                  <p className="text-red-400 text-xs mt-1">{validationErrors.category}</p>
+                )}
               </div>
 
               <div>
@@ -715,7 +684,16 @@ export default function ShariahAdminPage() {
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) => {
+                    const newTitle = e.target.value;
+                    const newSlug = sanitizedSlug(newTitle);
+                    setFormData((prev) => ({
+                      ...prev,
+                      title: newTitle,
+                      slug: newSlug,
+                      detailPath: `/shariah/${newSlug}`,
+                    }));
+                  }}
                   className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
                     validationErrors.title
                       ? 'border-red-500 focus:ring-red-500'
@@ -786,87 +764,6 @@ export default function ShariahAdminPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    CTA Label *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.ctaLabel}
-                    onChange={(e) => setFormData({ ...formData, ctaLabel: e.target.value })}
-                    className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
-                      validationErrors.ctaLabel
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-slate-600 focus:ring-indigo-500'
-                    }`}
-                    placeholder="View Details"
-                  />
-                  {validationErrors.ctaLabel && (
-                    <p className="text-red-400 text-xs mt-1">{validationErrors.ctaLabel}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Detail Path *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.detailPath}
-                    onChange={(e) => setFormData({ ...formData, detailPath: e.target.value })}
-                    className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
-                      validationErrors.detailPath
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-slate-600 focus:ring-indigo-500'
-                    }`}
-                    placeholder="/shariah/1"
-                  />
-                  {validationErrors.detailPath && (
-                    <p className="text-red-400 text-xs mt-1">{validationErrors.detailPath}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Locked Overlay Title *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.lockedTitle}
-                    onChange={(e) => setFormData({ ...formData, lockedTitle: e.target.value })}
-                    className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
-                      validationErrors.lockedTitle
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-slate-600 focus:ring-indigo-500'
-                    }`}
-                  />
-                  {validationErrors.lockedTitle && (
-                    <p className="text-red-400 text-xs mt-1">{validationErrors.lockedTitle}</p>
-                  )}
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-1">
-                    Locked Overlay Description *
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.lockedDescription}
-                    onChange={(e) =>
-                      setFormData({ ...formData, lockedDescription: e.target.value })
-                    }
-                    className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
-                      validationErrors.lockedDescription
-                        ? 'border-red-500 focus:ring-red-500'
-                        : 'border-slate-600 focus:ring-indigo-500'
-                    }`}
-                  />
-                  {validationErrors.lockedDescription && (
-                    <p className="text-red-400 text-xs mt-1">{validationErrors.lockedDescription}</p>
-                  )}
-                </div>
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -934,13 +831,13 @@ export default function ShariahAdminPage() {
             </p>
 
             <div className="space-y-4 mt-4">
-              {formData.complianceMetrics.length === 0 && (
+              {(!formData.complianceMetrics || formData.complianceMetrics.length === 0) && (
                 <p className="text-sm text-gray-400">
                   No compliance metrics yet. Add one to get started.
                 </p>
               )}
 
-              {formData.complianceMetrics.map((metric, index) => {
+              {(formData.complianceMetrics || []).map((metric, index) => {
                 const statusLabel = metricStatusLabel(metric);
                 const isPass = metricIsPass(metric);
                 return (

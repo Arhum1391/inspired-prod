@@ -35,6 +35,7 @@ const AccountPage = () => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [copiedInvoiceId, setCopiedInvoiceId] = useState<string | null>(null);
 
   useEffect(() => {
     // Wait for auth to finish loading before checking authentication
@@ -232,6 +233,18 @@ const AccountPage = () => {
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleCopyInvoiceId = async (invoiceId: string) => {
+    try {
+      await navigator.clipboard.writeText(invoiceId);
+      setCopiedInvoiceId(invoiceId);
+      setTimeout(() => {
+        setCopiedInvoiceId(null);
+      }, 2000);
+    } catch (error) {
+      console.error('Failed to copy invoice ID:', error);
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1000,6 +1013,33 @@ const AccountPage = () => {
                             >
                               {displayInvoiceId}
                             </span>
+                            <button
+                              onClick={() => handleCopyInvoiceId(invoiceId)}
+                              className="flex items-center justify-center hover:opacity-80 transition-opacity"
+                              style={{
+                                width: '20px',
+                                height: '20px',
+                                flex: 'none',
+                                order: 2,
+                                flexGrow: 0,
+                                cursor: 'pointer',
+                                background: 'transparent',
+                                border: 'none',
+                                padding: 0
+                              }}
+                              title={copiedInvoiceId === invoiceId ? 'Copied!' : 'Copy invoice ID'}
+                            >
+                              {copiedInvoiceId === invoiceId ? (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M13.3333 4L6 11.3333L2.66667 8" stroke="#05B353" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              ) : (
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10.6667 2H4C3.26362 2 2.66667 2.59695 2.66667 3.33333V11.3333C2.66667 12.0697 3.26362 12.6667 4 12.6667H10.6667C11.403 12.6667 12 12.0697 12 11.3333V3.33333C12 2.59695 11.403 2 10.6667 2Z" stroke="#909090" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M6 2V4.66667C6 5.03486 6.29881 5.33333 6.66667 5.33333H9.33333" stroke="#909090" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              )}
+                            </button>
                           </div>
                           <div
                             className="border border-[#05B353] rounded-full"
@@ -1861,9 +1901,35 @@ const AccountPage = () => {
                     return (
                       <div key={invoiceId || invoice.id} className="w-full border border-white/30 rounded-lg p-4 flex flex-row items-center gap-6">
                         <div className="w-[134px] flex flex-col justify-center items-center">
-                          <span className="text-white text-sm font-normal gilroy-medium text-center">
-                            <span title={invoiceId}>{displayInvoiceId}</span>
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-white text-sm font-normal gilroy-medium text-center" title={invoiceId}>
+                              {displayInvoiceId}
+                            </span>
+                            <button
+                              onClick={() => handleCopyInvoiceId(invoiceId)}
+                              className="flex items-center justify-center hover:opacity-80 transition-opacity"
+                              style={{
+                                width: '18px',
+                                height: '18px',
+                                cursor: 'pointer',
+                                background: 'transparent',
+                                border: 'none',
+                                padding: 0
+                              }}
+                              title={copiedInvoiceId === invoiceId ? 'Copied!' : 'Copy invoice ID'}
+                            >
+                              {copiedInvoiceId === invoiceId ? (
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M13.3333 4L6 11.3333L2.66667 8" stroke="#05B353" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              ) : (
+                                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <path d="M10.6667 2H4C3.26362 2 2.66667 2.59695 2.66667 3.33333V11.3333C2.66667 12.0697 3.26362 12.6667 4 12.6667H10.6667C11.403 12.6667 12 12.0697 12 11.3333V3.33333C12 2.59695 11.403 2 10.6667 2Z" stroke="#909090" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                  <path d="M6 2V4.66667C6 5.03486 6.29881 5.33333 6.66667 5.33333H9.33333" stroke="#909090" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              )}
+                            </button>
+                          </div>
                         </div>
                         <div className="w-[134px] flex flex-col justify-center items-start">
                           <span className="text-white text-sm font-normal gilroy-medium">

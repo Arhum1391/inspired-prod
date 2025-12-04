@@ -1469,6 +1469,14 @@ export default function PortfolioPage() {
             min-width: 343px !important;
             max-width: 343px !important;
           }
+          /* Reduce preview holdings table height */
+          .portfolio-preview-holdings-wrapper .holdings-root {
+            min-height: 300px !important;
+          }
+        }
+        /* Desktop: Reduce preview holdings table height */
+        .portfolio-preview-holdings-wrapper .holdings-root {
+          min-height: 300px !important;
         }
       `}} />
       <Navbar />
@@ -2420,6 +2428,7 @@ export default function PortfolioPage() {
                           </div>
             </div>
             <div
+              className="portfolio-preview-holdings-wrapper"
               style={{
                 marginTop: '150px',
                 display: 'flex',

@@ -84,6 +84,56 @@ function validateTilePayload(body: Partial<ShariahTile>) {
     }
   }
 
+  if (body.customTable !== undefined) {
+    if (!body.customTable || typeof body.customTable !== 'object') {
+      errors.push('customTable must be an object');
+    } else {
+      // Validate title
+      if (typeof body.customTable.title !== 'string' || !body.customTable.title.trim()) {
+        errors.push('customTable.title is required and must be a non-empty string');
+      }
+      
+      // Validate headings
+      if (!Array.isArray(body.customTable.headings)) {
+        errors.push('customTable.headings must be an array');
+      } else if (body.customTable.headings.length !== 4) {
+        errors.push('customTable.headings must have exactly 4 elements');
+      } else {
+        body.customTable.headings.forEach((heading: unknown, index: number) => {
+          if (typeof heading !== 'string' || !heading.trim()) {
+            errors.push(`customTable.headings[${index}] must be a non-empty string`);
+          }
+        });
+      }
+
+      // Validate rows
+      if (!Array.isArray(body.customTable.rows)) {
+        errors.push('customTable.rows must be an array');
+      } else {
+        body.customTable.rows.forEach((row: unknown, rowIndex: number) => {
+          if (!row || typeof row !== 'object') {
+            errors.push(`customTable.rows[${rowIndex}] must be an object`);
+            return;
+          }
+          const rowObj = row as { values?: unknown };
+          if (!Array.isArray(rowObj.values)) {
+            errors.push(`customTable.rows[${rowIndex}].values must be an array`);
+          } else if (rowObj.values.length !== 4) {
+            errors.push(`customTable.rows[${rowIndex}].values must have exactly 4 elements`);
+          } else {
+            rowObj.values.forEach((value: unknown, valueIndex: number) => {
+              if (typeof value !== 'string' || !value.trim()) {
+                errors.push(
+                  `customTable.rows[${rowIndex}].values[${valueIndex}] must be a non-empty string`
+                );
+              }
+            });
+          }
+        });
+      }
+    }
+  }
+
   return errors;
 }
 
@@ -127,6 +177,15 @@ export async function PUT(
             comparisonType: metric.comparisonType,
             ...(metric.customStatus ? { customStatus: metric.customStatus } : {}),
           }))
+        : undefined,
+      customTable: body.customTable
+        ? {
+            title: body.customTable.title.trim(),
+            headings: body.customTable.headings.map((h: string) => h.trim()),
+            rows: body.customTable.rows.map((row: { values: string[] }) => ({
+              values: row.values.map((v: string) => v.trim()),
+            })),
+          }
         : undefined,
       updatedAt: new Date(),
     };

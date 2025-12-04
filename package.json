@@ -10,7 +10,9 @@
     "rename-collection": "node rename-collection.js",
     "create-analysts": "node scripts/create-analysts.js",
     "migrate-bootcamp-ids": "node scripts/migrate-bootcamp-ids.js",
-    "mark-users-verified": "node scripts/mark-existing-users-verified.js"
+    "mark-users-verified": "node scripts/mark-existing-users-verified.js",
+    "create-plans": "node scripts/create-plans.js",
+    "update-price-format": "node scripts/update-price-format.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.937.0",

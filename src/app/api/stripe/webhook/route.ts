@@ -120,10 +120,55 @@ async function processWebhookAsync(event: any) {
               return;
             }
 
-            // Determine plan type and price
-            const planType = metadata.plan === 'annual' ? 'annual' : 'monthly';
-            const planName = planType === 'annual' ? 'Premium Annual' : 'Premium Monthly';
-            const price = planType === 'annual' ? '$120 USD' : '$30 USD';
+            // Fetch plan from database
+            const priceItem = stripeSubscription.items.data[0]?.price;
+            const plansCollection = db.collection('plans');
+            
+            // Try to find plan by Stripe price ID first
+            let planData = await plansCollection.findOne({ stripePriceId: priceItem?.id });
+            
+            if (!planData) {
+              // Fallback to matching by interval and amount
+              const interval = priceItem?.recurring?.interval;
+              const intervalCount = priceItem?.recurring?.interval_count || 1;
+              const amount = priceItem?.unit_amount ? priceItem.unit_amount / 100 : 0;
+              
+              if (interval === 'year' && amount === 100) {
+                planData = await plansCollection.findOne({ planId: 'annual' });
+              } else if (interval === 'month' && intervalCount === 6 && amount === 60) {
+                planData = await plansCollection.findOne({ planId: 'platinum' });
+              } else if (interval === 'month' && intervalCount === 1 && amount === 30) {
+                planData = await plansCollection.findOne({ planId: 'monthly' });
+              }
+            }
+
+            let planType: string;
+            let planName: string;
+            let price: string;
+
+            if (planData) {
+              planType = planData.planId;
+              planName = planData.name;
+              price = planData.isFree ? 'FREE' : planData.priceDisplay;
+            } else {
+              // Fallback to hardcoded values
+              const interval = priceItem?.recurring?.interval;
+              const intervalCount = priceItem?.recurring?.interval_count || 1;
+              
+              if (interval === 'year') {
+                planType = 'annual';
+                planName = 'Diamond';
+                price = '$100 USD';
+              } else if (interval === 'month' && intervalCount === 6) {
+                planType = 'platinum';
+                planName = 'Platinum';
+                price = '$60 USD';
+              } else {
+                planType = 'monthly';
+                planName = 'Premium';
+                price = '$30 USD';
+              }
+            }
 
             // Create subscription record
             const subscription = {
@@ -555,10 +600,52 @@ async function processWebhookAsync(event: any) {
         }
 
         // Determine plan type from subscription items
-        const planInterval = subscription.items.data[0]?.price?.recurring?.interval;
-        const planType = planInterval === 'year' ? 'annual' : 'monthly';
-        const planName = planType === 'annual' ? 'Premium Annual' : 'Premium Monthly';
-        const price = planType === 'annual' ? '$120 USD' : '$30 USD';
+        const priceItem = subscription.items.data[0]?.price;
+        const interval = priceItem?.recurring?.interval;
+        const intervalCount = priceItem?.recurring?.interval_count || 1;
+        const amount = priceItem?.unit_amount ? priceItem.unit_amount / 100 : 0;
+
+        // Fetch plan from database
+        const plansCollection = db.collection('plans');
+        
+        // Try to find plan by Stripe price ID first
+        let planData = await plansCollection.findOne({ stripePriceId: priceItem?.id });
+        
+        if (!planData) {
+          // Fallback to matching by interval and amount
+          if (interval === 'year' && amount === 100) {
+            planData = await plansCollection.findOne({ planId: 'annual' });
+          } else if (interval === 'month' && intervalCount === 6 && amount === 60) {
+            planData = await plansCollection.findOne({ planId: 'platinum' });
+          } else if (interval === 'month' && intervalCount === 1 && amount === 30) {
+            planData = await plansCollection.findOne({ planId: 'monthly' });
+          }
+        }
+
+        let planType: string;
+        let planName: string;
+        let price: string;
+
+        if (planData) {
+          planType = planData.planId;
+          planName = planData.name;
+          price = planData.isFree ? 'FREE' : planData.priceDisplay;
+        } else {
+          // Fallback to hardcoded values
+          if (interval === 'year') {
+            planType = 'annual';
+            planName = 'Diamond';
+            price = '$100 USD';
+          } else if (interval === 'month' && intervalCount === 6) {
+            planType = 'platinum';
+            planName = 'Platinum';
+            price = '$60 USD';
+          } else {
+            planType = 'monthly';
+            planName = 'Premium';
+            price = '$30 USD';
+          }
+        }
 
         // Create subscription record
         const subscriptionRecord = {
@@ -744,11 +831,55 @@ async function processWebhookAsync(event: any) {
             }
 
             if (userId) {
-              // Determine plan type from subscription items
-              const planInterval = stripeSubscription.items.data[0]?.price?.recurring?.interval;
-              const planType = planInterval === 'year' ? 'annual' : 'monthly';
-              const planName = planType === 'annual' ? 'Premium Annual' : 'Premium Monthly';
-              const price = planType === 'annual' ? '$120 USD' : '$30 USD';
+            // Fetch plan from database
+            const priceItem = stripeSubscription.items.data[0]?.price;
+            const plansCollection = db.collection('plans');
+            
+            // Try to find plan by Stripe price ID first
+            let planData = await plansCollection.findOne({ stripePriceId: priceItem?.id });
+            
+            if (!planData) {
+              // Fallback to matching by interval and amount
+              const interval = priceItem?.recurring?.interval;
+              const intervalCount = priceItem?.recurring?.interval_count || 1;
+              const amount = priceItem?.unit_amount ? priceItem.unit_amount / 100 : 0;
+              
+              if (interval === 'year' && amount === 100) {
+                planData = await plansCollection.findOne({ planId: 'annual' });
+              } else if (interval === 'month' && intervalCount === 6 && amount === 60) {
+                planData = await plansCollection.findOne({ planId: 'platinum' });
+              } else if (interval === 'month' && intervalCount === 1 && amount === 30) {
+                planData = await plansCollection.findOne({ planId: 'monthly' });
+              }
+            }
+
+            let planType: string;
+            let planName: string;
+            let price: string;
+
+            if (planData) {
+              planType = planData.planId;
+              planName = planData.name;
+              price = planData.isFree ? 'FREE' : planData.priceDisplay;
+            } else {
+              // Fallback to hardcoded values
+              const interval = priceItem?.recurring?.interval;
+              const intervalCount = priceItem?.recurring?.interval_count || 1;
+              
+              if (interval === 'year') {
+                planType = 'annual';
+                planName = 'Diamond';
+                price = '$100 USD';
+              } else if (interval === 'month' && intervalCount === 6) {
+                planType = 'platinum';
+                planName = 'Platinum';
+                price = '$60 USD';
+              } else {
+                planType = 'monthly';
+                planName = 'Premium';
+                price = '$30 USD';
+              }
+            }
 
               // Create subscription record
               subscription = {

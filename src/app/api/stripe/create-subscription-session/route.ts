@@ -1,22 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { verifyToken } from '@/lib/auth';
+import { getDatabase } from '@/lib/mongodb';
 import Stripe from 'stripe';
-
-const planConfig = {
-  monthly: {
-    priceEnvKey: 'STRIPE_PRICE_ID_MONTHLY',
-    amount: 30,
-    currency: 'usd',
-    name: 'Premium Monthly',
-  },
-  annual: {
-    priceEnvKey: 'STRIPE_PRICE_ID_ANNUAL',
-    amount: 120,
-    currency: 'usd',
-    name: 'Premium Annual',
-  },
-} as const;
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +16,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (plan !== 'monthly' && plan !== 'annual') {
+    if (plan !== 'monthly' && plan !== 'annual' && plan !== 'platinum') {
       return NextResponse.json(
         { error: 'Invalid plan type' },
         { status: 400 },
@@ -47,13 +33,44 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const config = planConfig[plan];
-    const priceId = process.env[config.priceEnvKey];
+    // Fetch plan from database
+    const db = await getDatabase();
+    const plansCollection = db.collection('plans');
+    const planData = await plansCollection.findOne({ planId: plan, isActive: true });
+
+    if (!planData) {
+      return NextResponse.json(
+        { error: 'Plan not found or inactive' },
+        { status: 404 },
+      );
+    }
+
+    // If plan is free, skip Stripe and return success immediately
+    if (planData.isFree) {
+      // Create a mock subscription ID for free plans
+      const mockSubscriptionId = `free_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      
+      return NextResponse.json({
+        clientSecret: null, // No payment needed
+        subscriptionId: mockSubscriptionId,
+        customerId: null,
+        plan: {
+          name: planData.name,
+          amount: 0,
+          currency: 'usd',
+          interval: planData.billingInterval === '6 months' ? '6 months' : planData.billingInterval,
+        },
+        isFree: true,
+      });
+    }
+
+    // Use Stripe Price ID from plan data or environment
+    const priceId = planData.stripePriceId || process.env[`STRIPE_PRICE_ID_${plan.toUpperCase()}`];
 
     if (!priceId) {
       return NextResponse.json(
         {
-          error: `Stripe price ID not configured for ${plan} plan. Set ${config.priceEnvKey} in your environment.`,
+          error: `Stripe price ID not configured for ${plan} plan. Please configure it in the admin panel or set STRIPE_PRICE_ID_${plan.toUpperCase()} in your environment.`,
         },
         { status: 500 },
       );
@@ -133,11 +150,12 @@ export async function POST(request: NextRequest) {
       subscriptionId: subscription.id,
       customerId: customer.id,
       plan: {
-        name: config.name,
-        amount: config.amount,
-        currency: config.currency,
-        interval: plan === 'monthly' ? 'month' : 'year',
+        name: planData.name,
+        amount: planData.priceAmount,
+        currency: 'usd',
+        interval: planData.billingInterval === '6 months' ? '6 months' : planData.billingInterval,
       },
+      isFree: false,
     });
   } catch (error: any) {
     console.error('Error creating subscription intent:', error);

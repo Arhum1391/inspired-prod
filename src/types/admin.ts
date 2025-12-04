@@ -100,6 +100,12 @@ export interface ComplianceMetric {
   customStatus?: 'pass' | 'fail';
 }
 
+export interface CustomTable {
+  title: string; // Table title/name
+  headings: string[]; // Exactly 4 column headings
+  rows: Array<{ values: string[] }>; // Each row contains exactly 4 values
+}
+
 export interface InfoCards {
   duration: {
     value: string;
@@ -197,6 +203,7 @@ export interface ShariahTile {
   lockedDescription: string;
   analystNotes: string;
   complianceMetrics?: ComplianceMetric[];
+  customTable?: CustomTable;
   createdAt: Date;
   updatedAt: Date;
 }

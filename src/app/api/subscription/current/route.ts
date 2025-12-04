@@ -57,10 +57,55 @@ export async function GET(request: NextRequest) {
             if (subscriptions.data.length > 0) {
               const stripeSubscription = subscriptions.data[0];
               
-              // Determine plan type from subscription
-              const planType = stripeSubscription.items.data[0]?.price?.recurring?.interval === 'year' ? 'annual' : 'monthly';
-              const planName = planType === 'annual' ? 'Premium Annual' : 'Premium Monthly';
-              const price = planType === 'annual' ? '$120 USD' : '$30 USD';
+              // Fetch plan from database
+              const priceItem = stripeSubscription.items.data[0]?.price;
+              const plansCollection = db.collection('plans');
+              
+              // Try to find plan by Stripe price ID first
+              let planData = await plansCollection.findOne({ stripePriceId: priceItem?.id });
+              
+              if (!planData) {
+                // Fallback to matching by interval and amount
+                const interval = priceItem?.recurring?.interval;
+                const intervalCount = priceItem?.recurring?.interval_count || 1;
+                const amount = priceItem?.unit_amount ? priceItem.unit_amount / 100 : 0;
+                
+                if (interval === 'year' && amount === 100) {
+                  planData = await plansCollection.findOne({ planId: 'annual' });
+                } else if (interval === 'month' && intervalCount === 6 && amount === 60) {
+                  planData = await plansCollection.findOne({ planId: 'platinum' });
+                } else if (interval === 'month' && intervalCount === 1 && amount === 30) {
+                  planData = await plansCollection.findOne({ planId: 'monthly' });
+                }
+              }
+
+              let planType: string;
+              let planName: string;
+              let price: string;
+
+              if (planData) {
+                planType = planData.planId;
+                planName = planData.name;
+                price = planData.isFree ? 'FREE' : planData.priceDisplay;
+              } else {
+                // Fallback to hardcoded values
+                const interval = priceItem?.recurring?.interval;
+                const intervalCount = priceItem?.recurring?.interval_count || 1;
+                
+                if (interval === 'year') {
+                  planType = 'annual';
+                  planName = 'Diamond';
+                  price = '$100 USD';
+                } else if (interval === 'month' && intervalCount === 6) {
+                  planType = 'platinum';
+                  planName = 'Platinum';
+                  price = '$60 USD';
+                } else {
+                  planType = 'monthly';
+                  planName = 'Premium';
+                  price = '$30 USD';
+                }
+              }
 
               // Save subscription to database
               subscription = {
@@ -131,14 +176,23 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // Format price for display - extract numeric value and add /month or /year
+    // Fetch plan details from database for accurate display
+    const plansCollection = db.collection('plans');
+    const planData = await plansCollection.findOne({ planId: subscription.planType });
+    
+    // Format price for display
     let displayPrice = subscription.price;
-    if (subscription.planType === 'annual') {
-      // Annual: show as $120 USD /year or ($10 USD /month)
-      displayPrice = subscription.price + ' /year';
+    if (planData) {
+      displayPrice = planData.isFree ? 'FREE' : planData.priceDisplay;
     } else {
-      // Monthly: show as $30 USD /month
-      displayPrice = subscription.price + ' /month';
+      // Fallback to hardcoded formatting
+      if (subscription.planType === 'annual') {
+        displayPrice = subscription.price + ' /year';
+      } else if (subscription.planType === 'platinum') {
+        displayPrice = subscription.price + '/6 months';
+      } else {
+        displayPrice = subscription.price + ' /month';
+      }
     }
 
     return NextResponse.json({

@@ -305,43 +305,11 @@ const BookingSuccessContent: React.FC = () => {
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-8 w-full sm:justify-center relative z-20">
-                    {/* Google Calendar */}
-                    <button 
-                        className="bg-white text-black px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
-                        style={{ outline: 'none', boxShadow: 'none' }}
-                    >
-                        <Image 
-                            src="/logo/calendar.svg" 
-                            alt="Google Calendar" 
-                            width={20}
-                            height={20}
-                            className="w-5 h-5"
-                        />
-                        Google Calendar
-                    </button>
-
-                    {/* Outlook Calendar */}
-                    <button 
-                        className="bg-black border border-white text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
-                        style={{ backgroundColor: 'black', outline: 'none', boxShadow: 'none' }}
-                        onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
-                        onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'black'}
-                    >
-                        <Image 
-                            src="/logo/outlook.png" 
-                            alt="Outlook Calendar" 
-                            width={20}
-                            height={20}
-                            className="w-5 h-5"
-                        />
-                        Outlook Calendar
-                    </button>
-
+                <div className="flex justify-center mb-8 w-full relative z-20" style={{ maxWidth: '600px' }}>
                     {/* Back Home Button */}
                     <button 
                         onClick={handleBackHome}
-                        className="bg-black border border-white text-white px-4 py-2 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full sm:w-auto focus:outline-none focus:ring-0"
+                        className="bg-black border border-white text-white px-6 py-3 rounded-3xl font-semibold flex items-center justify-center gap-2 transition-colors w-full focus:outline-none focus:ring-0"
                         style={{ backgroundColor: 'black', outline: 'none', boxShadow: 'none' }}
                         onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
                         onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'black'}

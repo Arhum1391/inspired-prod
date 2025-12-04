@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import type { ShariahTile, ComplianceMetric } from '@/types/admin';
+import type { ShariahTile, ComplianceMetric, CustomTable } from '@/types/admin';
 
 type TileResponse = ShariahTile & { _id?: string };
 
@@ -13,6 +13,11 @@ const emptyForm: Omit<ShariahTile, '_id' | 'createdAt' | 'updatedAt'> = {
   description: '',
   compliancePoints: [],
   complianceMetrics: [],
+  customTable: {
+    title: '',
+    headings: ['', '', '', ''],
+    rows: [],
+  },
   footerLeft: '',
   footerRight: '',
   ctaLabel: 'View Details',
@@ -130,6 +135,105 @@ export default function ShariahAdminPage() {
     }));
   };
 
+  const handleCustomTableTitleChange = (value: string) => {
+    setFormData((prev) => {
+      const customTable = prev.customTable || { title: '', headings: ['', '', '', ''], rows: [] };
+      return {
+        ...prev,
+        customTable: {
+          ...customTable,
+          title: value,
+        },
+      };
+    });
+    if (validationErrors.customTable) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next.customTable;
+        return next;
+      });
+    }
+  };
+
+  const handleCustomTableHeadingChange = (index: number, value: string) => {
+    setFormData((prev) => {
+      const customTable = prev.customTable || { title: '', headings: ['', '', '', ''], rows: [] };
+      const newHeadings = [...customTable.headings];
+      newHeadings[index] = value;
+      return {
+        ...prev,
+        customTable: {
+          ...customTable,
+          headings: newHeadings,
+        },
+      };
+    });
+    if (validationErrors.customTable) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next.customTable;
+        return next;
+      });
+    }
+  };
+
+  const addCustomTableRow = () => {
+    setFormData((prev) => {
+      const customTable = prev.customTable || { title: '', headings: ['', '', '', ''], rows: [] };
+      return {
+        ...prev,
+        customTable: {
+          ...customTable,
+          rows: [...customTable.rows, { values: ['', '', '', ''] }],
+        },
+      };
+    });
+    if (validationErrors.customTable) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next.customTable;
+        return next;
+      });
+    }
+  };
+
+  const handleCustomTableRowChange = (rowIndex: number, valueIndex: number, value: string) => {
+    setFormData((prev) => {
+      const customTable = prev.customTable || { title: '', headings: ['', '', '', ''], rows: [] };
+      const newRows = [...customTable.rows];
+      const newValues = [...newRows[rowIndex].values];
+      newValues[valueIndex] = value;
+      newRows[rowIndex] = { values: newValues };
+      return {
+        ...prev,
+        customTable: {
+          ...customTable,
+          rows: newRows,
+        },
+      };
+    });
+    if (validationErrors.customTable) {
+      setValidationErrors((prev) => {
+        const next = { ...prev };
+        delete next.customTable;
+        return next;
+      });
+    }
+  };
+
+  const removeCustomTableRow = (index: number) => {
+    setFormData((prev) => {
+      const customTable = prev.customTable || { title: '', headings: ['', '', '', ''], rows: [] };
+      return {
+        ...prev,
+        customTable: {
+          ...customTable,
+          rows: customTable.rows.filter((_, i) => i !== index),
+        },
+      };
+    });
+  };
+
   useEffect(() => {
     fetchTiles();
   }, []);
@@ -170,6 +274,11 @@ export default function ShariahAdminPage() {
         description: tile.description,
         compliancePoints: tile.compliancePoints || [],
         complianceMetrics: tile.complianceMetrics || [],
+        customTable: tile.customTable || {
+          title: '',
+          headings: ['', '', '', ''],
+          rows: [],
+        },
         footerLeft: tile.footerLeft,
         footerRight: formatDateForInput(tile.footerRight),
         ctaLabel: 'View Details',
@@ -285,9 +394,8 @@ export default function ShariahAdminPage() {
       }
     }
 
-    if (!formData.complianceMetrics || formData.complianceMetrics.length === 0) {
-      errors.complianceMetrics = 'Add at least one compliance metric';
-    } else {
+    // Validate compliance metrics if they exist (optional)
+    if (formData.complianceMetrics && formData.complianceMetrics.length > 0) {
       const missingData = formData.complianceMetrics.some(
         (metric) =>
           !metric.criteria.trim() ||
@@ -315,6 +423,55 @@ export default function ShariahAdminPage() {
           errors.complianceMetrics =
             'Numeric metrics must have parseable numbers in threshold and actual fields';
         }
+      }
+    }
+
+    // Validate custom table if it exists (optional)
+    if (formData.customTable) {
+      const customTable = formData.customTable;
+      
+      // Validate title
+      if (!customTable.title || !customTable.title.trim()) {
+        errors.customTable = 'Custom table title is required';
+      }
+      
+      // Validate headings - must have exactly 4 non-empty strings
+      if (!customTable.headings || customTable.headings.length !== 4) {
+        errors.customTable = 'Custom table must have exactly 4 column headings';
+      } else {
+        const emptyHeading = customTable.headings.some((heading) => !heading.trim());
+        if (emptyHeading) {
+          errors.customTable = 'All column headings must be filled';
+        }
+      }
+
+      // Validate rows if headings are valid
+      if (!errors.customTable && customTable.rows) {
+        const invalidRow = customTable.rows.some(
+          (row) => !row.values || row.values.length !== 4 || row.values.some((val) => !val.trim())
+        );
+        if (invalidRow) {
+          errors.customTable = 'Each row must have exactly 4 non-empty values';
+        }
+      }
+    }
+
+    // Require at least one table (compliance metrics OR custom table)
+    const hasComplianceMetrics = formData.complianceMetrics && formData.complianceMetrics.length > 0;
+    const hasCustomTable = formData.customTable && 
+      formData.customTable.title &&
+      formData.customTable.title.trim() &&
+      formData.customTable.headings && 
+      formData.customTable.headings.every(h => h.trim()) &&
+      formData.customTable.rows && 
+      formData.customTable.rows.length > 0;
+    
+    if (!hasComplianceMetrics && !hasCustomTable) {
+      if (!errors.complianceMetrics) {
+        errors.complianceMetrics = 'Add at least one compliance metric OR create a custom table';
+      }
+      if (!errors.customTable) {
+        errors.customTable = 'Add at least one compliance metric OR create a custom table';
       }
     }
 
@@ -355,6 +512,15 @@ export default function ShariahAdminPage() {
         threshold: metric.threshold.trim(),
         actual: metric.actual.trim(),
       })),
+      customTable: formData.customTable
+        ? {
+            title: formData.customTable.title.trim(),
+            headings: formData.customTable.headings.map((h) => h.trim()),
+            rows: formData.customTable.rows.map((row) => ({
+              values: row.values.map((v) => v.trim()),
+            })),
+          }
+        : undefined,
     };
 
     try {
@@ -956,6 +1122,116 @@ export default function ShariahAdminPage() {
               {validationErrors.complianceMetrics && (
                 <p className="text-red-400 text-xs">{validationErrors.complianceMetrics}</p>
               )}
+            </div>
+          </div>
+
+          {/* Custom Table Section */}
+          <div className="border-t border-slate-600 pt-6">
+            <h3 className="text-xl font-semibold text-white border-b border-slate-700 pb-2">
+              Custom Table (Optional)
+            </h3>
+            <p className="text-sm text-slate-400 mt-2">
+              Create a custom table with 4 columns. Define the column headings and add rows with data.
+              This table will be displayed on the Shariah details page alongside the compliance metrics table.
+            </p>
+
+            <div className="space-y-4 mt-4">
+              {/* Table Title */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Table Title *
+                </label>
+                <input
+                  type="text"
+                  value={formData.customTable?.title || ''}
+                  onChange={(e) => handleCustomTableTitleChange(e.target.value)}
+                  className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
+                    validationErrors.customTable
+                      ? 'border-red-500 focus:ring-red-500'
+                      : 'border-slate-600 focus:ring-indigo-500'
+                  }`}
+                  placeholder="Additional Information"
+                />
+              </div>
+
+              {/* Column Headings */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Column Headings *
+                </label>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  {[0, 1, 2, 3].map((index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      value={formData.customTable?.headings[index] || ''}
+                      onChange={(e) => handleCustomTableHeadingChange(index, e.target.value)}
+                      className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
+                        validationErrors.customTable
+                          ? 'border-red-500 focus:ring-red-500'
+                          : 'border-slate-600 focus:ring-indigo-500'
+                      }`}
+                      placeholder={`Column ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Table Rows */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Table Rows
+                </label>
+                {(!formData.customTable?.rows || formData.customTable.rows.length === 0) && (
+                  <p className="text-sm text-gray-400 mb-2">
+                    No rows yet. Add one to get started.
+                  </p>
+                )}
+
+                <div className="space-y-3">
+                  {(formData.customTable?.rows || []).map((row, rowIndex) => (
+                    <div key={rowIndex} className="bg-slate-700 rounded-lg p-4">
+                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        {[0, 1, 2, 3].map((colIndex) => (
+                          <input
+                            key={colIndex}
+                            type="text"
+                            value={row.values[colIndex] || ''}
+                            onChange={(e) =>
+                              handleCustomTableRowChange(rowIndex, colIndex, e.target.value)
+                            }
+                            className="w-full px-3 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                            placeholder={
+                              formData.customTable?.headings[colIndex] || `Column ${colIndex + 1}`
+                            }
+                          />
+                        ))}
+                      </div>
+                      <div className="mt-3 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => removeCustomTableRow(rowIndex)}
+                          className="px-3 py-1 text-sm text-red-400 hover:text-red-300"
+                        >
+                          Remove Row
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={addCustomTableRow}
+                  className="mt-4 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors w-full md:w-auto"
+                >
+                  Add Row
+                </button>
+
+                {validationErrors.customTable && (
+                  <p className="text-red-400 text-xs mt-2">{validationErrors.customTable}</p>
+                )}
+              </div>
             </div>
           </div>
 

@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import LoadingScreen from '@/components/LoadingScreen';
 import { useState, useEffect } from 'react';
-import type { ShariahTile, ComplianceMetric } from '@/types/admin';
+import type { ShariahTile, ComplianceMetric, CustomTable } from '@/types/admin';
 
 const FOOTER_DATE_FORMATTER = new Intl.DateTimeFormat('en-US', {
   month: 'long',
@@ -315,6 +315,118 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
     );
   };
 
+  // Custom Table Render Functions
+  const renderCustomTableMobileCard = (row: { values: string[] }, headings: string[], index: number) => {
+    const cardElements: JSX.Element[] = [];
+    
+    // First row - no divider before
+    cardElements.push(
+      <div key={`row-0`} className="w-full flex flex-row justify-between items-center gap-4 p-0">
+        <div className="flex flex-row items-center gap-2 p-0 flex-1">
+          <span 
+            className="text-sm leading-none text-white"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+          >
+            {headings[0]}
+          </span>
+        </div>
+        <span 
+          className="text-sm leading-none text-[#909090] text-right flex-1"
+          style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+        >
+          {row.values[0] || ''}
+        </span>
+      </div>
+    );
+    
+    // Remaining rows with dividers between each row
+    headings.slice(1).forEach((heading, colIndex) => {
+      // Add divider before each row (except the first)
+      cardElements.push(
+        <div key={`divider-${colIndex + 1}`} className="w-full h-px border-t border-[#404040]" />
+      );
+      // Add the row
+      cardElements.push(
+        <div key={`row-${colIndex + 1}`} className="w-full flex flex-row justify-between items-center gap-4 p-0">
+          <div className="flex flex-row items-center gap-2 p-0 flex-1">
+            <span 
+              className="text-sm leading-none text-white"
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              {heading}
+            </span>
+          </div>
+          <span 
+            className="text-sm leading-none text-[#909090] text-right flex-1"
+            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+          >
+            {row.values[colIndex + 1] || ''}
+          </span>
+        </div>
+      );
+    });
+
+    return (
+      <div
+        key={`custom-${index}`}
+        className="w-full max-w-full p-4 sm:p-5 gap-5 border border-white/30 rounded-lg flex flex-col justify-center items-center box-border min-h-[180px] sm:min-h-[200px]"
+      >
+        {cardElements}
+      </div>
+    );
+  };
+
+  const renderCustomTableModalCard = (row: { values: string[] }, headings: string[], index: number) => {
+    return (
+      <div
+        key={`custom-modal-${index}`}
+        className="shariah-details-compliance-card w-full max-w-full min-h-[152px] p-4 gap-4 border border-white/30 rounded-lg flex flex-col justify-center items-center box-border flex-shrink-0 overflow-hidden"
+      >
+        {headings.map((heading, colIndex) => (
+          <div key={colIndex}>
+            {colIndex > 0 && <div className="w-full h-px border-t border-[#404040] mb-2 mt-2 flex-shrink-0" />}
+            <div className="w-full flex flex-row justify-between items-center gap-4 p-0 flex-shrink-0">
+              <div className="flex flex-row items-center gap-2 p-0 flex-1">
+                <span 
+                  className="text-sm leading-none text-white flex-shrink-0"
+                  style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                >
+                  {heading}
+                </span>
+              </div>
+              <span 
+                className="text-sm leading-none text-[#909090] text-right flex-1"
+                style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+              >
+                {row.values[colIndex] || ''}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderCustomTableDesktopRow = (row: { values: string[] }, headings: string[], index: number) => {
+    return (
+      <div
+        key={`custom-desktop-${index}`}
+        className="hidden lg:grid lg:grid-cols-4 gap-6 w-full p-4 border-b border-white/10"
+      >
+        {headings.map((heading, colIndex) => (
+          <div key={colIndex} className={`flex flex-col justify-center p-0 ${colIndex === 0 ? 'items-start' : 'items-end'}`}>
+            <span
+              className={`text-sm leading-none text-[#909090] ${colIndex === 0 ? 'text-left' : 'text-right'}`}
+              style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+            >
+              {row.values[colIndex] || ''}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -397,10 +509,10 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
     );
   }
 
-  const complianceMetrics =
-    tile.complianceMetrics && tile.complianceMetrics.length > 0
-      ? tile.complianceMetrics
-      : fallbackComplianceMetrics;
+  // Only use actual compliance metrics, no fallback
+  const complianceMetrics = tile.complianceMetrics && tile.complianceMetrics.length > 0
+    ? tile.complianceMetrics
+    : [];
 
   // Calculate mobile tile height based on number of visible cards (1-5)
   const visibleCardsCount = Math.min(complianceMetrics.length, 5);
@@ -684,7 +796,8 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
           </div>
         </div>
 
-        {/* Compliance Breakdown Tile */}
+        {/* Compliance Breakdown Tile - Only show if compliance metrics exist */}
+        {complianceMetrics.length > 0 && (
         <div
           className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl mb-8 sm:mb-12 lg:mb-16 rounded-2xl bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 flex flex-col items-start gap-4 lg:gap-6 relative overflow-hidden"
         >
@@ -719,19 +832,21 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                     Compliance Breakdown
                   </h2>
                 </div>
-                <button
-                  className="flex flex-row items-center gap-1 bg-transparent border-none cursor-pointer p-0 relative z-10 self-start mt-0"
-                  onClick={() => {
-                    if (isMobile) {
-                      setIsMobileComplianceModalOpen(true);
-                    } else {
-                      setIsDesktopComplianceModalOpen(true);
-                    }
-                  }}
-                >
-                  <span className="text-xs sm:text-sm lg:text-sm text-white" style={{ fontFamily: 'Gilroy-SemiBold' }}>View All</span>
-                  <ChevronLeft size={16} className="rotate-180 text-white" />
-                </button>
+                {complianceMetrics.length > 0 && (
+                  <button
+                    className="flex flex-row items-center gap-1 bg-transparent border-none cursor-pointer p-0 relative z-10 self-start mt-0"
+                    onClick={() => {
+                      if (isMobile) {
+                        setIsMobileComplianceModalOpen(true);
+                      } else {
+                        setIsDesktopComplianceModalOpen(true);
+                      }
+                    }}
+                  >
+                    <span className="text-xs sm:text-sm lg:text-sm text-white" style={{ fontFamily: 'Gilroy-SemiBold' }}>View All</span>
+                    <ChevronLeft size={16} className="rotate-180 text-white" />
+                  </button>
+                )}
               </div>
 
               {/* Desktop Table Header */}
@@ -1699,6 +1814,79 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             </div>
           </div>
         </div>
+        )}
+
+        {/* Custom Table Tile */}
+        {tile.customTable && tile.customTable.headings && tile.customTable.headings.every(h => h.trim()) && tile.customTable.rows && tile.customTable.rows.length > 0 && (
+          <div
+            className="w-full max-w-4xl lg:max-w-5xl xl:max-w-6xl mb-8 sm:mb-12 lg:mb-16 rounded-2xl bg-[#1F1F1F] p-3 sm:p-4 lg:p-5 flex flex-col items-start gap-4 lg:gap-6 relative overflow-hidden"
+          >
+            {/* Curved Gradient Border - Desktop */}
+            <div
+              className="hidden lg:block absolute inset-0 pointer-events-none rounded-2xl p-[1px] z-0"
+              style={{
+                background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+              }}
+            >
+              <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
+            </div>
+
+            <div
+              className="w-full h-full rounded-2xl bg-transparent p-3 sm:p-4 lg:p-5 flex flex-col items-start relative overflow-hidden z-10"
+            >
+              <div
+                className="w-full flex flex-col items-start gap-3 lg:gap-3 p-0 relative z-10 box-border min-h-[200px] sm:min-h-[250px]"
+              >
+                {/* Header with Title */}
+                <div
+                  className="w-full flex flex-row items-start justify-between gap-4 p-0 mb-2 lg:mb-4 relative z-10"
+                >
+                  <div
+                    className="flex flex-col items-start gap-0 lg:gap-3 p-0 flex-1"
+                  >
+                    <h2
+                      className="w-full text-xl sm:text-2xl text-white m-0 relative z-10"
+                      style={{ fontFamily: 'Gilroy-SemiBold', fontWeight: 400 }}
+                    >
+                      {tile.customTable.title}
+                    </h2>
+                  </div>
+                </div>
+
+                {/* Desktop Table Header */}
+                <div className="hidden lg:grid lg:grid-cols-4 gap-6 w-full p-4 border-b border-white/30">
+                  {tile.customTable.headings.map((heading, index) => (
+                    <div key={index} className={`flex flex-col justify-center p-0 ${index === 0 ? 'items-start' : 'items-end'}`}>
+                      <span
+                        className={`text-sm leading-none text-white ${index === 0 ? 'text-left' : 'text-right'}`}
+                        style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                      >
+                        {heading}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Mobile Cards Container */}
+                <div className="lg:hidden flex flex-col items-start gap-4 w-full p-0">
+                  {(() => {
+                    const customTableVisibleCardsCount = Math.min(tile.customTable.rows.length, 5);
+                    return tile.customTable.rows.slice(0, customTableVisibleCardsCount).map((row, index) => 
+                      renderCustomTableMobileCard(row, tile.customTable!.headings, index)
+                    );
+                  })()}
+                </div>
+
+                {/* Desktop Data Rows Container */}
+                <div className="hidden lg:flex lg:flex-col lg:items-start gap-2 w-full p-0">
+                  {tile.customTable.rows.map((row, index) => 
+                    renderCustomTableDesktopRow(row, tile.customTable!.headings, index)
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Analyst Notes Section */}
         <div
@@ -1732,7 +1920,7 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
       )}
 
       {/* Desktop Compliance Modal */}
-      {!isMobile && isDesktopComplianceModalOpen && (
+      {!isMobile && isDesktopComplianceModalOpen && complianceMetrics.length > 0 && (
         <div
           className="fixed inset-0 w-full h-full bg-black/60 backdrop-blur-sm flex items-center justify-center z-[1000] p-4 lg:p-8"
           onClick={() => setIsDesktopComplianceModalOpen(false)}
@@ -1850,12 +2038,61 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
                 })}
               </div>
             </div>
+
+            {/* Custom Table Section in Modal */}
+            {tile.customTable && tile.customTable.headings && tile.customTable.headings.every(h => h.trim()) && tile.customTable.rows && tile.customTable.rows.length > 0 && (
+              <>
+                <div className="border-t border-white/30 pt-6 mt-6">
+                  <h2 
+                    className="text-xl sm:text-2xl lg:text-2xl text-white m-0 pr-8 mb-4"
+                    style={{ fontFamily: 'Gilroy-SemiBold', fontWeight: 400 }}
+                  >
+                    {tile.customTable.title}
+                  </h2>
+                </div>
+
+                {/* Table Header */}
+                <div className="grid grid-cols-4 gap-6 w-full p-4 border-b border-white/30 sticky top-0 bg-[#1F1F1F] z-10">
+                  {tile.customTable.headings.map((heading, index) => (
+                    <div key={index} className={`flex flex-col justify-center p-0 ${index === 0 ? 'items-start' : 'items-end'}`}>
+                      <span
+                        className={`text-sm leading-none text-white ${index === 0 ? 'text-left' : 'text-right'}`}
+                        style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                      >
+                        {heading}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Table Rows */}
+                <div className="flex flex-col items-start gap-2 w-full p-0">
+                  {tile.customTable.rows.map((row, index) => (
+                    <div
+                      key={`custom-modal-${index}`}
+                      className="grid grid-cols-4 gap-6 w-full p-4 border-b border-white/10"
+                    >
+                      {tile.customTable!.headings.map((heading, colIndex) => (
+                        <div key={colIndex} className={`flex flex-col justify-center p-0 ${colIndex === 0 ? 'items-start' : 'items-end'}`}>
+                          <span
+                            className={`text-sm leading-none text-[#909090] ${colIndex === 0 ? 'text-left' : 'text-right'}`}
+                            style={{ fontFamily: 'Gilroy-Medium', fontWeight: 400 }}
+                          >
+                            {row.values[colIndex] || ''}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
 
       {/* Mobile Compliance Modal */}
-      {isMobile && isMobileComplianceModalOpen && (
+      {isMobile && isMobileComplianceModalOpen && complianceMetrics.length > 0 && (
         <div
           className="shariah-details-compliance-mobile-modal"
           onClick={() => setIsMobileComplianceModalOpen(false)}
@@ -2053,6 +2290,20 @@ export default function ShariahDetailsPage({ fundId }: ShariahDetailsPageProps) 
             <div className="shariah-details-compliance-mobile-modal-list">
               {complianceMetrics.map((metric, index) => renderModalComplianceCard(metric, index))}
             </div>
+
+            {/* Custom Table Section in Mobile Modal */}
+            {tile.customTable && tile.customTable.headings && tile.customTable.headings.every(h => h.trim()) && tile.customTable.rows && tile.customTable.rows.length > 0 && (
+              <>
+                <h2 className="shariah-details-compliance-mobile-modal-title" style={{ marginTop: '32px' }}>
+                  {tile.customTable.title}
+                </h2>
+                <div className="shariah-details-compliance-mobile-modal-list">
+                  {tile.customTable.rows.map((row, index) => 
+                    renderCustomTableModalCard(row, tile.customTable!.headings, index)
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

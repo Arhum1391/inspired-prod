@@ -516,12 +516,14 @@ export default function BootcampPage() {
   };
 
   const removeMentor = (index: number) => {
+    const newMentors = formData.mentors.filter((_, i) => i !== index);
     setFormData({
       ...formData,
-      mentors: formData.mentors.filter((_, i) => i !== index)
+      mentors: newMentors
     });
-    // Clear mentors error when a mentor is removed (if there are still mentors)
-    if (formData.mentors.length > 1 && validationErrors.mentors) {
+    // Clear mentors error when a mentor is removed (if there is at least one mentor remaining)
+    // The requirement is >= 1 mentor, so clear error if length >= 1
+    if (newMentors.length >= 1 && validationErrors.mentors) {
       setValidationErrors({ ...validationErrors, mentors: '' });
     }
   };

@@ -21,6 +21,38 @@ async function findBootcampById(db: any, id: string) {
   return bootcamp;
 }
 
+// Helper function to ensure bootcamp has numeric id field (migrate legacy bootcamps)
+async function ensureBootcampHasId(db: any, bootcamp: any): Promise<string> {
+  // If bootcamp already has an id, return it
+  if (bootcamp.id) {
+    return bootcamp.id;
+  }
+  
+  // Legacy bootcamp without id - generate and assign one
+  if (bootcamp._id) {
+    const allBootcamps = await db.collection('bootcamps').find({}).toArray();
+    let maxId = 0;
+    for (const bc of allBootcamps) {
+      const idValue = typeof bc.id === 'number' ? bc.id : parseInt(bc.id);
+      if (!isNaN(idValue) && idValue > maxId) {
+        maxId = idValue;
+      }
+    }
+    const newId = (maxId + 1).toString();
+    
+    // Update bootcamp with new id
+    await db.collection('bootcamps').updateOne(
+      { _id: bootcamp._id },
+      { $set: { id: newId } }
+    );
+    
+    return newId;
+  }
+  
+  // Fallback (should not happen)
+  throw new Error('Bootcamp has neither id nor _id field');
+}
+
 // Helper to authenticate admin
 async function authenticateAdmin(request: NextRequest) {
   const token = request.cookies.get('auth-token')?.value;
@@ -85,8 +117,9 @@ export async function GET(
       );
     }
 
-    // Use bootcamp.id if available, otherwise use the provided id
-    const bootcampId = bootcamp.id || id;
+    // Ensure bootcamp has numeric id (migrate legacy bootcamps if needed)
+    // Always use numeric id for lessons, never ObjectId string
+    const bootcampId = await ensureBootcampHasId(db, bootcamp);
     
     const lessons = await db.collection('bootcamp_lessons')
       .find({ bootcampId: bootcampId })
@@ -127,8 +160,9 @@ export async function POST(
       );
     }
 
-    // Use bootcamp.id if available, otherwise use the provided id
-    const bootcampId = bootcamp.id || id;
+    // Ensure bootcamp has numeric id (migrate legacy bootcamps if needed)
+    // Always use numeric id for lessons, never ObjectId string
+    const bootcampId = await ensureBootcampHasId(db, bootcamp);
 
     // Validate required fields
     if (!body.title || !body.youtubeVideoId) {
@@ -226,8 +260,9 @@ export async function PUT(
       );
     }
 
-    // Use bootcamp.id if available, otherwise use the provided id
-    const bootcampId = bootcamp.id || id;
+    // Ensure bootcamp has numeric id (migrate legacy bootcamps if needed)
+    // Always use numeric id for lessons, never ObjectId string
+    const bootcampId = await ensureBootcampHasId(db, bootcamp);
 
     // Find the lesson
     const lesson = await db.collection('bootcamp_lessons').findOne({
@@ -331,8 +366,9 @@ export async function DELETE(
       );
     }
 
-    // Use bootcamp.id if available, otherwise use the provided id
-    const bootcampId = bootcamp.id || id;
+    // Ensure bootcamp has numeric id (migrate legacy bootcamps if needed)
+    // Always use numeric id for lessons, never ObjectId string
+    const bootcampId = await ensureBootcampHasId(db, bootcamp);
 
     const result = await db.collection('bootcamp_lessons').deleteOne({
       lessonId,

@@ -52,7 +52,7 @@ const AccountPage = () => {
     const fetchAccountData = async () => {
       try {
         const [subRes, pmRes, billingRes] = await Promise.all([
-          fetch('/api/subscription/current', { credentials: 'include' }),
+          fetch('/api/subscription/current', { credentials: 'include', cache: 'no-store' }),
           fetch('/api/payment-method/current', { credentials: 'include' }),
           fetch('/api/billing-history', { credentials: 'include' })
         ]);
@@ -91,6 +91,37 @@ const AccountPage = () => {
 
     fetchAccountData();
   }, [isAuthenticated, authLoading, router]);
+
+  // Refresh subscription data when page becomes visible (e.g., navigating back from pricing)
+  useEffect(() => {
+    if (!isAuthenticated || authLoading) {
+      return;
+    }
+
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible') {
+        try {
+          const subRes = await fetch('/api/subscription/current', { 
+            credentials: 'include',
+            cache: 'no-store' 
+          });
+          if (subRes.ok) {
+            const subData = await subRes.json();
+            setSubscription(subData.subscription || null);
+            localStorage.setItem('subscriptionId', subData.subscription ? subData.subscription.planName : '');
+          }
+        } catch (error) {
+          console.error('Error refreshing subscription data:', error);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isAuthenticated, authLoading]);
 
   // Initialize form fields when user data is available
   useEffect(() => {

@@ -36,6 +36,7 @@ const actionCards = [
 function SuccessPageContent() {
   const searchParams = useSearchParams();
   const [showSuccess, setShowSuccess] = useState(false);
+  const [planName, setPlanName] = useState<string | null>(null);
   const { login, user } = useAuth();
   const sessionId = searchParams.get('session_id');
   const subscriptionId = searchParams.get('subscription_id');
@@ -43,18 +44,43 @@ function SuccessPageContent() {
   useEffect(() => {
     const timer = setTimeout(() => setShowSuccess(true), 300);
 
+    const fetchPlanName = async () => {
+      try {
+        const subRes = await fetch('/api/subscription/current', { credentials: 'include', cache: 'no-store' });
+        if (subRes.ok) {
+          const subData = await subRes.json();
+          if (subData.subscription?.planName) {
+            setPlanName(subData.subscription.planName);
+            return; // Exit early if we got the plan name
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching subscription:', err);
+      }
+    };
+
     const pollSubscription = () => {
+      // Try immediately first
+      fetchPlanName();
+      
+      // Then retry after delay if needed
       setTimeout(async () => {
         try {
-          const subRes = await fetch('/api/subscription/current', { credentials: 'include' });
+          const subRes = await fetch('/api/subscription/current', { credentials: 'include', cache: 'no-store' });
           if (subRes.ok) {
             const subData = await subRes.json();
+            if (subData.subscription?.planName) {
+              setPlanName(subData.subscription.planName);
+            }
             if (!subData.subscription) {
               setTimeout(async () => {
                 try {
-                  const retryRes = await fetch('/api/subscription/current', { credentials: 'include' });
+                  const retryRes = await fetch('/api/subscription/current', { credentials: 'include', cache: 'no-store' });
                   if (retryRes.ok) {
-                    await retryRes.json();
+                    const retryData = await retryRes.json();
+                    if (retryData.subscription?.planName) {
+                      setPlanName(retryData.subscription.planName);
+                    }
                   }
                 } catch (err) {
                   console.error('Error checking subscription after auth:', err);
@@ -223,7 +249,7 @@ function SuccessPageContent() {
                 className="text-3xl sm:text-4xl font-semibold leading-[100%] text-white max-w-2xl"
                 style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 600 }}
               >
-                Welcome to Inspired Analyst Premium
+                {planName ? `Welcome to Inspired Analyst ${planName}` : 'Welcome to Inspired Analyst'}
               </h1>
               <p
                 className="text-sm sm:text-base leading-[120%] text-white/90 max-w-xl"
@@ -318,7 +344,7 @@ function SuccessPageContent() {
 
               <div className="w-full flex flex-col items-center gap-4">
                 <h1 className="text-[40px] font-semibold leading-[100%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 600 }}>
-                  Welcome to Inspired Analyst Premium
+                  {planName ? `Welcome to Inspired Analyst ${planName}` : 'Welcome to Inspired Analyst'}
                 </h1>
                 <p className="text-[14px] font-medium leading-[120%] text-center text-white" style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500 }}>
                   Your subscription is active.

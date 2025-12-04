@@ -243,7 +243,7 @@ function CheckoutContent() {
         setIsFinalizing(false);
       }
     },
-    [router, login],
+    [router, login, plan, customerEmail],
   );
 
   const handlePaymentError = useCallback((message: string | null) => {
@@ -720,7 +720,7 @@ function CheckoutPaymentForm({
             opacity: isProcessing ? 0.6 : 1,
           }}
         >
-          {isProcessing ? 'Processing...' : `Pay & Start Premium`}
+          {isProcessing ? 'Processing...' : `Pay & Start ${planDetails.name}`}
         </button>
 
         <p

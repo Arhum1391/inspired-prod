@@ -134,22 +134,132 @@ export async function GET(request: NextRequest) {
     }
 
     // If subscription found, sync with Stripe to ensure it's up to date
-    if (subscription?.stripeSubscriptionId) {
+    // Skip Stripe sync for free plans (they don't exist in Stripe)
+    // For free plans, the plan information is stored during activation and should be preserved
+    const isFreePlan = subscription?.stripeSubscriptionId?.startsWith('free_') || subscription?.isFree;
+    
+    // For free plans, ensure plan information is preserved (it's stored during activation)
+    if (isFreePlan && subscription && (!subscription.planName || !subscription.planType)) {
+      // If plan info is missing, try to fetch it from the database using planType if available
+      if (subscription.planType) {
+        const plansCollection = db.collection('plans');
+        const planData = await plansCollection.findOne({ planId: subscription.planType, isActive: true });
+        if (planData) {
+          await db.collection('subscriptions').updateOne(
+            { _id: subscription._id },
+            {
+              $set: {
+                planName: planData.name,
+                planType: planData.planId,
+                price: planData.isFree ? 'FREE' : planData.priceDisplay,
+                updatedAt: new Date()
+              }
+            }
+          );
+          // Refresh subscription from database
+          subscription = await db.collection('subscriptions').findOne({
+            _id: subscription._id
+          });
+        }
+      }
+    }
+    
+    if (subscription?.stripeSubscriptionId && !isFreePlan) {
       try {
         const stripeSubscription = await stripe.subscriptions.retrieve(subscription.stripeSubscriptionId);
+        
+        // Determine plan information - prioritize metadata, then database lookup, then fallback
+        const plansCollection = db.collection('plans');
+        let planType: string | undefined;
+        let planName: string | undefined;
+        let price: string | undefined;
+        let planData: any = null;
+        
+        // First, try to get plan from Stripe metadata (most reliable)
+        const metadataPlan = stripeSubscription.metadata?.plan;
+        if (metadataPlan && ['monthly', 'annual', 'platinum'].includes(metadataPlan)) {
+          planData = await plansCollection.findOne({ planId: metadataPlan, isActive: true });
+          if (planData) {
+            planType = planData.planId;
+            planName = planData.name;
+            price = planData.isFree ? 'FREE' : planData.priceDisplay;
+          }
+        }
+        
+        // If not found in metadata, try to find plan by Stripe price ID
+        if (!planData) {
+          const priceItem = stripeSubscription.items.data[0]?.price;
+          planData = await plansCollection.findOne({ stripePriceId: priceItem?.id, isActive: true });
+          
+          if (planData) {
+            planType = planData.planId;
+            planName = planData.name;
+            price = planData.isFree ? 'FREE' : planData.priceDisplay;
+          } else {
+            // Fallback to matching by interval and amount
+            const interval = priceItem?.recurring?.interval;
+            const intervalCount = priceItem?.recurring?.interval_count || 1;
+            const amount = priceItem?.unit_amount ? priceItem.unit_amount / 100 : 0;
+            
+            if (interval === 'year' && amount === 100) {
+              planData = await plansCollection.findOne({ planId: 'annual', isActive: true });
+            } else if (interval === 'month' && intervalCount === 6 && amount === 60) {
+              planData = await plansCollection.findOne({ planId: 'platinum', isActive: true });
+            } else if (interval === 'month' && intervalCount === 1 && amount === 30) {
+              planData = await plansCollection.findOne({ planId: 'monthly', isActive: true });
+            }
+            
+            if (planData) {
+              planType = planData.planId;
+              planName = planData.name;
+              price = planData.isFree ? 'FREE' : planData.priceDisplay;
+            }
+          }
+        }
+        
+        // Only update plan info if we found it and it's different, or if it's missing
+        // Preserve existing plan info if we can't determine it from Stripe
+        const updateData: any = {
+          status: stripeSubscription.status,
+          currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
+          currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
+          cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
+          updatedAt: new Date()
+        };
+        
+        // Only update plan info if we successfully determined it from metadata or database lookup
+        if (planType && planName && price) {
+          updateData.planName = planName;
+          updateData.planType = planType;
+          updateData.price = price;
+        }
+        // If plan info is missing in database, try one more fallback using Stripe price data
+        else if (!subscription.planName || !subscription.planType) {
+          const priceItem = stripeSubscription.items.data[0]?.price;
+          const interval = priceItem?.recurring?.interval;
+          const intervalCount = priceItem?.recurring?.interval_count || 1;
+          
+          if (interval === 'year') {
+            updateData.planType = 'annual';
+            updateData.planName = 'Diamond';
+            updateData.price = '$100 USD';
+          } else if (interval === 'month' && intervalCount === 6) {
+            updateData.planType = 'platinum';
+            updateData.planName = 'Platinum';
+            updateData.price = '$60 USD';
+          } else if (interval === 'month' && intervalCount === 1) {
+            updateData.planType = 'monthly';
+            updateData.planName = 'Premium';
+            updateData.price = '$30 USD';
+          }
+          // If we still can't determine it and database has no plan info, don't set anything
+        }
+        // If database already has plan info and we couldn't determine it from Stripe, preserve existing values
         
         // Update subscription in database with latest Stripe data
         await db.collection('subscriptions').updateOne(
           { _id: subscription._id },
-          {
-            $set: {
-              status: stripeSubscription.status,
-              currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
-              currentPeriodEnd: new Date(stripeSubscription.current_period_end * 1000),
-              cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
-              updatedAt: new Date()
-            }
-          }
+          { $set: updateData }
         );
 
         // Refresh subscription from database

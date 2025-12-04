@@ -57,6 +57,7 @@ export default function BootcampPage() {
   // Lesson management state
   const [lessons, setLessons] = useState<any[]>([]);
   const [loadingLessons, setLoadingLessons] = useState(false);
+  const [pendingLessons, setPendingLessons] = useState<any[]>([]); // Lessons added during creation (before bootcamp ID exists)
   const [newLesson, setNewLesson] = useState({
     title: '',
     youtubeVideoId: '',
@@ -72,16 +73,6 @@ export default function BootcampPage() {
     fetchBootcamps();
     fetchTeamMembers();
   }, []);
-
-  // Trigger validation when modal opens or form data changes
-  useEffect(() => {
-    if (showModal) {
-      // Small delay to ensure form is rendered
-      setTimeout(() => {
-        validateForm();
-      }, 100);
-    }
-  }, [showModal, formData.title, formData.description, formData.heroDescription]);
 
   const fetchTeamMembers = async () => {
     try {
@@ -141,6 +132,18 @@ export default function BootcampPage() {
     return '';
   };
 
+  const validateTargetAudienceItem = (item: string): string => {
+    if (!item.trim()) {
+      return 'Target audience item cannot be empty';
+    }
+    // Check for alphanumeric only (letters and numbers, no spaces or special characters)
+    const alphanumericRegex = /^[a-zA-Z0-9]+$/;
+    if (!alphanumericRegex.test(item.trim())) {
+      return 'Target audience items can only contain letters and numbers (no spaces or special characters)';
+    }
+    return '';
+  };
+
   const validateForm = (): boolean => {
     const errors: {[key: string]: string} = {};
     
@@ -152,10 +155,21 @@ export default function BootcampPage() {
     const descriptionError = validateDescription(formData.description, 'Description');
     if (descriptionError) errors.description = descriptionError;
     
+    // Validate mentors - at least one required
+    if (formData.mentors.length === 0) {
+      errors.mentors = 'At least one mentor is required';
+    }
+    
     // Validate hero description paragraphs
     formData.heroDescription.forEach((paragraph, index) => {
       const paragraphError = validateDescription(paragraph, `Hero Description Paragraph ${index + 1}`);
       if (paragraphError) errors[`heroDescription_${index}`] = paragraphError;
+    });
+    
+    // Validate target audience items
+    formData.targetAudience.items.forEach((item, index) => {
+      const itemError = validateTargetAudienceItem(item);
+      if (itemError) errors[`targetAudienceItem_${index}`] = itemError;
     });
     
     setValidationErrors(errors);
@@ -234,11 +248,13 @@ export default function BootcampPage() {
 
       if (editingBootcamp) {
         // Update existing bootcamp
-        console.log('Updating bootcamp with ID:', editingBootcamp._id);
+        // Use id if available, otherwise fall back to _id for backward compatibility
+        const bootcampId = editingBootcamp.id || editingBootcamp._id?.toString() || '';
+        console.log('Updating bootcamp with ID:', bootcampId);
         console.log('Update data:', bootcampData);
         console.log('Hero subheading being sent:', bootcampData.heroSubheading);
         
-        const response = await fetch(`/admin/api/bootcamp/${editingBootcamp._id}`, {
+        const response = await fetch(`/admin/api/bootcamp/${bootcampId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(bootcampData),
@@ -278,6 +294,33 @@ export default function BootcampPage() {
         if (response.ok) {
           const result = await response.json();
           console.log('Create successful:', result);
+          const newBootcampId = result.id;
+          
+          // Create pending lessons if any were added during creation
+          if (pendingLessons.length > 0) {
+            console.log(`Creating ${pendingLessons.length} pending lessons for bootcamp ${newBootcampId}`);
+            for (const pendingLesson of pendingLessons) {
+              try {
+                const lessonResponse = await fetch(`/admin/api/bootcamp/${newBootcampId}/lessons`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    title: pendingLesson.title,
+                    youtubeVideoId: pendingLesson.youtubeVideoId,
+                    description: pendingLesson.description,
+                    order: pendingLesson.order,
+                  }),
+                });
+                
+                if (!lessonResponse.ok) {
+                  console.error(`Failed to create lesson: ${pendingLesson.title}`);
+                }
+              } catch (error) {
+                console.error(`Error creating lesson ${pendingLesson.title}:`, error);
+              }
+            }
+          }
+          
           await fetchBootcamps();
           closeModal();
         } else {
@@ -344,8 +387,8 @@ export default function BootcampPage() {
     // Clear validation errors when editing
     setValidationErrors({});
     
-    // Fetch lessons for this bootcamp
-    fetchLessons(bootcamp.id);
+    // Fetch lessons for this bootcamp (use id if available, otherwise _id)
+    fetchLessons(bootcamp.id || bootcamp._id?.toString() || '');
   };
 
   const handleDelete = async (id: string) => {
@@ -419,6 +462,10 @@ export default function BootcampPage() {
     setNewCurriculumItem('');
     setNewTargetAudienceItem('');
     setValidationErrors({});
+    setPendingLessons([]);
+    setLessons([]);
+    setNewLesson({ title: '', youtubeVideoId: '', description: '', order: 0 });
+    setEditingLesson(null);
   };
 
   const openModal = () => {
@@ -473,6 +520,10 @@ export default function BootcampPage() {
       ...formData,
       mentors: formData.mentors.filter((_, i) => i !== index)
     });
+    // Clear mentors error when a mentor is removed (if there are still mentors)
+    if (formData.mentors.length > 1 && validationErrors.mentors) {
+      setValidationErrors({ ...validationErrors, mentors: '' });
+    }
   };
 
   // Get available team members (not already selected as mentors)
@@ -618,12 +669,19 @@ export default function BootcampPage() {
 
   // Target audience management
   const addTargetAudienceItem = () => {
-    if (newTargetAudienceItem.trim()) {
+    const trimmedItem = newTargetAudienceItem.trim();
+    if (trimmedItem) {
+      // Validate alphanumeric only
+      const validationError = validateTargetAudienceItem(trimmedItem);
+      if (validationError) {
+        alert(validationError);
+        return;
+      }
       setFormData({
         ...formData,
         targetAudience: {
           ...formData.targetAudience,
-          items: [...formData.targetAudience.items, newTargetAudienceItem.trim()]
+          items: [...formData.targetAudience.items, trimmedItem]
         }
       });
       setNewTargetAudienceItem('');
@@ -657,36 +715,51 @@ export default function BootcampPage() {
   };
 
   const handleAddLesson = async () => {
-    if (!editingBootcamp || !newLesson.title || !newLesson.youtubeVideoId) {
+    if (!newLesson.title || !newLesson.youtubeVideoId) {
       alert('Please fill in title and YouTube video ID');
       return;
     }
 
-    try {
-      const response = await fetch(`/admin/api/bootcamp/${editingBootcamp.id}/lessons`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newLesson),
-      });
+    // If editing existing bootcamp, save immediately
+    if (editingBootcamp) {
+      const bootcampId = editingBootcamp.id || editingBootcamp._id?.toString() || '';
+      try {
+        const response = await fetch(`/admin/api/bootcamp/${bootcampId}/lessons`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newLesson),
+        });
 
-      if (response.ok) {
-        await fetchLessons(editingBootcamp.id);
-        setNewLesson({ title: '', youtubeVideoId: '', description: '', order: 0 });
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to add lesson');
+        if (response.ok) {
+          await fetchLessons(bootcampId);
+          setNewLesson({ title: '', youtubeVideoId: '', description: '', order: 0 });
+        } else {
+          const error = await response.json();
+          alert(error.error || 'Failed to add lesson');
+        }
+      } catch (error) {
+        console.error('Failed to add lesson:', error);
+        alert('Failed to add lesson');
       }
-    } catch (error) {
-      console.error('Failed to add lesson:', error);
-      alert('Failed to add lesson');
+    } else {
+      // If creating new bootcamp, store lesson in pending lessons
+      const tempLessonId = `pending-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      const pendingLesson = {
+        ...newLesson,
+        lessonId: tempLessonId,
+        order: pendingLessons.length,
+      };
+      setPendingLessons([...pendingLessons, pendingLesson]);
+      setNewLesson({ title: '', youtubeVideoId: '', description: '', order: 0 });
     }
   };
 
   const handleUpdateLesson = async (lesson: any) => {
     if (!editingBootcamp) return;
 
+    const bootcampId = editingBootcamp.id || editingBootcamp._id?.toString() || '';
     try {
-      const response = await fetch(`/admin/api/bootcamp/${editingBootcamp.id}/lessons`, {
+      const response = await fetch(`/admin/api/bootcamp/${bootcampId}/lessons`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -699,7 +772,7 @@ export default function BootcampPage() {
       });
 
       if (response.ok) {
-        await fetchLessons(editingBootcamp.id);
+        await fetchLessons(bootcampId);
         setEditingLesson(null);
       } else {
         const error = await response.json();
@@ -712,22 +785,32 @@ export default function BootcampPage() {
   };
 
   const handleDeleteLesson = async (lessonId: string) => {
-    if (!editingBootcamp || !confirm('Are you sure you want to delete this lesson?')) return;
+    if (!confirm('Are you sure you want to delete this lesson?')) return;
 
-    try {
-      const response = await fetch(
-        `/admin/api/bootcamp/${editingBootcamp.id}/lessons?lessonId=${lessonId}`,
-        { method: 'DELETE' }
-      );
+    // If it's a pending lesson (during creation), remove from pending list
+    if (lessonId.startsWith('pending-')) {
+      setPendingLessons(pendingLessons.filter(lesson => lesson.lessonId !== lessonId));
+      return;
+    }
 
-      if (response.ok) {
-        await fetchLessons(editingBootcamp.id);
-      } else {
+    // If editing existing bootcamp, delete from server
+    if (editingBootcamp) {
+      const bootcampId = editingBootcamp.id || editingBootcamp._id?.toString() || '';
+      try {
+        const response = await fetch(
+          `/admin/api/bootcamp/${bootcampId}/lessons?lessonId=${lessonId}`,
+          { method: 'DELETE' }
+        );
+
+        if (response.ok) {
+          await fetchLessons(bootcampId);
+        } else {
+          alert('Failed to delete lesson');
+        }
+      } catch (error) {
+        console.error('Failed to delete lesson:', error);
         alert('Failed to delete lesson');
       }
-    } catch (error) {
-      console.error('Failed to delete lesson:', error);
-      alert('Failed to delete lesson');
     }
   };
 
@@ -850,7 +933,7 @@ export default function BootcampPage() {
                   ✏️
                 </button>
                 <button
-                  onClick={() => handleDelete(bootcamp._id!)}
+                  onClick={() => handleDelete(bootcamp.id || bootcamp._id?.toString() || '')}
                   className="text-red-400 hover:text-red-300"
                 >
                   🗑️
@@ -1174,9 +1257,17 @@ export default function BootcampPage() {
                       if (e.target.value) {
                         addMentor(e.target.value);
                         e.target.value = ''; // Reset selection
+                        // Clear mentors error when a mentor is added
+                        if (validationErrors.mentors) {
+                          setValidationErrors({ ...validationErrors, mentors: '' });
+                        }
                       }
                     }}
-                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white focus:outline-none focus:ring-2 ${
+                      validationErrors.mentors 
+                        ? 'border-red-500 focus:ring-red-500' 
+                        : 'border-slate-600 focus:ring-indigo-500'
+                    }`}
                   >
                     <option value="">Select a team member to add as mentor...</option>
                     {getAvailableTeamMembers().map((member) => (
@@ -1185,6 +1276,9 @@ export default function BootcampPage() {
                       </option>
                     ))}
                   </select>
+                  {validationErrors.mentors && (
+                    <p className="text-red-400 text-xs mt-1">{validationErrors.mentors}</p>
+                  )}
                   {getAvailableTeamMembers().length === 0 && formData.mentors.length > 0 && (
                     <p className="text-xs text-gray-400 mt-1">All team members are already selected as mentors</p>
                   )}
@@ -1320,7 +1414,24 @@ export default function BootcampPage() {
                         </label>
                         <select
                           value={selectedMentorForDetail}
-                          onChange={(e) => setSelectedMentorForDetail(e.target.value)}
+                          onChange={(e) => {
+                            const selectedId = e.target.value;
+                            setSelectedMentorForDetail(selectedId);
+                            
+                            // Preload mentor description from team member data
+                            if (selectedId) {
+                              const selectedMember = teamMembers.find(member => member.id.toString() === selectedId);
+                              if (selectedMember) {
+                                // Use bootcampAbout if available, otherwise fallback to about
+                                const description = (selectedMember.bootcampAbout && selectedMember.bootcampAbout.trim()) 
+                                  ? selectedMember.bootcampAbout 
+                                  : selectedMember.about;
+                                setNewMentorDescription(description);
+                              }
+                            } else {
+                              setNewMentorDescription('');
+                            }
+                          }}
                           className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         >
                           <option value="">Choose a mentor to add details...</option>
@@ -1331,24 +1442,6 @@ export default function BootcampPage() {
                           ))}
                         </select>
                       </div>
-
-                      {/* Show selected mentor info */}
-                      {selectedMentorForDetail && (
-                        <div className="mb-4 p-3 bg-slate-700 rounded-lg">
-                          {(() => {
-                            const selectedMember = teamMembers.find(member => member.id.toString() === selectedMentorForDetail);
-                            return selectedMember ? (
-                              <div>
-                                <h5 className="text-white font-medium">{selectedMember.name}</h5>
-                                <p className="text-gray-300 text-sm">{selectedMember.role}</p>
-                                {selectedMember.image && (
-                                  <p className="text-gray-400 text-xs mt-1">Image: {selectedMember.image}</p>
-                                )}
-                              </div>
-                            ) : null;
-                          })()}
-                        </div>
-                      )}
 
                       {/* Description Input */}
                       <div className="mb-4">
@@ -1602,8 +1695,17 @@ export default function BootcampPage() {
                       <input
                         type="text"
                         value={newTargetAudienceItem}
-                        onChange={(e) => setNewTargetAudienceItem(e.target.value)}
-                        placeholder="Add target audience item..."
+                        onChange={(e) => {
+                          setNewTargetAudienceItem(e.target.value);
+                          // Clear any validation errors for new items when user types
+                          const targetAudienceErrors = Object.keys(validationErrors).filter(key => key.startsWith('targetAudienceItem_'));
+                          if (targetAudienceErrors.length > 0) {
+                            const newErrors = { ...validationErrors };
+                            targetAudienceErrors.forEach(key => delete newErrors[key]);
+                            setValidationErrors(newErrors);
+                          }
+                        }}
+                        placeholder="Add target audience item (alphanumeric only)..."
                         className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTargetAudienceItem())}
                       />
@@ -1620,19 +1722,35 @@ export default function BootcampPage() {
                     {formData.targetAudience.items.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-xs text-gray-400">Current items:</p>
-                        {formData.targetAudience.items.map((item, index) => (
-                          <div key={index} className="flex items-center gap-2 bg-slate-800 rounded-lg px-3 py-2">
-                            <span className="text-xs text-gray-400">#{index + 1}</span>
-                            <span className="flex-1 text-sm text-white">{item}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeTargetAudienceItem(index)}
-                              className="text-red-400 hover:text-red-300"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
+                        {formData.targetAudience.items.map((item, index) => {
+                          const itemError = validationErrors[`targetAudienceItem_${index}`];
+                          return (
+                            <div key={index} className={`flex flex-col gap-1 bg-slate-800 rounded-lg px-3 py-2 ${itemError ? 'border border-red-500' : ''}`}>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-gray-400">#{index + 1}</span>
+                                <span className="flex-1 text-sm text-white">{item}</span>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    removeTargetAudienceItem(index);
+                                    // Clear error when item is removed
+                                    if (validationErrors[`targetAudienceItem_${index}`]) {
+                                      const newErrors = { ...validationErrors };
+                                      delete newErrors[`targetAudienceItem_${index}`];
+                                      setValidationErrors(newErrors);
+                                    }
+                                  }}
+                                  className="text-red-400 hover:text-red-300"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                              {itemError && (
+                                <p className="text-red-400 text-xs">{itemError}</p>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -1640,123 +1758,155 @@ export default function BootcampPage() {
               </div>
 
               {/* Lessons/Videos Management Section */}
-              {editingBootcamp && (
-                <div className="border-t border-slate-600 pt-6">
-                  <h3 className="text-lg font-semibold text-white mb-4">Lessons/Videos Management</h3>
-                  
-                  {loadingLessons ? (
-                    <p className="text-gray-400">Loading lessons...</p>
-                  ) : (
-                    <div className="space-y-4">
-                      {/* Add New Lesson Form */}
-                      <div className="bg-slate-700 rounded-lg p-4 space-y-3">
-                        <h4 className="text-sm font-medium text-white">Add New Lesson</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          <input
-                            type="text"
-                            placeholder="Lesson Title"
-                            value={newLesson.title}
-                            onChange={(e) => setNewLesson({ ...newLesson, title: e.target.value })}
-                            className="px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          />
-                          <input
-                            type="text"
-                            placeholder="YouTube Video ID or URL"
-                            value={newLesson.youtubeVideoId}
-                            onChange={(e) => setNewLesson({ ...newLesson, youtubeVideoId: e.target.value })}
-                            className="px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          />
-                        </div>
-                        <textarea
-                          placeholder="Description (optional)"
-                          value={newLesson.description}
-                          onChange={(e) => setNewLesson({ ...newLesson, description: e.target.value })}
-                          rows={2}
-                          className="w-full px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleAddLesson}
-                          className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
-                        >
-                          Add Lesson
-                        </button>
-                      </div>
-
-                      {/* Existing Lessons List */}
-                      {lessons.length > 0 ? (
-                        <div className="space-y-2">
-                          <h4 className="text-sm font-medium text-white">Existing Lessons ({lessons.length})</h4>
-                          {lessons.map((lesson, index) => (
-                            <div key={lesson.lessonId} className="bg-slate-800 rounded-lg p-4">
-                              {editingLesson?.lessonId === lesson.lessonId ? (
-                                <div className="space-y-3">
-                                  <input
-                                    type="text"
-                                    value={editingLesson.title}
-                                    onChange={(e) => setEditingLesson({ ...editingLesson, title: e.target.value })}
-                                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                  />
-                                  <input
-                                    type="text"
-                                    value={editingLesson.youtubeVideoId}
-                                    onChange={(e) => setEditingLesson({ ...editingLesson, youtubeVideoId: e.target.value })}
-                                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                                  />
-                                  <div className="flex gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={() => handleUpdateLesson(editingLesson)}
-                                      className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                                    >
-                                      Save
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => setEditingLesson(null)}
-                                      className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                </div>
-                              ) : (
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <p className="text-white font-medium">#{index + 1}. {lesson.title}</p>
-                                    <p className="text-gray-400 text-sm">Video ID: {lesson.youtubeVideoId}</p>
-                                    {lesson.description && (
-                                      <p className="text-gray-500 text-xs mt-1">{lesson.description}</p>
-                                    )}
-                                  </div>
-                                  <div className="flex gap-2">
-                                    <button
-                                      type="button"
-                                      onClick={() => setEditingLesson({ ...lesson })}
-                                      className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
-                                    >
-                                      Edit
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => handleDeleteLesson(lesson.lessonId)}
-                                      className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
-                                    >
-                                      Delete
-                                    </button>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="text-gray-400 text-sm">No lessons added yet. Add your first lesson above.</p>
+              <div className="border-t border-slate-600 pt-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Lessons/Videos Management</h3>
+                
+                {loadingLessons ? (
+                  <p className="text-gray-400">Loading lessons...</p>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Add New Lesson Form */}
+                    <div className="bg-slate-700 rounded-lg p-4 space-y-3">
+                      <h4 className="text-sm font-medium text-white">Add New Lesson</h4>
+                      {!editingBootcamp && (
+                        <p className="text-xs text-gray-400">Lessons will be saved after the bootcamp is created.</p>
                       )}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="Lesson Title"
+                          value={newLesson.title}
+                          onChange={(e) => setNewLesson({ ...newLesson, title: e.target.value })}
+                          className="px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <input
+                          type="text"
+                          placeholder="YouTube Video ID or URL"
+                          value={newLesson.youtubeVideoId}
+                          onChange={(e) => setNewLesson({ ...newLesson, youtubeVideoId: e.target.value })}
+                          className="px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        />
+                      </div>
+                      <textarea
+                        placeholder="Description (optional)"
+                        value={newLesson.description}
+                        onChange={(e) => setNewLesson({ ...newLesson, description: e.target.value })}
+                        rows={2}
+                        className="w-full px-3 py-2 bg-slate-600 border border-slate-500 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleAddLesson}
+                        className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+                      >
+                        Add Lesson
+                      </button>
                     </div>
-                  )}
-                </div>
-              )}
+
+                    {/* Pending Lessons (during creation) */}
+                    {!editingBootcamp && pendingLessons.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium text-white">Pending Lessons ({pendingLessons.length})</h4>
+                        {pendingLessons.map((lesson, index) => (
+                          <div key={lesson.lessonId} className="bg-slate-800 rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <p className="text-white font-medium">#{index + 1}. {lesson.title}</p>
+                                <p className="text-gray-400 text-sm">Video ID: {lesson.youtubeVideoId}</p>
+                                {lesson.description && (
+                                  <p className="text-gray-500 text-xs mt-1">{lesson.description}</p>
+                                )}
+                                <p className="text-xs text-yellow-400 mt-1">Will be saved after bootcamp creation</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteLesson(lesson.lessonId)}
+                                className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Existing Lessons List (during edit) */}
+                    {editingBootcamp && lessons.length > 0 && (
+                      <div className="space-y-2">
+                        <h4 className="text-sm font-medium text-white">Existing Lessons ({lessons.length})</h4>
+                        {lessons.map((lesson, index) => (
+                          <div key={lesson.lessonId} className="bg-slate-800 rounded-lg p-4">
+                            {editingLesson?.lessonId === lesson.lessonId ? (
+                              <div className="space-y-3">
+                                <input
+                                  type="text"
+                                  value={editingLesson.title}
+                                  onChange={(e) => setEditingLesson({ ...editingLesson, title: e.target.value })}
+                                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                />
+                                <input
+                                  type="text"
+                                  value={editingLesson.youtubeVideoId}
+                                  onChange={(e) => setEditingLesson({ ...editingLesson, youtubeVideoId: e.target.value })}
+                                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                />
+                                <div className="flex gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleUpdateLesson(editingLesson)}
+                                    className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingLesson(null)}
+                                    className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center justify-between">
+                                <div className="flex-1">
+                                  <p className="text-white font-medium">#{index + 1}. {lesson.title}</p>
+                                  <p className="text-gray-400 text-sm">Video ID: {lesson.youtubeVideoId}</p>
+                                  {lesson.description && (
+                                    <p className="text-gray-500 text-xs mt-1">{lesson.description}</p>
+                                  )}
+                                </div>
+                                <div className="flex gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => setEditingLesson({ ...lesson })}
+                                    className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition-colors"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteLesson(lesson.lessonId)}
+                                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* No lessons message */}
+                    {((!editingBootcamp && pendingLessons.length === 0) || (editingBootcamp && lessons.length === 0)) && (
+                      <p className="text-gray-400 text-sm">No lessons added yet. Add your first lesson above.</p>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Validation Summary - Always show if there are errors */}
               {Object.keys(validationErrors).length > 0 && (
@@ -1775,7 +1925,9 @@ export default function BootcampPage() {
                           <span className="font-bold text-red-300">
                             {field === 'title' && '📝 Title: '}
                             {field === 'description' && '📄 Description: '}
+                            {field === 'mentors' && '👥 Mentors: '}
                             {field.startsWith('heroDescription_') && `📋 Hero Description Paragraph ${parseInt(field.split('_')[1]) + 1}: `}
+                            {field.startsWith('targetAudienceItem_') && `🎯 Target Audience Item ${parseInt(field.split('_')[2]) + 1}: `}
                           </span>
                           {error}
                         </span>

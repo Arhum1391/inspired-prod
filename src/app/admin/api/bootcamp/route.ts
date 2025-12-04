@@ -149,8 +149,8 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Auto-generate numeric ID
-    // Find the highest numeric ID and increment
+    // Auto-generate numeric ID with uniqueness check
+    // Find the highest numeric ID and increment, then verify uniqueness
     const allBootcamps = await db.collection('bootcamps').find({}).toArray();
     let maxId = 0;
     
@@ -162,8 +162,38 @@ export async function POST(request: NextRequest) {
       }
     }
     
-    const newId = maxId + 1;
-    console.log(`Auto-generating bootcamp ID: ${newId}`);
+    // Generate initial ID candidate
+    let newId = maxId + 1;
+    let attempts = 0;
+    const maxAttempts = 100;
+    
+    // Check for uniqueness and retry if needed
+    while (attempts < maxAttempts) {
+      const existingBootcamp = await db.collection('bootcamps').findOne({ 
+        id: newId.toString() 
+      });
+      
+      if (!existingBootcamp) {
+        // ID is unique, break out of loop
+        break;
+      }
+      
+      // ID already exists, increment and try again
+      newId++;
+      attempts++;
+      
+      if (attempts >= 10) {
+        console.warn(`Warning: ID generation required ${attempts} attempts. This may indicate data issues.`);
+      }
+    }
+    
+    if (attempts >= maxAttempts) {
+      return NextResponse.json({ 
+        error: 'Failed to generate unique bootcamp ID after maximum attempts' 
+      }, { status: 500 });
+    }
+    
+    console.log(`Auto-generating bootcamp ID: ${newId} (after ${attempts} uniqueness checks)`);
 
     // Convert dates to Date objects if they're strings
     if (body.registrationStartDate && typeof body.registrationStartDate === 'string') {

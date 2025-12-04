@@ -145,12 +145,43 @@ export async function PUT(
 
     // Prevent ID changes - IDs are auto-generated and immutable
     // Get the current bootcamp to preserve its ID
-    const currentBootcamp = await db.collection('bootcamps').findOne({ 
-      _id: new ObjectId(params.id) 
+    // Support both numeric string id and MongoDB _id for backward compatibility
+    let currentBootcamp = await db.collection('bootcamps').findOne({ 
+      id: params.id 
     });
+    
+    // If not found by id, try _id for backward compatibility (legacy bootcamps)
+    if (!currentBootcamp && ObjectId.isValid(params.id)) {
+      try {
+        currentBootcamp = await db.collection('bootcamps').findOne({ 
+          _id: new ObjectId(params.id) 
+        });
+      } catch (e) {
+        // Invalid ObjectId format, continue
+      }
+    }
     
     if (!currentBootcamp) {
       return NextResponse.json({ error: 'Bootcamp not found' }, { status: 404 });
+    }
+    
+    // Ensure bootcamp has an id field (migrate legacy bootcamps)
+    if (!currentBootcamp.id && currentBootcamp._id) {
+      // Generate a new id for legacy bootcamp
+      const allBootcamps = await db.collection('bootcamps').find({}).toArray();
+      let maxId = 0;
+      for (const bootcamp of allBootcamps) {
+        const idValue = typeof bootcamp.id === 'number' ? bootcamp.id : parseInt(bootcamp.id);
+        if (!isNaN(idValue) && idValue > maxId) {
+          maxId = idValue;
+        }
+      }
+      const newId = (maxId + 1).toString();
+      await db.collection('bootcamps').updateOne(
+        { _id: currentBootcamp._id },
+        { $set: { id: newId } }
+      );
+      currentBootcamp.id = newId;
     }
 
     // Remove ID from update data - IDs cannot be changed
@@ -164,8 +195,13 @@ export async function PUT(
 
     console.log('Final update data:', updateData);
 
+    // Update using the same query method we used to find the bootcamp
+    const updateQuery = currentBootcamp.id === params.id 
+      ? { id: params.id }
+      : { _id: currentBootcamp._id };
+    
     const result = await db.collection('bootcamps').updateOne(
-      { _id: new ObjectId(params.id) },
+      updateQuery,
       { $set: updateData }
     );
 
@@ -200,9 +236,21 @@ export async function DELETE(
   try {
     const db = await getDatabase();
 
-    const result = await db.collection('bootcamps').deleteOne({
-      _id: new ObjectId(params.id)
+    // Support both numeric string id and MongoDB _id for backward compatibility
+    let result = await db.collection('bootcamps').deleteOne({
+      id: params.id
     });
+
+    // If not found by id, try _id for backward compatibility (legacy bootcamps)
+    if (result.deletedCount === 0 && ObjectId.isValid(params.id)) {
+      try {
+        result = await db.collection('bootcamps').deleteOne({
+          _id: new ObjectId(params.id)
+        });
+      } catch (e) {
+        // Invalid ObjectId format, continue
+      }
+    }
 
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: 'Bootcamp not found' }, { status: 404 });

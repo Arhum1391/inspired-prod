@@ -4,6 +4,55 @@ import { verifyToken } from '@/lib/auth';
 import { BootcampLesson } from '@/types/admin';
 import { ObjectId } from 'mongodb';
 
+// Helper function to find bootcamp by id or _id for backward compatibility
+async function findBootcampById(db: any, id: string) {
+  // Try by numeric string id first
+  let bootcamp = await db.collection('bootcamps').findOne({ id });
+  
+  // If not found and id looks like ObjectId, try _id
+  if (!bootcamp && ObjectId.isValid(id)) {
+    try {
+      bootcamp = await db.collection('bootcamps').findOne({ _id: new ObjectId(id) });
+    } catch (e) {
+      // Invalid ObjectId format
+    }
+  }
+  
+  return bootcamp;
+}
+
+// Helper function to ensure bootcamp has numeric id field (migrate legacy bootcamps)
+async function ensureBootcampHasId(db: any, bootcamp: any): Promise<string> {
+  // If bootcamp already has an id, return it
+  if (bootcamp.id) {
+    return bootcamp.id;
+  }
+  
+  // Legacy bootcamp without id - generate and assign one
+  if (bootcamp._id) {
+    const allBootcamps = await db.collection('bootcamps').find({}).toArray();
+    let maxId = 0;
+    for (const bc of allBootcamps) {
+      const idValue = typeof bc.id === 'number' ? bc.id : parseInt(bc.id);
+      if (!isNaN(idValue) && idValue > maxId) {
+        maxId = idValue;
+      }
+    }
+    const newId = (maxId + 1).toString();
+    
+    // Update bootcamp with new id
+    await db.collection('bootcamps').updateOne(
+      { _id: bootcamp._id },
+      { $set: { id: newId } }
+    );
+    
+    return newId;
+  }
+  
+  // Fallback (should not happen)
+  throw new Error('Bootcamp has neither id nor _id field');
+}
+
 // Helper to authenticate admin
 async function authenticateAdmin(request: NextRequest) {
   const token = request.cookies.get('auth-token')?.value;
@@ -59,8 +108,8 @@ export async function GET(
     const { id } = await params;
     const db = await getDatabase();
 
-    // Verify bootcamp exists
-    const bootcamp = await db.collection('bootcamps').findOne({ id });
+    // Verify bootcamp exists (support both id and _id for backward compatibility)
+    const bootcamp = await findBootcampById(db, id);
     if (!bootcamp) {
       return NextResponse.json(
         { error: 'Bootcamp not found' },
@@ -68,8 +117,12 @@ export async function GET(
       );
     }
 
+    // Ensure bootcamp has numeric id (migrate legacy bootcamps if needed)
+    // Always use numeric id for lessons, never ObjectId string
+    const bootcampId = await ensureBootcampHasId(db, bootcamp);
+    
     const lessons = await db.collection('bootcamp_lessons')
-      .find({ bootcampId: id })
+      .find({ bootcampId: bootcampId })
       .sort({ order: 1 })
       .toArray();
 
@@ -98,14 +151,18 @@ export async function POST(
     const body = await request.json();
     const db = await getDatabase();
 
-    // Verify bootcamp exists
-    const bootcamp = await db.collection('bootcamps').findOne({ id });
+    // Verify bootcamp exists (support both id and _id for backward compatibility)
+    const bootcamp = await findBootcampById(db, id);
     if (!bootcamp) {
       return NextResponse.json(
         { error: 'Bootcamp not found' },
         { status: 404 }
       );
     }
+
+    // Ensure bootcamp has numeric id (migrate legacy bootcamps if needed)
+    // Always use numeric id for lessons, never ObjectId string
+    const bootcampId = await ensureBootcampHasId(db, bootcamp);
 
     // Validate required fields
     if (!body.title || !body.youtubeVideoId) {
@@ -126,7 +183,7 @@ export async function POST(
 
     // Get the highest order number for this bootcamp
     const existingLessons = await db.collection('bootcamp_lessons')
-      .find({ bootcampId: id })
+      .find({ bootcampId: bootcampId })
       .sort({ order: -1 })
       .limit(1)
       .toArray();
@@ -143,7 +200,7 @@ export async function POST(
 
     const lesson: BootcampLesson = {
       lessonId,
-      bootcampId: id,
+      bootcampId: bootcampId,
       title: body.title,
       description: body.description || '',
       youtubeVideoId: videoId,
@@ -194,10 +251,23 @@ export async function PUT(
       );
     }
 
+    // Verify bootcamp exists (support both id and _id for backward compatibility)
+    const bootcamp = await findBootcampById(db, id);
+    if (!bootcamp) {
+      return NextResponse.json(
+        { error: 'Bootcamp not found' },
+        { status: 404 }
+      );
+    }
+
+    // Ensure bootcamp has numeric id (migrate legacy bootcamps if needed)
+    // Always use numeric id for lessons, never ObjectId string
+    const bootcampId = await ensureBootcampHasId(db, bootcamp);
+
     // Find the lesson
     const lesson = await db.collection('bootcamp_lessons').findOne({
       lessonId: body.lessonId,
-      bootcampId: id
+      bootcampId: bootcampId
     });
 
     if (!lesson) {
@@ -231,7 +301,7 @@ export async function PUT(
     }
 
     const result = await db.collection('bootcamp_lessons').updateOne(
-      { lessonId: body.lessonId, bootcampId: id },
+      { lessonId: body.lessonId, bootcampId: bootcampId },
       { $set: updateData }
     );
 
@@ -244,7 +314,7 @@ export async function PUT(
 
     const updatedLesson = await db.collection('bootcamp_lessons').findOne({
       lessonId: body.lessonId,
-      bootcampId: id
+      bootcampId: bootcampId
     });
 
     return NextResponse.json(
@@ -287,9 +357,22 @@ export async function DELETE(
 
     const db = await getDatabase();
 
+    // Verify bootcamp exists (support both id and _id for backward compatibility)
+    const bootcamp = await findBootcampById(db, id);
+    if (!bootcamp) {
+      return NextResponse.json(
+        { error: 'Bootcamp not found' },
+        { status: 404 }
+      );
+    }
+
+    // Ensure bootcamp has numeric id (migrate legacy bootcamps if needed)
+    // Always use numeric id for lessons, never ObjectId string
+    const bootcampId = await ensureBootcampHasId(db, bootcamp);
+
     const result = await db.collection('bootcamp_lessons').deleteOne({
       lessonId,
-      bootcampId: id
+      bootcampId: bootcampId
     });
 
     if (result.deletedCount === 0) {
@@ -301,7 +384,7 @@ export async function DELETE(
 
     // Also remove progress entries for this lesson
     await db.collection('bootcamp_progress').updateMany(
-      { bootcampId: id },
+      { bootcampId: bootcampId },
       { $pull: { lessons: { lessonId } } }
     );
 

@@ -14,7 +14,9 @@ function CheckoutContent() {
   const [stripeModule, setStripeModule] = useState<typeof import('@stripe/react-stripe-js') | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [plan, setPlan] = useState<'monthly' | 'annual'>('monthly');
+  const [plan, setPlan] = useState<'monthly' | 'annual' | 'platinum'>('monthly');
+  const [plans, setPlans] = useState<any[]>([]);
+  const [plansLoading, setPlansLoading] = useState(true);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [subscriptionId, setSubscriptionId] = useState<string | null>(null);
   const [isInitializingPayment, setIsInitializingPayment] = useState(false);
@@ -28,10 +30,28 @@ function CheckoutContent() {
 
   useEffect(() => {
     const planParam = searchParams.get('plan');
-    if (planParam === 'monthly' || planParam === 'annual') {
+    if (planParam === 'monthly' || planParam === 'annual' || planParam === 'platinum') {
       setPlan(planParam);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await fetch('/api/plans');
+        if (response.ok) {
+          const data = await response.json();
+          setPlans(data.plans || []);
+        }
+      } catch (error) {
+        console.error('Error fetching plans:', error);
+      } finally {
+        setPlansLoading(false);
+      }
+    };
+
+    fetchPlans();
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -127,24 +147,44 @@ function CheckoutContent() {
     return () => {
       isMounted = false;
     };
-  }, [plan, customerEmail, customerName]);
+  }, [plan, customerEmail, customerName, plansLoading]);
 
-  const planDetails = {
-    monthly: {
-      name: 'Premium Monthly',
-      price: '$30 USD',
-      priceAmount: 30,
-      billingFrequency: 'Monthly',
-      interval: 'month'
-    },
-    annual: {
-      name: 'Premium Annual',
-      price: '$120 USD',
-      priceAmount: 120,
-      billingFrequency: 'Yearly',
-      interval: 'year'
+  // Get plan details from fetched plans - recalculate when plans or plan changes
+  const planDetails = useMemo(() => {
+    // If plans haven't loaded yet, return fallback
+    if (plansLoading || plans.length === 0) {
+      return {
+        name: plan === 'monthly' ? 'Premium' : plan === 'platinum' ? 'Platinum' : 'Diamond',
+        price: plan === 'monthly' ? '$30 USD' : plan === 'platinum' ? '$60 USD' : '$100 USD',
+        priceAmount: plan === 'monthly' ? 30 : plan === 'platinum' ? 60 : 100,
+        billingFrequency: plan === 'monthly' ? 'Monthly' : plan === 'platinum' ? 'Bi-annual' : 'Yearly',
+        interval: plan === 'monthly' ? 'month' : plan === 'platinum' ? '6 months' : 'year',
+        isFree: false,
+      };
     }
-  };
+
+    const planData = plans.find(p => p.id === plan);
+    if (!planData) {
+      // Fallback to default values
+      return {
+        name: plan === 'monthly' ? 'Premium' : plan === 'platinum' ? 'Platinum' : 'Diamond',
+        price: plan === 'monthly' ? '$30 USD' : plan === 'platinum' ? '$60 USD' : '$100 USD',
+        priceAmount: plan === 'monthly' ? 30 : plan === 'platinum' ? 60 : 100,
+        billingFrequency: plan === 'monthly' ? 'Monthly' : plan === 'platinum' ? 'Bi-annual' : 'Yearly',
+        interval: plan === 'monthly' ? 'month' : plan === 'platinum' ? '6 months' : 'year',
+        isFree: false,
+      };
+    }
+    
+    return {
+      name: planData.name,
+      price: planData.isFree ? 'FREE' : planData.price.replace(' USD/month', ' USD').replace(' USD/6 months', ' USD').replace(' USD/year', ' USD'),
+      priceAmount: planData.isFree ? 0 : planData.priceAmount,
+      billingFrequency: planData.interval === 'month' ? 'Monthly' : planData.interval === '6 months' ? 'Bi-annual' : 'Yearly',
+      interval: planData.interval === '6 months' ? '6 months' : planData.interval,
+      isFree: Boolean(planData.isFree),
+    };
+  }, [plans, plan, plansLoading]);
 
   const handlePaymentSuccess = useCallback(
     async (subscription: string, paymentIntentId?: string | null) => {
@@ -156,7 +196,11 @@ function CheckoutContent() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify({ subscriptionId: subscription }),
+          body: JSON.stringify({ 
+            subscriptionId: subscription,
+            planId: plan,
+            customerEmail: customerEmail,
+          }),
         });
 
         if (!activateRes.ok) {
@@ -375,7 +419,27 @@ function CheckoutContent() {
                   Payment Details
                 </h3>
 
-                {isInitializingPayment || !elementsOptions || !subscriptionId ? (
+                {planDetails.isFree ? (
+                  <div className="flex flex-col gap-6">
+                    <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-green-400/40 bg-green-500/10 px-4 py-10 text-sm text-green-300">
+                      <div className="text-center">
+                        <p className="text-lg font-semibold mb-2">Free Plan Selected</p>
+                        <p>No payment required. Click the button below to activate your subscription.</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        if (subscriptionId) {
+                          await handlePaymentSuccess(subscriptionId, null);
+                        }
+                      }}
+                      disabled={!subscriptionId || isFinalizing}
+                      className="w-full py-3 px-4 bg-green-600 hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-semibold"
+                    >
+                      {isFinalizing ? 'Activating...' : 'Activate Free Subscription'}
+                    </button>
+                  </div>
+                ) : isInitializingPayment || !elementsOptions || !subscriptionId ? (
                   <div className="flex min-h-[180px] items-center justify-center rounded-xl border border-white/20 bg-white/5 px-4 py-10 text-sm text-white/70">
                     Preparing secure payment form...
                   </div>
@@ -437,7 +501,7 @@ function CheckoutContent() {
                         color: '#FFFFFF'
                       }}
                     >
-                      {planDetails[plan].name}
+                      {planDetails.name}
                     </h4>
                   </div>
 
@@ -447,7 +511,7 @@ function CheckoutContent() {
                         Billed
                       </span>
                       <span style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500, fontSize: '14px', lineHeight: '100%', color: '#FFFFFF' }}>
-                        {planDetails[plan].billingFrequency}
+                        {planDetails.billingFrequency}
                       </span>
                     </div>
 
@@ -456,7 +520,7 @@ function CheckoutContent() {
                         Price
                       </span>
                       <span style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500, fontSize: '14px', lineHeight: '100%', color: '#FFFFFF' }}>
-                        {planDetails[plan].price}
+                        {planDetails.isFree ? 'FREE' : planDetails.price}
                       </span>
                     </div>
 
@@ -478,7 +542,7 @@ function CheckoutContent() {
                         Total
                       </span>
                       <span style={{ fontFamily: 'Gilroy, sans-serif', fontWeight: 500, fontSize: '14px', lineHeight: '100%', color: '#FFFFFF' }}>
-                        {planDetails[plan].price}
+                        {planDetails.isFree ? 'FREE' : planDetails.price}
                       </span>
                     </div>
                   </div>

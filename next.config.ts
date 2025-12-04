@@ -71,17 +71,34 @@ const nextConfig: NextConfig = {
         ...config.optimization,
         splitChunks: {
           chunks: 'all',
+          maxInitialRequests: 25,
+          minSize: 20000,
           cacheGroups: {
+            // Prioritize vendor chunks - ensure they load before page chunks
             vendor: {
               test: /[\\/]node_modules[\\/]/,
               name: 'vendors',
               chunks: 'all',
-              maxSize: 200000,
+              priority: 10,
+              reuseExistingChunk: true,
+              enforce: true,
             },
+            // Common chunks with higher priority to prevent race conditions
             common: {
               name: 'common',
               minChunks: 2,
               chunks: 'all',
+              priority: 5,
+              reuseExistingChunk: true,
+              enforce: true,
+            },
+            // Framework chunks (React, Next.js) - highest priority
+            framework: {
+              test: /[\\/]node_modules[\\/](react|react-dom|next)[\\/]/,
+              name: 'framework',
+              chunks: 'all',
+              priority: 20,
+              reuseExistingChunk: true,
               enforce: true,
             },
           },

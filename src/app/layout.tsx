@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
+import ErrorBoundaryWrapper from "@/components/ErrorBoundaryWrapper";
 
 export const metadata: Metadata = {
   title: "Inspired Analyst - Making Finance & Tech Accessible",
@@ -38,9 +39,11 @@ export default function RootLayout({
       <body
         className="font-gilroy antialiased bg-[#0A0A0A] text-white"
       >
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+        <ErrorBoundaryWrapper>
+          <AuthProvider>
+            {children}
+          </AuthProvider>
+        </ErrorBoundaryWrapper>
       </body>
     </html>
   );

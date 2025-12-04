@@ -321,6 +321,12 @@ export default function Home() {
                 <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/ledger.svg" alt="Ledger" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
+                <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://kleinfunding.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
                 {/* Duplicate for seamless loop */}
                 <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/Gridlock.svg" alt="Gridlock" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
@@ -354,6 +360,12 @@ export default function Home() {
                 </a>
                 <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/ledger.svg" alt="Ledger" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://kleinfunding.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
               </div>
             </div>
@@ -411,7 +423,7 @@ export default function Home() {
             />
 
             {/* Frame 26 - First Row Logos */}
-            <div className="absolute z-30 flex justify-between items-center left-1/2 transform -translate-x-1/2 top-[13%] sm:top-[16%] md:top-[18%] lg:top-[16%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
+            <div className="absolute z-30 flex justify-center items-center left-1/2 transform -translate-x-1/2 top-[13%] sm:top-[16%] md:top-[18%] lg:top-[16%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
               <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/Gridlock.svg"
@@ -440,10 +452,6 @@ export default function Home() {
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
               </a>
-            </div>
-
-            {/* Frame 26 - Second Row Logos */}
-            <div className="absolute z-30 flex justify-between items-center left-1/2 transform -translate-x-1/2 top-[41%] sm:top-[44%] md:top-[45%] lg:top-[45%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
               <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/binance.svg"
@@ -451,6 +459,10 @@ export default function Home() {
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
               </a>
+            </div>
+
+            {/* Frame 26 - Second Row Logos */}
+            <div className="absolute z-30 flex justify-center items-center left-1/2 transform -translate-x-1/2 top-[41%] sm:top-[44%] md:top-[45%] lg:top-[45%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
               <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/exness.svg"
@@ -472,10 +484,6 @@ export default function Home() {
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
               </a>
-            </div>
-
-            {/* Frame 26 - Third Row Logos */}
-            <div className="absolute z-30 flex justify-between items-center left-1/2 transform -translate-x-1/2 top-[67%] sm:top-[70%] md:top-[71%] lg:top-[73%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-12 sm:px-16 lg:px-20">
               <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/wegic.svg"
@@ -490,11 +498,29 @@ export default function Home() {
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
               </a>
+            </div>
+
+            {/* Frame 26 - Third Row Logos */}
+            <div className="absolute z-30 flex justify-center items-center left-1/2 transform -translate-x-1/2 top-[67%] sm:top-[70%] md:top-[71%] lg:top-[73%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-8 sm:gap-12 md:gap-16 lg:gap-32 xl:gap-40 2xl:gap-48 px-2 sm:px-4 lg:px-0">
               <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/ledger.svg"
                   alt="Ledger"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-36 2xl:w-40 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/primexbt.svg"
+                  alt="PrimeXBT"
+                  className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
+                />
+              </a>
+              <a href="https://kleinfunding.com" target="_blank" rel="noopener noreferrer" className="w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20 2xl:w-24 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/klein.svg"
+                  alt="Klein"
+                  className="opacity-80 w-full h-auto object-contain max-h-5 sm:max-h-6 md:max-h-7 lg:max-h-8 xl:max-h-10"
                 />
               </a>
             </div>

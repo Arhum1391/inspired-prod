@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
-type PlanId = 'monthly' | 'annual';
+type PlanId = 'monthly' | 'annual' | 'platinum';
 
 interface Plan {
   id: PlanId;
@@ -15,6 +15,7 @@ interface Plan {
   priceAccent: string;
   billingNote?: string;
   isPopular?: boolean;
+  isFree?: boolean;
   features: string[];
 }
 
@@ -23,36 +24,7 @@ interface FAQ {
   answer: string;
 }
 
-const plans: Plan[] = [
-  {
-    id: 'monthly',
-    name: 'Premium Monthly',
-    description: 'Flexible access',
-    price: '$30 USD per month',
-    priceAccent: '#D4D737',
-    features: [
-      'Full research library',
-      'Position Sizing Calculator (save scenarios)',
-      'Portfolio analytics & history',
-      'Shariah project details & screens',
-    ],
-  },
-  {
-    id: 'annual',
-    name: 'Premium Annual',
-    description: 'Save 20%',
-    price: '$120 USD per year',
-    billingNote: '($10 USD /month)',
-    priceAccent: '#05B0B3',
-    isPopular: true,
-    features: [
-      'Full research library',
-      'Position Sizing Calculator (save scenarios)',
-      'Portfolio analytics & history',
-      'Shariah project details & screens',
-    ],
-  },
-];
+// Plans are now fetched from API
 
 const faqs: FAQ[] = [
   {
@@ -78,8 +50,33 @@ export default function Pricing() {
   const subscriptionId = typeof window !== 'undefined' ? localStorage.getItem('subscriptionId') : null;
 
   console.log("subscriptionId", subscriptionId);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [plansLoading, setPlansLoading] = useState(true);
   const [openFAQ, setOpenFAQ] = useState<number | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      try {
+        const response = await fetch('/api/plans');
+        if (response.ok) {
+          const data = await response.json();
+          setPlans(data.plans || []);
+        } else {
+          console.error('Failed to fetch plans');
+          // Fallback to empty array
+          setPlans([]);
+        }
+      } catch (error) {
+        console.error('Error fetching plans:', error);
+        setPlans([]);
+      } finally {
+        setPlansLoading(false);
+      }
+    };
+
+    fetchPlans();
+  }, []);
 
   const toggleFAQ = (index: number) => {
     setOpenFAQ((current) => (current === index ? null : index));
@@ -190,89 +187,187 @@ export default function Pricing() {
             </p>
           </header>
 
-          <section className="mt-12 sm:mt-16 max-w-5xl mx-auto flex flex-col gap-6">
-            {plans
-              .filter(plan => plan.name !== subscriptionId)
-              .map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`relative flex flex-col gap-8 bg-[#1F1F1F] rounded-2xl p-8 sm:p-10 w-full overflow-visible ${subscriptionId === plan.name ? "hidden" : ""}`}
-                >
+          {plansLoading ? (
+            <section className="mt-12 sm:mt-16 max-w-5xl mx-auto flex items-center justify-center">
+              <div className="text-white">Loading plans...</div>
+            </section>
+          ) : plans.length === 0 ? (
+            <section className="mt-12 sm:mt-16 max-w-5xl mx-auto flex items-center justify-center">
+              <div className="text-white">No plans available at this time.</div>
+            </section>
+          ) : (
+            <section className="mt-12 sm:mt-16 max-w-5xl mx-auto flex flex-col gap-6">
+              {plans
+                .filter(plan => plan.name !== subscriptionId)
+                .map((plan) => (
                   <div
-                    className="absolute inset-0 pointer-events-none rounded-2xl"
-                    style={{
-                      background:
-                        'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                      padding: '1px',
-                    }}
+                    key={plan.id}
+                    className={`relative flex flex-col gap-8 bg-[#1F1F1F] rounded-2xl p-8 sm:p-10 w-full overflow-hidden ${subscriptionId === plan.name ? "hidden" : ""}`}
                   >
-                    <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
-                  </div>
-
-                  {plan.isPopular && (
                     <div
-                      className="absolute -top-3 left-6 flex items-center justify-center px-3 py-1 text-xs rounded-full"
+                      className="absolute inset-0 pointer-events-none rounded-2xl"
                       style={{
-                        background: '#DE50EC',
-                        border: '1px solid #DE50EC',
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 500,
+                        background:
+                          'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                        padding: '1px',
                       }}
                     >
-                      Best Value
+                      <div className="w-full h-full rounded-[15px] bg-[#1F1F1F]"></div>
                     </div>
-                  )}
 
-                  <div className="relative z-10 flex flex-col gap-6">
-                    <div className="space-y-3">
-                      <div className="space-y-2">
-                        <h3
-                          className="text-2xl text-white"
-                          style={headingStyle}
-                        >
-                          {plan.name}
-                        </h3>
-                        <p className="text-sm text-white/80" style={bodyStyle}>
-                          {plan.description}
-                        </p>
+                    {plan.isFree && (
+                      <div
+                        className="absolute top-2 left-6 flex items-center justify-center px-3 py-1 text-xs rounded-full z-20"
+                        style={{
+                          background: '#DE50EC',
+                          border: '1px solid #DE50EC',
+                          fontFamily: 'Gilroy, sans-serif',
+                          fontWeight: 500,
+                        }}
+                      >
+                        Limited Time Free
                       </div>
-                      <div className="space-y-1">
-                        <p
-                          className="text-2xl"
-                          style={{ ...headingStyle, color: plan.priceAccent }}
-                        >
-                          {plan.price}
-                        </p>
-                        {plan.billingNote && (
-                          <p className="text-sm text-white/70" style={bodyStyle}>
-                            {plan.billingNote}
+                    )}
+
+                    {plan.isPopular && (
+                      <div
+                        className="absolute top-2 left-6 flex items-center justify-center px-3 py-1 text-xs rounded-full z-20"
+                        style={{
+                          background: '#DE50EC',
+                          border: '1px solid #DE50EC',
+                          fontFamily: 'Gilroy, sans-serif',
+                          fontWeight: 500,
+                        }}
+                      >
+                        Best Value
+                      </div>
+                    )}
+
+                    <div className="relative z-10 flex flex-col gap-3 flex-1 min-h-0">
+                      {/* Fixed height header section */}
+                      <div className="space-y-3 flex-shrink-0 mt-8" style={{ minHeight: '120px', maxHeight: '120px' }}>
+                        <div className="space-y-2">
+                          <h3
+                            className="text-2xl text-white"
+                            style={{
+                              ...headingStyle,
+                              minHeight: '32px',
+                              maxHeight: '32px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 1,
+                              WebkitBoxOrient: 'vertical',
+                            }}
+                          >
+                            {plan.name}
+                          </h3>
+                          <p 
+                            className="text-sm text-white/80" 
+                            style={{
+                              ...bodyStyle,
+                              minHeight: '20px',
+                              maxHeight: '20px',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              display: '-webkit-box',
+                              WebkitLineClamp: 1,
+                              WebkitBoxOrient: 'vertical',
+                            }}
+                          >
+                            {plan.description}
                           </p>
-                        )}
+                        </div>
+                        <div className="space-y-1">
+                          {plan.isFree ? (
+                            <div className="flex items-center gap-3">
+                              <p
+                                className="text-2xl"
+                                style={{ 
+                                  ...headingStyle, 
+                                  color: plan.priceAccent,
+                                  textDecoration: 'line-through',
+                                  opacity: 0.5,
+                                  minHeight: '32px',
+                                  maxHeight: '32px',
+                                }}
+                              >
+                                {plan.price}
+                              </p>
+                              <p
+                                className="text-2xl"
+                                style={{ 
+                                  ...headingStyle, 
+                                  color: '#DE50EC',
+                                  minHeight: '32px',
+                                  maxHeight: '32px',
+                                }}
+                              >
+                                FREE
+                              </p>
+                            </div>
+                          ) : (
+                            <p
+                              className="text-2xl"
+                              style={{ 
+                                ...headingStyle, 
+                                color: plan.priceAccent,
+                                minHeight: '32px',
+                                maxHeight: '48px',
+                                lineHeight: '120%',
+                              }}
+                            >
+                              {plan.price}
+                            </p>
+                          )}
+                          {plan.billingNote && (
+                            <p 
+                              className="text-sm text-white/70 mt-1" 
+                              style={{
+                                ...bodyStyle,
+                                minHeight: '16px',
+                                maxHeight: '20px',
+                              }}
+                            >
+                              {plan.billingNote}
+                            </p>
+                          )}
+                        </div>
                       </div>
+
+                      {/* Scrollable features section */}
+                      <div 
+                        className="flex-1 overflow-y-auto overflow-x-hidden pr-2 mt-2 min-h-0 pricing-features-scroll"
+                        style={{
+                          minHeight: '200px',
+                          maxHeight: '200px',
+                        }}
+                      >
+                        <ul className="space-y-4">
+                          {plan.features.map((feature) => (
+                            <li key={feature} className="flex items-start gap-3">
+                              <span className="mt-1 inline-block w-2 h-2 rounded-full bg-white flex-shrink-0"></span>
+                              <span className="text-base text-white break-words" style={{...bodyStyle, wordWrap: 'break-word', overflowWrap: 'break-word'}}>
+                                {feature}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      
+                      {/* Fixed button at bottom */}
+                      <button
+                        onClick={() => handleCheckout(plan.id)}
+                        className="relative z-10 w-full h-12 rounded-full bg-white text-[#1F1F1F] text-sm font-semibold hover:opacity-90 transition-opacity flex-shrink-0 mt-1"
+                        style={headingStyle}
+                      >
+                        Continue to Checkout
+                      </button>
                     </div>
-
-                    <ul className="space-y-4">
-                      {plan.features.map((feature) => (
-                        <li key={feature} className="flex items-start gap-3">
-                          <span className="mt-1 inline-block w-2 h-2 rounded-full bg-white"></span>
-                          <span className="text-base text-white" style={bodyStyle}>
-                            {feature}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <button
-                    onClick={() => handleCheckout(plan.id)}
-                    className="relative z-10 w-full h-12 rounded-full bg-white text-[#1F1F1F] text-sm font-semibold hover:opacity-90 transition-opacity"
-                    style={headingStyle}
-                  >
-                    Continue to Checkout
-                  </button>
                 </div>
               ))}
-          </section>
+            </section>
+          )}
 
           <section className="mt-16 sm:mt-20 max-w-4xl mx-auto text-center space-y-4">
             <h2
@@ -339,7 +434,7 @@ export default function Pricing() {
             className="flex items-center justify-center px-4 sm:px-6 lg:px-8 relative z-10"
             style={{ minHeight: 'calc(100vh - 80px)', paddingTop: '140px' }}
           >
-            <div className="w-full max-w-[848px] mx-auto">
+            <div className="w-full max-w-[1320px] mx-auto">
               <div className="flex flex-col items-center gap-6 mb-30">
                 <h1
                   className="text-white text-center"
@@ -349,8 +444,7 @@ export default function Pricing() {
                     fontSize: '48px',
                     lineHeight: '120%',
                     color: '#FFFFFF',
-                    width: '848px',
-                    height: '116px',
+                    maxWidth: '848px',
                   }}
                 >
                   All the Tools & Research You Need - One Subscription
@@ -364,25 +458,39 @@ export default function Pricing() {
                     fontSize: '16px',
                     lineHeight: '100%',
                     color: '#FFFFFF',
-                    width: '848px',
-                    height: '16px',
+                    maxWidth: '848px',
                   }}
                 >
                   Full reports, position sizing calculator, portfolio analytics, and Shariah filters. Cancel anytime.
                 </p>
               </div>
 
-              <div className="flex flex-row items-center justify-center gap-5 w-full">
-                <div
-                  className={`flex flex-col justify-between items-start p-10 gap-10 relative ${subscriptionId === 'Premium Monthly' ? 'hidden' : ''}`}
-                  style={{
-                    width: '414px',
-                    height: '418px',
-                    background: '#1F1F1F',
-                    borderRadius: '16px',
-                    boxSizing: 'border-box',
-                  }}
-                >
+              {plansLoading ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-white">Loading plans...</div>
+                </div>
+              ) : plans.length === 0 ? (
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-white">No plans available at this time.</div>
+                </div>
+              ) : (
+                <div className="flex flex-row items-center justify-center gap-5 w-full flex-wrap">
+                  {plans
+                    .filter(plan => plan.name !== subscriptionId)
+                    .map((plan) => (
+                      <div
+                        key={plan.id}
+                        className={`flex flex-col justify-between items-start p-10 gap-10 relative overflow-hidden ${subscriptionId === plan.name ? 'hidden' : ''}`}
+                        style={{
+                          width: '414px',
+                          minWidth: '414px',
+                          height: '418px',
+                          background: '#1F1F1F',
+                          borderRadius: '16px',
+                          boxSizing: 'border-box',
+                          flexShrink: 0,
+                        }}
+                      >
                   <div
                     className="absolute inset-0 pointer-events-none"
                     style={{
@@ -399,392 +507,214 @@ export default function Pricing() {
                       }}
                     ></div>
                   </div>
-                  <div className="flex flex-col items-start gap-6 w-full relative z-10">
-                    <div className="flex flex-col items-start gap-3 w-full">
-                      <div className="flex flex-row items-start gap-6 w-full">
-                        <h3
-                          className="text-white"
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 600,
-                            fontSize: '24px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Premium Monthly
-                        </h3>
+                        {(plan.isFree || plan.isPopular) && (
+                          <div
+                            className="absolute flex flex-row justify-center items-center px-2.5 py-2 gap-2.5"
+                            style={{
+                              width: plan.isFree ? '140px' : '95px',
+                              height: '26px',
+                              left: '24px',
+                              top: '16px',
+                              background: '#DE50EC',
+                              border: '1px solid #DE50EC',
+                              borderRadius: '80px',
+                              zIndex: 2,
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontFamily: 'Gilroy, sans-serif',
+                                fontWeight: 500,
+                                fontSize: '12px',
+                                lineHeight: '100%',
+                                textAlign: 'center',
+                                color: '#FFFFFF',
+                              }}
+                            >
+                              {plan.isFree ? 'Limited Time Free' : 'Best Value'}
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex flex-col items-start gap-3 w-full relative z-10 flex-1 min-h-0">
+                          {/* Fixed height header section */}
+                          <div 
+                            className="flex flex-col items-start gap-3 w-full flex-shrink-0 mt-4"
+                            style={{
+                              minHeight: '120px',
+                              maxHeight: '120px',
+                            }}
+                          >
+                            <div className="flex flex-row items-start gap-6 w-full">
+                              <h3
+                                className="text-white"
+                                style={{
+                                  fontFamily: 'Gilroy, sans-serif',
+                                  fontWeight: 600,
+                                  fontSize: '24px',
+                                  lineHeight: '100%',
+                                  color: '#FFFFFF',
+                                  minHeight: '24px',
+                                  maxHeight: '24px',
+                                  overflow: 'hidden',
+                                  textOverflow: 'ellipsis',
+                                  whiteSpace: 'nowrap',
+                                }}
+                              >
+                                {plan.name}
+                              </h3>
+                            </div>
+
+                            <p
+                              className="text-white"
+                              style={{
+                                fontFamily: 'Gilroy, sans-serif',
+                                fontWeight: 400,
+                                fontSize: '14px',
+                                lineHeight: '130%',
+                                color: '#FFFFFF',
+                                minHeight: '18px',
+                                maxHeight: '18px',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                display: '-webkit-box',
+                                WebkitLineClamp: 1,
+                                WebkitBoxOrient: 'vertical',
+                              }}
+                            >
+                              {plan.description}
+                            </p>
+
+                            {plan.isFree ? (
+                              <div className="flex flex-row items-center gap-3 w-full">
+                                <p
+                                  style={{
+                                    fontFamily: 'Gilroy, sans-serif',
+                                    fontWeight: 600,
+                                    fontSize: '24px',
+                                    lineHeight: '100%',
+                                    color: plan.priceAccent,
+                                    textDecoration: 'line-through',
+                                    opacity: 0.5,
+                                    minHeight: '24px',
+                                    maxHeight: '24px',
+                                  }}
+                                >
+                                  {plan.price}
+                                </p>
+                                <p
+                                  style={{
+                                    fontFamily: 'Gilroy, sans-serif',
+                                    fontWeight: 600,
+                                    fontSize: '24px',
+                                    lineHeight: '100%',
+                                    color: '#DE50EC',
+                                    minHeight: '24px',
+                                    maxHeight: '24px',
+                                  }}
+                                >
+                                  FREE
+                                </p>
+                              </div>
+                            ) : (
+                              <div className="flex flex-row items-start gap-6 w-full">
+                                <p
+                                  style={{
+                                    fontFamily: 'Gilroy, sans-serif',
+                                    fontWeight: 600,
+                                    fontSize: '24px',
+                                    lineHeight: '120%',
+                                    color: plan.priceAccent,
+                                    minHeight: '24px',
+                                    maxHeight: '48px',
+                                  }}
+                                >
+                                  {plan.price}
+                                </p>
+                              </div>
+                            )}
+                            {plan.billingNote && (
+                              <p
+                                className="text-white mt-1"
+                                style={{
+                                  fontFamily: 'Gilroy, sans-serif',
+                                  fontWeight: 400,
+                                  fontSize: '14px',
+                                  lineHeight: '100%',
+                                  color: '#FFFFFF',
+                                  minHeight: '14px',
+                                  maxHeight: '20px',
+                                }}
+                              >
+                                {plan.billingNote}
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Scrollable features section */}
+                          <div 
+                            className="flex flex-col items-start gap-4 w-full flex-1 overflow-y-auto overflow-x-hidden pr-1 mt-2 min-h-0 pricing-features-scroll"
+                            style={{
+                              minHeight: '148px',
+                              maxHeight: '148px',
+                            }}
+                          >
+                            {plan.features.map((feature, index) => (
+                              <div key={index} className="flex flex-row items-start gap-2 w-full flex-shrink-0">
+                                <div
+                                  style={{
+                                    width: '8px',
+                                    height: '8px',
+                                    background: '#FFFFFF',
+                                    borderRadius: '50%',
+                                    flexShrink: 0,
+                                    marginTop: '6px',
+                                  }}
+                                ></div>
+                                <span
+                                  className="break-words"
+                                  style={{
+                                    fontFamily: 'Gilroy, sans-serif',
+                                    fontWeight: 500,
+                                    fontSize: '16px',
+                                    lineHeight: '120%',
+                                    color: '#FFFFFF',
+                                    wordWrap: 'break-word',
+                                    overflowWrap: 'break-word',
+                                  }}
+                                >
+                                  {feature}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                          
+                          {/* Fixed button at bottom */}
+                          <div className="flex flex-row justify-center items-center w-full relative z-10 flex-shrink-0 mt-1">
+                            <button
+                              onClick={() => handleCheckout(plan.id)}
+                              className="flex flex-row justify-center items-center px-4 py-2.5 gap-2 w-full"
+                            style={{
+                              background: '#FFFFFF',
+                              border: '1px solid #FFFFFF',
+                              borderRadius: '100px',
+                              fontFamily: 'Gilroy, sans-serif',
+                              fontWeight: 600,
+                              fontSize: '14px',
+                              lineHeight: '100%',
+                              textAlign: 'center',
+                              color: '#1F1F1F',
+                              cursor: 'pointer',
+                              height: '38px',
+                            }}
+                          >
+                            Continue to Checkout
+                          </button>
+                          </div>
+                        </div>
                       </div>
-
-                      <p
-                        className="text-white"
-                        style={{
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 400,
-                          fontSize: '14px',
-                          lineHeight: '130%',
-                          color: '#FFFFFF',
-                        }}
-                      >
-                        Flexible access
-                      </p>
-                    </div>
-
-                    <div className="flex flex-row items-start gap-6 w-full">
-                      <p
-                        className="text-[#D4D737]"
-                        style={{
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 600,
-                          fontSize: '24px',
-                          lineHeight: '100%',
-                          color: '#D4D737',
-                        }}
-                      >
-                        $30 USD per month
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col items-start gap-4 w-full">
-                      <div className="flex flex-row items-center gap-2 w-full">
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                          }}
-                        ></div>
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Full research library
-                        </span>
-                      </div>
-
-                      <div className="flex flex-row items-center gap-2 w-full">
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                          }}
-                        ></div>
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Position Sizing Calculator (save scenarios)
-                        </span>
-                      </div>
-
-                      <div className="flex flex-row items-center gap-2 w-full">
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                          }}
-                        ></div>
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Portfolio analytics & history
-                        </span>
-                      </div>
-
-                      <div className="flex flex-row items-center gap-2 w-full">
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                          }}
-                        ></div>
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Shariah project details & screens
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row justify-center items-center w-full relative z-10">
-                    <button
-                      onClick={() => handleCheckout('monthly')}
-                      className="flex flex-row justify-center items-center px-4 py-2.5 gap-2 w-full"
-                      style={{
-                        background: '#FFFFFF',
-                        border: '1px solid #FFFFFF',
-                        borderRadius: '100px',
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        textAlign: 'center',
-                        color: '#1F1F1F',
-                        cursor: 'pointer',
-                        height: '38px',
-                      }}
-                    >
-                      Continue to Checkout
-                    </button>
-                  </div>
+                    ))}
                 </div>
-
-                <div
-                  className={`flex flex-col justify-between items-start p-10 gap-10 relative ${subscriptionId === 'Premium Annual' ? 'hidden' : ''}`}
-                  style={{
-                    width: '414px',
-                    height: '418px',
-                    background: '#1F1F1F',
-                    borderRadius: '16px',
-                    boxSizing: 'border-box',
-                    isolation: 'isolate',
-                  }}
-                >
-                  <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                      borderRadius: '16px',
-                      background:
-                        'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
-                      padding: '1px',
-                    }}
-                  >
-                    <div
-                      className="w-full h-full rounded-[15px]"
-                      style={{
-                        background: '#1F1F1F',
-                      }}
-                    ></div>
-                  </div>
-                  <div
-                    className="absolute flex flex-row justify-center items-center px-2.5 py-2 gap-2.5"
-                    style={{
-                      width: '95px',
-                      height: '26px',
-                      left: '24px',
-                      top: '-13px',
-                      background: '#DE50EC',
-                      border: '1px solid #DE50EC',
-                      borderRadius: '80px',
-                      zIndex: 2,
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 500,
-                        fontSize: '12px',
-                        lineHeight: '100%',
-                        textAlign: 'center',
-                        color: '#FFFFFF',
-                      }}
-                    >
-                      Best Value
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col items-start gap-6 w-full relative z-10">
-                    <div className="flex flex-col items-start gap-3 w-full">
-                      <div className="flex flex-row items-start gap-6 w-full">
-                        <h3
-                          className="text-white"
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 600,
-                            fontSize: '24px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Premium Annual
-                        </h3>
-                      </div>
-
-                      <p
-                        className="text-white"
-                        style={{
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 400,
-                          fontSize: '14px',
-                          lineHeight: '130%',
-                          color: '#FFFFFF',
-                        }}
-                      >
-                        Save 20%
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col items-start gap-2 w-full">
-                      <p
-                        className="text-[#05B0B3]"
-                        style={{
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 600,
-                          fontSize: '24px',
-                          lineHeight: '100%',
-                          color: '#05B0B3',
-                        }}
-                      >
-                        $120 USD per year
-                      </p>
-                      <p
-                        className="text-white"
-                        style={{
-                          fontFamily: 'Gilroy, sans-serif',
-                          fontWeight: 400,
-                          fontSize: '14px',
-                          lineHeight: '100%',
-                          color: '#FFFFFF',
-                        }}
-                      >
-                        ($10 USD /month)
-                      </p>
-                    </div>
-
-                    <div className="flex flex-col items-start gap-4 w-full">
-                      <div className="flex flex-row items-center gap-2 w-full">
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                          }}
-                        ></div>
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Full research library
-                        </span>
-                      </div>
-
-                      <div className="flex flex-row items-center gap-2 w-full">
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                          }}
-                        ></div>
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Position Sizing Calculator (save scenarios)
-                        </span>
-                      </div>
-
-                      <div className="flex flex-row items-center gap-2 w-full">
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                          }}
-                        ></div>
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Portfolio analytics & history
-                        </span>
-                      </div>
-
-                      <div className="flex flex-row items-center gap-2 w-full">
-                        <div
-                          style={{
-                            width: '8px',
-                            height: '8px',
-                            background: '#FFFFFF',
-                            borderRadius: '50%',
-                          }}
-                        ></div>
-                        <span
-                          style={{
-                            fontFamily: 'Gilroy, sans-serif',
-                            fontWeight: 500,
-                            fontSize: '16px',
-                            lineHeight: '100%',
-                            color: '#FFFFFF',
-                          }}
-                        >
-                          Shariah project details & screens
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-row justify-center items-center w-full relative z-10">
-                    <button
-                      onClick={() => handleCheckout('annual')}
-                      className="flex flex-row justify-center items-center px-4 py-2.5 gap-2 w-full"
-                      style={{
-                        background: '#FFFFFF',
-                        border: '1px solid #FFFFFF',
-                        borderRadius: '100px',
-                        fontFamily: 'Gilroy, sans-serif',
-                        fontWeight: 600,
-                        fontSize: '14px',
-                        lineHeight: '100%',
-                        textAlign: 'center',
-                        color: '#1F1F1F',
-                        cursor: 'pointer',
-                        height: '38px',
-                      }}
-                    >
-                      Continue to Checkout
-                    </button>
-                  </div>
-                </div>
-              </div>
+              )}
 
               <div className="flex flex-col items-center gap-8 sm:gap-12 lg:gap-16 w-full mt-60">
                 <div className="flex flex-col items-center gap-4 sm:gap-6 w-full max-w-[847px] px-4 sm:px-6">

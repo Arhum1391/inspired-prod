@@ -1,22 +1,132 @@
 # Vercel Deployment Guide - Environment Variables
 
+## Complete Environment Variables Checklist
+
+This guide lists ALL environment variables required for Vercel deployment, organized by category and build-time vs runtime requirements.
+
+### ⚠️ CRITICAL: Build-Time vs Runtime Variables
+
+**Build-Time Variables** (Required during `npm run build`):
+- `MONGODB_URI` - Must be available during build (though connection is lazy-loaded)
+- `NEXT_PUBLIC_*` variables - Embedded into the build output
+
+**Runtime Variables** (Required when the app is running):
+- All other variables are only needed at runtime
+
+---
+
 ## Required Environment Variables
 
-For the Calendly integration to work on Vercel (or any production deployment), you MUST configure the following environment variables:
+### 1. Database Configuration (REQUIRED - Build & Runtime)
 
-### 1. `CALENDLY_ACCESS_TOKEN`
+#### `MONGODB_URI` ⚠️ **CRITICAL**
+- **Description**: MongoDB connection string
+- **Format**: `mongodb+srv://username:password@cluster.mongodb.net/inspired-analyst`
+- **Required**: Yes (Build & Runtime)
+- **Used for**: All database operations
+- **⚠️ IMPORTANT**: Must be set in Vercel for builds to succeed (connection is lazy-loaded but URI check happens)
+
+#### `JWT_SECRET` ⚠️ **CRITICAL**
+- **Description**: Secret key for signing JSON Web Tokens
+- **Format**: Any secure random string (minimum 32 characters recommended)
+- **Required**: Yes (Runtime)
+- **Used for**: User authentication and session management
+- **How to generate**: 
+  ```bash
+  node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+  ```
+
+---
+
+### 2. Stripe Payment Integration (REQUIRED for payments)
+
+#### `STRIPE_SECRET_KEY`
+- **Description**: Stripe secret key (server-side)
+- **Where to get it**: https://dashboard.stripe.com/apikeys
+- **Required**: Yes (Runtime)
+- **Used for**: Creating checkout sessions, handling webhooks, managing subscriptions
+
+#### `STRIPE_WEBHOOK_SECRET`
+- **Description**: Stripe webhook signing secret
+- **Where to get it**: https://dashboard.stripe.com/webhooks (create endpoint, copy signing secret)
+- **Required**: Yes (Runtime)
+- **Used for**: Verifying webhook signatures from Stripe
+
+#### `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- **Description**: Stripe publishable key (client-side)
+- **Where to get it**: https://dashboard.stripe.com/apikeys
+- **Required**: Yes (Build-time - embedded in build)
+- **Used for**: Client-side Stripe.js initialization
+
+#### `STRIPE_PRICE_ID_MONTHLY` (Optional)
+- **Description**: Stripe Price ID for monthly subscription plan
+- **Required**: No (can be set in admin panel instead)
+- **Used for**: Monthly subscription checkout
+
+#### `STRIPE_PRICE_ID_PLATINUM` (Optional)
+- **Description**: Stripe Price ID for platinum subscription plan
+- **Required**: No (can be set in admin panel instead)
+- **Used for**: Platinum subscription checkout
+
+#### `STRIPE_PRICE_ID_ANNUAL` (Optional)
+- **Description**: Stripe Price ID for annual subscription plan
+- **Required**: No (can be set in admin panel instead)
+- **Used for**: Annual subscription checkout
+
+#### `STRIPE_TEST_MODE` (Optional)
+- **Description**: Enable Stripe test mode
+- **Format**: `true` or `false`
+- **Required**: No (defaults to production mode)
+- **Used for**: Testing payments without real charges
+
+---
+
+### 3. AWS S3 Configuration (REQUIRED for file uploads)
+
+#### `AWS_S3_BUCKET_NAME`
+- **Description**: AWS S3 bucket name for file storage
+- **Required**: Yes (Runtime)
+- **Used for**: Storing uploaded files, images, and assets
+
+#### `AWS_S3_REGION`
+- **Description**: AWS region where S3 bucket is located
+- **Format**: e.g., `us-east-1`, `eu-west-1`
+- **Required**: Yes (Runtime)
+- **Used for**: S3 client configuration and image domain whitelisting
+
+#### `AWS_ACCESS_KEY_ID`
+- **Description**: AWS access key ID
+- **Where to get it**: AWS IAM Console → Users → Security Credentials
+- **Required**: Yes (Runtime)
+- **Used for**: Authenticating S3 API requests
+
+#### `AWS_SECRET_ACCESS_KEY`
+- **Description**: AWS secret access key
+- **Where to get it**: AWS IAM Console → Users → Security Credentials
+- **Required**: Yes (Runtime)
+- **Used for**: Authenticating S3 API requests
+
+---
+
+### 4. Calendly Integration (REQUIRED for booking)
+
+#### `CALENDLY_ACCESS_TOKEN`
 - **Description**: Your Calendly Personal Access Token
 - **Where to get it**: https://calendly.com/integrations/api_webhooks
-- **Required**: Yes
+- **Required**: Yes (Runtime)
 - **Used for**: All Calendly API calls (fetching events, availability, etc.)
 
-### 2. `CALENDLY_ANALYST_1_URI`
+#### `CALENDLY_ANALYST_1_URI`
 - **Description**: Assassin's Calendly User URI (Analyst ID: 1)
 - **Format**: `https://api.calendly.com/users/XXXXXXXXXXXXXXXX`
-- **Required**: Yes (for Assassin's meeting bookings)
+- **Required**: Yes (Runtime - for Assassin's meeting bookings)
 - **Used for**: Fetching Assassin's event types and availability
 
-### 3. `BINANCE_CREDENTIALS_ENCRYPTION_KEY` ⚠️ **CRITICAL FOR BINANCE INTEGRATION**
+---
+
+### 5. Binance Portfolio Integration (OPTIONAL)
+
+#### `BINANCE_CREDENTIALS_ENCRYPTION_KEY` ⚠️ **CRITICAL IF USING BINANCE**
 - **Description**: 32-byte encryption key for encrypting Binance API credentials at rest
 - **Format**: Base64, hex, or 32-character UTF-8 string
 - **Required**: Yes (if using Binance portfolio integration)
@@ -26,6 +136,75 @@ For the Calendly integration to work on Vercel (or any production deployment), y
   ```
 - **Used for**: Encrypting user Binance API keys and secrets before storing in MongoDB
 - **⚠️ IMPORTANT**: This key must be the same across all deployments/environments if you want to decrypt existing credentials
+
+#### `BINANCE_API_BASE_URL` (Optional)
+- **Description**: Override default Binance API base URL
+- **Format**: e.g., `https://testnet.binance.vision`
+- **Required**: No
+- **Used for**: Using Binance testnet
+
+#### `BINANCE_USE_TESTNET_DEFAULT` (Optional)
+- **Description**: Default to testnet for new credentials
+- **Format**: `true` or `false`
+- **Required**: No
+- **Used for**: Testing Binance integration
+
+---
+
+### 6. Email Configuration (REQUIRED for email verification/password reset)
+
+#### `COLLAB_EMAIL`
+- **Description**: Email address used as sender for transactional emails
+- **Format**: `your-email@example.com`
+- **Required**: Yes (Runtime)
+- **Used for**: Sending verification emails, password reset emails
+
+#### `SMTP_HOST`
+- **Description**: SMTP server hostname
+- **Format**: e.g., `smtp.gmail.com`, `smtp-mail.outlook.com`
+- **Required**: Yes (Runtime)
+- **Used for**: Sending emails via SMTP
+
+#### `SMTP_PORT`
+- **Description**: SMTP server port
+- **Format**: Usually `587` (TLS) or `465` (SSL)
+- **Required**: Yes (Runtime)
+- **Used for**: SMTP connection
+
+#### `SMTP_SECURE`
+- **Description**: Use secure connection (TLS/SSL)
+- **Format**: `false` for TLS (port 587), `true` for SSL (port 465)
+- **Required**: Yes (Runtime)
+- **Used for**: SMTP security configuration
+
+#### `SMTP_USER`
+- **Description**: SMTP authentication username (usually your email)
+- **Format**: `your-email@gmail.com`
+- **Required**: Yes (Runtime)
+- **Used for**: SMTP authentication
+
+#### `SMTP_PASS`
+- **Description**: SMTP authentication password or app password
+- **Required**: Yes (Runtime)
+- **Used for**: SMTP authentication
+- **Note**: For Gmail, use an App Password (not your regular password)
+
+---
+
+### 7. Application Configuration (OPTIONAL)
+
+#### `NEXT_PUBLIC_BASE_URL`
+- **Description**: Base URL of your application
+- **Format**: `https://yourdomain.com` (no trailing slash)
+- **Required**: No (auto-detected from Vercel)
+- **Used for**: Generating absolute URLs in emails and redirects
+- **Note**: Vercel automatically sets `VERCEL_URL` - only set this if you need a custom domain
+
+#### `NODE_ENV`
+- **Description**: Node.js environment
+- **Format**: `production`, `development`, or `test`
+- **Required**: No (automatically set by Vercel)
+- **Note**: Vercel sets this automatically - don't override unless needed
 
 ---
 
@@ -166,15 +345,48 @@ CALENDLY_ANALYST_1_URI=https://api.calendly.com/users/XXXXXXXXXXXXXXXX
 
 ## Quick Checklist
 
-Before deploying to Vercel, ensure:
+Before deploying to Vercel, ensure ALL required variables are set:
 
-- [ ] `CALENDLY_ACCESS_TOKEN` is added to Vercel
-- [ ] `CALENDLY_ANALYST_1_URI` is added to Vercel
-- [ ] `BINANCE_CREDENTIALS_ENCRYPTION_KEY` is added to Vercel (if using Binance integration)
+### Critical (Required for Build & Runtime)
+- [ ] `MONGODB_URI` - Database connection string
+- [ ] `JWT_SECRET` - Authentication secret
+
+### Payment Integration (Required for payments)
+- [ ] `STRIPE_SECRET_KEY` - Stripe secret key
+- [ ] `STRIPE_WEBHOOK_SECRET` - Stripe webhook secret
+- [ ] `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
+
+### File Storage (Required for uploads)
+- [ ] `AWS_S3_BUCKET_NAME` - S3 bucket name
+- [ ] `AWS_S3_REGION` - AWS region
+- [ ] `AWS_ACCESS_KEY_ID` - AWS access key
+- [ ] `AWS_SECRET_ACCESS_KEY` - AWS secret key
+
+### Calendly Integration (Required for booking)
+- [ ] `CALENDLY_ACCESS_TOKEN` - Calendly API token
+- [ ] `CALENDLY_ANALYST_1_URI` - Analyst Calendly URI
+
+### Email (Required for verification/reset)
+- [ ] `COLLAB_EMAIL` - Sender email address
+- [ ] `SMTP_HOST` - SMTP server
+- [ ] `SMTP_PORT` - SMTP port
+- [ ] `SMTP_SECURE` - Use secure connection
+- [ ] `SMTP_USER` - SMTP username
+- [ ] `SMTP_PASS` - SMTP password/app password
+
+### Optional (If using features)
+- [ ] `BINANCE_CREDENTIALS_ENCRYPTION_KEY` - If using Binance integration
+- [ ] `STRIPE_PRICE_ID_*` - If not set in admin panel
+- [ ] `NEXT_PUBLIC_BASE_URL` - If using custom domain
+
+### Deployment Steps
 - [ ] All variables are enabled for **Production** environment
+- [ ] All variables are enabled for **Preview** environment (for PR previews)
 - [ ] Application has been redeployed after adding variables
-- [ ] Test the Calendly integration on the deployed site
-- [ ] Test the Binance integration on the deployed site (if applicable)
+- [ ] Test the application on the deployed site
+- [ ] Test payment flow (if applicable)
+- [ ] Test Calendly booking (if applicable)
+- [ ] Test email verification/reset (if applicable)
 
 ---
 

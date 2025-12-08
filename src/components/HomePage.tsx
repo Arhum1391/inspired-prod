@@ -31,6 +31,20 @@ export default function Home() {
     fetchTeamData();
   }, []);
 
+  // Handle hash-based scrolling when navigating from other pages
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '#latest-videos') {
+      // Small delay to ensure DOM is fully rendered
+      setTimeout(() => {
+        const element = document.getElementById('latest-videos');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
       {/* Vector Background Image */}

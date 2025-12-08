@@ -1788,6 +1788,7 @@ export default function ShariahPage() {
                 }}
                 onMouseDown={(e) => e.preventDefault()}
                 onFocus={(e) => e.currentTarget.style.outline = 'none'}
+                onClick={() => router.push('/pricing')}
               >
                 Start Subscription
               </button>
@@ -1826,6 +1827,7 @@ export default function ShariahPage() {
                 onBlur={(e) => {
                   e.currentTarget.style.border = '1px solid #FFFFFF';
                 }}
+                onClick={() => router.push('/#latest-videos')}
               >
                 Watch Free Videos
               </button>
@@ -2205,6 +2207,7 @@ export default function ShariahPage() {
                     onBlur={(e) => {
                       e.currentTarget.style.border = '1px solid #FFFFFF';
                     }}
+                    onClick={() => router.push('/#latest-videos')}
                   >
                     Watch Free Videos
                   </button>

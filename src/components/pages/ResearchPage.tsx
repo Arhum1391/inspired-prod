@@ -1231,6 +1231,7 @@ export default function ResearchPage() {
                   onBlur={(e) => {
                     e.currentTarget.style.border = '1px solid #FFFFFF';
                   }}
+                  onClick={() => router.push('/#latest-videos')}
                 >
                   Watch Free Videos
                 </button>
@@ -2067,6 +2068,7 @@ export default function ResearchPage() {
                       onBlur={(e) => {
                         e.currentTarget.style.border = '1px solid #FFFFFF';
                       }}
+                      onClick={() => router.push('/#latest-videos')}
                     >
                       Watch Free Videos
                     </button>

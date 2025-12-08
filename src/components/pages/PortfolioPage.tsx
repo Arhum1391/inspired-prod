@@ -1478,6 +1478,13 @@ export default function PortfolioPage() {
         .portfolio-preview-holdings-wrapper .holdings-root {
           min-height: 300px !important;
         }
+        /* Disable interactions on preview holdings table buttons */
+        .portfolio-preview-holdings-wrapper button,
+        .portfolio-preview-holdings-wrapper .holdings-action-button,
+        .portfolio-preview-holdings-wrapper .holdings-pagination-button {
+          pointer-events: none !important;
+          cursor: not-allowed !important;
+        }
       `}} />
       <Navbar />
       
@@ -1872,6 +1879,7 @@ export default function PortfolioPage() {
                  onBlur={(e) => {
                    e.currentTarget.style.border = '1px solid #FFFFFF';
                  }}
+                 onClick={() => router.push('/#latest-videos')}
                >
                  Watch Free Videos
                </button>
@@ -2433,6 +2441,8 @@ export default function PortfolioPage() {
                 marginTop: '150px',
                 display: 'flex',
                 justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
               <HoldingsTable
@@ -2440,6 +2450,22 @@ export default function PortfolioPage() {
                 totalValue={PREVIEW_TOTAL_VALUE}
                 isLoading={false}
               />
+              {/* Bottom Gradient Mask for non-authenticated users */}
+              {!isAuthenticated && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: '100%',
+                    background: 'linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 35%, rgba(0, 0, 0, 0.8) 100%)',
+                    pointerEvents: 'none',
+                    zIndex: 15,
+                    borderRadius: '16px',
+                  }}
+                />
+              )}
             </div>
             </>
             )}
@@ -2644,6 +2670,7 @@ export default function PortfolioPage() {
                     onBlur={(e) => {
                       e.currentTarget.style.border = '1px solid #FFFFFF';
                     }}
+                    onClick={() => router.push('/#latest-videos')}
                   >
                     Watch Free Videos
                   </button>

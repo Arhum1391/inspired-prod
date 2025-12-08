@@ -30,6 +30,43 @@ const s3Client = new S3Client({
 const BUCKET_NAME = process.env.AWS_S3_BUCKET_NAME;
 
 /**
+ * Extract meaningful error message from AWS SDK error
+ * @param error - The error object from AWS SDK
+ * @param defaultMessage - Default error message if extraction fails
+ * @returns A detailed error message
+ */
+function extractErrorMessage(error: unknown, defaultMessage: string): string {
+  if (error instanceof Error) {
+    // Check if it's an AWS SDK error with name property
+    const awsError = error as Error & { name?: string; $metadata?: { httpStatusCode?: number } };
+    
+    if (awsError.name) {
+      // AWS SDK errors often have a name property (e.g., 'AccessDenied', 'InvalidAccessKeyId', 'NoSuchBucket')
+      const errorName = awsError.name;
+      const errorMessage = awsError.message || '';
+      const statusCode = awsError.$metadata?.httpStatusCode;
+      
+      // Build a detailed error message
+      let detailedMessage = `${defaultMessage}: ${errorName}`;
+      if (errorMessage) {
+        detailedMessage += ` - ${errorMessage}`;
+      }
+      if (statusCode) {
+        detailedMessage += ` (HTTP ${statusCode})`;
+      }
+      
+      return detailedMessage;
+    }
+    
+    // Fallback to error message if available
+    return `${defaultMessage}: ${error.message}`;
+  }
+  
+  // Fallback for non-Error objects
+  return `${defaultMessage}: ${String(error)}`;
+}
+
+/**
  * Upload a file to S3
  * @param fileBuffer - The file buffer to upload
  * @param fileName - The name/path for the file in S3
@@ -53,7 +90,8 @@ export async function uploadFile(
     return fileName;
   } catch (error) {
     console.error('S3 upload error:', error);
-    throw new Error('Failed to upload file to S3');
+    const errorMessage = extractErrorMessage(error, 'Failed to upload file to S3');
+    throw new Error(errorMessage);
   }
 }
 
@@ -71,7 +109,8 @@ export async function deleteFile(fileName: string): Promise<void> {
     await s3Client.send(command);
   } catch (error) {
     console.error('S3 delete error:', error);
-    throw new Error('Failed to delete file from S3');
+    const errorMessage = extractErrorMessage(error, 'Failed to delete file from S3');
+    throw new Error(errorMessage);
   }
 }
 
@@ -106,7 +145,8 @@ export async function getPresignedUrl(
     return url;
   } catch (error) {
     console.error('S3 presigned URL error:', error);
-    throw new Error('Failed to generate presigned URL');
+    const errorMessage = extractErrorMessage(error, 'Failed to generate presigned URL');
+    throw new Error(errorMessage);
   }
 }
 

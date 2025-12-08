@@ -201,72 +201,74 @@ export default function PlansPage() {
         {plans.map((plan) => (
           <div
             key={plan._id}
-            className={`bg-slate-800 rounded-xl p-6 border ${
+            className={`flex flex-col h-full bg-slate-800 rounded-xl p-6 border ${
               plan.isActive ? 'border-slate-700' : 'border-slate-600 opacity-60'
             }`}
           >
-            <div className="flex items-start justify-between mb-4">
-              <div>
-                <h3 className="text-xl font-semibold text-white">{plan.name}</h3>
-                <p className="text-slate-400 text-sm mt-1">{plan.description}</p>
-              </div>
-              {!plan.isActive && (
-                <span className="px-2 py-1 text-xs bg-slate-700 text-slate-300 rounded">
-                  Hidden
-                </span>
-              )}
-            </div>
-
-            <div className="mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span
-                  className="text-2xl font-bold"
-                  style={{ color: plan.priceAccent }}
-                >
-                  {plan.isFree ? 'FREE' : plan.priceDisplay}
-                </span>
-                {plan.isFree && plan.priceAmount > 0 && (
-                  <span
-                    className="text-lg line-through opacity-50"
-                    style={{ color: plan.priceAccent }}
-                  >
-                    {plan.priceDisplay}
+            <div className="flex-1">
+              <div className="flex items-start justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-semibold text-white">{plan.name}</h3>
+                  <p className="text-slate-400 text-sm mt-1">{plan.description}</p>
+                </div>
+                {!plan.isActive && (
+                  <span className="px-2 py-1 text-xs bg-slate-700 text-slate-300 rounded">
+                    Hidden
                   </span>
                 )}
               </div>
-              {plan.billingNote && (
-                <p className="text-slate-400 text-sm">{plan.billingNote}</p>
-              )}
-            </div>
 
-            <div className="mb-4">
-              <p className="text-slate-400 text-sm mb-2">Features:</p>
-              <ul className="space-y-1">
-                {plan.features.map((feature, index) => (
-                  <li key={index} className="text-white text-sm flex items-start">
-                    <span className="mr-2">•</span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+              <div className="mb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <span
+                    className="text-2xl font-bold"
+                    style={{ color: plan.priceAccent }}
+                  >
+                    {plan.isFree ? 'FREE' : plan.priceDisplay}
+                  </span>
+                  {plan.isFree && plan.priceAmount > 0 && (
+                    <span
+                      className="text-lg line-through opacity-50"
+                      style={{ color: plan.priceAccent }}
+                    >
+                      {plan.priceDisplay}
+                    </span>
+                  )}
+                </div>
+                {plan.billingNote && (
+                  <p className="text-slate-400 text-sm">{plan.billingNote}</p>
+                )}
+              </div>
 
-            <div className="flex items-center gap-2 mb-4">
-              {plan.isPopular && (
-                <span className="px-2 py-1 text-xs bg-purple-600 text-white rounded">
-                  Popular
-                </span>
-              )}
-              {plan.isFree && (
-                <span className="px-2 py-1 text-xs bg-green-600 text-white rounded">
-                  Free
-                </span>
-              )}
+              <div className="mb-4">
+                <p className="text-slate-400 text-sm mb-2">Features:</p>
+                <ul className="space-y-1">
+                  {plan.features.map((feature, index) => (
+                    <li key={index} className="text-white text-sm flex items-start">
+                      <span className="mr-2">•</span>
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="flex items-center gap-2 mb-4">
+                {plan.isPopular && (
+                  <span className="px-2 py-1 text-xs bg-purple-600 text-white rounded">
+                    Popular
+                  </span>
+                )}
+                {plan.isFree && (
+                  <span className="px-2 py-1 text-xs bg-green-600 text-white rounded">
+                    Free
+                  </span>
+                )}
+              </div>
             </div>
 
             <button
               onClick={() => handleEdit(plan)}
-              className="w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
+              className="mt-auto w-full py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
             >
               Edit Plan
             </button>

@@ -825,6 +825,32 @@ section, main, div[id^="social-"], div[id^="latest-"], div[id^="partners"], div[
   background: rgba(255, 255, 255, 0.25);
 }
 
+/* Minimal scrollbar for review name horizontal scrolling */
+/* Only appears when text cannot wrap (e.g., very long strings without spaces) */
+.review-name-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.review-name-scroll::-webkit-scrollbar {
+  height: 3px;
+}
+
+.review-name-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.review-name-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+}
+
+.review-name-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 .research-gradient {
   background: linear-gradient(
     107.68deg,

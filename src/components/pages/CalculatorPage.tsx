@@ -4779,7 +4779,7 @@ export default function CalculatorPage() {
 
                 }}
 
-                onClick={() => router.push('/signup')}
+                onClick={() => router.push('/#latest-videos')}
 
               >
 
@@ -11209,6 +11209,8 @@ export default function CalculatorPage() {
                       e.currentTarget.style.border = '1px solid #FFFFFF';
 
                     }}
+
+                    onClick={() => router.push('/#latest-videos')}
 
                   >
 

@@ -991,9 +991,11 @@ const ReviewsContent: React.FC = () => {
                                                                     />
                                                                 )}
                                                             </div>
-                                                            <p className="text-white font-semibold text-sm break-words leading-tight">
-                                                                {review.reviewerName}
-                                                            </p>
+                                                            <div className="overflow-x-auto overflow-y-hidden review-name-scroll min-w-0 flex-1">
+                                                                <p className="text-white font-semibold text-sm break-words leading-tight">
+                                                                    {review.reviewerName}
+                                                                </p>
+                                                            </div>
                                                         </div>
                                                         <div className="flex items-center gap-0.5 flex-shrink-0 w-[100px] justify-end">
                                                             {renderStars(review.rating)}
@@ -1087,9 +1089,11 @@ const ReviewsContent: React.FC = () => {
                                                                             />
                                                                         )}
                                                                     </div>
-                                                                    <p className="text-white font-semibold text-sm break-words leading-tight">
-                                                                        {review.reviewerName}
-                                                                    </p>
+                                                                    <div className="overflow-x-auto overflow-y-hidden review-name-scroll min-w-0 flex-1">
+                                                                        <p className="text-white font-semibold text-sm break-words leading-tight">
+                                                                            {review.reviewerName}
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                                 <div className="flex items-center gap-0.5 flex-shrink-0 w-[100px] justify-end">
                                                                     {renderStars(review.rating)}

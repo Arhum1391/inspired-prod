@@ -18,7 +18,7 @@ const getClientPromise = (): Promise<MongoClient> => {
   }
 
   const uri = process.env.MONGODB_URI;
-  let globalWithMongo = global as typeof globalThis & {
+  const globalWithMongo = global as typeof globalThis & {
     _mongoClientPromise?: Promise<MongoClient>;
   };
 

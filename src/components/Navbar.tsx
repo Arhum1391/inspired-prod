@@ -27,8 +27,8 @@ const Navbar: React.FC<NavbarProps> = ({ variant = 'default' }) => {
     { label: 'Calculator', href: '/calculator' },
     { label: 'Portfolio', href: '/portfolio' },
     { label: 'Shariah', href: '/shariah' },
-    { label: 'About Us', href: '/about' },
     { label: 'Bootcamp', href: '/bootcamp' },
+    { label: 'About Us', href: '/about' },
   ];
 
   const isActive = (path: string) => {

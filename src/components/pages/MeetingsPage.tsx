@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown, ChevronLeft, CreditCard } from 'lucide-react';
 import Image from 'next/image';
@@ -276,6 +276,54 @@ const getMeetingPriceForAnalyst = (duration: number, analystName?: string): stri
   // Fallback to closest default tiers if new durations appear
   return duration < 60 ? '60 USD' : '100 USD';
 };
+
+// --- TIMEZONE OFFSET HELPERS ---
+// Mapping of IANA timezone identifiers to their UTC offsets (in hours)
+const getTimezoneOffsets = (): { [key: string]: number } => ({
+  // North America
+  'America/New_York': -5, 'America/Chicago': -6, 'America/Denver': -7, 'America/Los_Angeles': -8,
+  'America/Anchorage': -9, 'Pacific/Honolulu': -10, 'America/Toronto': -5, 'America/Vancouver': -8,
+  'America/Winnipeg': -6, 'America/Edmonton': -7, 'America/Halifax': -4, 'America/St_Johns': -3.5,
+  'America/Mexico_City': -6, 'America/Cancun': -5, 'America/Tijuana': -8,
+  
+  // South America
+  'America/Sao_Paulo': -3, 'America/Argentina/Buenos_Aires': -3, 'America/Santiago': -4,
+  'America/Bogota': -5, 'America/Lima': -5, 'America/Caracas': -4, 'America/Guayaquil': -5,
+  'America/La_Paz': -4, 'America/Asuncion': -3, 'America/Montevideo': -3, 'America/Paramaribo': -3,
+  'America/Cayenne': -3,
+  
+  // Europe
+  'Europe/London': 0, 'Europe/Dublin': 0, 'Europe/Paris': 1, 'Europe/Berlin': 1, 'Europe/Rome': 1,
+  'Europe/Madrid': 1, 'Europe/Amsterdam': 1, 'Europe/Brussels': 1, 'Europe/Vienna': 1, 'Europe/Zurich': 1,
+  'Europe/Stockholm': 1, 'Europe/Oslo': 1, 'Europe/Copenhagen': 1, 'Europe/Helsinki': 2, 'Europe/Warsaw': 1,
+  'Europe/Prague': 1, 'Europe/Budapest': 1, 'Europe/Bucharest': 2, 'Europe/Sofia': 2, 'Europe/Athens': 2,
+  'Europe/Istanbul': 3, 'Europe/Moscow': 3, 'Europe/Kiev': 2, 'Europe/Minsk': 3, 'Europe/Lisbon': 0,
+  'Europe/Reykjavik': 0,
+  
+  // Africa
+  'Africa/Cairo': 2, 'Africa/Johannesburg': 2, 'Africa/Lagos': 1, 'Africa/Casablanca': 0, 'Africa/Nairobi': 3,
+  'Africa/Tunis': 1, 'Africa/Algiers': 1, 'Africa/Addis_Ababa': 3, 'Africa/Khartoum': 2, 'Africa/Dakar': 0,
+  'Africa/Abidjan': 0, 'Africa/Accra': 0, 'Africa/Douala': 1, 'Africa/Luanda': 1, 'Africa/Maputo': 2,
+  'Africa/Windhoek': 2,
+  
+  // Asia
+  'Asia/Tokyo': 9, 'Asia/Shanghai': 8, 'Asia/Hong_Kong': 8, 'Asia/Singapore': 8, 'Asia/Seoul': 9,
+  'Asia/Manila': 8, 'Asia/Jakarta': 7, 'Asia/Bangkok': 7, 'Asia/Ho_Chi_Minh': 7, 'Asia/Kuala_Lumpur': 8,
+  'Asia/Taipei': 8, 'Asia/Kolkata': 5.5, 'Asia/Karachi': 5, 'Asia/Dhaka': 6, 'Asia/Kathmandu': 5.75,
+  'Asia/Colombo': 5.5, 'Asia/Dubai': 4, 'Asia/Riyadh': 3, 'Asia/Kuwait': 3, 'Asia/Qatar': 3,
+  'Asia/Bahrain': 3, 'Asia/Muscat': 4, 'Asia/Tehran': 3.5, 'Asia/Baghdad': 3, 'Asia/Jerusalem': 2,
+  'Asia/Amman': 2, 'Asia/Beirut': 2, 'Asia/Baku': 4, 'Asia/Tbilisi': 4, 'Asia/Yerevan': 4,
+  'Asia/Almaty': 6, 'Asia/Tashkent': 5, 'Asia/Kabul': 4.5,
+  
+  // Oceania
+  'Australia/Sydney': 10, 'Australia/Melbourne': 10, 'Australia/Brisbane': 10, 'Australia/Perth': 8,
+  'Australia/Adelaide': 9.5, 'Australia/Darwin': 9.5, 'Australia/Hobart': 10, 'Pacific/Auckland': 12,
+  'Pacific/Fiji': 12, 'Pacific/Port_Moresby': 10, 'Pacific/Guam': 10, 'Pacific/Saipan': 10,
+  'Pacific/Noumea': 11, 'Pacific/Norfolk': 11,
+  
+  // Other
+  'UTC': 0, 'GMT': 0
+});
 
 // --- HELPER COMPONENTS ---
 
@@ -801,6 +849,7 @@ const MeetingsPage = () => {
 
     const [hoveredTimezone, setHoveredTimezone] = useState<string>('');
     const [timezoneSearch, setTimezoneSearch] = useState<string>('');
+    const [userTimezone, setUserTimezone] = useState<string>('');
     const [selectedDate, setSelectedDate] = useState<string>('');
     const [selectedTime, setSelectedTime] = useState<string>('');
     const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
@@ -812,6 +861,20 @@ const MeetingsPage = () => {
     const [paymentCompleted, setPaymentCompleted] = useState<boolean>(false);
     const [paymentInitiating, setPaymentInitiating] = useState<boolean>(false);
     const [paymentError, setPaymentError] = useState<string>('');
+
+    // Detect user's timezone once on mount (used only for sorting suggestions; user still chooses)
+    useEffect(() => {
+        if (typeof window === 'undefined' || typeof Intl === 'undefined' || !Intl.DateTimeFormat) return;
+
+        try {
+            const resolvedTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            if (resolvedTz) {
+                setUserTimezone(resolvedTz);
+            }
+        } catch (error) {
+            console.warn('Unable to resolve user timezone:', error);
+        }
+    }, []);
 
     // Load Calendly widget script for popup functionality
     useEffect(() => {
@@ -1484,10 +1547,23 @@ const MeetingsPage = () => {
 
     // const router = useRouter(); // Removed to prevent compilation error
 
-    // Flatten all timezones for filtering - moved before handleContinue
-    const allTimezones = timezoneGroups.flatMap(group => 
-        group.timezones.map(tz => ({ ...tz, region: group.region }))
-    );
+    // Flatten all timezones for filtering and sort by proximity to user's timezone
+    const allTimezones = useMemo(() => {
+        const flat = timezoneGroups.flatMap(group =>
+            group.timezones.map(tz => ({ ...tz, region: group.region }))
+        );
+
+        if (!userTimezone) return flat;
+
+        const offsets = getTimezoneOffsets();
+        const userOffset = offsets[userTimezone] ?? 0;
+
+        return [...flat].sort((a, b) => {
+            const offsetA = offsets[a.value] ?? 0;
+            const offsetB = offsets[b.value] ?? 0;
+            return Math.abs(offsetA - userOffset) - Math.abs(offsetB - userOffset);
+        });
+    }, [userTimezone]);
 
     const filteredTimezones = allTimezones.filter(tz => 
         tz.label.toLowerCase().includes(timezoneSearch.toLowerCase()) ||
@@ -2000,53 +2076,6 @@ const MeetingsPage = () => {
             setSelectedTime(''); // Reset time selection when date changes
         }
     };
-
-    // Get timezone offset mapping
-const getTimezoneOffsets = (): { [key: string]: number } => ({
-  // North America
-  'America/New_York': -5, 'America/Chicago': -6, 'America/Denver': -7, 'America/Los_Angeles': -8,
-  'America/Anchorage': -9, 'Pacific/Honolulu': -10, 'America/Toronto': -5, 'America/Vancouver': -8,
-  'America/Winnipeg': -6, 'America/Edmonton': -7, 'America/Halifax': -4, 'America/St_Johns': -3.5,
-  'America/Mexico_City': -6, 'America/Cancun': -5, 'America/Tijuana': -8,
-  
-  // South America
-  'America/Sao_Paulo': -3, 'America/Argentina/Buenos_Aires': -3, 'America/Santiago': -4,
-  'America/Bogota': -5, 'America/Lima': -5, 'America/Caracas': -4, 'America/Guayaquil': -5,
-  'America/La_Paz': -4, 'America/Asuncion': -3, 'America/Montevideo': -3, 'America/Paramaribo': -3,
-  'America/Cayenne': -3,
-  
-  // Europe
-  'Europe/London': 0, 'Europe/Dublin': 0, 'Europe/Paris': 1, 'Europe/Berlin': 1, 'Europe/Rome': 1,
-  'Europe/Madrid': 1, 'Europe/Amsterdam': 1, 'Europe/Brussels': 1, 'Europe/Vienna': 1, 'Europe/Zurich': 1,
-  'Europe/Stockholm': 1, 'Europe/Oslo': 1, 'Europe/Copenhagen': 1, 'Europe/Helsinki': 2, 'Europe/Warsaw': 1,
-  'Europe/Prague': 1, 'Europe/Budapest': 1, 'Europe/Bucharest': 2, 'Europe/Sofia': 2, 'Europe/Athens': 2,
-  'Europe/Istanbul': 3, 'Europe/Moscow': 3, 'Europe/Kiev': 2, 'Europe/Minsk': 3, 'Europe/Lisbon': 0,
-  'Europe/Reykjavik': 0,
-  
-  // Africa
-  'Africa/Cairo': 2, 'Africa/Johannesburg': 2, 'Africa/Lagos': 1, 'Africa/Casablanca': 0, 'Africa/Nairobi': 3,
-  'Africa/Tunis': 1, 'Africa/Algiers': 1, 'Africa/Addis_Ababa': 3, 'Africa/Khartoum': 2, 'Africa/Dakar': 0,
-  'Africa/Abidjan': 0, 'Africa/Accra': 0, 'Africa/Douala': 1, 'Africa/Luanda': 1, 'Africa/Maputo': 2,
-  'Africa/Windhoek': 2,
-  
-  // Asia
-  'Asia/Tokyo': 9, 'Asia/Shanghai': 8, 'Asia/Hong_Kong': 8, 'Asia/Singapore': 8, 'Asia/Seoul': 9,
-  'Asia/Manila': 8, 'Asia/Jakarta': 7, 'Asia/Bangkok': 7, 'Asia/Ho_Chi_Minh': 7, 'Asia/Kuala_Lumpur': 8,
-  'Asia/Taipei': 8, 'Asia/Kolkata': 5.5, 'Asia/Karachi': 5, 'Asia/Dhaka': 6, 'Asia/Kathmandu': 5.75,
-  'Asia/Colombo': 5.5, 'Asia/Dubai': 4, 'Asia/Riyadh': 3, 'Asia/Kuwait': 3, 'Asia/Qatar': 3,
-  'Asia/Bahrain': 3, 'Asia/Muscat': 4, 'Asia/Tehran': 3.5, 'Asia/Baghdad': 3, 'Asia/Jerusalem': 2,
-  'Asia/Amman': 2, 'Asia/Beirut': 2, 'Asia/Baku': 4, 'Asia/Tbilisi': 4, 'Asia/Yerevan': 4,
-  'Asia/Almaty': 6, 'Asia/Tashkent': 5, 'Asia/Kabul': 4.5,
-  
-  // Oceania
-  'Australia/Sydney': 10, 'Australia/Melbourne': 10, 'Australia/Brisbane': 10, 'Australia/Perth': 8,
-  'Australia/Adelaide': 9.5, 'Australia/Darwin': 9.5, 'Australia/Hobart': 10, 'Pacific/Auckland': 12,
-  'Pacific/Fiji': 12, 'Pacific/Port_Moresby': 10, 'Pacific/Guam': 10, 'Pacific/Saipan': 10,
-  'Pacific/Noumea': 11, 'Pacific/Norfolk': 11,
-  
-  // Other
-  'UTC': 0, 'GMT': 0
-});
 
     // Convert UTC time to selected timezone (for display)
     // NOTE: This function is now mainly for backwards compatibility
@@ -3172,34 +3201,25 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
                                             </div>
                                         )
                                     ) : (
-                                        // Show grouped results when not searching
-                                        timezoneGroups.map((group) => (
-                                            <div key={group.region}>
-                                                {/* Region Header */}
-                                                        <div className="px-4 py-2 text-xs font-semibold text-gray-300 bg-gray-800/50 border-b border-gray-600">
-                                                    {group.region}
-                                                </div>
-                                                {/* Timezone Options */}
-                                                {group.timezones.map((tz) => (
-                                                    <button
-                                                        key={tz.value}
-                                                        type="button"
-                                                        onClick={() => handleTimezoneSelect(tz.value)}
-                                                        onMouseEnter={() => setHoveredTimezone(tz.value)}
-                                                        onMouseLeave={() => setHoveredTimezone('')}
-                                                        className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center focus:outline-none focus:ring-0 ${
-                                                            selectedTimezone === tz.value
-                                                                ? 'bg-purple-600 text-white'
-                                                                : hoveredTimezone === tz.value
-                                                                ? 'bg-purple-500 text-white'
-                                                                        : 'bg-black text-white hover:bg-gray-800'
-                                                        }`}
-                                                        style={{ outline: 'none', boxShadow: 'none' }}
-                                                    >
-                                                        <span>{tz.label}</span>
-                                                    </button>
-                                                ))}
-                                            </div>
+                                        // No search: show a flat list sorted globally by proximity to the user's timezone
+                                        allTimezones.map((tz) => (
+                                            <button
+                                                key={tz.value}
+                                                type="button"
+                                                onClick={() => handleTimezoneSelect(tz.value)}
+                                                onMouseEnter={() => setHoveredTimezone(tz.value)}
+                                                onMouseLeave={() => setHoveredTimezone('')}
+                                                className={`w-full text-left px-4 py-3 text-sm transition-colors duration-150 flex justify-between items-center focus:outline-none focus:ring-0 ${
+                                                    selectedTimezone === tz.value
+                                                        ? 'bg-purple-600 text-white'
+                                                        : hoveredTimezone === tz.value
+                                                        ? 'bg-purple-500 text-white'
+                                                        : 'bg-black text-white hover:bg-gray-800'
+                                                }`}
+                                                style={{ outline: 'none', boxShadow: 'none' }}
+                                            >
+                                                <span>{tz.label}</span>
+                                            </button>
                                         ))
                                     )}
                                 </div>

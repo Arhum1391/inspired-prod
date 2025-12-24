@@ -24,7 +24,7 @@ function YouTubeEmbed({ videoId }: { videoId: string }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <div className="w-full relative" style={{ aspectRatio: '16/9' }}>
+    <div className="w-full relative" style={{ height: '370px' }}>
       {!isLoaded && (
         <div className="absolute inset-0 bg-gray-800 flex items-center justify-center rounded-lg">
           <div className="text-white">Loading video...</div>
@@ -138,7 +138,7 @@ export default function PartnerPage({
       <main className="relative z-10">
         <section className="px-4 sm:px-6 md:px-8 lg:px-12 py-12 sm:py-16 md:py-20 mt-8 sm:mt-12 md:mt-16">
           <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
               {/* Left Column: Text Content */}
               <div className="flex flex-col gap-6">
                 <h1
@@ -155,11 +155,11 @@ export default function PartnerPage({
                 </p>
 
                 {/* Steps */}
-                <div className="flex flex-col gap-6 mt-4">
+                <div className="flex flex-col gap-2">
                   {steps.map((step) => (
                     <div
                       key={step.number}
-                      className="flex flex-col gap-1 items-start"
+                      className="flex flex-col gap-[2px] items-start"
                     >
                       <div className="flex">
                       <span
@@ -186,8 +186,8 @@ export default function PartnerPage({
               </div>
 
               {/* Right Column: Video */}
-              <div className="lg:sticky lg:top-24">
-                <div className="bg-[#1F1F1F] rounded-2xl p-4 sm:p-6 relative">
+              <div className="lg:sticky lg:top-24 flex">
+                <div className="bg-[#1F1F1F] rounded-2xl p-4 sm:p-6 relative w-full flex flex-col">
                   {/* Curved Gradient Border */}
                   <div
                     className="absolute inset-0 pointer-events-none"
@@ -205,7 +205,7 @@ export default function PartnerPage({
                     ></div>
                   </div>
                   
-                  <div className="relative z-10">
+                  <div className="relative z-10 flex flex-col flex-1 justify-center">
                     
                     
                     {/* Video Embed */}

@@ -10,6 +10,7 @@ import BrandStories from '@/components/sections/BrandStories';
 import CollaborationForm from '@/components/sections/CollaborationForm';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useEffect } from 'react';
 
 export default function Home() {
@@ -305,39 +306,39 @@ export default function Home() {
                
               
               
-                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                <Link href="/partners/binance" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
-                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                </Link>
+                <Link href="/partners/exness" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
+                </Link>
                
                 
                
                
                
-                <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                <Link href="/partners/primexbt" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
-                <a href="https://kleinfunding.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                </Link>
+                <Link href="/partners/klein-funding" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
+                </Link>
                 {/* Duplicate for seamless loop */}
                 
-                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                <Link href="/partners/binance" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
-                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                </Link>
+                <Link href="/partners/exness" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
+                </Link>
                 
                
-                <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                <Link href="/partners/primexbt" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
-                <a href="https://kleinfunding.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                </Link>
+                <Link href="/partners/klein-funding" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -365,34 +366,34 @@ export default function Home() {
               
              
               
-              <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+              <Link href="/partners/binance" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/binance.svg"
                   alt="Binance"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </a>
-              <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+              </Link>
+              <Link href="/partners/exness" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/exness.svg"
                   alt="Exness"
                   className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
                 />
-              </a>
-              <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-36 2xl:w-40 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+              </Link>
+              <Link href="/partners/primexbt" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-36 2xl:w-40 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/primexbt.svg"
                   alt="PrimeXBT"
                   className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
                 />
-              </a>
-              <a href="https://kleinfunding.com" target="_blank" rel="noopener noreferrer" className="w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20 2xl:w-24 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+              </Link>
+              <Link href="/partners/klein-funding" className="w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20 2xl:w-24 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
                   src="/brand_images/klein.svg"
                   alt="Klein"
                   className="opacity-80 w-full h-auto object-contain max-h-5 sm:max-h-6 md:max-h-7 lg:max-h-8 xl:max-h-10"
                 />
-              </a>
+              </Link>
             </div>
 
            

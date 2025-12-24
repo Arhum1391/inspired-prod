@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
 import { ChevronDown, ChevronLeft, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
+import { slugify } from '@/lib/teamUtils';
 
 // --- TYPE DEFINITIONS ---
 type Meeting = {
@@ -21,6 +22,7 @@ type Analyst = {
   name: string;
   description: string;
   image: string;
+  slug?: string; // URL-friendly slug for routing
 };
 
 type ReviewStats = {
@@ -493,15 +495,28 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
 };
 
 // --- MAIN PAGE COMPONENT ---
-const MeetingsPage = () => {
+const MeetingsPage = ({ slug: slugProp }: { slug?: string } = {}) => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [currentStep, setCurrentStep] = useState<number>(1);
-    const [selectedAnalyst, setSelectedAnalyst] = useState<number | null>(null); // No default selection
+    const params = useParams();
+    
+    // Get slug from URL params (for dynamic routes) or prop (for static routes)
+    const slug = slugProp || (params?.name as string) || '';
+    
+    // Check if we're on a slug route - simplified to only check slug prop
+    const isSlugRoute = !!slug;
+    
+    // Initialize step based on whether we're on a slug route
+    // Initialize loading state immediately when slug is present to prevent flicker
+    const [currentStep, setCurrentStep] = useState<number>(isSlugRoute ? 2 : 1);
+    const [selectedAnalyst, setSelectedAnalyst] = useState<number | null>(null);
     const [selectedMeeting, setSelectedMeeting] = useState<number | null>(null); // No default selection
     const [selectedTimezone, setSelectedTimezone] = useState<string>('');
     const [reviewStatsByAnalyst, setReviewStatsByAnalyst] = useState<Record<number, ReviewStats>>({});
     const [isLoadingReviewStats, setIsLoadingReviewStats] = useState<boolean>(false);
+    
+    // Initialize loading states when slug is present to ensure smooth navigation from AboutPage
+    const [isInitialLoading, setIsInitialLoading] = useState<boolean>(isSlugRoute);
     
     // Cache invalidation function
     const invalidateCache = () => {
@@ -1042,15 +1057,51 @@ const MeetingsPage = () => {
         }
     }, []); // Run only once on mount
 
-    // Fetch team data and check Calendly integration on component mount
+    // Handle slug from URL (for dynamic route support) - simplified without pathname checks
     useEffect(() => {
-        // Small delay to ensure any recent database operations have completed
-        const timer = setTimeout(() => {
-            fetchTeamData();
-            checkAllAnalystsCalendlyIntegration();
-        }, 100);
+        if (!isSlugRoute || !analysts.length || !slug) {
+            // If we were waiting for slug match, clear loading state
+            if (isInitialLoading) {
+                setIsInitialLoading(false);
+            }
+            return;
+        }
         
-        return () => clearTimeout(timer);
+        // Match by slug first (from API), then fallback to generated slug
+        const analyst = analysts.find(a => {
+            const apiSlug = a.slug || slugify(a.name);
+            return apiSlug === slug;
+        });
+        
+        if (analyst) {
+            // Reset selections when slug changes to a different analyst
+            if (selectedAnalyst !== analyst.id) {
+                setSelectedMeeting(null);
+                setSelectedDate('');
+                setSelectedTime('');
+                setSelectedTimezone('');
+                setAvailableDates([]);
+                setAvailableTimesByDate({});
+                setSlotUrlsByDateTime({});
+                setRawTimestampsByDateTime({});
+                setCalendlyMeetings([]);
+            }
+            setSelectedAnalyst(analyst.id);
+            setCurrentStep(2);
+            // Clear initial loading state once analyst is matched
+            setIsInitialLoading(false);
+        } else {
+            // Slug not found - redirect to /meetings
+            setIsInitialLoading(false);
+            router.replace('/meetings');
+        }
+    }, [analysts, slug, isSlugRoute, router, isInitialLoading]);
+
+    // Fetch team data and check Calendly integration on component mount
+    // Always fetch immediately to ensure loading state is consistent
+    useEffect(() => {
+        fetchTeamData();
+        checkAllAnalystsCalendlyIntegration();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Auto-refresh team data when user returns to the page (focus event)
@@ -1088,6 +1139,11 @@ const MeetingsPage = () => {
         const handleAnalystSelection = async () => {
             if (selectedAnalyst === null) return;
             
+            // Ensure analysts array is loaded before fetching
+            if (!isTeamDataLoaded || analysts.length === 0) {
+                return;
+            }
+            
             // Check if we're returning from payment (with safety checks)
             if (typeof window === 'undefined') return;
             
@@ -1101,16 +1157,26 @@ const MeetingsPage = () => {
             const stepParam = searchParams.get('step');
             const isUrlRedirect = stepParam === '2' && searchParams.get('selectedAnalyst') !== null;
             
-            // Allow fetching when:
-            // 1. Normal flow: currentStep !== 2 (user manually selected analyst from step 1)
-            // 2. URL redirect: currentStep === 2 but we detected step=2 in URL (coming from about page)
-            const shouldFetch = currentStep !== 2 || isUrlRedirect;
-            
-            if (!shouldFetch) return;
-            
-            // Ensure analysts array is loaded before fetching
-            if (!isTeamDataLoaded || analysts.length === 0) {
-                console.log('⏳ Waiting for team data to load before fetching meeting types...');
+            // On slug route, fetch immediately without resetting to ensure smooth navigation
+            if (isSlugRoute && currentStep === 2 && !isReturningFromPayment && !isUrlRedirect) {
+                setIsLoadingEventTypes(true);
+                // Clear initial loading state once we start fetching
+                if (isInitialLoading) {
+                    setIsInitialLoading(false);
+                }
+                try {
+                    const hasCalendly = await checkSpecificAnalystCalendlyIntegration(selectedAnalyst);
+                    if (hasCalendly) {
+                        await fetchCalendlyEventTypes();
+                    } else {
+                        setCalendlyMeetings([]);
+                    }
+                } catch (error) {
+                    console.error('Error handling slug route analyst selection:', error);
+                    setCalendlyMeetings([]);
+                } finally {
+                    setIsLoadingEventTypes(false);
+                }
                 return;
             }
             
@@ -1184,18 +1250,34 @@ const MeetingsPage = () => {
                 return;
             }
             
-            // Reset ALL selections when analyst changes (normal flow only)
-            console.log(`🔄 Normal flow: Resetting all selections for new analyst ${selectedAnalyst}`);
-            setCalendlyMeetings([]);
-            setSelectedMeeting(null);
-            setSelectedDate('');
-            setSelectedTime('');
-            setSelectedTimezone('');
-            setAvailableDates([]);
-            setAvailableTimesByDate({});
-            setSlotUrlsByDateTime({});
-            setRawTimestampsByDateTime({});
-            setCurrentStep(1); // Reset to analyst selection step
+            // Reset ALL selections when analyst changes (normal flow only - NOT on slug routes)
+            // Don't reset step if we're on a slug route - we should stay on step 2
+            if (!isSlugRoute) {
+                console.log(`🔄 Normal flow: Resetting all selections for new analyst ${selectedAnalyst}`);
+                setCalendlyMeetings([]);
+                setSelectedMeeting(null);
+                setSelectedDate('');
+                setSelectedTime('');
+                setSelectedTimezone('');
+                setAvailableDates([]);
+                setAvailableTimesByDate({});
+                setSlotUrlsByDateTime({});
+                setRawTimestampsByDateTime({});
+                setCurrentStep(1); // Reset to analyst selection step only if not on slug route
+            } else {
+                console.log(`🔄 Slug route: Keeping step 2, just resetting meeting selections`);
+                // On slug route, just reset meeting-related selections but keep step 2
+                // Ensure loading state is set to prevent flicker
+                setCalendlyMeetings([]);
+                setSelectedMeeting(null);
+                setSelectedDate('');
+                setSelectedTime('');
+                setSelectedTimezone('');
+                setAvailableDates([]);
+                setAvailableTimesByDate({});
+                setSlotUrlsByDateTime({});
+                setRawTimestampsByDateTime({});
+            }
             setIsLoadingEventTypes(true);
             
             try {
@@ -1218,8 +1300,8 @@ const MeetingsPage = () => {
             }
         };
         
-        handleAnalystSelection();
-    }, [selectedAnalyst, searchParams, isTeamDataLoaded, analysts.length]); // eslint-disable-line react-hooks/exhaustive-deps
+            handleAnalystSelection();
+    }, [selectedAnalyst, searchParams, isTeamDataLoaded, analysts.length, isSlugRoute, currentStep]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Fetch Calendly availability when meeting type, month, or timezone change
     useEffect(() => {
@@ -1913,7 +1995,10 @@ const MeetingsPage = () => {
         if (currentStep === 2) {
             console.log('⬅️ Navigating back from step 2 to step 1 - invalidating cache');
             invalidateCache();
+            // Navigate to /meetings (without slug) when going back from step 2
+            router.push('/meetings', { scroll: false });
             setCurrentStep(1);
+            setSelectedAnalyst(null);
         } else if (currentStep === 3) {
             console.log('⬅️ Navigating back from step 3 to step 2 - invalidating booking cache');
             if (typeof sessionStorage !== 'undefined') {
@@ -2657,7 +2742,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                             style={{
-                                        backgroundImage: 'url("inspired analysts team/1.png")',
+                                        backgroundImage: 'url("/inspired analysts team/1.png")',
                                         backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2666,7 +2751,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
+                                        backgroundImage: 'url("/inspired analysts team/2 improved.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2675,7 +2760,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/3.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/3.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2684,7 +2769,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/4.png")',
+                                        backgroundImage: 'url("/inspired analysts team/4.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2694,7 +2779,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/1.png")',
+                                        backgroundImage: 'url("/inspired analysts team/1.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2703,7 +2788,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
+                                        backgroundImage: 'url("/inspired analysts team/2 improved.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2712,7 +2797,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/3.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/3.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2721,7 +2806,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/4.png")',
+                                        backgroundImage: 'url("/inspired analysts team/4.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2737,7 +2822,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/5.png")',
+                                        backgroundImage: 'url("/inspired analysts team/5.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2746,7 +2831,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/6.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/6.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2755,7 +2840,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/7.png")',
+                                        backgroundImage: 'url("/inspired analysts team/7.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2764,7 +2849,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/2.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/2.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2774,7 +2859,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/5.png")',
+                                        backgroundImage: 'url("/inspired analysts team/5.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2783,7 +2868,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/6.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/6.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2792,7 +2877,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/7.png")',
+                                        backgroundImage: 'url("/inspired analysts team/7.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2801,7 +2886,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                             style={{
-                                        backgroundImage: 'url("inspired analysts team/2.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/2.jpg")',
                                         backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2958,8 +3043,8 @@ const MeetingsPage = () => {
                         <h1 className="text-3xl sm:text-4xl font-bold" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Book Mentorship</h1>
                     </div>
 
-                    {/* Step 1: Analyst Selection */}
-                    {currentStep === 1 && (
+                    {/* Step 1: Analyst Selection - NEVER show on slug routes */}
+                    {currentStep === 1 && !isSlugRoute && (
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Select Your Analyst</h2>
@@ -3027,15 +3112,15 @@ const MeetingsPage = () => {
                                             key={analyst.id}
                                             analyst={analyst}
                                             isSelected={selectedAnalyst === analyst.id}
-                                            onSelect={setSelectedAnalyst}
+                                            onSelect={(id) => {
+                                                setSelectedAnalyst(id);
+                                                setCurrentStep(2); // Set step immediately for smooth navigation
+                                                // Use slug from API if available, otherwise generate it (simple like AboutPage)
+                                                const slug = analyst.slug || slugify(analyst.name);
+                                                router.push(`/meetings/${slug}`, { scroll: false });
+                                            }}
                                             onAdvance={() => {
-                                                console.log('➡️ Advancing from step 1 to step 2 - invalidating Calendly cache');
-                                                if (typeof sessionStorage !== 'undefined') {
-                                                    sessionStorage.removeItem('calendlyEventTypes');
-                                                    sessionStorage.removeItem('calendlyAvailability');
-                                                    sessionStorage.removeItem('calendlyEventDetails');
-                                                }
-                                                setCurrentStep(2);
+                                                // No-op when navigating to slug route - step is already set
                                             }}
                                             isTeamDataLoaded={isTeamDataLoaded}
                                         />
@@ -3062,7 +3147,7 @@ const MeetingsPage = () => {
                     )}
 
                     {/* Step 2: Meeting Selection, Timezone, Date & Time */}
-                    {currentStep === 2 && (
+                    {currentStep === 2 && selectedAnalyst !== null && (
                         <div className="space-y-8">
                             {/* Meeting Selection */}
                     <div className="space-y-6">
@@ -3071,7 +3156,7 @@ const MeetingsPage = () => {
                             <p className="text-sm sm:text-base text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Choose the session that best fits your needs</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {isLoadingEventTypes ? (
+                            {(isLoadingEventTypes || isInitialLoading) ? (
                                 <div className="col-span-full flex flex-col items-center justify-center py-8">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mb-3"></div>
                                     <p className="text-gray-400 text-sm">Loading meeting types...</p>
@@ -3251,7 +3336,7 @@ const MeetingsPage = () => {
                                             className="bg-[#1F1F1F] rounded-xl mt-6 relative overflow-hidden p-4 w-full max-w-[412px] min-h-[284px] flex flex-col items-start gap-2.5"
                                         >
                                             {/* Loading Overlay */}
-                                            {isLoadingAvailability && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && (
+                                            {(isLoadingAvailability || isInitialLoading) && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && (
                                                 <div className="absolute inset-0 bg-[#1F1F1F]/90 flex items-center justify-center z-30 rounded-xl">
                                                     <div className="flex flex-col items-center gap-3">
                                                         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-400"></div>
@@ -3332,13 +3417,13 @@ const MeetingsPage = () => {
                                                                 {getDaysInMonth(currentMonth).filter((_, index) => index % 7 === dayIndex).map((day, weekIndex) => (
                                                         <button
                                                                         key={weekIndex}
-                                                                        onClick={() => day && !isLoadingAvailability && handleDateSelect(day)}
-                                                                        disabled={!day || !isDateAvailable(day) || (isLoadingAvailability && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst))}
+                                                                        onClick={() => day && !isLoadingAvailability && !isInitialLoading && handleDateSelect(day)}
+                                                                        disabled={!day || !isDateAvailable(day) || ((isLoadingAvailability || isInitialLoading) && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst))}
                                                             className={`
                                                                             flex items-center justify-center transition-all duration-200 w-8 h-8 rounded-lg text-sm focus:outline-none focus:ring-0
                                                                             ${day && isDateSelected(day)
                                                                                 ? 'bg-white text-black'
-                                                                                : day && isDateAvailable(day) && !(isLoadingAvailability && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst))
+                                                                                : day && isDateAvailable(day) && !((isLoadingAvailability || isInitialLoading) && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst))
                                                                                 ? 'bg-[#404040] text-white hover:bg-gray-500 cursor-pointer'
                                                                                 : 'text-[#909090] cursor-not-allowed'
                                                                             }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getDatabase } from '@/lib/mongodb';
+import { slugify } from '@/lib/teamUtils';
 import { getCanonicalMentorImagePath } from '@/lib/mentorImages';
 
 // Cache this route response for 60 seconds on the edge
@@ -12,6 +13,7 @@ interface Analyst {
   description: string; // This will be the role
   image: string;
   about: string; // This will be the about field
+  slug: string; // URL-friendly slug for routing
 }
 
 export async function GET() {
@@ -32,6 +34,10 @@ export async function GET() {
         imageUrl = getCanonicalMentorImagePath(member.name);
       }
 
+      const slug = member.slug && typeof member.slug === 'string' && member.slug.trim() !== ''
+        ? member.slug
+        : slugify(member.name);
+
       console.log('🔄 Mapping team member:', {
         id: member.id,
         name: member.name,
@@ -39,6 +45,7 @@ export async function GET() {
         about: member.about?.substring(0, 50) + '...', // Log first 50 chars
         hasImage: !!imageUrl,
         imageSource: member.image && member.image.trim() !== '' ? 'team member field' : 'static fallback',
+        slug,
       });
 
       return {
@@ -47,6 +54,7 @@ export async function GET() {
         description: member.role || 'Role unavailable',
         image: imageUrl,
         about: member.about || 'About info unavailable',
+        slug,
       };
     });
 

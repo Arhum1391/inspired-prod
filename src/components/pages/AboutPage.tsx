@@ -8,6 +8,7 @@ import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import CollaborationForm from '@/components/sections/CollaborationForm';
 import Footer from '@/components/Footer';
 import Link from 'next/link';
+import { slugify } from '@/lib/teamUtils';
 
 type Analyst = {
   id: number;
@@ -15,6 +16,7 @@ type Analyst = {
   description: string;
   image: string;
   about?: string;
+  slug?: string; // URL-friendly slug for routing
 };
 
 const MOBILE_BELT_IMAGE_STYLE = {
@@ -317,7 +319,7 @@ export default function AboutPage() {
                                   minHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   maxHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   flexShrink: 0,
-                                  backgroundImage: 'url("inspired analysts team/5.png")',
+                                  backgroundImage: 'url("/inspired analysts team/5.png")',
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
                                   backgroundRepeat: 'no-repeat'
@@ -355,7 +357,7 @@ export default function AboutPage() {
                                   minHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   maxHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   flexShrink: 0,
-                                  backgroundImage: 'url("inspired analysts team/6.jpg")',
+                                  backgroundImage: 'url("/inspired analysts team/6.jpg")',
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
                                   backgroundRepeat: 'no-repeat'
@@ -393,7 +395,7 @@ export default function AboutPage() {
                                   minHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   maxHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   flexShrink: 0,
-                                  backgroundImage: 'url("inspired analysts team/7.png")',
+                                  backgroundImage: 'url("/inspired analysts team/7.png")',
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
                                   backgroundRepeat: 'no-repeat'
@@ -431,7 +433,7 @@ export default function AboutPage() {
                                   minHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   maxHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   flexShrink: 0,
-                                  backgroundImage: 'url("inspired analysts team/2.jpg")',
+                                  backgroundImage: 'url("/inspired analysts team/2.jpg")',
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
                                   backgroundRepeat: 'no-repeat'
@@ -469,7 +471,7 @@ export default function AboutPage() {
                                   minHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   maxHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   flexShrink: 0,
-                                  backgroundImage: 'url("inspired analysts team/1.png")',
+                                  backgroundImage: 'url("/inspired analysts team/1.png")',
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
                                   backgroundRepeat: 'no-repeat'
@@ -507,7 +509,7 @@ export default function AboutPage() {
                                   minHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   maxHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   flexShrink: 0,
-                                  backgroundImage: 'url("inspired analysts team/3.jpg")',
+                                  backgroundImage: 'url("/inspired analysts team/3.jpg")',
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
                                   backgroundRepeat: 'no-repeat'
@@ -526,7 +528,7 @@ export default function AboutPage() {
                                   minHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   maxHeight: 'calc(((100vw - 192px) / 13) * 2.2)',
                                   flexShrink: 0,
-                                  backgroundImage: 'url("inspired analysts team/4.png")',
+                                  backgroundImage: 'url("/inspired analysts team/4.png")',
                                   backgroundSize: 'cover',
                                   backgroundPosition: 'center',
                                   backgroundRepeat: 'no-repeat'
@@ -650,7 +652,7 @@ export default function AboutPage() {
                   boxSizing: 'border-box',
                   width: '343px',
                   height: '303px',
-                  background: 'url("team dark/Adnan.png"), #1F1F1F',
+                  background: 'url("/team dark/Adnan.png"), #1F1F1F',
                   backgroundSize: '110%',
                   backgroundPosition: 'center',
                   backgroundRepeat: 'no-repeat',
@@ -699,7 +701,9 @@ export default function AboutPage() {
 
                 {/* Frame 23 - Book Mentorship Button */}
                 <Link
-                  href={`/meetings?step=2&selectedAnalyst=${analysts.length > 0 ? analysts[0].id : 0}`}
+                  href={analysts.length > 0 && analysts[0].slug 
+                    ? `/meetings/${analysts[0].slug}` 
+                    : `/meetings?step=2&selectedAnalyst=${analysts.length > 0 ? analysts[0].id : 0}`}
                   className="flex flex-row justify-center items-center w-full md:w-auto md:max-w-[187px] mt-4 md:mt-0"
                   style={{
                     width: '100%',
@@ -1149,7 +1153,8 @@ export default function AboutPage() {
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
-                                router.push(`/meetings?step=2&selectedAnalyst=${analyst.id}`);
+                                const slug = analyst.slug || slugify(analyst.name);
+                                router.push(`/meetings/${slug}`);
                               }}
                               onMouseDown={(e) => {
                                 e.preventDefault();

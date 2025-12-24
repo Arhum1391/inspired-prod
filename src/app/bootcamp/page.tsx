@@ -296,12 +296,14 @@ export default function BootcampPage() {
       <div
         className="absolute inset-0 -top-[1px] -right-[1px] pointer-events-none rounded-2xl"
         style={{
-          background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%)'
+          // background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%)'
         }}
       >
       </div>
       <div
-        className="bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full">
+        className=" bg-[#1F1F1F] rounded-2xl p-6 flex flex-col gap-6 relative overflow-hidden h-full"
+      
+        >
 
         {/* Gradient Ellipse */}
         <div
@@ -347,68 +349,83 @@ export default function BootcampPage() {
               }}
             ></div>
 
-            <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">{bootcamp.price}</span>
+            {/* <span className="relative z-10 inline-block bg-[#1F1F1F] text-white text-xs font-semibold px-3 py-1 rounded-full border border-gray-600/50 transition-colors duration-300 whitespace-nowrap">{bootcamp.price}</span> */}
           </div>
         </div>
 
-        {/* Description */}
-        <p className="text-base text-white leading-[130%] relative z-10" style={{ fontFamily: 'Gilroy' }}>
-          {bootcamp.description}
-        </p>
-
-        {/* Mentors */}
-        <div className="flex flex-col gap-2 relative z-10">
-          <h4 className="text-xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600 }}>Mentors:</h4>
-          {bootcamp.mentors.map((mentor, index) => (
-            <p key={index} className="text-base text-white leading-[130%]" style={{ fontFamily: 'Gilroy' }}>{mentor}</p>
-          ))}
-        </div>
-
-        {/* Tags - Dynamic Duration and Format */}
-        <div className="flex gap-2 relative z-10">
-          {/* Duration tag */}
-          <span
-            className="border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] border rounded-full px-2.5 py-1 text-xs"
-            style={{ fontFamily: 'Gilroy', fontWeight: 500 }}
-          >
-            {bootcamp.duration}
-          </span>
-
-          {/* Format tag */}
-          <span
-            className="border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC] border rounded-full px-2.5 py-1 text-xs"
-            style={{ fontFamily: 'Gilroy', fontWeight: 500 }}
-          >
-            {bootcamp.format}
+        {/* Coming Soon Overlay - Can be removed later by deleting this section */}
+        <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none "
+        style={{
+          background:' linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, #0A0A0A 100%)',
+          // backdropFilter: 'blur(8px)',
+        }}
+        >
+          <span className="text-lg  text-white font-semibold" >
+            Coming Soon
           </span>
         </div>
 
-        {/* Registration Dates */}
-        <p className="text-base text-white leading-[130%] relative z-10" style={{ fontFamily: 'Gilroy' }}>
-          Registration Dates: {new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-          })} - {new Date(bootcamp.registrationEndDate).toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-          })}
-        </p>
+        {/* Content with blur effect - Remove blur style when removing Coming Soon */}
+        <div className="relative z-10" style={{ filter: 'blur(4px)', pointerEvents: 'none' }}>
+          {/* Description */}
+          <p className="text-base text-white leading-[130%]" style={{ fontFamily: 'Gilroy' }}>
+            {bootcamp.description}
+          </p>
 
-        {/* Buttons */}
-        <div className="flex gap-4 relative z-10 mt-auto">
-          <Link href={`/bootcamp/${bootcamp.id}`} className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{ fontFamily: 'Gilroy', fontWeight: 600 }}>
-            Learn More
-            <Image
-              src="/logo/backhome.png"
-              alt="Arrow"
-              width={20}
-              height={20}
-              className="w-5 h-5"
-            />
-          </Link>
-          <Link href={`/bootcamp/${bootcamp.id}/register`} className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{ fontFamily: 'Gilroy', fontWeight: 600 }}>Register Now</Link>
+          {/* Mentors */}
+          <div className="flex flex-col gap-2 relative z-10">
+            <h4 className="text-xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600 }}>Mentors:</h4>
+            {bootcamp.mentors.map((mentor, index) => (
+              <p key={index} className="text-base text-white leading-[130%]" style={{ fontFamily: 'Gilroy' }}>{mentor}</p>
+            ))}
+          </div>
+
+          {/* Tags - Dynamic Duration and Format */}
+          <div className="flex gap-2 relative z-10">
+            {/* Duration tag */}
+            <span
+              className="border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] border rounded-full px-2.5 py-1 text-xs"
+              style={{ fontFamily: 'Gilroy', fontWeight: 500 }}
+            >
+              {bootcamp.duration}
+            </span>
+
+            {/* Format tag */}
+            <span
+              className="border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC] border rounded-full px-2.5 py-1 text-xs"
+              style={{ fontFamily: 'Gilroy', fontWeight: 500 }}
+            >
+              {bootcamp.format}
+            </span>
+          </div>
+
+          {/* Registration Dates */}
+          <p className="text-base text-white leading-[130%] relative z-10" style={{ fontFamily: 'Gilroy' }}>
+            Registration Dates: {new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric'
+            })} - {new Date(bootcamp.registrationEndDate).toLocaleDateString('en-US', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric'
+            })}
+          </p>
+
+          {/* Buttons */}
+          <div className="flex gap-4 relative z-10 mt-10">
+            <Link href={`/bootcamp/${bootcamp.id}`} className="flex-1 border border-white rounded-full py-2.5 px-4 text-sm text-white text-center hover:bg-white/10 transition-colors flex items-center justify-center gap-2" style={{ fontFamily: 'Gilroy', fontWeight: 600 }}>
+              Learn More
+              <Image
+                src="/logo/backhome.png"
+                alt="Arrow"
+                width={20}
+                height={20}
+                className="w-5 h-5"
+              />
+            </Link>
+            <Link href={`/bootcamp/${bootcamp.id}/register`} className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{ fontFamily: 'Gilroy', fontWeight: 600 }}>Register Now</Link>
+          </div>
         </div>
       </div >
 

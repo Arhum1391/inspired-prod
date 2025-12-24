@@ -1,14 +1,17 @@
 import { Suspense } from 'react';
 import MeetingsPage from '@/components/pages/MeetingsPage';
+import LoadingScreen from '@/components/LoadingScreen';
 
-export default function MeetingsWithSlug({
+export default async function MeetingsWithSlug({
   params,
 }: {
-  params: { name: string };
+  params: Promise<{ name: string }>;
 }) {
+  const { name } = await params;
+  
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <MeetingsPage slug={params.name} />
+    <Suspense fallback={<LoadingScreen message="Loading..." />}>
+      <MeetingsPage slug={name} />
     </Suspense>
   );
 }

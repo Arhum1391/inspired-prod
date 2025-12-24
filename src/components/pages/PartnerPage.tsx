@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
+import Image from 'next/image';
 
 interface Step {
   number: number;
@@ -50,8 +51,55 @@ export default function PartnerPage({
 }: PartnerPageProps) {
   return (
     <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .partner-background-svg {
+            width: 1043px !important;
+            height: 470px !important;
+            left: -300px !important;
+            top: -120px !important;
+            rotate: -8deg !important;
+          }
+        }
+      `}</style>
+    
+      {/* Background SVG Gradient - Same as PortfolioPage */}
+      <svg 
+        className="absolute pointer-events-none partner-background-svg"
+        style={{
+          left: '-500px',
+          top: '-80px',
+          width: '1686.4px',
+          height: '934.41px',
+          rotate: '-12deg',
+          zIndex: 0,
+        }}
+        viewBox="0 0 635 728" 
+        fill="none" 
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="xMidYMid meet"
+      >
+        <g filter="url(#filter0_f_partner)">
+          <path d="M-323.419 -963.166C-339.01 -913.804 -341.542 -793.642 -219.641 -721.835C68.1756 -552.293 47.4452 -238.748 50.2608 -183.474C54.8056 -94.2532 60.7748 113.384 232.274 209.929C361.298 282.563 423.638 276.679 416.511 277.203L434.837 526.531C384.709 530.216 273.76 520.175 109.635 427.781C-199.701 253.642 -196.356 -110.679 -199.416 -170.757C-204.206 -264.783 -195.12 -417.24 -346.527 -506.428C-604.593 -658.445 -598.186 -923.295 -561.811 -1038.46L-323.419 -963.166Z" fill="url(#paint0_linear_partner)" opacity="1"/>
+        </g>
+        <defs>
+          <filter id="filter0_f_partner" x="-780.181" y="-1238.46" width="1415.02" height="1965.62" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+            <feFlood floodOpacity="0" result="BackgroundImageFix"/>
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+            <feGaussianBlur stdDeviation="75" result="effect1_foregroundBlur_partner"/>
+          </filter>
+          <linearGradient id="paint0_linear_partner" x1="-442.615" y1="-1000.81" x2="328.493" y2="452.779" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#3813F3"/>
+            <stop offset="0.307692" stopColor="#DE50EC"/>
+            <stop offset="0.543269" stopColor="#B9B9E9"/>
+            <stop offset="0.740385" stopColor="#4B25FD"/>
+            <stop offset="0.9999" stopColor="#05B0B3"/>
+          </linearGradient>
+        </defs>
+      </svg>
     
       <div
+            className="hidden md:block"
             style={{
               position: 'absolute',
               width: '300px',
@@ -81,6 +129,10 @@ export default function PartnerPage({
 
       {/* Navigation Header */}
       <Navbar variant="default" />
+      <div className='relative md:hidden'>
+
+        <Image src="/icons/partner1.svg" alt="Partner Background" width={300} height={30}  className='absolute top-[220px]  right-[-140px]'/>
+      </div>
 
       {/* Main Content */}
       <main className="relative z-10">

@@ -65,7 +65,7 @@ export default function PartnerPage({
     
       {/* Background SVG Gradient - Same as PortfolioPage */}
       <svg 
-        className="absolute pointer-events-none partner-background-svg"
+        className="absolute pointer-events-none partner-background-svg md:hidden"
         style={{
           left: '-500px',
           top: '-80px',

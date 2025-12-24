@@ -10,6 +10,7 @@ import BrandStories from '@/components/sections/BrandStories';
 import CollaborationForm from '@/components/sections/CollaborationForm';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { useEffect } from 'react';
 
 export default function Home() {
@@ -267,8 +268,143 @@ export default function Home() {
       </div>
 
 
+  {/* Our Affiliated Partners Connected Vector Grid Rows - Responsive */}
+  <section id="affiliated" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16 mt-12 sm:mt-0 sm:mb-0! sm:pb-0!">
+        <div className="max-w-6xl mx-auto">
+          {/* Our Valued Partners Header - Centered and smaller */}
+          <div className="text-center -mb-22 md:mb-8">
+            <h2
+              className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white"
+              style={{fontFamily: 'Gilroy', fontWeight: 600}}
+            >
+              Our Affiliated Partners
+            </h2>
+          </div>
+
+          {/* Mobile Carousel View */}
+          <div className="block md:hidden relative w-full mx-auto h-[340px]">
+            {/* Single Vector Background for Mobile */}
+            <div
+              className="absolute w-full top-1/2 transform -translate-y-1/2 max-w-2xl mx-auto left-0 right-0"
+              style={{
+                aspectRatio: '1064/310',
+                background: `
+                  url("/Vector (1).png"),
+                  linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                  radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+                `,
+                backgroundSize: '150%, cover, cover',
+                backgroundPosition: 'center, center, center',
+                backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+              }}
+            />
+
+            {/* Carousel Container */}
+            <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 w-full overflow-hidden">
+              <div className="flex animate-carousel gap-16 items-center">
+                {/* All brand logos in a row that will scroll */}
+               
+              
+              
+                <Link href="/partners/binance" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                <Link href="/partners/exness" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+               
+                
+               
+               
+               
+                <Link href="/partners/primexbt" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                <Link href="/partners/klein-funding" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                {/* Duplicate for seamless loop */}
+                
+                <Link href="/partners/binance" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                <Link href="/partners/exness" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                
+               
+                <Link href="/partners/primexbt" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                <Link href="/partners/klein-funding" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop/Tablet Grid View */}
+          <div className="hidden md:block relative w-full max-w-4xl mx-auto h-[400px]">
+
+            {/* Group 13 - First Vector Grid Background */}
+            <div
+              className="absolute w-full top-[-40px]"
+              style={{
+                aspectRatio: '1064/310',
+                background: `
+                  url("/Vector (1).png"),
+                  linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                  radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+                `,
+                backgroundSize: 'contain, cover, cover',
+                backgroundPosition: 'center, center, center',
+                backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+              }}
+            />
+            {/* Frame 26 - First Row Logos */}
+            <div className="absolute z-30 flex justify-center items-center left-1/2 transform -translate-x-1/2 top-[13%] sm:top-[16%] md:top-[18%] lg:top-[16%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
+              
+             
+              
+              <Link href="/partners/binance" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/binance.svg"
+                  alt="Binance"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </Link>
+              <Link href="/partners/exness" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/exness.svg"
+                  alt="Exness"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </Link>
+              <Link href="/partners/primexbt" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-36 2xl:w-40 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/primexbt.svg"
+                  alt="PrimeXBT"
+                  className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
+                />
+              </Link>
+              <Link href="/partners/klein-funding" className="w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20 2xl:w-24 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/klein.svg"
+                  alt="Klein"
+                  className="opacity-80 w-full h-auto object-contain max-h-5 sm:max-h-6 md:max-h-7 lg:max-h-8 xl:max-h-10"
+                />
+              </Link>
+            </div>
+
+           
+
+          
+
+          </div>
+        </div>
+      </section>
       {/* Brand Logos Section with 3 Connected Vector Grid Rows - Responsive */}
-      <section id="partners" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16 mt-12 sm:mt-0">
+      <section id="partners" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16 mt-12 sm:mt-0 sm:pt-0!">
         <div className="max-w-6xl mx-auto">
           {/* Our Valued Partners Header - Centered and smaller */}
           <div className="text-center -mb-22 md:mb-8">

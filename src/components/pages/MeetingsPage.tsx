@@ -858,6 +858,7 @@ const MeetingsPage = () => {
     const [notes, setNotes] = useState<string>('');
     const [nameError, setNameError] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
+    const [notesError, setNotesError] = useState<string>('');
     const [paymentCompleted, setPaymentCompleted] = useState<boolean>(false);
     const [paymentInitiating, setPaymentInitiating] = useState<boolean>(false);
     const [paymentError, setPaymentError] = useState<string>('');
@@ -946,9 +947,19 @@ const MeetingsPage = () => {
                     // Use setTimeout to batch all state updates together
                     setTimeout(() => {
                         // Restore all form fields in one batch
-                        setFullName(formData.fullName || '');
-                        setEmail(formData.email || '');
-                        setNotes(formData.notes || '');
+                        const restoredFullName = formData.fullName || '';
+                        const restoredEmail = formData.email || '';
+                        const restoredNotes = formData.notes || '';
+                        
+                        setFullName(restoredFullName);
+                        setEmail(restoredEmail);
+                        setNotes(restoredNotes);
+                        
+                        // Validate restored fields
+                        setNameError(validateName(restoredFullName));
+                        setEmailError(validateEmail(restoredEmail));
+                        setNotesError(validateNotes(restoredNotes));
+                        
                         setSelectedAnalyst(formData.selectedAnalyst !== undefined ? formData.selectedAnalyst : null);
                         setSelectedMeeting(formData.selectedMeeting !== undefined ? formData.selectedMeeting : null);
                         setSelectedDate(formData.selectedDate || '');
@@ -1004,9 +1015,19 @@ const MeetingsPage = () => {
                     console.log('🔒 Set isLoadingAvailability=true after cancellation');
                     
                     setTimeout(() => {
-                        setFullName(formData.fullName || '');
-                        setEmail(formData.email || '');
-                        setNotes(formData.notes || '');
+                        const restoredFullName = formData.fullName || '';
+                        const restoredEmail = formData.email || '';
+                        const restoredNotes = formData.notes || '';
+                        
+                        setFullName(restoredFullName);
+                        setEmail(restoredEmail);
+                        setNotes(restoredNotes);
+                        
+                        // Validate restored fields
+                        setNameError(validateName(restoredFullName));
+                        setEmailError(validateEmail(restoredEmail));
+                        setNotesError(validateNotes(restoredNotes));
+                        
                         setSelectedAnalyst(formData.selectedAnalyst !== undefined ? formData.selectedAnalyst : null);
                         setSelectedMeeting(formData.selectedMeeting !== undefined ? formData.selectedMeeting : null);
                         setSelectedDate(formData.selectedDate || '');
@@ -1634,10 +1655,10 @@ const MeetingsPage = () => {
     const timeSlotObjects = getTimeSlotObjects();
 
     const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
-                               currentStep === 3 ? (!fullName || !email || !!nameError || !!emailError || !paymentCompleted || isLoadingAvailability) : false;
+                               currentStep === 3 ? (!fullName || !email || !notes || !!nameError || !!emailError || !!notesError || !paymentCompleted || isLoadingAvailability) : false;
 
     const handleStripePayment = async () => {
-        if (!fullName || !email || !!nameError || !!emailError) {
+        if (!fullName || !email || !notes || !!nameError || !!emailError || !!notesError) {
             setPaymentError('Please fill in all required fields correctly');
             return;
         }
@@ -2166,6 +2187,18 @@ const MeetingsPage = () => {
         }
         if (!emailRegex.test(email)) {
             return 'Please enter a valid email address';
+        }
+        return '';
+    };
+
+    const validateNotes = (notes: string) => {
+        if (!notes.trim()) {
+            return 'Notes are required';
+        }
+        // Count words by splitting on whitespace and filtering empty strings
+        const wordCount = notes.trim().split(/\s+/).filter(word => word.length > 0).length;
+        if (wordCount < 100) {
+            return `Notes must contain at least 100 words (currently ${wordCount} words)`;
         }
         return '';
     };
@@ -3526,15 +3559,30 @@ const MeetingsPage = () => {
                                         </div>
                                         
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">Notes (Optional)</label>
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">Notes <span className="text-red-400">*</span> <span className="text-xs text-gray-400">(Minimum 100 words required)</span></label>
                                             <textarea
                                                 value={notes}
-                                                onChange={(e) => setNotes(e.target.value)}
-                                                placeholder="Let us know if you want to discuss specific topics..."
+                                                onChange={(e) => {
+                                                    const value = e.target.value;
+                                                    setNotes(value);
+                                                    const error = validateNotes(value);
+                                                    setNotesError(error);
+                                                }}
+                                                placeholder="Let us know if you want to discuss specific topics... (Minimum 100 words required)"
                                                 rows={window.innerWidth < 640 ? 3 : 4}
-                                                className="w-full bg-black border-2 border-gray-500 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors resize-none"
+                                                className={`w-full bg-black border-2 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors resize-none ${
+                                                    notesError ? 'border-red-500' : 'border-gray-500'
+                                                }`}
                                                 style={{ outline: 'none', boxShadow: 'none' }}
                                             />
+                                            {notesError && (
+                                                <p className="text-red-400 text-xs mt-1">{notesError}</p>
+                                            )}
+                                            {notes.trim() && !notesError && (
+                                                <p className="text-gray-400 text-xs mt-1">
+                                                    Word count: {notes.trim().split(/\s+/).filter(word => word.length > 0).length}/100
+                                                </p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -3545,7 +3593,7 @@ const MeetingsPage = () => {
                                         <div className="flex flex-col gap-3 mt-4">
                                             <button
                                                 onClick={handleStripePayment}
-                                                disabled={!fullName || !email || !!nameError || !!emailError || paymentInitiating || paymentCompleted}
+                                                disabled={!fullName || !email || !notes || !!nameError || !!emailError || !!notesError || paymentInitiating || paymentCompleted}
                                                 className={`w-fit flex items-center justify-center gap-2 px-4 py-3 border rounded-lg transition-all duration-300 ${
                                                     paymentCompleted
                                                         ? 'border-green-500/50 bg-green-500/10 cursor-not-allowed'
@@ -3580,7 +3628,7 @@ const MeetingsPage = () => {
                                             
                                             {!paymentCompleted && !paymentInitiating && (
                                                 <p className="text-xs text-gray-400">
-                                                    {(!fullName || !email || !!nameError || !!emailError) ? 'Fill in your details above to proceed with payment' : 'Click to complete payment via Stripe'}
+                                                    {(!fullName || !email || !notes || !!nameError || !!emailError || !!notesError) ? 'Fill in all required fields above to proceed with payment' : 'Click to complete payment via Stripe'}
                                                 </p>
                                             )}
                                             

@@ -26,9 +26,34 @@ const HeroSection = () => {
               <a href="/meetings" className="w-full md:w-auto bg-white text-[#0A0A0A] text-[14px] font-semibold rounded-full py-[18px] px-8 hover:brightness-90 transition-all text-center flex items-center justify-center h-[50px]" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
                 Book Mentorship
               </a>
-              <button className="w-full md:w-auto border border-white text-white text-[14px] font-semibold rounded-full py-[18px] px-12 hover:bg-white/10 transition-all text-center flex items-center justify-center h-[48px]" style={{fontFamily: 'Gilroy', fontWeight: 600}}>
-                Learn More
-              </button>
+
+                <a
+                  href="https://discord.com/invite/inspiredanalyst"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="  w-full sm:w-auto border border-white/60 bg-white/5 hover:bg-white/10 text-white text-[14px] font-semibold rounded-full py-3 px-6 transition-all flex items-center justify-center gap-2"
+                >
+                  <img
+                    src="/icons/discord.svg"
+                    alt="Discord"
+                    className="w-5 h-5"
+                  />
+                  <span>Join Discord</span>
+                </a>
+
+                <a
+                  href="https://whop.com/discover/inspiredanalyst/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto border border-white/60 bg-white/5 hover:bg-white/10 text-white text-[14px] font-semibold rounded-full py-3 px-6 transition-all flex items-center justify-center gap-2"
+                >
+                  <img
+                    src="/icons/whop.svg"
+                    alt="Whop"
+                    className="h-5 w-5"
+                  />
+                  <span>Join Whop</span>
+                </a>
             </div>
           </div>
 

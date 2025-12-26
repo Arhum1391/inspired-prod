@@ -5,17 +5,39 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 
+// Helper function to render text with bold formatting (**text**)
+function renderBoldText(text: string) {
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      const boldText = part.slice(2, -2);
+      return <strong key={index}>{boldText}</strong>;
+    }
+    return <span key={index}>{part}</span>;
+  });
+}
+
 interface Step {
   number: number;
   title: string;
-  description: string;
+  description?: string;
+  link?: string;
+  points?: string[];
+}
+
+interface Benefits {
+  heading: string;
+  points: string[];
+  footer?: string;
 }
 
 interface PartnerPageProps {
   partnerName: string;
-  heading: string;
-  description: string;
-  steps: Step[];
+  heading?: string;
+  description?: string;
+  link?: string;
+  steps?: Step[];
+  benefits?: Benefits;
   videoId: string; // YouTube video ID
 }
 
@@ -24,7 +46,7 @@ function YouTubeEmbed({ videoId }: { videoId: string }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <div className="w-full relative" style={{ height: '370px' }}>
+    <div className="w-full relative h-[300px] sm:h-[300px]">
       {!isLoaded && (
         <div className="absolute inset-0 bg-gray-800 flex items-center justify-center rounded-lg">
           <div className="text-white">Loading video...</div>
@@ -46,7 +68,9 @@ export default function PartnerPage({
   partnerName,
   heading,
   description,
+  link,
   steps,
+  benefits,
   videoId,
 }: PartnerPageProps) {
   return (
@@ -140,54 +164,119 @@ export default function PartnerPage({
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
               {/* Left Column: Text Content */}
-              <div className="flex flex-col gap-6">
-                <h1
-                  className="text-2xl sm:text-4xl md:text-5xl lg:text-5xl font-semibold text-white leading-tight"
-                >
-                  {heading}
-                </h1>
+              <div className="flex flex-col gap-6 h-full">
+                {heading && (
+                  <h1
+                    className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-semibold text-white leading-tight"
+                  >
+                    {heading}
+                  </h1>
+                )}
                 
-                <p
-                  className="text-base sm:text-lg md:text-xl text-white leading-relaxed"
-                  style={{ fontFamily: 'Gilroy' }}
-                >
-                  {description}
-                </p>
+                {description && (
+                  <p
+                    className="text-base  text-white leading-relaxed"
+                  >
+                    {renderBoldText(description)}
+                  </p>
+                )}
 
-                {/* Steps */}
-                <div className="flex flex-col gap-2">
-                  {steps.map((step) => (
-                    <div
-                      key={step.number}
-                      className="flex flex-col gap-[2px] items-start"
+                {/* Link Section */}
+                {link && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xl g font-medium text-white">
+                      🔗 Register here:
+                    </p>
+                    <a
+                      href={link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-base  text-blue-400 hover:text-blue-300 underline break-all"
                     >
-                      <div className="flex">
-                      <span
-                        className="  font-bold text-base mr-1"
-                      >
-                        Step {step.number}: {" "}
-                      </span>
-                        <span
-                          className="text-base  font-medium text-white "
-                          >
-                          {step.title}
-                        </span>
-                      </div>
+                      {link}
+                    </a>
+                  </div>
+                )}
 
-                        <p
-                          className="text-sm sm:text-base md:text-lg text-white/80 leading-relaxed"
-                          style={{ fontFamily: 'Gilroy' }}
+                {/* Steps Layout */}
+                {steps && steps.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    {steps.map((step) => (
+                      <div
+                        key={step.number}
+                        className="flex flex-col gap-[2px] items-start"
+                      >
+                        <div className="flex">
+                          <span className="font-bold text-base mr-1">
+                            Step {step.number}:{" "}
+                          </span>
+                          <span className="text-base font-medium text-white">
+                            {step.title}
+                          </span>
+                        </div>
+
+                        {step.description && (
+                          <p
+                            className="text-base  text-white/80 leading-relaxed"
+                          >
+                            {renderBoldText(step.description)}
+                          </p>
+                        )}
+                        {step.link && (
+                          <a
+                            href={step.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-base text-blue-400 hover:text-blue-300 underline break-all"
+                          >
+                            {step.link}
+                          </a>
+                        )}
+                        {step.points && (
+                          <ul className="flex flex-col gap-2 list-none">
+                            {step.points.map((point, index) => (
+                              <li key={index} className="text-base text-white leading-relaxed list-disc list-inside">
+                                {renderBoldText(point)}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Benefits Layout (Binance-style) */}
+                {benefits && (
+                  <div className="flex flex-col gap-4">
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white">
+                      {benefits.heading}
+                    </h2>
+                    <ul className="flex flex-col gap-2 list-none">
+                      {benefits.points.map((point, index) => (
+                        <li
+                          key={index}
+                          className="text-base  text-white leading-relaxed list-disc list-inside"
                         >
-                          {step.description}
-                        </p>
-                    </div>
-                  ))}
-                </div>
+                          {renderBoldText(point)}
+                        </li>
+                      ))}
+                    </ul>
+                    {benefits.footer && (
+                      <p
+                        className="text-base sm:text-lg text-white leading-relaxed mt-2"
+                        style={{ fontFamily: 'Gilroy' }}
+                      >
+                        {renderBoldText(benefits.footer)}
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Right Column: Video */}
-              <div className="lg:sticky lg:top-24 flex">
-                <div className="bg-[#1F1F1F] rounded-2xl p-4 sm:p-6 relative w-full flex flex-col">
+              <div className="flex h-full">
+                <div className="bg-[#1F1F1F] rounded-xl p-3 sm:p-6 relative w-full flex flex-col h-full">
                   {/* Curved Gradient Border */}
                   <div
                     className="absolute inset-0 pointer-events-none"
@@ -205,7 +294,7 @@ export default function PartnerPage({
                     ></div>
                   </div>
                   
-                  <div className="relative z-10 flex flex-col flex-1 justify-center">
+                  <div className="relative z-10 flex flex-col ">
                     
                     
                     {/* Video Embed */}

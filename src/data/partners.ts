@@ -1,13 +1,21 @@
 export interface Partner {
   slug: string;
   name: string;
-  heading: string;
-  description: string;
-  steps: {
+  heading?: string;
+  description?: string;
+  link?: string; // Registration/affiliate link
+  steps?: {
     number: number;
     title: string;
-    description: string;
+    description?: string;
+    link?: string;
+    points?: string[];
   }[];
+  benefits?: {
+    heading: string;
+    points: string[];
+    footer?: string; // Optional footer text
+  };
   videoId: string; // YouTube video ID
 }
 
@@ -15,57 +23,45 @@ export const partners: Partner[] = [
   {
     slug: 'binance',
     name: 'Binance',
-    heading: 'Join Our Discord for Free via Binance',
-    description: 'Get exclusive access to our Discord community by completing a simple process through Binance. Follow the steps below to get started today.',
-    steps: [
-      {
-        number: 1,
-        title: 'Complete Binance requirement',
-        description: 'Create your free Binance account and complete the registration process.',
-      },
-      {
-        number: 2,
-        title: 'Sign up on Binance',
-        description: 'Verify your account and meet the simple criteria to qualify for Discord access.',
-      },
-      {
-        number: 3,
-        title: 'Receive access confirmation',
-        description: 'Get your confirmation email with your unique Discord invitation link.',
-      },
-      {
-        number: 4,
-        title: 'Join the Discord',
-        description: 'Click the link and join our exclusive community. Welcome aboard!',
-      },
-    ],
-    videoId: 'yTXSsPP163w', // Placeholder - replace with actual video ID
+    description: 'Join our exclusive Binance partner program and unlock premium trading benefits.',
+    link: 'https://accounts.binance.info/register?ref=75431452',
+    benefits: {
+      heading: 'Why Join Through Inspired Analyst?',
+      points: [
+        ' 10% discount on Spot trading fees',
+        ' Monthly giveaways for referral users',
+        ' Dedicated customer support',
+        ' Interactive quiz events with rewards',
+        ' Trade on the world\'s most secure and trusted crypto platform — Binance',
+      ],
+      footer: ' Start your crypto journey today with Inspired Analyst × Binance.',
+    },
+    videoId: 'xGP9oQd3mxE', // Placeholder - replace with actual video ID
   },
   {
     slug: 'exness',
     name: 'Exness',
-    heading: 'Join Our Discord for Free via Exness',
-    description: 'Get exclusive access to our Discord community by completing a simple process through Exness. Follow the steps below to get started today.',
+    link: 'https://one.exnesstrack.org/a/40mum98fwt',
     steps: [
       {
         number: 1,
-        title: 'Create Exness Account',
-        description: 'Sign up for a free Exness account if you don’t already have one.',
+        title: 'Register with Exness',
+        description: 'Sign up using our official affiliate link (Affiliate Code: 40mum98fwt)',
       },
       {
         number: 2,
-        title: 'Complete Required Action',
-        description: 'Follow the steps shown in the video (such as registering through a referral link or meeting the eligibility requirement set by Exness).',
+        title: 'Complete Account Verification',
+        description: 'Finish your KYC to activate your trading account.',
       },
       {
         number: 3,
-        title: 'Get Access Approval',
-        description: 'Once the requirement is completed, your eligibility for free Discord access will be confirmed.',
+        title: 'Make Your First Deposit',
+        description: 'Fund your account with a minimum deposit of **$1,000** to proceed.',
       },
       {
         number: 4,
-        title: 'Join the Discord Community',
-        description: 'Use the provided invite link to join our private Discord server and access exclusive discussions, insights, and updates.',
+        title: 'Get Access',
+        description: 'Once done, get access from bot by providing your Exness Signup Email.',
       },
     ],
     videoId: 'yTXSsPP163w', // Placeholder - replace with actual video ID
@@ -73,61 +69,68 @@ export const partners: Partner[] = [
   {
     slug: 'primexbt',
     name: 'PrimeXBT',
-    heading: 'Join Our Discord for Free via PrimeXBT',
-    description: 'Get exclusive access to our Discord community by completing a simple process through PrimeXBT. Follow the steps below to get started today.',
     steps: [
       {
         number: 1,
-        title: 'Create PrimeXBT Account',
-        description: 'Sign up for a free PrimeXBT account if you don’t already have one.',
+        title: 'Create Your PrimeXBT Account',
+        description: 'Register using our official partner link (Referral Code: 46521)',
+      link: 'https://go.primexbt.direct/visit/?bta=46521&brand=primexbt',
+
       },
       {
         number: 2,
-        title: 'Complete the Required Step',
-        description: 'Follow the instructions shown in the video (such as registering through a referral link or completing the required action set by PrimeXBT).',
+        title: 'Complete KYC Verification',
+        description: 'Verify your identity on the PrimeXBT platform to activate your account.',
       },
       {
         number: 3,
-        title: 'Get Access Confirmation',
-        description: 'After completing the requirement, you’ll receive confirmation for free Discord access.',
+        title: 'Make Your First Deposit',
+        description: 'Deposit a minimum of **$100 USD** to qualify.',
       },
       {
         number: 4,
-        title: 'Join the Discord Community',
-        description: 'Use the provided invite link to join our private Discord server and connect with other traders.',
+        title: 'Discord Verification',
+        description: 'Click the verification button and submit',
+        points:[
+           'Your PrimeXBT User ID / Account ID',
+           'Your registration date',
+
+        ]
       },
     ],
-    videoId: 'yTXSsPP163w', // Placeholder - replace with actual video ID
+    videoId: 'kYlYU8jR9i4', // Placeholder - replace with actual video ID
   },
   {
     slug: 'klein-funding',
     name: 'Klein Funding',
-    heading: 'Join Our Discord for Free via Klein Funding',
-    description: 'Get exclusive access to our Discord community by completing a simple process through Klein Funding. Follow the steps below to get started today.',
     steps: [
       {
         number: 1,
-        title: 'Create Klein Funding Account',
-      
-        description: 'Sign up for a free account on Klein Funding\'s platform and complete your profile setup.',
+        title: 'Create Your Klein Funding Account',
+        description: 'Sign up using our official partner link',
+    link: 'https://kleinfunding.com/ref/4961',
       },
-        {
+      {
         number: 2,
-        title: 'Verify Your Email',
-        description: 'Check your inbox for the verification email and confirm your account to activate full access.',
+        title: 'Purchase Any Account (With Discount)',
+        description: 'Use one of the following discount codes at checkout:',
+        points:[
+          '25% OFF on Standard Accounts — Code: IA25',
+          '15% OFF on Instant Accounts — Code: IA15',
+        ]
       },
       {
         number: 3,
-        title: 'Complete Onboarding',
-        description: 'Go through the quick onboarding process to familiarize yourself with Klein Funding\'s platform.',
+        title: 'Submit a Support Ticket',
+        description: 'Create a support ticket and share your **Order ID** in the **support-ticket** channel.',
       },
       {
         number: 4,
-        title: 'Join the Discord Community',
-        description: 'Receive your exclusive Discord invite link and join our active trading community.'
+        title: 'Get Access',
+        description: 'Once verified, you\'ll receive **free access** to the **Klein Funded Tier**.',
       }
     ],
-    videoId: 'yTXSsPP163w', // Placeholder - replace with actual video ID
+    videoId: 'LDtURmq4bRA', // Placeholder - replace with actual video ID
   },
 ];
 

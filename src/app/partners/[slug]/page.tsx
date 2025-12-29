@@ -32,7 +32,9 @@ async function PartnerPageContent({
       partnerName={partner.name}
       heading={partner.heading}
       description={partner.description}
+      link={partner.link}
       steps={partner.steps}
+      benefits={partner.benefits}
       videoId={partner.videoId}
     />
   );

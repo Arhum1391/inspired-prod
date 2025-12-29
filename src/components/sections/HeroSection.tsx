@@ -69,7 +69,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/6.jpg")',
+                        backgroundImage: 'url("/team-mob/6.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -87,7 +87,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/5.png")',
+                        backgroundImage: 'url("/team-mob/5.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -106,7 +106,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/6.jpg")',
+                        backgroundImage: 'url("/team-mob/6.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -124,7 +124,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/5.png")',
+                        backgroundImage: 'url("/team-mob/5.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -146,7 +146,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/1.png")',
+                        backgroundImage: 'url("/team-mob/1.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -164,7 +164,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/2 improved.png")',
+                        backgroundImage: 'url("/team-mob/2 improved.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -183,7 +183,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/1.png")',
+                        backgroundImage: 'url("/team-mob/1.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -201,7 +201,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/2 improved.png")',
+                        backgroundImage: 'url("/team-mob/2 improved.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -223,7 +223,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/3.jpg")',
+                        backgroundImage: 'url("/team-mob/3.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -241,7 +241,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/4 - colored.png")',
+                        backgroundImage: 'url("/team-mob/4 - colored.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -250,7 +250,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/7.png")',
+                        backgroundImage: 'url("/team-mob/7.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -260,7 +260,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/3.jpg")',
+                        backgroundImage: 'url("/team-mob/3.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -278,7 +278,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/4 - colored.png")',
+                        backgroundImage: 'url("/team-mob/4 - colored.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -287,7 +287,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
                       style={{
-                        backgroundImage: 'url("team-mob/7.png")',
+                        backgroundImage: 'url("/team-mob/7.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -308,7 +308,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/6.jpg")',
+                        backgroundImage: 'url("/team-mob/6.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -326,7 +326,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/5.png")',
+                        backgroundImage: 'url("/team-mob/5.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -345,7 +345,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/6.jpg")',
+                        backgroundImage: 'url("/team-mob/6.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -363,7 +363,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/5.png")',
+                        backgroundImage: 'url("/team-mob/5.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -385,7 +385,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/1.png")',
+                        backgroundImage: 'url("/team-mob/1.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -403,7 +403,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/2 improved.png")',
+                        backgroundImage: 'url("/team-mob/2 improved.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -422,7 +422,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/1.png")',
+                        backgroundImage: 'url("/team-mob/1.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -440,7 +440,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/2 improved.png")',
+                        backgroundImage: 'url("/team-mob/2 improved.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -462,7 +462,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/3.jpg")',
+                        backgroundImage: 'url("/team-mob/3.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -480,7 +480,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/4 - colored.png")',
+                        backgroundImage: 'url("/team-mob/4 - colored.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -489,7 +489,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/7.png")',
+                        backgroundImage: 'url("/team-mob/7.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -499,7 +499,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/3.jpg")',
+                        backgroundImage: 'url("/team-mob/3.jpg")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -517,7 +517,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/4 - colored.png")',
+                        backgroundImage: 'url("/team-mob/4 - colored.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'
@@ -526,7 +526,7 @@ const HeroSection = () => {
                     <div
                       className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
                       style={{
-                        backgroundImage: 'url("team-mob/7.png")',
+                        backgroundImage: 'url("/team-mob/7.png")',
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundRepeat: 'no-repeat'

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown, ChevronLeft, CreditCard } from 'lucide-react';
 import Image from 'next/image';
@@ -21,6 +21,7 @@ type Analyst = {
   name: string;
   description: string;
   image: string;
+  slug?: string; // URL-friendly slug from API
 };
 
 type ReviewStats = {
@@ -41,6 +42,7 @@ interface AnalystCardProps {
   onSelect: (id: number) => void;
   onAdvance: () => void;
   isTeamDataLoaded: boolean;
+  router?: any; // Next.js router for navigation
 }
 
 interface Timezone {
@@ -262,7 +264,7 @@ const DEFAULT_PRICING: DurationPricing = {
 
 const getMeetingPriceForAnalyst = (duration: number, analystName?: string): string => {
   if (duration === 60) {
-    return '80 USD';
+    return '500 USD';
   }
 
   const normalizedName = analystName?.trim().toLowerCase() || '';
@@ -330,8 +332,15 @@ const getTimezoneOffsets = (): { [key: string]: number } => ({
 
 
 // Reusable Analyst Card Component
-const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect, onAdvance, isTeamDataLoaded }) => {
+const AnalystCard: React.FC<AnalystCardProps> = ({ analyst, isSelected, onSelect, onAdvance, isTeamDataLoaded, router }) => {
     const handleClick = () => {
+        // If router is provided and analyst has slug, navigate to slug route
+        if (router && analyst.slug) {
+            router.push(`/meetings/${analyst.slug}`);
+            return;
+        }
+        
+        // Fallback to old behavior if no router or slug
         onSelect(analyst.id);
         // Auto-advance to next step after selection
         setTimeout(() => {
@@ -493,10 +502,29 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
 };
 
 // --- MAIN PAGE COMPONENT ---
-const MeetingsPage = () => {
+const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [currentStep, setCurrentStep] = useState<number>(1);
+    
+    // Ref to track if slug routing has been initialized (prevents re-running on step changes)
+    const slugInitializedRef = useRef<boolean>(false);
+    
+    // Initialize step based on slug or URL params to prevent flash
+    // Check URL params synchronously on client side for immediate initialization
+    const getInitialStep = (): number => {
+        if (slug) return 2; // Slug route always starts at step 2
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const stepParam = params.get('step');
+            if (stepParam) {
+                const step = parseInt(stepParam);
+                if (step >= 1 && step <= 3) return step;
+            }
+        }
+        return 1; // Default to step 1
+    };
+    
+    const [currentStep, setCurrentStep] = useState<number>(getInitialStep());
     const [selectedAnalyst, setSelectedAnalyst] = useState<number | null>(null); // No default selection
     const [selectedMeeting, setSelectedMeeting] = useState<number | null>(null); // No default selection
     const [selectedTimezone, setSelectedTimezone] = useState<string>('');
@@ -1104,6 +1132,68 @@ const MeetingsPage = () => {
         };
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+    // Handle slug-based routing when slug is provided (using Next.js dynamic route)
+    useEffect(() => {
+        // If slug is provided, find analyst by slug and set up the booking flow
+        if (!slug) {
+            slugInitializedRef.current = false;
+            return;
+        }
+
+        // Skip slug routing if we have payment query params (returning from payment)
+        // This prevents resetting the form when returning from payment
+        if (typeof window !== 'undefined') {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            if (paymentStatus === 'success' || paymentStatus === 'cancelled') {
+                console.log('🔄 Skipping slug routing - payment query params present');
+                return;
+            }
+        }
+
+        // Only process slug if team data is loaded and we have analysts
+        if (!isTeamDataLoaded || analysts.length === 0) {
+            return;
+        }
+
+        // If already initialized and analyst matches, don't re-run (prevents interfering with step navigation)
+        const analystBySlug = analysts.find(a => {
+            return a.slug && a.slug.toLowerCase() === slug.toLowerCase();
+        });
+        
+        if (analystBySlug && selectedAnalyst === analystBySlug.id && slugInitializedRef.current) {
+            // Already initialized, don't interfere with current step
+            return;
+        }
+
+        // Use slug directly from API (API ensures slug is always present and valid)
+        if (analystBySlug) {
+            console.log(`🔗 Slug-based routing: Found analyst ${analystBySlug.id} (${analystBySlug.name}) from slug "${slug}"`);
+            
+            // Set selected analyst immediately (this will trigger Calendly data fetch)
+            if (selectedAnalyst !== analystBySlug.id) {
+                setSelectedAnalyst(analystBySlug.id);
+            }
+            
+            // Only set step to 2 if we're on step 1 (don't override step 2 or step 3)
+            // This allows navigation from step 2 to step 3 without being forced back to step 2
+            // Also prevents overriding step 3 when returning from payment
+            if (currentStep === 1) {
+                setCurrentStep(2);
+            }
+            
+            // Mark as initialized
+            slugInitializedRef.current = true;
+        } else {
+            console.warn(`⚠️ No analyst found with slug "${slug}"`);
+            // If slug doesn't match, redirect to meetings page without slug
+            router.replace('/meetings');
+            slugInitializedRef.current = false;
+        }
+        // Remove currentStep from dependencies to prevent re-running when step changes
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [slug, isTeamDataLoaded, analysts, selectedAnalyst, router]);
+
     // Fetch Calendly event types when an analyst with Calendly integration is selected
     useEffect(() => {
         const handleAnalystSelection = async () => {
@@ -1118,9 +1208,9 @@ const MeetingsPage = () => {
             const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
             const isReturningFromPayment = (paymentStatus === 'success' || paymentStatus === 'cancelled') && savedFormData;
             
-            // Detect URL-based redirects (coming from about page with step=2 in URL)
+            // Detect URL-based redirects (coming from about page with step=2 in URL OR slug-based route)
             const stepParam = searchParams.get('step');
-            const isUrlRedirect = stepParam === '2' && searchParams.get('selectedAnalyst') !== null;
+            const isUrlRedirect = (stepParam === '2' && searchParams.get('selectedAnalyst') !== null) || !!slug;
             
             // Allow fetching when:
             // 1. Normal flow: currentStep !== 2 (user manually selected analyst from step 1)
@@ -1240,7 +1330,7 @@ const MeetingsPage = () => {
         };
         
         handleAnalystSelection();
-    }, [selectedAnalyst, searchParams, isTeamDataLoaded, analysts.length]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [selectedAnalyst, searchParams, isTeamDataLoaded, analysts.length, slug]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Fetch Calendly availability when meeting type, month, or timezone change
     useEffect(() => {
@@ -1454,9 +1544,15 @@ const MeetingsPage = () => {
 
     // Handle step and selectedAnalyst parameters from URL (for navigation back from reviews page)
     useEffect(() => {
+        // Skip if we're handling slug-based routing (slug takes precedence)
+        if (slug) {
+            return;
+        }
+
         const stepParam = searchParams.get('step');
         const selectedAnalystParam = searchParams.get('selectedAnalyst');
         
+        // If step param exists, initialize step immediately to prevent flash
         if (stepParam) {
             const step = parseInt(stepParam);
             if (step >= 1 && step <= 3) {
@@ -1471,7 +1567,7 @@ const MeetingsPage = () => {
                 setSelectedAnalyst(analystId);
             }
         }
-    }, [searchParams]);
+    }, [searchParams, slug]);
 
     // Fetch analyst about data when analyst is selected
     useEffect(() => {
@@ -1773,7 +1869,39 @@ const MeetingsPage = () => {
                 if (typeof sessionStorage !== 'undefined') {
                     sessionStorage.removeItem('calendlyEventDetails');
                 }
+                
+                // Check if we're returning from payment (has payment query params)
+                const urlParams = new URLSearchParams(window.location.search);
+                const paymentStatus = urlParams.get('payment');
+                const sessionId = urlParams.get('session_id');
+                const isReturningFromPayment = paymentStatus === 'success' || paymentStatus === 'cancelled';
+                
+                // Preserve slug in URL when advancing to step 3, but preserve payment query params if present
+                if (selectedAnalyst !== null) {
+                    const analyst = analysts.find(a => a.id === selectedAnalyst);
+                    if (analyst && analyst.slug) {
+                        // If we're returning from payment, preserve the query params
+                        if (isReturningFromPayment) {
+                            // Keep the current URL with payment params, just update step
+                            // Don't navigate to slug route as it will reset everything
+                            console.log('🔄 Preserving payment query params, not navigating to slug route');
+                            // Just update URL to preserve payment params
+                            const currentUrl = window.location.pathname + window.location.search;
+                            window.history.pushState({}, '', currentUrl);
+                        } else if (slug) {
+                            // Already on slug route, just update URL
+                            window.history.pushState({}, '', `/meetings/${analyst.slug}`);
+                        } else {
+                            // Not on slug route, navigate to slug route
+                            // Use replace to avoid adding to history
+                            router.replace(`/meetings/${analyst.slug}`);
+                        }
+                    }
+                }
+                
+                // Set step to 3 immediately (before any navigation effects)
                 setCurrentStep(3);
+                
                 // Scroll to top on mobile when advancing to next step
                 if (typeof window !== 'undefined' && window.innerWidth < 768) {
                     setTimeout(() => {
@@ -1934,16 +2062,52 @@ const MeetingsPage = () => {
         if (currentStep === 2) {
             console.log('⬅️ Navigating back from step 2 to step 1 - invalidating cache');
             invalidateCache();
+            
+            // Check if we have payment query params - if so, preserve them
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            const sessionId = urlParams.get('session_id');
+            const hasPaymentParams = paymentStatus || sessionId;
+            
+            if (hasPaymentParams) {
+                // Preserve payment query params when going back
+                const queryString = window.location.search;
+                router.push(`/meetings${queryString}`);
+            } else {
+                // Navigate to /meetings (without slug) to show analyst selection (step 1)
+                router.push('/meetings');
+            }
             setCurrentStep(1);
         } else if (currentStep === 3) {
             console.log('⬅️ Navigating back from step 3 to step 2 - invalidating booking cache');
             if (typeof sessionStorage !== 'undefined') {
                 sessionStorage.removeItem('calendlyEventDetails');
             }
+            
+            // Check if we have payment query params - if so, preserve them
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('payment');
+            const sessionId = urlParams.get('session_id');
+            const hasPaymentParams = paymentStatus || sessionId;
+            
+            if (hasPaymentParams) {
+                // Preserve payment query params when going back to step 2
+                const queryString = window.location.search;
+                window.history.pushState({}, '', `/meetings${queryString}`);
+            } else if (slug && selectedAnalyst !== null) {
+                // If we came from slug route, preserve slug in URL
+                const analyst = analysts.find(a => a.id === selectedAnalyst);
+                // Use slug directly from API (API ensures it's always present)
+                if (analyst && analyst.slug) {
+                    // Update URL to preserve slug when going back to step 2
+                    window.history.pushState({}, '', `/meetings/${analyst.slug}`);
+                }
+            }
+            
             setCurrentStep(2);
         } else {
-        // Navigate to the landing page using standard web APIs
-        window.location.href = '/';
+            // Navigate to the landing page using standard web APIs
+            window.location.href = '/';
         }
     };
 
@@ -2195,10 +2359,10 @@ const MeetingsPage = () => {
         if (!notes.trim()) {
             return 'Notes are required';
         }
-        // Count words by splitting on whitespace and filtering empty strings
-        const wordCount = notes.trim().split(/\s+/).filter(word => word.length > 0).length;
-        if (wordCount < 100) {
-            return `Notes must contain at least 100 words (currently ${wordCount} words)`;
+        // Check character count
+        const charCount = notes.trim().length;
+        if (charCount < 100) {
+            return 'Notes must contain at least 100 characters';
         }
         return '';
     };
@@ -2690,7 +2854,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                             style={{
-                                        backgroundImage: 'url("inspired analysts team/1.png")',
+                                        backgroundImage: 'url("/inspired analysts team/1.png")',
                                         backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2699,7 +2863,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
+                                        backgroundImage: 'url("/inspired analysts team/2 improved.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2708,7 +2872,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/3.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/3.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2717,7 +2881,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/4.png")',
+                                        backgroundImage: 'url("/inspired analysts team/4.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2727,7 +2891,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/1.png")',
+                                        backgroundImage: 'url("/inspired analysts team/1.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2736,7 +2900,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/2 improved.png")',
+                                        backgroundImage: 'url("/inspired analysts team/2 improved.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2745,7 +2909,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/3.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/3.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2754,7 +2918,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-auto mr-1"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/4.png")',
+                                        backgroundImage: 'url("/inspired analysts team/4.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2770,7 +2934,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/5.png")',
+                                        backgroundImage: 'url("/inspired analysts team/5.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2779,7 +2943,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/6.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/6.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2788,7 +2952,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/7.png")',
+                                        backgroundImage: 'url("/inspired analysts team/7.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2797,7 +2961,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/2.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/2.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2807,7 +2971,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/5.png")',
+                                        backgroundImage: 'url("/inspired analysts team/5.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2816,7 +2980,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/6.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/6.jpg")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2825,7 +2989,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                                     style={{
-                                        backgroundImage: 'url("inspired analysts team/7.png")',
+                                        backgroundImage: 'url("/inspired analysts team/7.png")',
                                         backgroundSize: 'cover',
                                         backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -2834,7 +2998,7 @@ const MeetingsPage = () => {
                                 <div
                                     className="aspect-[1/2.2] w-20 xl:w-28 rounded-full bg-zinc-800 ml-1 mr-auto"
                             style={{
-                                        backgroundImage: 'url("inspired analysts team/2.jpg")',
+                                        backgroundImage: 'url("/inspired analysts team/2.jpg")',
                                         backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                         backgroundRepeat: 'no-repeat'
@@ -3071,6 +3235,7 @@ const MeetingsPage = () => {
                                                 setCurrentStep(2);
                                             }}
                                             isTeamDataLoaded={isTeamDataLoaded}
+                                            router={router}
                                         />
                                     ))}
                                 </div>
@@ -3559,7 +3724,7 @@ const MeetingsPage = () => {
                                         </div>
                                         
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">Notes <span className="text-red-400">*</span> <span className="text-xs text-gray-400">(Minimum 100 words required)</span></label>
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">Notes <span className="text-red-400">*</span> <span className="text-xs text-gray-400">(Minimum 100 characters required)</span></label>
                                             <textarea
                                                 value={notes}
                                                 onChange={(e) => {
@@ -3568,7 +3733,7 @@ const MeetingsPage = () => {
                                                     const error = validateNotes(value);
                                                     setNotesError(error);
                                                 }}
-                                                placeholder="Let us know if you want to discuss specific topics... (Minimum 100 words required)"
+                                                placeholder="Let us know if you want to discuss specific topics... (Minimum 100 characters required)"
                                                 rows={window.innerWidth < 640 ? 3 : 4}
                                                 className={`w-full bg-black border-2 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors resize-none ${
                                                     notesError ? 'border-red-500' : 'border-gray-500'
@@ -3577,11 +3742,6 @@ const MeetingsPage = () => {
                                             />
                                             {notesError && (
                                                 <p className="text-red-400 text-xs mt-1">{notesError}</p>
-                                            )}
-                                            {notes.trim() && !notesError && (
-                                                <p className="text-gray-400 text-xs mt-1">
-                                                    Word count: {notes.trim().split(/\s+/).filter(word => word.length > 0).length}/100
-                                                </p>
                                             )}
                                         </div>
                                     </div>

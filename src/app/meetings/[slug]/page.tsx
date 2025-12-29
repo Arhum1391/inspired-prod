@@ -5,13 +5,13 @@ import LoadingScreen from '@/components/LoadingScreen';
 export default async function MeetingsWithSlug({
   params,
 }: {
-  params: Promise<{ name: string }>;
+  params: Promise<{ slug: string }>;
 }) {
-  const { name } = await params;
+  const { slug } = await params;
   
   return (
     <Suspense fallback={<LoadingScreen message="Loading..." />}>
-      <MeetingsPage slug={name} />
+      <MeetingsPage slug={slug} />
     </Suspense>
   );
 }

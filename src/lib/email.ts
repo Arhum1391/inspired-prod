@@ -96,6 +96,166 @@ export async function sendEmail({ to, subject, html, text }: EmailOptions): Prom
   }
 }
 
+// Generic email template function
+function generateEmailTemplate(mainContent: string, pageTitle: string): string {
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${pageTitle}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0A0A0A;font-family:Arial,Helvetica,sans-serif;color:#FFFFFF;">
+
+  <!-- Outer Wrapper Table -->
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#0A0A0A;">
+    <tr>
+      <td align="center" style="padding:32px 16px;">
+        <!-- Main Container Table -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0 auto;">
+          <!-- Logo Section -->
+          <tr>
+            <td align="left" style="padding-bottom:40px;padding-top:40px;">
+              <img src="https://exnrmjojhrivshxdknae.supabase.co/storage/v1/object/public/Inspired%20Analyst/logo.png" 
+                   alt="Inspired Analyst Logo" 
+                   style="display:block;max-width:100%;height:auto;border:0;" 
+                   width="auto" 
+                   height="auto" />
+            </td>
+          </tr>
+          
+          <!-- Main Card Container -->
+          <tr>
+            <td>
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#121212;border-radius:12px;overflow:hidden;">
+                <!-- Gradient Header -->
+                <tr>
+                  <td style="height:160px;background:linear-gradient(90deg,#1E5AA8,#5A5AD6,#7A4C82);background-color:#1E5AA8;">
+                    &nbsp;
+                  </td>
+                </tr>
+                
+                <!-- Content Section -->
+                <tr>
+                  <td style="text-align:left;padding:32px;background-color:#191919;">
+                    ${mainContent}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          
+          <!-- Footer Section -->
+          <tr>
+            <td style="padding-top:24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;margin:0 auto;">
+                <!-- Logo and Social Media Icons Row -->
+                <tr>
+                  <td style="padding-bottom:24px;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <!-- Logo -->
+                        <td align="left" valign="middle" style="padding-right:16px;">
+                          <img src="https://exnrmjojhrivshxdknae.supabase.co/storage/v1/object/public/Inspired%20Analyst/logo.png" 
+                               alt="Logo" 
+                               style="display:block;vertical-align:middle;border:0;" 
+                               width="auto" 
+                               height="auto" />
+                        </td>
+                        
+                        <!-- Social Media Icons -->
+                        <td align="right" valign="middle" style="padding-left:16px;">
+                          <table cellpadding="0" cellspacing="0" border="0" align="right">
+                            <tr>
+                              <td style="padding:0 4px;">
+                                <a href="https://x.com/inspirdanalyst" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;">
+                                  <img src="https://exnrmjojhrivshxdknae.supabase.co/storage/v1/object/public/Inspired%20Analyst/TwitterIcon.png" alt="Twitter" style="display:block;border:0;" width="24" height="24" />
+                                </a>
+                              </td>
+                              <td style="padding:0 4px;">
+                                <a href="https://www.tiktok.com/@inspiredanalyst" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;">
+                                  <img src="https://exnrmjojhrivshxdknae.supabase.co/storage/v1/object/public/Inspired%20Analyst/TicktockIcon.png" alt="TikTok" style="display:block;border:0;" width="24" height="24" />
+                                </a>
+                              </td>
+                              <td style="padding:0 4px;">
+                                <a href="https://www.facebook.com/inspiredanalyst/" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;">
+                                  <img src="https://exnrmjojhrivshxdknae.supabase.co/storage/v1/object/public/Inspired%20Analyst/FacebookIcon.png" alt="Facebook" style="display:block;border:0;" width="24" height="24" />
+                                </a>
+                              </td>
+                              <td style="padding:0 4px;">
+                                <a href="https://instagram.com/inspiredanalyst/" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;">
+                                  <img src="https://exnrmjojhrivshxdknae.supabase.co/storage/v1/object/public/Inspired%20Analyst/InstaIcon.png" alt="Instagram" style="display:block;border:0;" width="24" height="24" />
+                                </a>
+                              </td>
+                              <td style="padding:0 4px;">
+                                <a href="https://www.youtube.com/@inspiredanalyst" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;">
+                                  <img src="https://exnrmjojhrivshxdknae.supabase.co/storage/v1/object/public/Inspired%20Analyst/YoutubeIcon.png" alt="YouTube" style="display:block;border:0;" width="24" height="24" />
+                                </a>
+                              </td>
+                              <td style="padding:0 4px;">
+                                <a href="https://www.linkedin.com/in/inspiredanalyst" target="_blank" rel="noopener noreferrer" style="display:inline-block;text-decoration:none;">
+                                  <img src="https://exnrmjojhrivshxdknae.supabase.co/storage/v1/object/public/Inspired%20Analyst/LinkedinIcon.png" alt="LinkedIn" style="display:block;border:0;" width="24" height="24" />
+                                </a>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Privacy Policy Links -->
+                <tr>
+                  <td align="center" style="padding-bottom:12px;">
+                    <table cellpadding="0" cellspacing="0" border="0" align="center">
+                      <tr>
+                        <td style="padding:0 8px;">
+                          <a href="https://inspiredanalyst.com/privacy" style="color:#667EEA;text-decoration:none;font-size:14px;font-family:Arial,Helvetica,sans-serif;">Privacy Policy</a>
+                        </td>
+                        <td style="padding:0 8px;">
+                          <a href="https://inspiredanalyst.com/terms" style="color:#667EEA;text-decoration:none;font-size:14px;font-family:Arial,Helvetica,sans-serif;">Terms & Conditions</a>
+                        </td>
+                        <td style="padding:0 8px;">
+                          <a href="https://inspiredanalyst.com/#collaboration" style="color:#667EEA;text-decoration:none;font-size:14px;font-family:Arial,Helvetica,sans-serif;">Contact</a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                
+                <!-- Copyright -->
+                <tr>
+                  <td align="center" style="padding-bottom:8px;">
+                    <p style="margin:0;color:#909090;font-size:14px;font-family:Arial,Helvetica,sans-serif;">
+                      © 2025 Inspired Analyst. All Rights Reserved
+                    </p>
+                  </td>
+                </tr>
+                
+                <!-- Unsubscribe -->
+                <tr>
+                  <td align="center">
+                    <p style="margin:0;color:#909090;font-size:14px;font-family:Arial,Helvetica,sans-serif;">
+                      You're receiving this email because you signed up for Inspired Analyst.
+                      <a href="#" style="color:#667EEA;text-decoration:underline;">Unsubscribe</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
+  `;
+}
+
 // Email verification email
 export async function sendVerificationEmail(email: string, verificationToken: string): Promise<void> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 
@@ -103,32 +263,82 @@ export async function sendVerificationEmail(email: string, verificationToken: st
   
   const verificationUrl = `${baseUrl}/verify-email?token=${verificationToken}`;
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Verify Your Email</title>
-      </head>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-          <h1 style="color: white; margin: 0;">Welcome to Inspired Analyst</h1>
-        </div>
-        <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-          <p style="font-size: 16px; margin-bottom: 20px;">Thank you for signing up! Please verify your email address to complete your registration.</p>
-          <p style="margin-bottom: 30px;">Click the button below to verify your email:</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${verificationUrl}" style="display: inline-block; background: #3813F3; color: white; padding: 15px 30px; text-decoration: none; border-radius: 100px; font-weight: 600; font-size: 16px;">Verify Email Address</a>
-          </div>
-          <p style="font-size: 14px; color: #666; margin-top: 30px;">Or copy and paste this link into your browser:</p>
-          <p style="font-size: 12px; color: #999; word-break: break-all;">${verificationUrl}</p>
-          <p style="font-size: 14px; color: #666; margin-top: 30px;">This link will expire in 24 hours.</p>
-          <p style="font-size: 14px; color: #666; margin-top: 20px;">If you didn't create an account, you can safely ignore this email.</p>
-        </div>
-      </body>
-    </html>
+  const mainContent = `
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+      <!-- Heading -->
+      <tr>
+        <td align="center" style="padding-bottom:12px;">
+          <h1 style="margin:0;font-size:22px;font-weight:600;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+            Welcome to Inspired Analyst
+          </h1>
+        </td>
+      </tr>
+      
+      <!-- Description Text -->
+      <tr>
+        <td style="padding-bottom:24px;">
+          <p style="margin:0;font-size:14px;line-height:1.6;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+            Thank you for signing up! Please verify your email address to complete your registration.<br>
+            Click the button below to verify your email:
+          </p>
+        </td>
+      </tr>
+      
+      <!-- Verify Button -->
+      <tr>
+        <td align="left" style="padding-bottom:30px;">
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td align="center" style="background-color:#FFFFFF;border-radius:24px;">
+                <a href="${verificationUrl}" 
+                   style="display:inline-block;padding:12px 22px;border-radius:24px;background-color:#FFFFFF;color:#000000;text-decoration:none;font-size:14px;font-weight:600;font-family:Arial,Helvetica,sans-serif;">
+                  Verify Email Address
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      
+      <!-- Link Text -->
+      <tr>
+        <td style="padding-bottom:8px;">
+          <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+            Or copy and paste this link into your browser:
+          </p>
+        </td>
+      </tr>
+      
+      <!-- Verification URL -->
+      <tr>
+        <td style="padding-bottom:30px;">
+          <p style="margin:0;font-size:12px;color:#FFFFFF;word-break:break-all;font-family:Arial,Helvetica,sans-serif;">
+            ${verificationUrl}
+          </p>
+        </td>
+      </tr>
+      
+      <!-- Expiry Notice -->
+      <tr>
+        <td style="padding-bottom:20px;">
+          <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+            This link will expire in 24 hours.
+          </p>
+        </td>
+      </tr>
+      
+      <!-- Ignore Notice -->
+      <tr>
+        <td>
+          <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+            If you didn't create an account, you can safely ignore this email.
+          </p>
+        </td>
+      </tr>
+    </table>
   `;
+
+  const html = generateEmailTemplate(mainContent, 'Inspired Analyst');
 
   await sendEmail({
     to: email,
@@ -144,32 +354,84 @@ export async function sendPasswordResetEmail(email: string, resetToken: string):
   
   const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Reset Your Password</title>
-      </head>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-          <h1 style="color: white; margin: 0;">Reset Your Password</h1>
-        </div>
-        <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-          <p style="font-size: 16px; margin-bottom: 20px;">We received a request to reset your password for your Inspired Analyst account.</p>
-          <p style="margin-bottom: 30px;">Click the button below to reset your password:</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${resetUrl}" style="display: inline-block; background: #3813F3; color: white; padding: 15px 30px; text-decoration: none; border-radius: 100px; font-weight: 600; font-size: 16px;">Reset Password</a>
-          </div>
-          <p style="font-size: 14px; color: #666; margin-top: 30px;">Or copy and paste this link into your browser:</p>
-          <p style="font-size: 12px; color: #999; word-break: break-all;">${resetUrl}</p>
-          <p style="font-size: 14px; color: #666; margin-top: 30px;">This link will expire in 1 hour.</p>
-          <p style="font-size: 14px; color: #666; margin-top: 20px;">If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
-        </div>
-      </body>
-    </html>
+  const mainContent = `
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+      <!-- Heading -->
+      <tr>
+        <td align="center" style="padding-bottom:12px;">
+          <h1 style="margin:0;font-size:22px;font-weight:600;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+            Reset Your Password
+          </h1>
+        </td>
+      </tr>
+      
+      <!-- Description Text -->
+      <tr>
+        <td style="padding-bottom:24px;">
+          <p style="margin:0;font-size:14px;line-height:1.6;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+           We received a request to reset your password for your Inspired Analyst account
+          </p>
+          <p style="margin:0;font-size:14px;line-height:1.6;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+          Click the button below to reset your password:
+          </p>
+        </td>
+      </tr>
+      
+      <!-- Reset Button -->
+      <tr>
+        <td align="left" style="padding-bottom:30px;">
+          <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+              <td align="center" style="background-color:#FFFFFF;border-radius:24px;">
+                <a href="${resetUrl}" 
+                   style="display:inline-block;padding:12px 22px;border-radius:24px;background-color:#FFFFFF;color:#000000;text-decoration:none;font-size:14px;font-weight:600;font-family:Arial,Helvetica,sans-serif;">
+                 Reset Password
+                </a>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      
+      <!-- Link Text -->
+      <tr>
+        <td style="padding-bottom:8px;">
+          <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+            Or copy and paste this link into your browser:
+          </p>
+        </td>
+      </tr>
+      
+      <!-- Reset URL -->
+      <tr>
+        <td style="padding-bottom:30px;">
+          <p style="margin:0;font-size:12px;color:#FFFFFF;word-break:break-all;font-family:Arial,Helvetica,sans-serif;">
+            ${resetUrl}
+          </p>
+        </td>
+      </tr>
+      
+      <!-- Expiry Notice -->
+      <tr>
+        <td style="padding-bottom:20px;">
+          <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+            This link will expire in 1 hour.
+          </p>
+        </td>
+      </tr>
+      
+      <!-- Ignore Notice -->
+      <tr>
+        <td>
+          <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+            If you didn't create an account, you can safely ignore this email.
+          </p>
+        </td>
+      </tr>
+    </table>
   `;
+
+  const html = generateEmailTemplate(mainContent, 'Reset Your Password');
 
   await sendEmail({
     to: email,
@@ -202,40 +464,87 @@ export async function sendBootcampSignupRequiredEmail(
     signupUrl
   });
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Complete Your Bootcamp Enrollment</title>
-      </head>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-          <h1 style="color: white; margin: 0;">Welcome to ${bootcampTitle}!</h1>
-        </div>
-        <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-          <p style="font-size: 16px; margin-bottom: 20px;">Hi ${customerName || 'there'},</p>
-          <p style="font-size: 16px; margin-bottom: 20px;">Great news! Your payment for <strong>${bootcampTitle}</strong> has been successfully processed.</p>
-          <p style="margin-bottom: 30px;">To access your bootcamp videos and materials, you'll need to create an account on our platform using the same email address you used for payment: <strong>${email}</strong></p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${signupUrl}" style="display: inline-block; background: #3813F3; color: white; padding: 15px 30px; text-decoration: none; border-radius: 100px; font-weight: 600; font-size: 16px;">Sign Up to Access Bootcamp</a>
-          </div>
-          <p style="font-size: 14px; color: #666; margin-top: 30px;">Once you sign up and verify your email, you'll have full access to all bootcamp content, including:</p>
-          <ul style="font-size: 14px; color: #666; margin-top: 15px; padding-left: 20px;">
+  const mainContent = `
+ <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <!-- Heading -->
+    <tr>
+      <td align="center" style="padding-bottom:12px;">
+        <h1 style="margin:0;font-size:22px;font-weight:600;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+         Welcome to ${bootcampTitle}!
+        </h1>
+      </td>
+    </tr>
+    
+    <!-- Description Text -->
+    <tr>
+      <td style="padding-bottom:24px;">
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+         Hi ${customerName || 'there'},
+        </p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+         Great news! Your payment for <strong>${bootcampTitle}</strong> has been successfully processed.
+        </p>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+        To access your bootcamp videos and materials, you'll need to create an account on our platform using the same email address you used for payment: <strong>${email}</strong></p>
+        </p>
+         
+        
+      </td>
+    </tr>
+    
+    <!-- Verify Button -->
+    <tr>
+      <td align="left" style="padding-bottom:30px;">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td align="center" style="background-color:#FFFFFF;border-radius:24px;">
+              <a href="${signupUrl}" 
+                 style="display:inline-block;padding:12px 22px;border-radius:24px;background-color:#FFFFFF;color:#000000;text-decoration:none;font-size:14px;font-weight:600;font-family:Arial,Helvetica,sans-serif;">
+                Sign Up to Access Bootcamp
+              </a>
+              
+              
+              
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    
+    <!-- Link Text -->
+    <tr>
+      <td style="padding-bottom:8px;">
+        <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+         Once you sign up and verify your email, you'll have full access to all bootcamp content, including:
+           <ul style="font-size: 14px; color: #fff; margin-top: 15px; padding-left: 20px;">
             <li>All video lessons</li>
             <li>Course materials and resources</li>
             <li>Progress tracking</li>
             <li>Community access</li>
           </ul>
-          <p style="font-size: 14px; color: #666; margin-top: 30px;">If you have any questions, feel free to reach out to our support team.</p>
-          <p style="font-size: 14px; color: #666; margin-top: 20px;">Happy learning!<br>The Inspired Analyst Team</p>
-        </div>
-      </body>
-    </html>
-  `;
+        </p>
+      </td>
+    </tr>
+    
+    <!-- Verification URL -->
+    
+    
+    <!-- Expiry Notice -->
+    <tr>
+      <td style="padding-bottom:20px;">
+        <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+         If you have any questions, feel free to reach out to our support team
+        </p>
+         <p style="font-size: 14px; color: #fff; margin-top: 20px;">Happy learning!<br> <br>The Inspired Analyst Team</p>
+      </td>
+    </tr>
+    
+    
+  </table>
+`;
 
   console.log('📧 [BOOTCAMP EMAIL] Calling sendEmail function...');
+  const html = generateEmailTemplate(mainContent, 'Inspired Analyst');
   
   try {
     await sendEmail({
@@ -283,41 +592,94 @@ export async function sendBootcampEnrollmentEmail(
     bootcampUrl
   });
 
-  const html = `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Welcome to ${bootcampTitle}</title>
-      </head>
-      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%); padding: 30px; text-align: center; border-radius: 10px 10px 0 0;">
-          <h1 style="color: white; margin: 0;">Welcome to ${bootcampTitle}!</h1>
-        </div>
-        <div style="background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px;">
-          <p style="font-size: 16px; margin-bottom: 20px;">Hi ${customerName || 'there'},</p>
-          <p style="font-size: 16px; margin-bottom: 20px;">Congratulations! Your enrollment in <strong>${bootcampTitle}</strong> has been confirmed.</p>
-          <p style="margin-bottom: 30px;">You now have full access to all bootcamp content. Click the button below to start your learning journey:</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${bootcampUrl}" style="display: inline-block; background: #3813F3; color: white; padding: 15px 30px; text-decoration: none; border-radius: 100px; font-weight: 600; font-size: 16px;">Access Bootcamp</a>
-          </div>
-          <p style="font-size: 14px; color: #666; margin-top: 30px;">Or copy and paste this link into your browser:</p>
-          <p style="font-size: 12px; color: #999; word-break: break-all;">${bootcampUrl}</p>
-          <p style="font-size: 14px; color: #666; margin-top: 30px;">As an enrolled student, you have access to:</p>
-          <ul style="font-size: 14px; color: #666; margin-top: 15px; padding-left: 20px;">
+  const mainContent = `
+ <table width="100%" cellpadding="0" cellspacing="0" border="0">
+    <!-- Heading -->
+    <tr>
+      <td align="center" style="padding-bottom:12px;">
+        <h1 style="margin:0;font-size:22px;font-weight:600;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+         Welcome to ${bootcampTitle}!
+        </h1>
+      </td>
+    </tr>
+    
+    <!-- Description Text -->
+    <tr>
+      <td style="padding-bottom:24px;">
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+         Hi ${customerName || 'there'},
+        </p>
+       
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+       Congratulations! Your enrollment in <strong>${bootcampTitle}</strong> has been confirmed.
+        </p>
+          <p style="margin:0;font-size:14px;line-height:1.6;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+      You now have full access to all bootcamp content. Click the button below to start your learning journey:
+        </p>
+         
+        
+      </td>
+    </tr>
+    
+    <!-- Verify Button -->
+    <tr>
+      <td align="left" style="padding-bottom:30px;">
+        <table cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td align="center" style="background-color:#FFFFFF;border-radius:24px;">
+              <a href="${bootcampUrl}" 
+                 style="display:inline-block;padding:12px 22px;border-radius:24px;background-color:#FFFFFF;color:#000000;text-decoration:none;font-size:14px;font-weight:600;font-family:Arial,Helvetica,sans-serif;">
+                Access Bootcamp
+              </a>
+              
+              
+              
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    
+    <!-- Link Text -->
+    <tr>
+      <td style="padding-bottom:8px;">
+        <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+        Or copy and paste this link into your browser:
+          
+        </p>
+        <p style="font-size: 14px; color: #fffff; word-break: break-all;">${bootcampUrl}</p>
+         <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+       As an enrolled student, you have access to:
+          
+        </p>
+        <ul style="font-size: 14px; color: #ffff; margin-top: 15px; padding-left: 20px;">
             <li>All video lessons and tutorials</li>
             <li>Course materials and resources</li>
             <li>Progress tracking and analytics</li>
             <li>Community access and support</li>
           </ul>
-          <p style="font-size: 14px; color: #666; margin-top: 30px;">If you have any questions, feel free to reach out to our support team.</p>
-          <p style="font-size: 14px; color: #666; margin-top: 20px;">Happy learning!<br>The Inspired Analyst Team</p>
-        </div>
-      </body>
-    </html>
-  `;
+       
+      </td>
+    </tr>
+    
+    <!-- Verification URL -->
+    
+    
+    <!-- Expiry Notice -->
+    <tr>
+      <td style="padding-bottom:20px;">
+        <p style="margin:0;font-size:14px;color:#FFFFFF;font-family:Arial,Helvetica,sans-serif;">
+         If you have any questions, feel free to reach out to our support team
+        </p>
+         <p style="font-size: 14px; color: #fff; margin-top: 20px;">Happy learning!<br> <br>The Inspired Analyst Team</p>
+      </td>
+    </tr>
+    
+    
+  </table>
+`;
 
+  const html = generateEmailTemplate(mainContent, 'Inspired Analyst');
   console.log('📧 [BOOTCAMP ENROLLMENT EMAIL] Calling sendEmail function...');
   
   try {

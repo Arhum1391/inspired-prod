@@ -23,6 +23,7 @@ export const partners: Partner[] = [
   {
     slug: 'binance',
     name: 'Binance',
+    heading:"Join Our Discord for Free Via Binance",
     description: 'Join our exclusive Binance partner program and unlock premium trading benefits.',
     link: 'https://accounts.binance.info/register?ref=75431452',
     benefits: {
@@ -41,6 +42,7 @@ export const partners: Partner[] = [
   {
     slug: 'exness',
     name: 'Exness',
+    heading:"Join Our Discord for Free Via Exness",
     link: 'https://one.exnesstrack.org/a/40mum98fwt',
     steps: [
       {
@@ -64,11 +66,13 @@ export const partners: Partner[] = [
         description: 'Once done, get access from bot by providing your Exness Signup Email.',
       },
     ],
-    videoId: 'yTXSsPP163w', // Placeholder - replace with actual video ID
+    videoId: 'nJYaqIcjccs', // Placeholder - replace with actual video ID
   },
   {
     slug: 'primexbt',
     name: 'PrimeXBT',
+    heading:"Join Our Discord for Free Via PrimeXBT",
+
     steps: [
       {
         number: 1,
@@ -103,6 +107,8 @@ export const partners: Partner[] = [
   {
     slug: 'klein-funding',
     name: 'Klein Funding',
+    heading:"Join Our Discord for Free Via Klein",
+
     steps: [
       {
         number: 1,

@@ -264,7 +264,7 @@ const DEFAULT_PRICING: DurationPricing = {
 
 const getMeetingPriceForAnalyst = (duration: number, analystName?: string): string => {
   if (duration === 60) {
-    return '80 USD';
+    return '500 USD';
   }
 
   const normalizedName = analystName?.trim().toLowerCase() || '';
@@ -2359,10 +2359,10 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         if (!notes.trim()) {
             return 'Notes are required';
         }
-        // Count words by splitting on whitespace and filtering empty strings
-        const wordCount = notes.trim().split(/\s+/).filter(word => word.length > 0).length;
-        if (wordCount < 100) {
-            return `Notes must contain at least 100 words (currently ${wordCount} words)`;
+        // Check character count
+        const charCount = notes.trim().length;
+        if (charCount < 100) {
+            return 'Notes must contain at least 100 characters';
         }
         return '';
     };
@@ -3724,7 +3724,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                         </div>
                                         
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">Notes <span className="text-red-400">*</span> <span className="text-xs text-gray-400">(Minimum 100 words required)</span></label>
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">Notes <span className="text-red-400">*</span> <span className="text-xs text-gray-400">(Minimum 100 characters required)</span></label>
                                             <textarea
                                                 value={notes}
                                                 onChange={(e) => {
@@ -3733,7 +3733,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                                     const error = validateNotes(value);
                                                     setNotesError(error);
                                                 }}
-                                                placeholder="Let us know if you want to discuss specific topics... (Minimum 100 words required)"
+                                                placeholder="Let us know if you want to discuss specific topics... (Minimum 100 characters required)"
                                                 rows={window.innerWidth < 640 ? 3 : 4}
                                                 className={`w-full bg-black border-2 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors resize-none ${
                                                     notesError ? 'border-red-500' : 'border-gray-500'
@@ -3742,11 +3742,6 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                             />
                                             {notesError && (
                                                 <p className="text-red-400 text-xs mt-1">{notesError}</p>
-                                            )}
-                                            {notes.trim() && !notesError && (
-                                                <p className="text-gray-400 text-xs mt-1">
-                                                    Word count: {notes.trim().split(/\s+/).filter(word => word.length > 0).length}/100
-                                                </p>
                                             )}
                                         </div>
                                     </div>

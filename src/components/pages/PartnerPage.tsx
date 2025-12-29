@@ -301,11 +301,16 @@ export default function PartnerPage({
                     <YouTubeEmbed videoId={videoId} />
                     
                     {/* Video Title Below */}
+                    <a  href="https://discord.com/invite/inspiredanalyst"
+                  target="_blank"
+                  rel="noopener noreferrer">
+
                     <p
                       className="text-white text-right mt-4 text-base  font-normal"
-                    >
+                      >
                       Join Our Discord for Free via {partnerName}
                     </p>
+                      </a>
                   </div>
                 </div>
               </div>

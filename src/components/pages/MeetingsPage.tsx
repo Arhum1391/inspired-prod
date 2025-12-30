@@ -891,7 +891,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     const [paymentInitiating, setPaymentInitiating] = useState<boolean>(false);
     const [paymentError, setPaymentError] = useState<string>('');
 
-    // Detect user's timezone once on mount (used only for sorting suggestions; user still chooses)
+    // Detect user's timezone once on mount and auto-select it
     useEffect(() => {
         if (typeof window === 'undefined' || typeof Intl === 'undefined' || !Intl.DateTimeFormat) return;
 
@@ -899,11 +899,20 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
             const resolvedTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
             if (resolvedTz) {
                 setUserTimezone(resolvedTz);
+                
+                // Auto-select the timezone if it exists in our available timezones
+                const allAvailableTimezones = timezoneGroups.flatMap(group => group.timezones);
+                const matchingTimezone = allAvailableTimezones.find(tz => tz.value === resolvedTz);
+                
+                if (matchingTimezone && !selectedTimezone) {
+                    console.log('Auto-selecting user timezone:', resolvedTz);
+                    setSelectedTimezone(resolvedTz);
+                }
             }
         } catch (error) {
             console.warn('Unable to resolve user timezone:', error);
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Load Calendly widget script for popup functionality
     useEffect(() => {

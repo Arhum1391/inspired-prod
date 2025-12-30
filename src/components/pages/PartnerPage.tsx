@@ -11,7 +11,7 @@ function renderBoldText(text: string) {
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       const boldText = part.slice(2, -2);
-      return <strong key={index}>{boldText}</strong>;
+      return <strong key={index} className='text-white'>{boldText}</strong>;
     }
     return <span key={index}>{part}</span>;
   });
@@ -175,7 +175,7 @@ export default function PartnerPage({
                 
                 {description && (
                   <p
-                    className="text-base  text-white leading-relaxed"
+                    className="text-xl  text-white leading-relaxed"
                   >
                     {renderBoldText(description)}
                   </p>
@@ -207,10 +207,10 @@ export default function PartnerPage({
                         className="flex flex-col gap-[2px] items-start"
                       >
                         <div className="flex">
-                          <span className="font-bold text-base mr-1">
+                          <span className="font-bold text-xl mr-1">
                             Step {step.number}:{" "}
                           </span>
-                          <span className="text-base font-medium text-white">
+                          <span className="text-xl font-bold text-white">
                             {step.title}
                           </span>
                         </div>

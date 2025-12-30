@@ -43,12 +43,13 @@ export const partners: Partner[] = [
     slug: 'exness',
     name: 'Exness',
     heading:"Join Our Discord for Free Via Exness",
-    link: 'https://one.exnesstrack.org/a/40mum98fwt',
+    
     steps: [
       {
         number: 1,
         title: 'Register with Exness',
         description: 'Sign up using our official affiliate link (Affiliate Code: 40mum98fwt)',
+        link: 'https://one.exnesstrack.org/a/40mum98fwt',
       },
       {
         number: 2,
@@ -58,7 +59,7 @@ export const partners: Partner[] = [
       {
         number: 3,
         title: 'Make Your First Deposit',
-        description: 'Fund your account with a minimum deposit of **$1,000** to proceed.',
+        description: 'Fund your account with a **minimum deposit of $1,000** to proceed.',
       },
       {
         number: 4,
@@ -121,8 +122,8 @@ export const partners: Partner[] = [
         title: 'Purchase Any Account (With Discount)',
         description: 'Use one of the following discount codes at checkout:',
         points:[
-          '25% OFF on Standard Accounts — Code: IA25',
-          '15% OFF on Instant Accounts — Code: IA15',
+          '**25% OFF** on Standard Accounts — **Code: IA25**',
+          '**15% OFF** on Instant Accounts — **Code: IA15**',
         ]
       },
       {
@@ -133,7 +134,7 @@ export const partners: Partner[] = [
       {
         number: 4,
         title: 'Get Access',
-        description: 'Once verified, you\'ll receive **free access** to the **Klein Funded Tier**.',
+        description: 'Once verified, you\'ll receive **free access to the Klein Funded Tier**.',
       }
     ],
     videoId: 'LDtURmq4bRA', // Placeholder - replace with actual video ID

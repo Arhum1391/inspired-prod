@@ -249,23 +249,23 @@ type DurationPricing = Record<number, number>;
 const ANALYST_CUSTOM_PRICING: Record<string, DurationPricing> = {
   adnan: {
     30: 300,
-    90: 500,
+    60: 500,
   },
   assassin: {
     30: 300,
-    90: 400,
+    60: 400,
   },
 };
 
 const DEFAULT_PRICING: DurationPricing = {
   30: 60,
-  90: 100,
+  60: 100,
 };
 
 const getMeetingPriceForAnalyst = (duration: number, analystName?: string): string => {
-  if (duration === 60) {
-    return '500 USD';
-  }
+//   if (duration === 60) {
+//     return '500 USD';
+//   }
 
   const normalizedName = analystName?.trim().toLowerCase() || '';
   const pricingTable = ANALYST_CUSTOM_PRICING[normalizedName] || DEFAULT_PRICING;
@@ -2314,7 +2314,9 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         return calendlyMeetings.find(meeting => meeting.id === selectedMeeting);
     };
 
+
     const selectedMeetingDetails = getSelectedMeetingData();
+    console.log("selectedMeetingDetails", selectedMeetingDetails)
     const selectedAnalystStats = selectedAnalyst !== null ? reviewStatsByAnalyst[selectedAnalyst] : undefined;
     const reviewTotalForSelectedAnalyst = selectedAnalystStats?.totalReviews ?? 0;
     const hasReviewsForSelectedAnalyst = reviewTotalForSelectedAnalyst > 0;
@@ -2367,11 +2369,6 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     const validateNotes = (notes: string) => {
         if (!notes.trim()) {
             return 'Notes are required';
-        }
-        // Check character count
-        const charCount = notes.trim().length;
-        if (charCount < 100) {
-            return 'Notes must contain at least 100 characters';
         }
         return '';
     };
@@ -3733,7 +3730,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                         </div>
                                         
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-300 mb-2">Notes <span className="text-red-400">*</span> <span className="text-xs text-gray-400">(Minimum 100 characters required)</span></label>
+                                            <label className="block text-sm font-medium text-gray-300 mb-2">Notes </label>
                                             <textarea
                                                 value={notes}
                                                 onChange={(e) => {
@@ -3742,7 +3739,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                                     const error = validateNotes(value);
                                                     setNotesError(error);
                                                 }}
-                                                placeholder="Let us know if you want to discuss specific topics... (Minimum 100 characters required)"
+                                                placeholder="Let us know if you want to discuss specific topics... "
                                                 rows={window.innerWidth < 640 ? 3 : 4}
                                                 className={`w-full bg-black border-2 rounded-lg py-3 px-4 text-white focus:outline-none focus:border-gray-400 hover:border-gray-400 transition-colors resize-none ${
                                                     notesError ? 'border-red-500' : 'border-gray-500'
@@ -3762,11 +3759,11 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                         <div className="flex flex-col gap-3 mt-4">
                                             <button
                                                 onClick={handleStripePayment}
-                                                disabled={!fullName || !email || !notes || !!nameError || !!emailError || !!notesError || paymentInitiating || paymentCompleted}
+                                                disabled={!fullName || !email || !notes || notes.trim().length === 0 || !!nameError || !!emailError || !!notesError || paymentInitiating || paymentCompleted}
                                                 className={`w-fit flex items-center justify-center gap-2 px-4 py-3 border rounded-lg transition-all duration-300 ${
                                                     paymentCompleted
                                                         ? 'border-green-500/50 bg-green-500/10 cursor-not-allowed'
-                                                        : !fullName || !email || !!nameError || !!emailError || paymentInitiating
+                                                        : !fullName || !email || !notes || notes.trim().length === 0 || !!nameError || !!emailError || paymentInitiating
                                                         ? 'border-white/20 bg-white/5 cursor-not-allowed opacity-50'
                                                         : 'border-white/30 hover:border-white/60 hover:bg-white/5 cursor-pointer hover:scale-105'
                                                 }`}
@@ -3855,10 +3852,10 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                                             <span className="text-gray-300">Price</span>
                                                             <span className="text-white">{getMeetingPrice()}</span>
                                                         </div>
-                                                        <div className="flex justify-between text-sm mb-2">
+                                                        {/* <div className="flex justify-between text-sm mb-2">
                                                             <span className="text-gray-300">Tax</span>
                                                             <span className="text-white">10%</span>
-                                                        </div>
+                                                        </div> */}
                                                         {/* Separation Line Above Total */}
                                                         <div className="mb-2 w-full h-px border-t border-[#404040]"></div>
                                                         <div className="flex justify-between text-base font-semibold">

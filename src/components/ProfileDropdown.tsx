@@ -94,17 +94,24 @@ const ProfileDropdown = () => {
         onClick={handleToggle}
         className="relative w-[38px] h-[38px] rounded-full flex items-center justify-center hover:opacity-80 transition-opacity overflow-hidden"
         style={{
-          background: user?.image ? 'transparent' : 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
+          // background: user?.image ? 'transparent' : 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
+          background: 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
         }}
       >
         {user?.image ? (
-          <Image 
-            src={user.image} 
-            alt="Profile" 
-            fill
-            sizes="38px"
-            className="w-full h-full object-cover"
-          />
+          // <Image 
+          //   src={user.image} 
+          //   alt="Profile" 
+          //   fill
+          //   sizes="38px"
+          //   className="w-full h-full object-cover"
+          // />
+          // <div className="rounded-full flex items-center justify-center overflow-hidden">
+
+          <span className="text-white font-semibold text-sm">
+            {initials[0]}
+          </span>
+          // </div>
         ) : (
           <span className="text-white font-semibold text-sm">
             {initials[0]}
@@ -227,17 +234,21 @@ const ProfileDropdown = () => {
                     style={{
                       width: '48px',
                       height: '48px',
-                      background: user?.image ? 'transparent' : 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
+                      // background: user?.image ? 'transparent' : 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
+                      background: 'linear-gradient(135deg, #DE50EC 0%, #667EEA 100%)'
                     }}
                   >
                     {user?.image ? (
-                      <Image 
-                        src={user.image} 
-                        alt="Profile" 
-                        width={48}
-                        height={48}
-                        className="w-full h-full object-cover"
-                      />
+                      // <Image 
+                      //   src={user.image} 
+                      //   alt="Profile" 
+                      //   width={48}
+                      //   height={48}
+                      //   className="w-full h-full object-cover"
+                      // />
+                      <span className="text-white font-semibold text-lg">
+                        {initials[0]}
+                      </span>
                     ) : (
                       <span className="text-white font-semibold text-lg">
                         {initials[0]}

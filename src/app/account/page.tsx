@@ -444,7 +444,7 @@ const AccountPage = () => {
 
               {/* Image Section */}
               <div className="flex flex-row items-center gap-4 w-full">
-                <div className="relative w-[63px] h-[64px] flex-shrink-0">
+                {/* <div className="relative w-[63px] h-[64px] flex-shrink-0">
                   <div className="absolute w-[64px] h-[64px] left-[-1px] top-0 rounded-full bg-[#D9D9D9] overflow-hidden">
                     {uploading ? (
                       <div className="w-full h-full flex items-center justify-center bg-[#D9D9D9]">
@@ -476,7 +476,7 @@ const AccountPage = () => {
                       </svg>
                     </div>
                   </button>
-                </div>
+                </div> */}
                 <div className="flex flex-col items-start gap-0.5 flex-1 min-w-0">
                   <span className="text-white text-lg font-normal leading-[140%] tracking-[0.01em] gilroy-semibold w-full">
                     {user?.name || 'John Doe'}
@@ -1379,7 +1379,7 @@ const AccountPage = () => {
 
               {/* Image Section */}
               <div className="flex flex-row items-center gap-4 w-full h-16 relative">
-                <div className="relative w-[63px] h-16 flex-shrink-0">
+                {/* <div className="relative w-[63px] h-16 flex-shrink-0">
                   <div className="absolute w-16 h-16 left-[-1px] top-0 rounded-full bg-[#D9D9D9] overflow-hidden">
                     {uploading ? (
                       <div className="w-full h-full flex items-center justify-center bg-[#D9D9D9]">
@@ -1411,7 +1411,7 @@ const AccountPage = () => {
                       </svg>
                     </div>
                   </button>
-                </div>
+                </div> */}
                 <div className="flex flex-col items-start gap-0.5 flex-1 min-w-0">
                   <span className="text-white text-lg font-normal leading-[140%] tracking-[0.01em] gilroy-semibold w-full">
                     {user?.name || 'John Doe'}

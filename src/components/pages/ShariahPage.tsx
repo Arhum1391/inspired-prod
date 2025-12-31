@@ -2005,7 +2005,9 @@ export default function ShariahPage() {
                 </div>
               ) : (
                 <div className="flex flex-row gap-6 shariah-tiles-wrapper flex-wrap">
-                  {tiles.map((tile) => renderTile(tile))}
+                  {/* {tiles.map((tile) => renderTile(tile))} */}
+                  {(isAuthenticated ? tiles : tiles.slice(0, 3)).map((tile) => renderTile(tile))}
+
                 </div>
               )}
             </div>
@@ -2431,7 +2433,7 @@ export default function ShariahPage() {
                 {expandedTiles[1] && (
                   <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
-                      Answer placeholder text - will be updated later.
+                    We offer a 7-day money-back guarantee for all new subscribers.
                     </p>
                   </div>
                 )}
@@ -2503,8 +2505,7 @@ export default function ShariahPage() {
                 {expandedTiles[2] && (
                   <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
-                      Answer placeholder text - will be updated later.
-                    </p>
+                    Full research library, position sizing calculator, portfolio analytics, and Shariah project details & screens.                    </p>
                   </div>
                 )}
               </div>
@@ -2575,7 +2576,7 @@ export default function ShariahPage() {
                 {expandedTiles[3] && (
                   <div className="relative z-10 mt-4 calculator-faq-answer" style={{ paddingTop: '16px' }}>
                     <p style={{ color: '#FFFFFF', fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '130%', margin: 0 }}>
-                      Answer placeholder text - will be updated later.
+                    Yes! We continuously improve our platform and add new features based on user feedback.
                     </p>
                   </div>
                 )}

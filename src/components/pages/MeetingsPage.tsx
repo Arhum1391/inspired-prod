@@ -255,10 +255,7 @@ const ANALYST_CUSTOM_PRICING: Record<string, DurationPricing> = {
     30: 300,
     60: 400,
   },
-  meower:{
-    30: 1,
-    60: 1,
-  }
+ 
 };
 
 const DEFAULT_PRICING: DurationPricing = {

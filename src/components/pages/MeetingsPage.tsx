@@ -1433,13 +1433,15 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 // Use the earlier of end of month or max allowed date
                 const endDate = endOfMonth < maxEndDate ? endOfMonth : maxEndDate;
                 
-                // Fetch availability in 7-day chunks
+                // Fetch availability in 7-day chunks (in parallel for better performance)
                 const fetchAllAvailability = async () => {
                     const allDates: string[] = [];
                     const allTimesByDate: Record<string, string[]> = {};
                     const allSlotUrls: Record<string, string> = {};
                     const allRawTimestamps: Record<string, string> = {};
                     
+                    // Build all chunk requests first
+                    const chunkRequests: Array<{ startDateStr: string; endDateStr: string }> = [];
                     let currentStart = new Date(startDate);
                     let chunkCount = 0;
                     const maxChunks = 12; // Limit to 12 chunks (12 weeks = 3 months)
@@ -1456,8 +1458,17 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         const startDateStr = currentStart.toISOString().split('T')[0];
                         const endDateStr = currentEnd.toISOString().split('T')[0];
                         
-                        console.log('Fetching availability chunk:', { startDateStr, endDateStr });
+                        chunkRequests.push({ startDateStr, endDateStr });
                         
+                        // Move to next week
+                        currentStart.setDate(currentStart.getDate() + 7);
+                        chunkCount++;
+                    }
+                    
+                    console.log(`Fetching ${chunkRequests.length} availability chunks in parallel...`);
+                    
+                    // Make all requests in parallel
+                    const fetchPromises = chunkRequests.map(async ({ startDateStr, endDateStr }) => {
                         try {
                             const url = new URL('/api/calendly/availability', typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
                             url.searchParams.append('eventTypeUri', selectedEventType.id);
@@ -1472,21 +1483,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                             
                             if (response.ok) {
                                 const data = await response.json();
-                                console.log('Received chunk data:', data);
-                                
-                                // Merge the results
-                                if (data.availableDates) {
-                                    allDates.push(...data.availableDates);
-                                }
-                                if (data.availabilityByDate) {
-                                    Object.assign(allTimesByDate, data.availabilityByDate);
-                                }
-                                if (data.slotUrls) {
-                                    Object.assign(allSlotUrls, data.slotUrls);
-                                }
-                                if (data.rawTimestamps) {
-                                    Object.assign(allRawTimestamps, data.rawTimestamps);
-                                }
+                                return { success: true, data, startDateStr, endDateStr };
                             } else {
                                 const errorText = await response.text();
                                 
@@ -1501,15 +1498,35 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                     // Other errors - log as warning but don't treat as critical
                                     console.warn(`⚠️ Failed to fetch chunk for ${startDateStr} to ${endDateStr}:`, response.status, errorText);
                                 }
+                                return { success: false, startDateStr, endDateStr };
                             }
                         } catch (error) {
-                            console.error('Error fetching chunk:', error);
+                            console.error(`Error fetching chunk ${startDateStr} to ${endDateStr}:`, error);
+                            return { success: false, startDateStr, endDateStr };
                         }
-                        
-                        // Move to next week
-                        currentStart.setDate(currentStart.getDate() + 7);
-                        chunkCount++;
-                    }
+                    });
+                    
+                    // Wait for all requests to complete
+                    const results = await Promise.all(fetchPromises);
+                    
+                    // Merge all successful results
+                    results.forEach((result) => {
+                        if (result.success && result.data) {
+                            // Merge the results
+                            if (result.data.availableDates) {
+                                allDates.push(...result.data.availableDates);
+                            }
+                            if (result.data.availabilityByDate) {
+                                Object.assign(allTimesByDate, result.data.availabilityByDate);
+                            }
+                            if (result.data.slotUrls) {
+                                Object.assign(allSlotUrls, result.data.slotUrls);
+                            }
+                            if (result.data.rawTimestamps) {
+                                Object.assign(allRawTimestamps, result.data.rawTimestamps);
+                            }
+                        }
+                    });
                     
                     // Remove duplicates and sort
                     const uniqueDates = [...new Set(allDates)].sort();
@@ -1518,7 +1535,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         totalDates: uniqueDates.length,
                         dates: uniqueDates,
                         totalSlotUrls: Object.keys(allSlotUrls).length,
-                        chunksProcessed: chunkCount,
+                        chunksProcessed: chunkRequests.length,
                         maxChunks: maxChunks
                     });
                     

@@ -826,6 +826,13 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 if (transformedMeetings.length > 0) {
                     setCalendlyMeetings(transformedMeetings);
                     console.log('✅ Set Calendly meetings successfully');
+                    
+                    // Select 30 min meeting as default
+                    const thirtyMinMeeting = transformedMeetings.find(meeting => meeting.duration === '30 minutes');
+                    if (thirtyMinMeeting) {
+                        setSelectedMeeting(thirtyMinMeeting.id);
+                        console.log('✅ Selected 30 min meeting as default:', thirtyMinMeeting.id);
+                    }
                 } else {
                     console.log('⚠️ No transformed meetings found - setting empty array');
                     setCalendlyMeetings([]);

@@ -1506,25 +1506,39 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         }
                     });
                     
-                    // Wait for all requests to complete
-                    const results = await Promise.all(fetchPromises);
+                    // Wait for all requests to complete (using allSettled to handle partial failures gracefully)
+                    const results = await Promise.allSettled(fetchPromises);
+                    
+                    let successCount = 0;
+                    let failureCount = 0;
                     
                     // Merge all successful results
-                    results.forEach((result) => {
-                        if (result.success && result.data) {
-                            // Merge the results
-                            if (result.data.availableDates) {
-                                allDates.push(...result.data.availableDates);
+                    results.forEach((settledResult, index) => {
+                        if (settledResult.status === 'fulfilled') {
+                            const result = settledResult.value;
+                            if (result.success && result.data) {
+                                successCount++;
+                                // Merge the results
+                                if (result.data.availableDates) {
+                                    allDates.push(...result.data.availableDates);
+                                }
+                                if (result.data.availabilityByDate) {
+                                    Object.assign(allTimesByDate, result.data.availabilityByDate);
+                                }
+                                if (result.data.slotUrls) {
+                                    Object.assign(allSlotUrls, result.data.slotUrls);
+                                }
+                                if (result.data.rawTimestamps) {
+                                    Object.assign(allRawTimestamps, result.data.rawTimestamps);
+                                }
+                            } else {
+                                failureCount++;
                             }
-                            if (result.data.availabilityByDate) {
-                                Object.assign(allTimesByDate, result.data.availabilityByDate);
-                            }
-                            if (result.data.slotUrls) {
-                                Object.assign(allSlotUrls, result.data.slotUrls);
-                            }
-                            if (result.data.rawTimestamps) {
-                                Object.assign(allRawTimestamps, result.data.rawTimestamps);
-                            }
+                        } else {
+                            // Promise was rejected (unexpected error)
+                            failureCount++;
+                            const chunk = chunkRequests[index];
+                            console.error(`❌ Promise rejected for chunk ${chunk.startDateStr} to ${chunk.endDateStr}:`, settledResult.reason);
                         }
                     });
                     
@@ -1536,8 +1550,17 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         dates: uniqueDates,
                         totalSlotUrls: Object.keys(allSlotUrls).length,
                         chunksProcessed: chunkRequests.length,
+                        successfulChunks: successCount,
+                        failedChunks: failureCount,
                         maxChunks: maxChunks
                     });
+                    
+                    // Log warning if some chunks failed but we still have data
+                    if (failureCount > 0 && successCount > 0) {
+                        console.warn(`⚠️ ${failureCount} chunk(s) failed, but ${successCount} chunk(s) succeeded. Partial availability data loaded.`);
+                    } else if (failureCount > 0 && successCount === 0) {
+                        console.error(`❌ All ${failureCount} chunk(s) failed. No availability data could be loaded.`);
+                    }
                     
                     // Only set availability if we got some data, otherwise keep empty arrays
                     if (uniqueDates.length > 0) {

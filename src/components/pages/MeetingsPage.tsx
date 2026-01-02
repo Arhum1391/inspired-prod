@@ -1433,15 +1433,13 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 // Use the earlier of end of month or max allowed date
                 const endDate = endOfMonth < maxEndDate ? endOfMonth : maxEndDate;
                 
-                // Fetch availability in 7-day chunks (in parallel for better performance)
+                // Fetch availability in 7-day chunks
                 const fetchAllAvailability = async () => {
                     const allDates: string[] = [];
                     const allTimesByDate: Record<string, string[]> = {};
                     const allSlotUrls: Record<string, string> = {};
                     const allRawTimestamps: Record<string, string> = {};
                     
-                    // Build all chunk requests first
-                    const chunkRequests: Array<{ startDateStr: string; endDateStr: string }> = [];
                     let currentStart = new Date(startDate);
                     let chunkCount = 0;
                     const maxChunks = 12; // Limit to 12 chunks (12 weeks = 3 months)
@@ -1458,17 +1456,8 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         const startDateStr = currentStart.toISOString().split('T')[0];
                         const endDateStr = currentEnd.toISOString().split('T')[0];
                         
-                        chunkRequests.push({ startDateStr, endDateStr });
+                        console.log('Fetching availability chunk:', { startDateStr, endDateStr });
                         
-                        // Move to next week
-                        currentStart.setDate(currentStart.getDate() + 7);
-                        chunkCount++;
-                    }
-                    
-                    console.log(`Fetching ${chunkRequests.length} availability chunks in parallel...`);
-                    
-                    // Make all requests in parallel
-                    const fetchPromises = chunkRequests.map(async ({ startDateStr, endDateStr }) => {
                         try {
                             const url = new URL('/api/calendly/availability', typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
                             url.searchParams.append('eventTypeUri', selectedEventType.id);
@@ -1483,7 +1472,21 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                             
                             if (response.ok) {
                                 const data = await response.json();
-                                return { success: true, data, startDateStr, endDateStr };
+                                console.log('Received chunk data:', data);
+                                
+                                // Merge the results
+                                if (data.availableDates) {
+                                    allDates.push(...data.availableDates);
+                                }
+                                if (data.availabilityByDate) {
+                                    Object.assign(allTimesByDate, data.availabilityByDate);
+                                }
+                                if (data.slotUrls) {
+                                    Object.assign(allSlotUrls, data.slotUrls);
+                                }
+                                if (data.rawTimestamps) {
+                                    Object.assign(allRawTimestamps, data.rawTimestamps);
+                                }
                             } else {
                                 const errorText = await response.text();
                                 
@@ -1498,49 +1501,15 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                     // Other errors - log as warning but don't treat as critical
                                     console.warn(`⚠️ Failed to fetch chunk for ${startDateStr} to ${endDateStr}:`, response.status, errorText);
                                 }
-                                return { success: false, startDateStr, endDateStr };
                             }
                         } catch (error) {
-                            console.error(`Error fetching chunk ${startDateStr} to ${endDateStr}:`, error);
-                            return { success: false, startDateStr, endDateStr };
+                            console.error('Error fetching chunk:', error);
                         }
-                    });
-                    
-                    // Wait for all requests to complete (using allSettled to handle partial failures gracefully)
-                    const results = await Promise.allSettled(fetchPromises);
-                    
-                    let successCount = 0;
-                    let failureCount = 0;
-                    
-                    // Merge all successful results
-                    results.forEach((settledResult, index) => {
-                        if (settledResult.status === 'fulfilled') {
-                            const result = settledResult.value;
-                            if (result.success && result.data) {
-                                successCount++;
-                                // Merge the results
-                                if (result.data.availableDates) {
-                                    allDates.push(...result.data.availableDates);
-                                }
-                                if (result.data.availabilityByDate) {
-                                    Object.assign(allTimesByDate, result.data.availabilityByDate);
-                                }
-                                if (result.data.slotUrls) {
-                                    Object.assign(allSlotUrls, result.data.slotUrls);
-                                }
-                                if (result.data.rawTimestamps) {
-                                    Object.assign(allRawTimestamps, result.data.rawTimestamps);
-                                }
-                            } else {
-                                failureCount++;
-                            }
-                        } else {
-                            // Promise was rejected (unexpected error)
-                            failureCount++;
-                            const chunk = chunkRequests[index];
-                            console.error(`❌ Promise rejected for chunk ${chunk.startDateStr} to ${chunk.endDateStr}:`, settledResult.reason);
-                        }
-                    });
+                        
+                        // Move to next week
+                        currentStart.setDate(currentStart.getDate() + 7);
+                        chunkCount++;
+                    }
                     
                     // Remove duplicates and sort
                     const uniqueDates = [...new Set(allDates)].sort();
@@ -1549,18 +1518,9 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         totalDates: uniqueDates.length,
                         dates: uniqueDates,
                         totalSlotUrls: Object.keys(allSlotUrls).length,
-                        chunksProcessed: chunkRequests.length,
-                        successfulChunks: successCount,
-                        failedChunks: failureCount,
+                        chunksProcessed: chunkCount,
                         maxChunks: maxChunks
                     });
-                    
-                    // Log warning if some chunks failed but we still have data
-                    if (failureCount > 0 && successCount > 0) {
-                        console.warn(`⚠️ ${failureCount} chunk(s) failed, but ${successCount} chunk(s) succeeded. Partial availability data loaded.`);
-                    } else if (failureCount > 0 && successCount === 0) {
-                        console.error(`❌ All ${failureCount} chunk(s) failed. No availability data could be loaded.`);
-                    }
                     
                     // Only set availability if we got some data, otherwise keep empty arrays
                     if (uniqueDates.length > 0) {

@@ -46,7 +46,7 @@ function YouTubeEmbed({ videoId }: { videoId: string }) {
   const [isLoaded, setIsLoaded] = useState(false);
 
   return (
-    <div className="w-full relative h-[370px] sm:h-[300px]">
+    <div className="w-full relative aspect-video">
       {!isLoaded && (
         <div className="absolute inset-0 bg-gray-800 flex items-center justify-center rounded-lg">
           <div className="text-white">Loading video...</div>

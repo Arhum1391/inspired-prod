@@ -162,7 +162,7 @@ const Footer = () => {
           <div className="relative z-30 mt-6 pt-4 border-t border-gray-600">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
               <p className="text-gray-400 text-sm">
-                © 2025 Inspired Analyst. All rights reserved.
+                © {new Date().getFullYear()} Inspired Analyst. All rights reserved.
               </p>
               <div className="flex flex-row space-x-6 mt-2 sm:mt-0">
                 <Link href="/privacy"><span className="text-gray-400 hover:text-white transition-colors duration-200 text-sm">Privacy Policy</span></Link>

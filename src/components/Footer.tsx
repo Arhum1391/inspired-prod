@@ -164,10 +164,10 @@ const Footer = () => {
               <p className="text-gray-400 text-sm">
                 © {new Date().getFullYear()} Inspired Analyst. All rights reserved.
               </p>
-              <div className="flex flex-row space-x-6 mt-2 sm:mt-0">
+              {/* <div className="flex flex-row space-x-6 mt-2 sm:mt-0">
                 <Link href="/privacy"><span className="text-gray-400 hover:text-white transition-colors duration-200 text-sm">Privacy Policy</span></Link>
                 <Link href="/terms"><span className="text-gray-400 hover:text-white transition-colors duration-200 text-sm">Terms & Condition</span></Link>
-              </div>
+              </div> */}
             </div>
           </div>
         </footer>

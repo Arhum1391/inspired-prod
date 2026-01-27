@@ -106,25 +106,23 @@ export const partners: Partner[] = [
     videoId: 'kYlYU8jR9i4', // Placeholder - replace with actual video ID
   },
   {
-    slug: 'klein-funding',
-    name: 'Klein Funding',
-    heading:"Join Our Discord for Free Via Klein",
+    slug: 'bitfunded',
+    name: 'BitFunded',
+    heading:"Join Our Discord for Free Via BitFunded ",
 
     steps: [
       {
         number: 1,
-        title: 'Create Your Klein Funding Account',
+        title: 'Create Your BitFunded Account',
         description: 'Sign up using our official partner link',
-    link: 'https://kleinfunding.com/ref/4961',
+        link: 'https://trader.bitfunded.com/client/register?regid=2185504503',
+        points: [
+          'Invitation Code: 2185504503',
+        ]
       },
       {
         number: 2,
-        title: 'Purchase Any Account (With Discount)',
-        description: 'Use one of the following discount codes at checkout:',
-        points:[
-          '**25% OFF** on Standard Accounts — **Code: IA25**',
-          '**15% OFF** on Instant Accounts — **Code: IA15**',
-        ]
+        title: 'Purchase Any Account, Step 1 or Step 2',
       },
       {
         number: 3,
@@ -134,10 +132,10 @@ export const partners: Partner[] = [
       {
         number: 4,
         title: 'Get Access',
-        description: 'Once verified, you\'ll receive **free access to the Klein Funded Tier**.',
+        description: 'Once verified, you\'ll receive **free access to the BitFunded Tier**.',
       }
     ],
-    videoId: 'LDtURmq4bRA', // Placeholder - replace with actual video ID
+    videoId: 'REX7P-Yj8EI', // Placeholder - replace with actual video ID
   },
 ];
 

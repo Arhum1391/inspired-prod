@@ -320,8 +320,8 @@ export default function Home() {
                 <Link href="/partners/primexbt" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </Link>
-                <Link href="/partners/klein-funding" className="h-14 w-28 flex-shrink-0">
-                  <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                <Link href="/partners/bitfunded" className="h-20 w-40 flex-shrink-0">
+                  <Image src="/brand_images/bitfunded.png" alt="BitFunded" width={160} height={80} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </Link>
                 {/* Duplicate for seamless loop */}
                 
@@ -336,8 +336,8 @@ export default function Home() {
                 <Link href="/partners/primexbt" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </Link>
-                <Link href="/partners/klein-funding" className="h-14 w-28 flex-shrink-0">
-                  <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                <Link href="/partners/bitfunded" className="h-20 w-40 flex-shrink-0">
+                  <Image src="/brand_images/bitfunded.png" alt="BitFunded" width={160} height={80} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </Link>
               </div>
             </div>
@@ -387,11 +387,11 @@ export default function Home() {
                   className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
                 />
               </Link>
-              <Link href="/partners/klein-funding" className="w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20 2xl:w-24 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+              <Link href="/partners/bitfunded" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-32 2xl:w-36 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
-                  src="/brand_images/klein.svg"
-                  alt="Klein"
-                  className="opacity-80 w-full h-auto object-contain max-h-5 sm:max-h-6 md:max-h-7 lg:max-h-8 xl:max-h-10"
+                  src="/brand_images/bitfunded.png"
+                  alt="BitFunded"
+                  className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
                 />
               </Link>
             </div>
@@ -474,9 +474,9 @@ export default function Home() {
                 <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://kleinfunding.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
+                <Link href="/partners/bitfunded" className="h-20 w-40 flex-shrink-0">
+                  <Image src="/brand_images/bitfunded.png" alt="BitFunded" width={160} height={80} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
                 {/* Duplicate for seamless loop */}
                 <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/Gridlock.svg" alt="Gridlock" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
@@ -514,9 +514,9 @@ export default function Home() {
                 <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
                   <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
                 </a>
-                <a href="https://kleinfunding.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
-                  <Image src="/brand_images/klein.svg" alt="Klein" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
-                </a>
+                <Link href="/partners/bitfunded" className="h-20 w-40 flex-shrink-0">
+                  <Image src="/brand_images/bitfunded.png" alt="BitFunded" width={160} height={80} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
               </div>
             </div>
           </div>
@@ -666,13 +666,13 @@ export default function Home() {
                   className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
                 />
               </a>
-              <a href="https://kleinfunding.com" target="_blank" rel="noopener noreferrer" className="w-8 sm:w-10 md:w-12 lg:w-16 xl:w-20 2xl:w-24 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+              <Link href="/partners/bitfunded" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-32 2xl:w-36 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
                 <img
-                  src="/brand_images/klein.svg"
-                  alt="Klein"
-                  className="opacity-80 w-full h-auto object-contain max-h-5 sm:max-h-6 md:max-h-7 lg:max-h-8 xl:max-h-10"
+                  src="/brand_images/bitfunded.png"
+                  alt="BitFunded"
+                  className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
                 />
-              </a>
+              </Link>
             </div>
 
           </div>

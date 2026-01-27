@@ -206,11 +206,11 @@ export default function PartnerPage({
                         key={step.number}
                         className="flex flex-col gap-[2px] items-start"
                       >
-                        <div className="flex">
-                          <span className="font-bold text-xl mr-1">
+                        <div className="flex flex-nowrap">
+                          <span className="font-bold text-lg sm:text-xl mr-1 flex-shrink-0">
                             Step {step.number}:{" "}
                           </span>
-                          <span className="text-xl font-bold text-white">
+                          <span className="text-lg sm:text-xl font-bold text-white">
                             {step.title}
                           </span>
                         </div>

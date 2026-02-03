@@ -94,7 +94,7 @@ const SocialStats: React.FC = () => {
                   color: '#FFFFFF'
                 }}
               >
-                536K+
+                552K+
               </div>
             </a>
 
@@ -137,7 +137,7 @@ const SocialStats: React.FC = () => {
                   color: '#FFFFFF'
                 }}
               >
-                520K+
+                675K+
               </div>
             </a>
 
@@ -177,7 +177,7 @@ const SocialStats: React.FC = () => {
                   color: '#FFFFFF'
                 }}
               >
-                153K+
+                166K+
               </div>
             </a>
 
@@ -217,7 +217,7 @@ const SocialStats: React.FC = () => {
                   color: '#FFFFFF'
                 }}
               >
-                97K+
+                100K+
               </div>
             </a>
           </div>
@@ -263,7 +263,7 @@ const SocialStats: React.FC = () => {
                   color: '#FFFFFF'
                 }}
               >
-                77K+
+                90K+
               </div>
             </a>
 
@@ -306,7 +306,7 @@ const SocialStats: React.FC = () => {
                   color: '#FFFFFF'
                 }}
               >
-                54K+
+                55K+
               </div>
             </a>
 
@@ -346,7 +346,7 @@ const SocialStats: React.FC = () => {
                   color: '#FFFFFF'
                 }}
               >
-                29K+
+                33k+
               </div>
             </a>
 
@@ -386,7 +386,7 @@ const SocialStats: React.FC = () => {
                   color: '#FFFFFF'
                 }}
               >
-                15K+
+                18K+
               </div>
             </a>
           </div>

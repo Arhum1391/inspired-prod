@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { stripe } from '@/lib/stripe';
+import { getDatabase } from '@/lib/mongodb';
 
 /**
  * POST /api/calendly/create-booking
  * Creates a single-use scheduling link for a Calendly event
  * This allows users to book directly without going through Calendly's UI
+ * 
+ * SECURITY: Requires a valid paid Stripe session ID to prevent unauthorized bookings
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { eventTypeUri, name, email, startTime, notes } = body;
+    const { eventTypeUri, name, email, startTime, notes, sessionId } = body;
 
     if (!process.env.CALENDLY_ACCESS_TOKEN) {
       return NextResponse.json(
@@ -24,7 +28,69 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('Creating Calendly booking:', { eventTypeUri, name, email, startTime });
+    // SECURITY: Require and verify Stripe session ID
+    if (!sessionId) {
+      return NextResponse.json(
+        { error: 'Payment session ID is required. Please complete payment first.' },
+        { status: 400 }
+      );
+    }
+
+    // Verify payment with Stripe
+    let stripeSession;
+    try {
+      stripeSession = await stripe.checkout.sessions.retrieve(sessionId);
+    } catch (error: any) {
+      console.error('Error retrieving Stripe session:', error);
+      return NextResponse.json(
+        { error: 'Invalid payment session' },
+        { status: 400 }
+      );
+    }
+
+    // Verify payment is completed
+    if (stripeSession.payment_status !== 'paid') {
+      console.error('Payment not completed:', {
+        sessionId,
+        paymentStatus: stripeSession.payment_status,
+        status: stripeSession.status
+      });
+      return NextResponse.json(
+        { 
+          error: 'Payment not completed', 
+          paymentStatus: stripeSession.payment_status,
+          message: 'Please complete payment before booking'
+        },
+        { status: 402 } // 402 Payment Required
+      );
+    }
+
+    // Verify booking exists in database with paid status (double-check)
+    try {
+      const db = await getDatabase();
+      const booking = await db.collection('bookings').findOne({
+        stripeSessionId: sessionId,
+        paymentStatus: 'paid'
+      });
+
+      if (!booking) {
+        console.warn('Booking not found in database for paid session:', sessionId);
+        // Don't block - webhook might not have processed yet, but Stripe says it's paid
+        // Log for monitoring
+      }
+    } catch (dbError) {
+      console.error('Database check error (non-blocking):', dbError);
+      // Don't block if database check fails - Stripe verification is primary
+    }
+
+    console.log('Creating Calendly booking for paid session:', { 
+      sessionId, 
+      eventTypeUri, 
+      name, 
+      email, 
+      startTime,
+      paymentStatus: stripeSession.payment_status
+    });
 
     // Create a single-use scheduling link
     const response = await fetch('https://api.calendly.com/scheduling_links', {
@@ -72,7 +138,9 @@ export async function POST(request: NextRequest) {
       success: true,
       bookingUrl: bookingUrl.toString(),
       schedulingLink: data.resource.booking_url,
-      message: 'Scheduling link created successfully'
+      message: 'Scheduling link created successfully',
+      sessionId: sessionId, // Return session ID for verification
+      verified: true // Indicate payment was verified
     });
   } catch (error) {
     console.error('Error creating Calendly booking:', error);

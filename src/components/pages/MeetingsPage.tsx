@@ -951,6 +951,30 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         };
     }, []);
 
+    // Helper function to verify payment with server
+    const verifyPayment = async (sessionId: string): Promise<boolean> => {
+        try {
+            const response = await fetch(`/api/stripe/payment-status/${sessionId}`);
+            if (!response.ok) {
+                console.error('Payment verification failed:', response.status);
+                return false;
+            }
+            const data = await response.json();
+            // Check if payment is actually paid
+            const isPaid = data.paymentStatus === 'paid' || data.status === 'confirmed' || data.status === 'PAID' || data.status === 'CONFIRMED';
+            console.log('Payment verification result:', { 
+                sessionId, 
+                paymentStatus: data.paymentStatus, 
+                status: data.status, 
+                isPaid 
+            });
+            return isPaid;
+        } catch (error) {
+            console.error('Error verifying payment:', error);
+            return false;
+        }
+    };
+
     // Check payment status and restore form data on mount (run only once)
     useEffect(() => {
         // Ensure we're on the client side
@@ -965,86 +989,105 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         
         // Handle payment status first
         if (paymentStatus === 'success' && sessionId) {
-            // Payment was successful
-            console.log('✅ Payment successful detected!');
-            
-            // Restore form data from sessionStorage (with safety check)
-            const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
-            console.log('📦 Checking for saved form data:', savedFormData ? 'FOUND' : 'NOT FOUND');
-            
-            if (savedFormData) {
-                try {
-                    const formData = JSON.parse(savedFormData);
-                    console.log('📝 Form data to restore:', {
-                        name: formData.fullName,
-                        email: formData.email,
-                        analyst: formData.selectedAnalyst,
-                        meeting: formData.selectedMeeting,
-                        date: formData.selectedDate,
-                        time: formData.selectedTime,
-                        timezone: formData.selectedTimezone
-                    });
-                    
-                    // CRITICAL: Set loading state IMMEDIATELY to disable Continue button
-                    setIsLoadingAvailability(true);
-                    console.log('🔒 Set isLoadingAvailability=true to disable Continue button during data fetch');
-                    
-                    // Use setTimeout to batch all state updates together
-                    setTimeout(() => {
-                        // Restore all form fields in one batch
-                        const restoredFullName = formData.fullName || '';
-                        const restoredEmail = formData.email || '';
-                        const restoredNotes = formData.notes || '';
-                        
-                        setFullName(restoredFullName);
-                        setEmail(restoredEmail);
-                        setNotes(restoredNotes);
-                        
-                        // Validate restored fields
-                        setNameError(validateName(restoredFullName));
-                        setEmailError(validateEmail(restoredEmail));
-                        setNotesError(validateNotes(restoredNotes));
-                        
-                        setSelectedAnalyst(formData.selectedAnalyst !== undefined ? formData.selectedAnalyst : null);
-                        setSelectedMeeting(formData.selectedMeeting !== undefined ? formData.selectedMeeting : null);
-                        setSelectedDate(formData.selectedDate || '');
-                        setSelectedTime(formData.selectedTime || '');
-                        setSelectedTimezone(formData.selectedTimezone || '');
-                        
-                        // CRITICAL: Set currentMonth to match the saved date so availability fetches correctly
-                        if (formData.selectedDate) {
-                            // Parse date more reliably for production (YYYY-MM-DD format)
-                            const dateParts = formData.selectedDate.split('-');
-                            const savedDateObj = new Date(
-                                parseInt(dateParts[0]), // year
-                                parseInt(dateParts[1]) - 1, // month (0-indexed)
-                                parseInt(dateParts[2]), // day
-                                12, 0, 0, 0 // noon local time
-                            );
-                            console.log('📅 Setting currentMonth to match saved date:', formData.selectedDate, '→', savedDateObj);
-                            setCurrentMonth(savedDateObj);
-                        }
-                        
-                        setPaymentCompleted(true);
-                        setPaymentError('');
-                        
-                        // CRITICAL: Set to step 3
-                        setCurrentStep(3);
-                        
-                        console.log('✅ All state restored, should now be on step 3');
-                        
-                        // DON'T clear URL params - let user stay with params visible
-                        // This prevents any race condition
-                        console.log('ℹ️ Keeping URL params visible for transparency');
-                    }, 0); // Use 0 to defer to next tick but keep it fast
-                    
-                } catch (error) {
-                    console.error('❌ Failed to restore form data:', error);
+            // SECURITY: Verify payment before proceeding
+            console.log('🔒 Verifying payment before proceeding...');
+            verifyPayment(sessionId).then((isPaid) => {
+                if (!isPaid) {
+                    console.error('❌ Payment verification failed - payment not completed');
+                    alert('Payment verification failed. Please complete payment before booking.');
+                    setPaymentError('Payment not verified. Please complete payment first.');
+                    setPaymentCompleted(false);
+                    // Redirect back to meetings page without payment params
+                    router.replace('/meetings');
+                    return;
                 }
-            } else {
-                console.error('⚠️ CRITICAL: No saved form data found after payment! SessionStorage might have been cleared.');
-                alert('There was an issue restoring your booking information. Please try again.');
-            }
+                
+                // Payment verified - proceed with normal flow
+                console.log('✅ Payment verified successfully!');
+            
+                // Restore form data from sessionStorage (with safety check)
+                const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
+                console.log('📦 Checking for saved form data:', savedFormData ? 'FOUND' : 'NOT FOUND');
+                
+                if (savedFormData) {
+                    try {
+                        const formData = JSON.parse(savedFormData);
+                        console.log('📝 Form data to restore:', {
+                            name: formData.fullName,
+                            email: formData.email,
+                            analyst: formData.selectedAnalyst,
+                            meeting: formData.selectedMeeting,
+                            date: formData.selectedDate,
+                            time: formData.selectedTime,
+                            timezone: formData.selectedTimezone
+                        });
+                        
+                        // CRITICAL: Set loading state IMMEDIATELY to disable Continue button
+                        setIsLoadingAvailability(true);
+                        console.log('🔒 Set isLoadingAvailability=true to disable Continue button during data fetch');
+                        
+                        // Use setTimeout to batch all state updates together
+                        setTimeout(() => {
+                            // Restore all form fields in one batch
+                            const restoredFullName = formData.fullName || '';
+                            const restoredEmail = formData.email || '';
+                            const restoredNotes = formData.notes || '';
+                            
+                            setFullName(restoredFullName);
+                            setEmail(restoredEmail);
+                            setNotes(restoredNotes);
+                            
+                            // Validate restored fields
+                            setNameError(validateName(restoredFullName));
+                            setEmailError(validateEmail(restoredEmail));
+                            setNotesError(validateNotes(restoredNotes));
+                            
+                            setSelectedAnalyst(formData.selectedAnalyst !== undefined ? formData.selectedAnalyst : null);
+                            setSelectedMeeting(formData.selectedMeeting !== undefined ? formData.selectedMeeting : null);
+                            setSelectedDate(formData.selectedDate || '');
+                            setSelectedTime(formData.selectedTime || '');
+                            setSelectedTimezone(formData.selectedTimezone || '');
+                            
+                            // CRITICAL: Set currentMonth to match the saved date so availability fetches correctly
+                            if (formData.selectedDate) {
+                                // Parse date more reliably for production (YYYY-MM-DD format)
+                                const dateParts = formData.selectedDate.split('-');
+                                const savedDateObj = new Date(
+                                    parseInt(dateParts[0]), // year
+                                    parseInt(dateParts[1]) - 1, // month (0-indexed)
+                                    parseInt(dateParts[2]), // day
+                                    12, 0, 0, 0 // noon local time
+                                );
+                                console.log('📅 Setting currentMonth to match saved date:', formData.selectedDate, '→', savedDateObj);
+                                setCurrentMonth(savedDateObj);
+                            }
+                            
+                            setPaymentCompleted(true);
+                            setPaymentError('');
+                            
+                            // CRITICAL: Set to step 3
+                            setCurrentStep(3);
+                            
+                            console.log('✅ All state restored, should now be on step 3');
+                            
+                            // DON'T clear URL params - let user stay with params visible
+                            // This prevents any race condition
+                            console.log('ℹ️ Keeping URL params visible for transparency');
+                        }, 0); // Use 0 to defer to next tick but keep it fast
+                    } catch (error) {
+                        console.error('❌ Failed to restore form data:', error);
+                    }
+                } else {
+                    console.error('⚠️ CRITICAL: No saved form data found after payment! SessionStorage might have been cleared.');
+                    alert('There was an issue restoring your booking information. Please try again.');
+                }
+            }).catch((error) => {
+                console.error('Payment verification error:', error);
+                alert('Error verifying payment. Please try again.');
+                setPaymentError('Payment verification error');
+                setPaymentCompleted(false);
+                router.replace('/meetings');
+            });
         } else if (paymentStatus === 'cancelled') {
             // Payment was cancelled - restore form data but don't activate payment
             console.log('❌ Payment cancelled');
@@ -1928,149 +1971,185 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
             } else if (currentStep === 3 && paymentCompleted) {
                 // Payment completed, process booking submission
                 console.log('🎯 Processing final step after payment completion');
-                console.log('📊 Current state:', {
-                    selectedAnalyst,
-                    hasCalendlyIntegration: selectedAnalyst !== null ? hasCalendlyIntegration(selectedAnalyst) : false,
-                    selectedDate,
-                    selectedTime,
-                    isLoadingAvailability,
-                    timeSlotObjectsCount: timeSlotObjects.length,
-                    timeSlotObjects: timeSlotObjects
-                });
                 
-                const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
-                const selectedMeetingData = getSelectedMeetingData() || meetings.find(m => m.id === selectedMeeting);
+                // SECURITY: Double-check payment before opening Calendly
+                const urlParams = new URLSearchParams(window.location.search);
+                const sessionId = urlParams.get('session_id');
                 
-                // Get Calendly scheduling URL if analyst has Calendly integration
-                let calendlyUrl = '';
-                if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && selectedDate && selectedTime) {
-                    console.log('🔍 Looking for time slot:', selectedTime);
-                    console.log('🔍 Selected date:', selectedDate);
-                    console.log('🔍 Available dates in availableTimesByDate:', Object.keys(availableTimesByDate));
-                    console.log('🔍 Times for selected date:', availableTimesByDate[selectedDate]);
-                    console.log('🔍 All time slot objects:', timeSlotObjects.map(s => ({ date: selectedDate, time: s.displayTime, url: s.schedulingUrl })));
-                    
-                    const selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
-                    
-                    if (selectedSlot && selectedSlot.schedulingUrl) {
-                        calendlyUrl = selectedSlot.schedulingUrl;
-                        console.log('✅ Found Calendly scheduling URL:', calendlyUrl);
-                    } else {
-                        console.warn('⚠️ No Calendly URL found for selected time slot');
-                        console.log('Available slots:', timeSlotObjects.map(s => ({ time: s.displayTime, hasUrl: !!s.schedulingUrl })));
+                if (!sessionId) {
+                    console.error('❌ No session ID found - cannot verify payment');
+                    alert('Payment session not found. Please complete payment first.');
+                    setPaymentError('Payment session not found');
+                    setPaymentCompleted(false);
+                    router.replace('/meetings');
+                    return;
+                }
+                
+                // Verify payment before proceeding
+                verifyPayment(sessionId).then((isPaid) => {
+                    if (!isPaid) {
+                        console.error('❌ Payment verification failed before opening Calendly');
+                        alert('Payment verification failed. Please complete payment before booking.');
+                        setPaymentError('Payment not verified');
+                        setPaymentCompleted(false);
+                        router.replace('/meetings');
+                        return;
                     }
-                } else {
-                    console.log('❌ Calendly requirements not met:', {
-                        hasAnalyst: selectedAnalyst !== null,
-                        hasIntegration: selectedAnalyst !== null ? hasCalendlyIntegration(selectedAnalyst) : false,
-                        hasDate: !!selectedDate,
-                        hasTime: !!selectedTime
+                    
+                    // Payment verified - proceed with booking
+                    console.log('✅ Payment verified - proceeding with Calendly booking');
+                    
+                    console.log('📊 Current state:', {
+                        selectedAnalyst,
+                        hasCalendlyIntegration: selectedAnalyst !== null ? hasCalendlyIntegration(selectedAnalyst) : false,
+                        selectedDate,
+                        selectedTime,
+                        isLoadingAvailability,
+                        timeSlotObjectsCount: timeSlotObjects.length,
+                        timeSlotObjects: timeSlotObjects
                     });
-                }
-
-                // Store booking details in sessionStorage for success page
-                        const bookingDetails = {
-                            analyst: selectedAnalyst?.toString() || '0',
-                            analystName: analysts.find(a => a.id === selectedAnalyst)?.name || '',
-                            meeting: selectedMeeting?.toString() || '1',
-                    meetingTitle: selectedMeetingData?.title || '',
-                    meetingDuration: selectedMeetingData?.duration || '',
-                            date: selectedDate || '',
-                            time: selectedTime || '',
-                            timezone: selectedTimezoneData?.label || '',
-                            timezoneValue: selectedTimezone || '',
-                            notes: notes || '',
-                            fullName: fullName,
-                            email: email,
-                    paymentCompleted: true,
-                    calendlyUrl: calendlyUrl,
-                            hasCalendlyIntegration: calendlyUrl !== ''
-                        };
-                        
-                        if (typeof sessionStorage !== 'undefined') {
-                            sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
-                        }
-                        
-                // Clear form data from sessionStorage
-                const formDataKey = 'meetings-form';
-                if (typeof sessionStorage !== 'undefined') {
-                    sessionStorage.removeItem(formDataKey);
-                }
-                
-                // If analyst has Calendly integration, open Calendly popup
-                if (calendlyUrl) {
-                    console.log('Opening Calendly popup for analyst booking with URL:', calendlyUrl);
                     
-                    // Check if Calendly is available
-                    // @ts-ignore
-                    if (typeof window !== 'undefined' && window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
-                        console.log('Calendly is loaded, opening popup...');
+                    const selectedTimezoneData = allTimezones.find(tz => tz.value === selectedTimezone);
+                    const selectedMeetingData = getSelectedMeetingData() || meetings.find(m => m.id === selectedMeeting);
+                    
+                    // Get Calendly scheduling URL if analyst has Calendly integration
+                    let calendlyUrl = '';
+                    if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && selectedDate && selectedTime) {
+                        console.log('🔍 Looking for time slot:', selectedTime);
+                        console.log('🔍 Selected date:', selectedDate);
+                        console.log('🔍 Available dates in availableTimesByDate:', Object.keys(availableTimesByDate));
+                        console.log('🔍 Times for selected date:', availableTimesByDate[selectedDate]);
+                        console.log('🔍 All time slot objects:', timeSlotObjects.map(s => ({ date: selectedDate, time: s.displayTime, url: s.schedulingUrl })));
                         
-                        // Open Calendly popup with a slight delay to ensure DOM is ready
-                        setTimeout(() => {
-                            // @ts-ignore
-                            window.Calendly.initPopupWidget({
-                                url: calendlyUrl,
-                                prefill: {
-                                    name: fullName || '',
-                                    email: email || '',
-                                    customAnswers: {
-                                        a1: notes || ''
-                                    }
-                                },
-                                utm: {
-                                    utmSource: 'inspired-analyst',
-                                    utmMedium: 'booking',
-                                    utmCampaign: 'mentorship'
-                                }
-                            });
-                            console.log('Calendly popup initiated');
-                        }, 300);
-
-                        // Listen for Calendly event completion
-                        const handleCalendlyEvent = (e: MessageEvent) => {
-                            if (e.data.event && e.data.event === 'calendly.event_scheduled') {
-                                console.log('Calendly booking completed:', e.data);
-                                
-                                // Save Calendly event details
-                                if (e.data.payload && typeof sessionStorage !== 'undefined') {
-                                    sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
-                                }
-                                
-                                // Close the Calendly popup automatically
-                                console.log('Closing Calendly popup automatically...');
-                                // @ts-ignore
-                                if (window.Calendly && window.Calendly.closePopupWidget) {
-                                    // @ts-ignore
-                                    window.Calendly.closePopupWidget();
-                                }
-                                
-                                // Redirect to success page after Calendly booking
-                                console.log('Redirecting to success page...');
-                                setTimeout(() => {
-                                    router.push('/booking-success');
-                                }, 500);
-                                
-                                // Clean up event listener
-                                window.removeEventListener('message', handleCalendlyEvent);
-                            }
-                        };
-
-                        window.addEventListener('message', handleCalendlyEvent);
+                        const selectedSlot = timeSlotObjects.find(slot => slot.displayTime === selectedTime);
+                        
+                        if (selectedSlot && selectedSlot.schedulingUrl) {
+                            calendlyUrl = selectedSlot.schedulingUrl;
+                            console.log('✅ Found Calendly scheduling URL:', calendlyUrl);
+                        } else {
+                            console.warn('⚠️ No Calendly URL found for selected time slot');
+                            console.log('Available slots:', timeSlotObjects.map(s => ({ time: s.displayTime, hasUrl: !!s.schedulingUrl })));
+                        }
                     } else {
-                        // @ts-ignore
-                        console.error('Calendly script not loaded or not available. Window.Calendly:', typeof window !== 'undefined' ? window.Calendly : 'undefined');
-                        alert('Unable to open booking calendar. Redirecting to confirmation page...');
-                        // Fall back to direct redirect if Calendly fails
-                        setTimeout(() => {
-                            router.push('/booking-success');
-                        }, 1000);
+                        console.log('❌ Calendly requirements not met:', {
+                            hasAnalyst: selectedAnalyst !== null,
+                            hasIntegration: selectedAnalyst !== null ? hasCalendlyIntegration(selectedAnalyst) : false,
+                            hasDate: !!selectedDate,
+                            hasTime: !!selectedTime
+                        });
                     }
-                } else {
-                    console.log('No Calendly URL found, redirecting directly to success page');
-                    // No Calendly integration, redirect directly to success page
-                    router.push('/booking-success');
-                }
+                    
+                    // Store booking details in sessionStorage for success page
+                    const bookingDetails = {
+                        analyst: selectedAnalyst?.toString() || '0',
+                        analystName: analysts.find(a => a.id === selectedAnalyst)?.name || '',
+                        meeting: selectedMeeting?.toString() || '1',
+                        meetingTitle: selectedMeetingData?.title || '',
+                        meetingDuration: selectedMeetingData?.duration || '',
+                        date: selectedDate || '',
+                        time: selectedTime || '',
+                        timezone: selectedTimezoneData?.label || '',
+                        timezoneValue: selectedTimezone || '',
+                        notes: notes || '',
+                        fullName: fullName,
+                        email: email,
+                        paymentCompleted: true,
+                        calendlyUrl: calendlyUrl,
+                        hasCalendlyIntegration: calendlyUrl !== '',
+                        sessionId: sessionId // Store session ID for verification
+                    };
+                    
+                    if (typeof sessionStorage !== 'undefined') {
+                        sessionStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+                    }
+                    
+                    // Clear form data from sessionStorage
+                    const formDataKey = 'meetings-form';
+                    if (typeof sessionStorage !== 'undefined') {
+                        sessionStorage.removeItem(formDataKey);
+                    }
+                    
+                    // If analyst has Calendly integration, open Calendly popup
+                    if (calendlyUrl) {
+                        console.log('Opening Calendly popup for analyst booking with URL:', calendlyUrl);
+                        
+                        // Check if Calendly is available
+                        // @ts-ignore
+                        if (typeof window !== 'undefined' && window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
+                            console.log('Calendly is loaded, opening popup...');
+                            
+                            // Open Calendly popup with a slight delay to ensure DOM is ready
+                            setTimeout(() => {
+                                // @ts-ignore
+                                window.Calendly.initPopupWidget({
+                                    url: calendlyUrl,
+                                    prefill: {
+                                        name: fullName || '',
+                                        email: email || '',
+                                        customAnswers: {
+                                            a1: notes || ''
+                                        }
+                                    },
+                                    utm: {
+                                        utmSource: 'inspired-analyst',
+                                        utmMedium: 'booking',
+                                        utmCampaign: 'mentorship'
+                                    }
+                                });
+                                console.log('Calendly popup initiated');
+                            }, 300);
+
+                            // Listen for Calendly event completion
+                            const handleCalendlyEvent = (e: MessageEvent) => {
+                                if (e.data.event && e.data.event === 'calendly.event_scheduled') {
+                                    console.log('Calendly booking completed:', e.data);
+                                    
+                                    // Save Calendly event details
+                                    if (e.data.payload && typeof sessionStorage !== 'undefined') {
+                                        sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
+                                    }
+                                    
+                                    // Close the Calendly popup automatically
+                                    console.log('Closing Calendly popup automatically...');
+                                    // @ts-ignore
+                                    if (window.Calendly && window.Calendly.closePopupWidget) {
+                                        // @ts-ignore
+                                        window.Calendly.closePopupWidget();
+                                    }
+                                    
+                                    // Redirect to success page after Calendly booking
+                                    console.log('Redirecting to success page...');
+                                    setTimeout(() => {
+                                        router.push('/booking-success');
+                                    }, 500);
+                                    
+                                    // Clean up event listener
+                                    window.removeEventListener('message', handleCalendlyEvent);
+                                }
+                            };
+
+                            window.addEventListener('message', handleCalendlyEvent);
+                        } else {
+                            // @ts-ignore
+                            console.error('Calendly script not loaded or not available. Window.Calendly:', typeof window !== 'undefined' ? window.Calendly : 'undefined');
+                            alert('Unable to open booking calendar. Redirecting to confirmation page...');
+                            // Fall back to direct redirect if Calendly fails
+                            setTimeout(() => {
+                                router.push('/booking-success');
+                            }, 1000);
+                        }
+                    } else {
+                        console.log('No Calendly URL found, redirecting directly to success page');
+                        // No Calendly integration, redirect directly to success page
+                        router.push('/booking-success');
+                    }
+                }).catch((error) => {
+                    console.error('Payment verification error before Calendly:', error);
+                    alert('Error verifying payment. Please try again.');
+                    setPaymentError('Payment verification error');
+                    setPaymentCompleted(false);
+                    router.replace('/meetings');
+                });
             }
         }
     };

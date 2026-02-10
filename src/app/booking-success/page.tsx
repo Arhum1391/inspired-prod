@@ -168,11 +168,14 @@ const BookingSuccessContent: React.FC = () => {
                     if (e.data.event === 'calendly.event_scheduled') {
                         console.log('Calendly booking confirmed!', e.data.payload);
                         
-                        // Store Calendly event details
+                        const calendlyEventUri = e.data.payload?.event?.uri || '';
+                        const calendlyInviteeUri = e.data.payload?.invitee?.uri || '';
+                        
+                        // Store Calendly event details in sessionStorage
                         const updatedDetails = {
                             ...bookingDetails,
-                            calendlyEventUri: e.data.payload?.event?.uri || '',
-                            calendlyInviteeUri: e.data.payload?.invitee?.uri || '',
+                            calendlyEventUri,
+                            calendlyInviteeUri,
                             bookingConfirmed: true
                         };
                         
@@ -180,6 +183,32 @@ const BookingSuccessContent: React.FC = () => {
                             sessionStorage.setItem('bookingDetails', JSON.stringify(updatedDetails));
                         }
                         setBookingDetails(updatedDetails);
+                        
+                        // Save Calendly URIs to database to mark booking as completed
+                        if (bookingDetails?.sessionId && (calendlyEventUri || calendlyInviteeUri)) {
+                            fetch('/api/bookings/update-calendly', {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    sessionId: bookingDetails.sessionId,
+                                    calendlyEventUri,
+                                    calendlyInviteeUri
+                                })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    console.log('✅ Booking updated with Calendly URIs in database');
+                                } else {
+                                    console.warn('⚠️ Failed to update booking with Calendly URIs:', data.error);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error updating booking with Calendly URIs:', error);
+                            });
+                        }
                         
                         // Close the Calendly popup automatically
                         console.log('Closing Calendly popup automatically from success page...');

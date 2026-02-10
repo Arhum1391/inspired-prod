@@ -65,7 +65,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify booking exists in database with paid status (double-check)
+    // SECURITY: Check if session is too old (prevent reuse of old sessions)
+    const MAX_SESSION_AGE_HOURS = 1;
+    const now = Math.floor(Date.now() / 1000); // Current time in seconds
+    const sessionCreated = stripeSession.created; // Stripe session created timestamp
+    
+    if (sessionCreated) {
+      const hoursSinceCreation = (now - sessionCreated) / 3600;
+      if (hoursSinceCreation > MAX_SESSION_AGE_HOURS) {
+        console.warn(`⚠️ Session ${sessionId} is too old: ${hoursSinceCreation.toFixed(2)} hours`);
+        return NextResponse.json(
+          { 
+            error: 'Session expired',
+            message: `This payment session is too old (older than ${MAX_SESSION_AGE_HOURS} hours). Please create a new booking.`,
+            sessionAge: hoursSinceCreation.toFixed(2)
+          },
+          { status: 410 } // 410 Gone
+        );
+      }
+    }
+
+    // SECURITY: Verify booking exists and check if already completed
     try {
       const db = await getDatabase();
       const booking = await db.collection('bookings').findOne({
@@ -77,10 +97,26 @@ export async function POST(request: NextRequest) {
         console.warn('Booking not found in database for paid session:', sessionId);
         // Don't block - webhook might not have processed yet, but Stripe says it's paid
         // Log for monitoring
+      } else {
+        // SECURITY: Check if booking already has Calendly URIs (already completed)
+        if (booking.calendlyEventUri || booking.calendlyInviteeUri) {
+          console.warn(`⚠️ Booking ${sessionId} already has Calendly booking completed`);
+          return NextResponse.json(
+            { 
+              error: 'Booking already completed',
+              message: 'This payment session has already been used to complete a booking.',
+              alreadyUsed: true,
+              calendlyEventUri: booking.calendlyEventUri,
+              calendlyInviteeUri: booking.calendlyInviteeUri
+            },
+            { status: 409 } // 409 Conflict
+          );
+        }
       }
     } catch (dbError) {
-      console.error('Database check error (non-blocking):', dbError);
+      console.error('Database check error:', dbError);
       // Don't block if database check fails - Stripe verification is primary
+      // But log it for monitoring
     }
 
     console.log('Creating Calendly booking for paid session:', { 
@@ -132,6 +168,25 @@ export async function POST(request: NextRequest) {
     // Add the selected time if it matches a slot
     if (startTime) {
       bookingUrl.searchParams.append('date_and_time', startTime);
+    }
+
+    // Update booking record with scheduling URL (for tracking)
+    try {
+      const db = await getDatabase();
+      await db.collection('bookings').updateOne(
+        { stripeSessionId: sessionId },
+        {
+          $set: {
+            calendlySchedulingUrl: bookingUrl.toString(),
+            calendlySchedulingLinkCreatedAt: new Date(),
+            updatedAt: new Date()
+          }
+        }
+      );
+      console.log(`✅ Updated booking ${sessionId} with Calendly scheduling URL`);
+    } catch (dbError) {
+      console.error('Error updating booking with scheduling URL (non-blocking):', dbError);
+      // Don't block if update fails - scheduling link is already created
     }
 
     return NextResponse.json({

@@ -952,26 +952,52 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     }, []);
 
     // Helper function to verify payment with server
-    const verifyPayment = async (sessionId: string): Promise<boolean> => {
+    const verifyPayment = async (sessionId: string): Promise<{ isValid: boolean; error?: string }> => {
         try {
             const response = await fetch(`/api/stripe/payment-status/${sessionId}`);
             if (!response.ok) {
-                console.error('Payment verification failed:', response.status);
-                return false;
+                const errorData = await response.json().catch(() => ({}));
+                console.error('Payment verification failed:', response.status, errorData);
+                
+                // Handle specific error cases
+                if (response.status === 410) {
+                    return { isValid: false, error: 'This payment session has expired. Please create a new booking.' };
+                }
+                if (response.status === 409) {
+                    return { isValid: false, error: 'This payment session has already been used.' };
+                }
+                if (response.status === 404) {
+                    return { isValid: false, error: 'Payment session not found. Please complete payment first.' };
+                }
+                
+                return { isValid: false, error: 'Payment verification failed. Please try again.' };
             }
             const data = await response.json();
+            
             // Check if payment is actually paid
             const isPaid = data.paymentStatus === 'paid' || data.status === 'confirmed' || data.status === 'PAID' || data.status === 'CONFIRMED';
+            
+            // Check for security flags
+            if (data.sessionTooOld) {
+                return { isValid: false, error: 'This payment session is too old. Please create a new booking.' };
+            }
+            if (data.alreadyUsed) {
+                return { isValid: false, error: 'This payment session has already been used.' };
+            }
+            
             console.log('Payment verification result:', { 
                 sessionId, 
                 paymentStatus: data.paymentStatus, 
                 status: data.status, 
-                isPaid 
+                isPaid,
+                sessionTooOld: data.sessionTooOld,
+                alreadyUsed: data.alreadyUsed
             });
-            return isPaid;
+            
+            return { isValid: isPaid };
         } catch (error) {
             console.error('Error verifying payment:', error);
-            return false;
+            return { isValid: false, error: 'Error verifying payment. Please try again.' };
         }
     };
 
@@ -991,11 +1017,11 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         if (paymentStatus === 'success' && sessionId) {
             // SECURITY: Verify payment before proceeding
             console.log('🔒 Verifying payment before proceeding...');
-            verifyPayment(sessionId).then((isPaid) => {
-                if (!isPaid) {
-                    console.error('❌ Payment verification failed - payment not completed');
-                    alert('Payment verification failed. Please complete payment before booking.');
-                    setPaymentError('Payment not verified. Please complete payment first.');
+            verifyPayment(sessionId).then((result) => {
+                if (!result.isValid) {
+                    console.error('❌ Payment verification failed:', result.error);
+                    alert(result.error || 'Payment verification failed. Please complete payment before booking.');
+                    setPaymentError(result.error || 'Payment not verified. Please complete payment first.');
                     setPaymentCompleted(false);
                     // Redirect back to meetings page without payment params
                     router.replace('/meetings');
@@ -1986,11 +2012,11 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 }
                 
                 // Verify payment before proceeding
-                verifyPayment(sessionId).then((isPaid) => {
-                    if (!isPaid) {
-                        console.error('❌ Payment verification failed before opening Calendly');
-                        alert('Payment verification failed. Please complete payment before booking.');
-                        setPaymentError('Payment not verified');
+                verifyPayment(sessionId).then((result) => {
+                    if (!result.isValid) {
+                        console.error('❌ Payment verification failed before opening Calendly:', result.error);
+                        alert(result.error || 'Payment verification failed. Please complete payment before booking.');
+                        setPaymentError(result.error || 'Payment not verified');
                         setPaymentCompleted(false);
                         router.replace('/meetings');
                         return;
@@ -2104,9 +2130,26 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                 if (e.data.event && e.data.event === 'calendly.event_scheduled') {
                                     console.log('Calendly booking completed:', e.data);
                                     
-                                    // Save Calendly event details
+                                    // Save Calendly event details to sessionStorage for booking-success page
                                     if (e.data.payload && typeof sessionStorage !== 'undefined') {
                                         sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
+                                        
+                                        // Also update bookingDetails with URIs so booking-success can save them
+                                        const storedDetails = sessionStorage.getItem('bookingDetails');
+                                        if (storedDetails) {
+                                            try {
+                                                const bookingDetails = JSON.parse(storedDetails);
+                                                const updatedDetails = {
+                                                    ...bookingDetails,
+                                                    calendlyEventUri: e.data.payload?.event?.uri || '',
+                                                    calendlyInviteeUri: e.data.payload?.invitee?.uri || '',
+                                                    bookingConfirmed: true
+                                                };
+                                                sessionStorage.setItem('bookingDetails', JSON.stringify(updatedDetails));
+                                            } catch (error) {
+                                                console.error('Error updating bookingDetails:', error);
+                                            }
+                                        }
                                     }
                                     
                                     // Close the Calendly popup automatically

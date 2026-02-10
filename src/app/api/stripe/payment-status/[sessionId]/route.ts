@@ -57,9 +57,37 @@ export async function GET(
       );
     }
 
-    // Check if payment has expired
+    // SECURITY: Check if payment has expired
     const now = new Date();
     const expired = record.expiresAt && now > record.expiresAt;
+
+    // SECURITY: Check if paid session is too old (prevent reuse of old sessions)
+    // Allow sessions to be used within 24 hours of payment completion
+    const MAX_SESSION_AGE_HOURS = 1;
+    let sessionTooOld = false;
+    if (record.status === 'PAID' || record.status === 'CONFIRMED' || record.paymentStatus === 'paid') {
+      const paidAt = record.paidAt || record.confirmedAt || record.createdAt;
+      if (paidAt) {
+        const paidDate = new Date(paidAt);
+        const hoursSincePayment = (now.getTime() - paidDate.getTime()) / (1000 * 60 * 60);
+        sessionTooOld = hoursSincePayment > MAX_SESSION_AGE_HOURS;
+        
+        if (sessionTooOld) {
+          console.warn(`⚠️ Session ${sessionId} is too old: ${hoursSincePayment.toFixed(2)} hours since payment`);
+        }
+      }
+    }
+
+    // SECURITY: Check if booking was already completed (prevent reuse)
+    let alreadyUsed = false;
+    if (recordType === 'booking') {
+      // Check if there's a Calendly event already created for this booking
+      // This would indicate the booking was already completed
+      if (record.calendlyEventUri || record.calendlyInviteeUri) {
+        alreadyUsed = true;
+        console.warn(`⚠️ Session ${sessionId} already has Calendly booking`);
+      }
+    }
 
     // If expired and still pending, update status
     if (expired && record.status === 'PENDING') {
@@ -96,6 +124,31 @@ export async function GET(
       record.paymentStatus = 'EXPIRED';
     }
 
+    // SECURITY: Reject if session is too old or already used
+    if (sessionTooOld) {
+      return NextResponse.json(
+        { 
+          error: 'Session expired',
+          message: `This payment session is too old (older than ${MAX_SESSION_AGE_HOURS} hours). Please create a new booking.`,
+          expired: true,
+          sessionAge: 'too_old'
+        },
+        { status: 410 } // 410 Gone - resource is no longer available
+      );
+    }
+
+    if (alreadyUsed) {
+      return NextResponse.json(
+        { 
+          error: 'Session already used',
+          message: 'This payment session has already been used to complete a booking.',
+          expired: false,
+          alreadyUsed: true
+        },
+        { status: 409 } // 409 Conflict - resource already used
+      );
+    }
+
     // Prepare response based on record type
     const response: any = {
       success: true,
@@ -110,7 +163,9 @@ export async function GET(
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
       expiresAt: record.expiresAt,
-      expired: expired || false
+      expired: expired || false,
+      sessionTooOld: false,
+      alreadyUsed: false
     };
 
     // Add type-specific fields

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
+import { stripe } from '@/lib/stripe';
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 const DB_NAME = 'inspired-analyst';
@@ -50,11 +51,82 @@ export async function GET(
 
     await client.close();
 
+    // If not in DB, fall back to Stripe API (webhook may not have run yet, e.g. in dev or delay)
     if (!record) {
-      return NextResponse.json(
-        { error: 'Payment session not found' },
-        { status: 404 }
-      );
+      try {
+        const stripeSession = await stripe.checkout.sessions.retrieve(sessionId, { expand: [] });
+        const metadata = stripeSession.metadata || {};
+        const type = metadata.type as string | undefined;
+
+        if (stripeSession.payment_status === 'paid' && type === 'booking') {
+          // Build a record-shaped object so we can use the same response logic below
+          record = {
+            stripeSessionId: stripeSession.id,
+            meetingTypeId: metadata.meetingTypeId,
+            customerName: metadata.customerName ?? '',
+            customerEmail: (metadata.customer_email || metadata.customerEmail) ?? '',
+            amount: (stripeSession.amount_total ?? 0) / 100,
+            currency: stripeSession.currency ?? 'usd',
+            paymentStatus: 'paid',
+            status: 'confirmed',
+            selectedAnalyst: metadata.bookingSelectedAnalyst === '' || metadata.bookingSelectedAnalyst === undefined ? null : (parseInt(String(metadata.bookingSelectedAnalyst), 10) || null),
+            selectedMeeting: metadata.bookingSelectedMeeting === '' || metadata.bookingSelectedMeeting === undefined ? null : (parseInt(String(metadata.bookingSelectedMeeting), 10) || null),
+            selectedDate: metadata.bookingSelectedDate ?? '',
+            selectedTime: metadata.bookingSelectedTime ?? '',
+            selectedTimezone: metadata.bookingSelectedTimezone ?? '',
+            notes: metadata.bookingNotes ?? '',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          } as any;
+
+          // Upsert into DB so webhook can be idempotent and future lookups hit DB
+          const client2 = new MongoClient(MONGODB_URI);
+          await client2.connect();
+          const db2 = client2.db(DB_NAME);
+          await db2.collection('bookings').updateOne(
+            { stripeSessionId: sessionId },
+            { $setOnInsert: record },
+            { upsert: true }
+          );
+          await client2.close();
+          console.log(`✅ Payment-status: created booking from Stripe session ${sessionId} (webhook not yet received)`);
+        } else if (stripeSession.payment_status === 'paid' && type === 'bootcamp') {
+          record = {
+            stripeSessionId: stripeSession.id,
+            bootcampId: metadata.bootcampId,
+            customerName: metadata.customerName ?? '',
+            customerEmail: (metadata.customer_email || metadata.customerEmail) ?? '',
+            notes: metadata.notes ?? '',
+            paymentStatus: 'paid',
+            status: 'confirmed',
+            amount: (stripeSession.amount_total ?? 0) / 100,
+            currency: stripeSession.currency ?? 'usd',
+            createdAt: new Date(),
+            updatedAt: new Date()
+          } as any;
+          recordType = 'bootcamp';
+          const client2 = new MongoClient(MONGODB_URI);
+          await client2.connect();
+          const db2 = client2.db(DB_NAME);
+          await db2.collection('bootcamp_registrations').updateOne(
+            { stripeSessionId: sessionId },
+            { $setOnInsert: record },
+            { upsert: true }
+          );
+          await client2.close();
+        } else {
+          return NextResponse.json(
+            { error: 'Payment session not found' },
+            { status: 404 }
+          );
+        }
+      } catch (stripeError: any) {
+        console.warn('Payment-status: Stripe fallback failed:', stripeError?.message || stripeError);
+        return NextResponse.json(
+          { error: 'Payment session not found' },
+          { status: 404 }
+        );
+      }
     }
 
     // SECURITY: Check if payment has expired

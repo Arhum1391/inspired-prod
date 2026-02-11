@@ -50,6 +50,18 @@ interface Timezone {
     label: string;
 }
 
+/** Shape of form data restored after payment (sessionStorage, localStorage, or server) */
+interface RestoredFormData {
+  fullName?: string;
+  email?: string;
+  notes?: string;
+  selectedAnalyst?: number | null;
+  selectedMeeting?: number | null;
+  selectedDate?: string;
+  selectedTime?: string;
+  selectedTimezone?: string;
+}
+
 // --- NO HARDCODED DATA ---
 // All analyst data is now fetched dynamically from the database
 
@@ -901,6 +913,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     const [paymentCompleted, setPaymentCompleted] = useState<boolean>(false);
     const [paymentInitiating, setPaymentInitiating] = useState<boolean>(false);
     const [paymentError, setPaymentError] = useState<string>('');
+    const [isVerifyingPayment, setIsVerifyingPayment] = useState<boolean>(false);
 
     // Detect user's timezone once on mount and auto-select it
     useEffect(() => {
@@ -1005,6 +1018,21 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         }
     };
 
+    // Verify payment with retries on 404 (webhook may not have written the booking yet)
+    const verifyPaymentWithRetry = async (sessionId: string, maxRetries = 5, delayMs = 2000): Promise<{ isValid: boolean; error?: string; formData?: Record<string, unknown> }> => {
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            const result = await verifyPayment(sessionId);
+            if (result.isValid) return result;
+            if (result.error?.includes('Payment session not found') && attempt < maxRetries) {
+                console.log(`⏳ Payment session not in DB yet (attempt ${attempt}/${maxRetries}), retrying in ${delayMs}ms...`);
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+                continue;
+            }
+            return result;
+        }
+        return { isValid: false, error: 'Payment session not found. Please complete payment first.' };
+    };
+
     // Check payment status and restore form data on mount (run only once)
     useEffect(() => {
         // Ensure we're on the client side
@@ -1019,9 +1047,11 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         
         // Handle payment status first
         if (paymentStatus === 'success' && sessionId) {
-            // SECURITY: Verify payment before proceeding
+            setIsVerifyingPayment(true);
+            // SECURITY: Verify payment before proceeding (retry on 404 to allow webhook time to create booking)
             console.log('🔒 Verifying payment before proceeding...');
-            verifyPayment(sessionId).then((result) => {
+            verifyPaymentWithRetry(sessionId).then((result) => {
+                setIsVerifyingPayment(false);
                 if (!result.isValid) {
                     console.error('❌ Payment verification failed:', result.error);
                     alert(result.error || 'Payment verification failed. Please complete payment before booking.');
@@ -1077,10 +1107,11 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         
                         // Use setTimeout to batch all state updates together
                         setTimeout(() => {
+                            const fd = formData as RestoredFormData;
                             // Restore all form fields in one batch
-                            const restoredFullName = formData.fullName || '';
-                            const restoredEmail = formData.email || '';
-                            const restoredNotes = formData.notes || '';
+                            const restoredFullName = fd.fullName || '';
+                            const restoredEmail = fd.email || '';
+                            const restoredNotes = fd.notes || '';
                             
                             setFullName(restoredFullName);
                             setEmail(restoredEmail);
@@ -1091,23 +1122,23 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                             setEmailError(validateEmail(restoredEmail));
                             setNotesError(validateNotes(restoredNotes));
                             
-                            setSelectedAnalyst(formData.selectedAnalyst !== undefined ? formData.selectedAnalyst : null);
-                            setSelectedMeeting(formData.selectedMeeting !== undefined ? formData.selectedMeeting : null);
-                            setSelectedDate(formData.selectedDate || '');
-                            setSelectedTime(formData.selectedTime || '');
-                            setSelectedTimezone(formData.selectedTimezone || '');
+                            setSelectedAnalyst(fd.selectedAnalyst !== undefined ? fd.selectedAnalyst : null);
+                            setSelectedMeeting(fd.selectedMeeting !== undefined ? fd.selectedMeeting : null);
+                            setSelectedDate(fd.selectedDate || '');
+                            setSelectedTime(fd.selectedTime || '');
+                            setSelectedTimezone(fd.selectedTimezone || '');
                             
                             // CRITICAL: Set currentMonth to match the saved date so availability fetches correctly
-                            if (formData.selectedDate) {
+                            if (fd.selectedDate) {
                                 // Parse date more reliably for production (YYYY-MM-DD format)
-                                const dateParts = formData.selectedDate.split('-');
+                                const dateParts = fd.selectedDate.split('-');
                                 const savedDateObj = new Date(
                                     parseInt(dateParts[0]), // year
                                     parseInt(dateParts[1]) - 1, // month (0-indexed)
                                     parseInt(dateParts[2]), // day
                                     12, 0, 0, 0 // noon local time
                                 );
-                                console.log('📅 Setting currentMonth to match saved date:', formData.selectedDate, '→', savedDateObj);
+                                console.log('📅 Setting currentMonth to match saved date:', fd.selectedDate, '→', savedDateObj);
                                 setCurrentMonth(savedDateObj);
                             }
                             
@@ -1131,6 +1162,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     alert('There was an issue restoring your booking information. Please try again.');
                 }
             }).catch((error) => {
+                setIsVerifyingPayment(false);
                 console.error('Payment verification error:', error);
                 alert('Error verifying payment. Please try again.');
                 setPaymentError('Payment verification error');
@@ -3337,8 +3369,24 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         <h1 className="text-3xl sm:text-4xl font-bold" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Book Mentorship</h1>
                     </div>
 
+                    {/* Payment verification loading - show instead of step 1 while verifying after redirect */}
+                    {isVerifyingPayment && (
+                        <div className="flex flex-col items-center justify-center py-16 sm:py-24 px-6">
+                            <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-2xl p-8 sm:p-12 max-w-md w-full flex flex-col items-center gap-6 text-center">
+                                <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center">
+                                    <CreditCard className="w-8 h-8 text-white" />
+                                </div>
+                                <div className="w-10 h-10 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                <div>
+                                    <p className="text-lg font-semibold text-white mb-1" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Verifying your payment</p>
+                                    <p className="text-sm text-gray-400" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Please wait while we confirm your payment...</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Step 1: Analyst Selection */}
-                    {currentStep === 1 && (
+                    {!isVerifyingPayment && currentStep === 1 && (
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Select Your Analyst</h2>
@@ -3442,7 +3490,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     )}
 
                     {/* Step 2: Meeting Selection, Timezone, Date & Time */}
-                    {currentStep === 2 && (
+                    {!isVerifyingPayment && currentStep === 2 && (
                         <div className="space-y-8">
                             {/* Meeting Selection */}
                     <div className="space-y-6">
@@ -3845,7 +3893,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     )}
 
                     {/* Step 3: Pay & Confirm */}
-                    {currentStep === 3 && (
+                    {!isVerifyingPayment && currentStep === 3 && (
                         <div className="space-y-6">
                             <div className="flex flex-col lg:flex-row gap-8 items-start">
                                 {/* Left side - Payment Form */}

@@ -951,8 +951,8 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         };
     }, []);
 
-    // Helper function to verify payment with server
-    const verifyPayment = async (sessionId: string): Promise<{ isValid: boolean; error?: string }> => {
+    // Helper function to verify payment with server (returns formData when available for post-redirect restore)
+    const verifyPayment = async (sessionId: string): Promise<{ isValid: boolean; error?: string; formData?: Record<string, unknown> }> => {
         try {
             const response = await fetch(`/api/stripe/payment-status/${sessionId}`);
             if (!response.ok) {
@@ -991,10 +991,11 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 status: data.status, 
                 isPaid,
                 sessionTooOld: data.sessionTooOld,
-                alreadyUsed: data.alreadyUsed
+                alreadyUsed: data.alreadyUsed,
+                hasFormData: !!data.formData
             });
             
-            return { isValid: isPaid };
+            return { isValid: isPaid, formData: data.formData };
         } catch (error) {
             console.error('Error verifying payment:', error);
             return { isValid: false, error: 'Error verifying payment. Please try again.' };
@@ -1031,13 +1032,32 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 // Payment verified - proceed with normal flow
                 console.log('✅ Payment verified successfully!');
             
-                // Restore form data from sessionStorage (with safety check)
-                const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
-                console.log('📦 Checking for saved form data:', savedFormData ? 'FOUND' : 'NOT FOUND');
-                
+                // Restore form data: sessionStorage first, then localStorage by sessionId, then server (formData from payment-status)
+                let savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
+                if (!savedFormData && sessionId && typeof localStorage !== 'undefined') {
+                    savedFormData = localStorage.getItem(`meetings-form-${sessionId}`);
+                    if (savedFormData) {
+                        try {
+                            localStorage.removeItem(`meetings-form-${sessionId}`);
+                        } catch (_) { /* ignore */ }
+                        console.log('📦 Restored form data from localStorage (sessionStorage was empty)');
+                    }
+                }
+                let formData: Record<string, unknown> | null = null;
                 if (savedFormData) {
                     try {
-                        const formData = JSON.parse(savedFormData);
+                        formData = JSON.parse(savedFormData);
+                    } catch (_) {
+                        formData = null;
+                    }
+                } else if (result.formData && typeof result.formData === 'object') {
+                    formData = result.formData as Record<string, unknown>;
+                    console.log('📦 Restored form data from server (sessionStorage and localStorage were empty)');
+                }
+                console.log('📦 Checking for saved form data:', formData ? 'FOUND' : 'NOT FOUND');
+                
+                if (formData) {
+                    try {
                         console.log('📝 Form data to restore:', {
                             name: formData.fullName,
                             email: formData.email,
@@ -1292,7 +1312,8 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
             const paymentStatus = urlParams.get('payment');
             const formDataKey = 'meetings-form';
             const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
-            const isReturningFromPayment = (paymentStatus === 'success' || paymentStatus === 'cancelled') && savedFormData;
+            // Treat as returning from payment based on URL only (form may have been restored from localStorage or server)
+            const isReturningFromPayment = paymentStatus === 'success' || paymentStatus === 'cancelled';
             
             // Detect URL-based redirects (coming from about page with step=2 in URL OR slug-based route)
             const stepParam = searchParams.get('step');
@@ -1314,15 +1335,21 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
             if (isReturningFromPayment) {
                 console.log(`✋ Returning from payment for analyst ${selectedAnalyst} - loading Calendly data WITHOUT reset`);
                 
-                // Parse saved form data to get the selected date/meeting
+                // Get selected date/meeting from sessionStorage (if present) or from current state (restored from localStorage/server)
                 let savedDate = '';
-                let savedMeeting = null;
-                try {
-                    const formData = JSON.parse(savedFormData);
-                    savedDate = formData.selectedDate || '';
-                    savedMeeting = formData.selectedMeeting;
-                } catch (error) {
-                    console.error('Error parsing saved form data:', error);
+                let savedMeeting: number | null = null;
+                if (savedFormData) {
+                    try {
+                        const formData = JSON.parse(savedFormData);
+                        savedDate = formData.selectedDate || '';
+                        savedMeeting = formData.selectedMeeting ?? null;
+                    } catch (error) {
+                        console.error('Error parsing saved form data:', error);
+                    }
+                }
+                if (!savedDate || savedMeeting === null) {
+                    savedDate = selectedDate || '';
+                    savedMeeting = selectedMeeting;
                 }
                 
                 // Load Calendly data but don't reset the form
@@ -1913,7 +1940,15 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                             meetingTypeId: meetingTypeId,
                             priceAmount: priceAmount, // Send the actual price
                             customerEmail: email,
-                            customerName: fullName
+                            customerName: fullName,
+                            bookingFormData: {
+                                selectedAnalyst: selectedAnalyst ?? null,
+                                selectedMeeting: selectedMeeting ?? null,
+                                selectedDate: selectedDate || '',
+                                selectedTime: selectedTime || '',
+                                selectedTimezone: selectedTimezone || '',
+                                notes: notes || ''
+                            }
                         }),
                     });
                     
@@ -1921,6 +1956,14 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     
                     if (response.ok && data.success) {
                 console.log('Stripe session created successfully. Redirecting to:', data.url);
+                // Persist form data by session ID so it survives redirect (e.g. when Stripe opens in another tab/context)
+                if (typeof localStorage !== 'undefined' && data.sessionId) {
+                    try {
+                        localStorage.setItem(`meetings-form-${data.sessionId}`, JSON.stringify(formData));
+                    } catch (e) {
+                        console.warn('Could not save form data to localStorage:', e);
+                    }
+                }
                 // Small delay to ensure sessionStorage write completes
                 setTimeout(() => {
                     if (typeof window !== 'undefined') {

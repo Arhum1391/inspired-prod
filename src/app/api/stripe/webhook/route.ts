@@ -522,7 +522,7 @@ async function processWebhookAsync(event: any) {
             return;
           }
 
-          // Create booking record
+          // Create booking record (include form data for post-payment restore if client storage was lost)
           const booking = {
             stripeSessionId: session.id,
             meetingTypeId: metadata.meetingTypeId,
@@ -532,6 +532,12 @@ async function processWebhookAsync(event: any) {
             currency: session.currency,
             paymentStatus: 'paid',
             status: 'confirmed',
+            ...(metadata.bookingSelectedAnalyst !== undefined && { selectedAnalyst: metadata.bookingSelectedAnalyst === '' ? null : (parseInt(metadata.bookingSelectedAnalyst, 10) || null) }),
+            ...(metadata.bookingSelectedMeeting !== undefined && { selectedMeeting: metadata.bookingSelectedMeeting === '' ? null : (parseInt(metadata.bookingSelectedMeeting, 10) || null) }),
+            ...(metadata.bookingSelectedDate !== undefined && { selectedDate: metadata.bookingSelectedDate || '' }),
+            ...(metadata.bookingSelectedTime !== undefined && { selectedTime: metadata.bookingSelectedTime || '' }),
+            ...(metadata.bookingSelectedTimezone !== undefined && { selectedTimezone: metadata.bookingSelectedTimezone || '' }),
+            ...(metadata.bookingNotes !== undefined && { notes: metadata.bookingNotes || '' }),
             createdAt: new Date(),
             updatedAt: new Date()
           };

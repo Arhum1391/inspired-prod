@@ -175,6 +175,19 @@ export async function GET(
         meetingName: record.meetingName,
         meetingDescription: record.meetingDescription
       };
+      // Return saved form data so client can restore after redirect when sessionStorage/localStorage was lost
+      if (record.customerName != null || record.customerEmail != null || record.selectedAnalyst != null || record.selectedMeeting != null || record.selectedDate != null || record.selectedTime != null || record.selectedTimezone != null || record.notes != null) {
+        response.formData = {
+          fullName: record.customerName ?? '',
+          email: record.customerEmail ?? '',
+          notes: record.notes ?? '',
+          selectedAnalyst: record.selectedAnalyst ?? null,
+          selectedMeeting: record.selectedMeeting ?? null,
+          selectedDate: record.selectedDate ?? '',
+          selectedTime: record.selectedTime ?? '',
+          selectedTimezone: record.selectedTimezone ?? ''
+        };
+      }
     } else {
       response.bootcampDetails = {
         bootcampId: record.bootcampId,

@@ -72,7 +72,16 @@ const bookingSchema = Joi.object({
   meetingTypeId: Joi.string().required(),
   priceAmount: Joi.number().positive().optional(), // Price from frontend (in USD)
   customerEmail: Joi.string().email().required(),
-  customerName: Joi.string().optional()
+  customerName: Joi.string().optional(),
+  // Optional form data so we can restore after redirect if client storage is lost
+  bookingFormData: Joi.object({
+    selectedAnalyst: Joi.number().allow(null).optional(),
+    selectedMeeting: Joi.number().allow(null).optional(),
+    selectedDate: Joi.string().allow('').optional(),
+    selectedTime: Joi.string().allow('').optional(),
+    selectedTimezone: Joi.string().allow('').optional(),
+    notes: Joi.string().allow('').optional()
+  }).optional()
 });
 
 const bootcampSchema = Joi.object({
@@ -272,7 +281,15 @@ export async function POST(request: NextRequest) {
           customerName: body.customerName || '',
           ...(body.userId ? { userId: body.userId } : {}),
           ...(body.type === 'booking' ? {
-            meetingTypeId: body.meetingTypeId
+            meetingTypeId: body.meetingTypeId,
+            ...(body.bookingFormData && {
+              bookingSelectedAnalyst: String(body.bookingFormData.selectedAnalyst ?? ''),
+              bookingSelectedMeeting: String(body.bookingFormData.selectedMeeting ?? ''),
+              bookingSelectedDate: String(body.bookingFormData.selectedDate ?? '').slice(0, 50),
+              bookingSelectedTime: String(body.bookingFormData.selectedTime ?? '').slice(0, 50),
+              bookingSelectedTimezone: String(body.bookingFormData.selectedTimezone ?? '').slice(0, 100),
+              bookingNotes: String(body.bookingFormData.notes ?? '').slice(0, 500)
+            })
           } : {
             bootcampId: body.bootcampId,
             notes: body.notes || ''

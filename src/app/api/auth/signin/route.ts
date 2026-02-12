@@ -32,6 +32,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if account is blocked (treat missing status as active for legacy users)
+    if (user.status === 'blocked') {
+      return NextResponse.json(
+        { error: 'Your account has been blocked.', accountBlocked: true },
+        { status: 403 }
+      );
+    }
+
     // Check if email is verified
     if (!user.emailVerified) {
       return NextResponse.json(

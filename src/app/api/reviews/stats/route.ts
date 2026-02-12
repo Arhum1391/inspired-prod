@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getReviewStatsForAnalyst } from '@/lib/reviews';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 60;
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = request.nextUrl;
     const analystParam = searchParams.get('analystId');
 
     if (!analystParam) {

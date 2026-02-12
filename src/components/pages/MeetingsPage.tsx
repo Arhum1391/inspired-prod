@@ -271,6 +271,10 @@ const ANALYST_CUSTOM_PRICING: Record<string, DurationPricing> = {
     30: 60,
     60: 100,
   },
+  'hassan khan': {
+    30: 100,
+    60: 150,
+  },
 };
 
 const DEFAULT_PRICING: DurationPricing = {

@@ -256,7 +256,7 @@ export default function Layout({ children }: LayoutProps) {
       )
     },
     { 
-      name: 'Subscribers', 
+      name: 'User Management', 
       href: '/admin/subscribers', 
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

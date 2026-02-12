@@ -19,6 +19,7 @@ function SignInInner() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [blockedMessage, setBlockedMessage] = useState<string | null>(null);
   const router = useRouter();
   const { login, isAuthenticated, isLoading: authLoading } = useAuth();
 
@@ -26,8 +27,8 @@ function SignInInner() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-
     setInfoMessage(null);
+    setBlockedMessage(null);
 
     const formData = new FormData(e.target as HTMLFormElement);
     const fullname = isSignUp ? formData.get('fullname') : null;
@@ -100,8 +101,11 @@ function SignInInner() {
         const data = await response.json();
 
         if (!response.ok) {
-          // Check if email verification is required
-          if (data.requiresVerification) {
+          if (data.accountBlocked) {
+            setBlockedMessage(data.error || 'Your account has been blocked.');
+            setError(null);
+            setInfoMessage(null);
+          } else if (data.requiresVerification) {
             setInfoMessage(data.error || 'Please verify your email address before signing in. Check your inbox for the verification link.');
           } else {
             setError(data.error || 'Invalid credentials');
@@ -136,6 +140,7 @@ function SignInInner() {
     setIsSignUp(value);
     setError(null);
     setInfoMessage(null);
+    setBlockedMessage(null);
     setFormKey(prev => prev + 1);
   };
 
@@ -247,6 +252,13 @@ function SignInInner() {
             {error && (
               <div className="w-full p-3 bg-red-500/20 border border-red-500 rounded-lg">
                 <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+
+            {/* Blocked Account Message - same styling as other popups on the page */}
+            {blockedMessage && (
+              <div className="w-full p-3 bg-red-500/20 border border-red-500 rounded-lg">
+                <p className="text-red-400 text-sm">{blockedMessage}</p>
               </div>
             )}
 

@@ -9,8 +9,8 @@ async function handler(req: NextRequest, userId: string) {
     // Get team members count
     const teamMembersCount = await db.collection('team').countDocuments();
 
-    // Get subscribers count from the subscribers collection
-    const subscribersCount = await db.collection('subscribers').countDocuments();
+    // Get total users count from public_users collection
+    const totalUsersCount = await db.collection('public_users').countDocuments();
 
     // Get bookings for today
     const today = new Date();
@@ -32,7 +32,7 @@ async function handler(req: NextRequest, userId: string) {
 
     const stats = {
       teamMembers: teamMembersCount,
-      subscribers: subscribersCount,
+      subscribers: totalUsersCount,
       bookingsToday: bookingsTodayCount,
       activeBootcamps: activeBootcampsCount,
     };

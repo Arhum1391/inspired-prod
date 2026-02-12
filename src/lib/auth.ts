@@ -46,6 +46,7 @@ export interface PublicUser {
   emailVerificationTokenExpiry?: Date | null;
   passwordResetToken?: string | null;
   passwordResetTokenExpiry?: Date | null;
+  status?: 'active' | 'blocked';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -120,6 +121,7 @@ export async function createPublicUser(email: string, password: string, name?: s
     emailVerificationTokenExpiry: emailVerificationTokenExpiry,
     passwordResetToken: null,
     passwordResetTokenExpiry: null,
+    status: 'active',
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -145,6 +147,7 @@ export async function getPublicUserByEmail(email: string): Promise<PublicUser | 
     emailVerificationTokenExpiry: user.emailVerificationTokenExpiry ?? null,
     passwordResetToken: user.passwordResetToken ?? null,
     passwordResetTokenExpiry: user.passwordResetTokenExpiry ?? null,
+    status: (user.status as 'active' | 'blocked') || 'active',
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   } : null;
@@ -167,6 +170,7 @@ export async function getPublicUserById(id: string): Promise<PublicUser | null> 
     emailVerificationTokenExpiry: user.emailVerificationTokenExpiry ?? null,
     passwordResetToken: user.passwordResetToken ?? null,
     passwordResetTokenExpiry: user.passwordResetTokenExpiry ?? null,
+    status: (user.status as 'active' | 'blocked') || 'active',
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   } : null;
@@ -237,6 +241,7 @@ export async function updatePublicUser(
     emailVerificationTokenExpiry?: Date | null;
     passwordResetToken?: string | null;
     passwordResetTokenExpiry?: Date | null;
+    status?: 'active' | 'blocked';
     password?: string;
   }
 ): Promise<PublicUser | null> {
@@ -274,6 +279,7 @@ export async function updatePublicUser(
     emailVerificationTokenExpiry: updatedUser.emailVerificationTokenExpiry ?? null,
     passwordResetToken: updatedUser.passwordResetToken ?? null,
     passwordResetTokenExpiry: updatedUser.passwordResetTokenExpiry ?? null,
+    status: (updatedUser.status as 'active' | 'blocked') || 'active',
     createdAt: updatedUser.createdAt,
     updatedAt: updatedUser.updatedAt
 
@@ -310,6 +316,7 @@ export async function getPublicUserByVerificationToken(token: string): Promise<P
     emailVerificationTokenExpiry: user.emailVerificationTokenExpiry ?? null,
     passwordResetToken: user.passwordResetToken ?? null,
     passwordResetTokenExpiry: user.passwordResetTokenExpiry ?? null,
+    status: (user.status as 'active' | 'blocked') || 'active',
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   };
@@ -339,6 +346,7 @@ export async function getPublicUserByPasswordResetToken(token: string): Promise<
     emailVerificationTokenExpiry: user.emailVerificationTokenExpiry ?? null,
     passwordResetToken: user.passwordResetToken ?? null,
     passwordResetTokenExpiry: user.passwordResetTokenExpiry ?? null,
+    status: (user.status as 'active' | 'blocked') || 'active',
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   };

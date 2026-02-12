@@ -2,37 +2,37 @@
 
 import { useState, useEffect } from 'react';
 
-interface Subscriber {
+interface PublicUserRow {
   _id: string;
-  id: string;
   email: string;
-  status: string;
-  subscriptions: string[];
+  name: string | null;
+  status: 'active' | 'blocked';
   createdAt: string;
   updatedAt: string;
 }
 
 export default function SubscribersAdmin() {
-  const [subscribers, setSubscribers] = useState<Subscriber[]>([]);
+  const [users, setUsers] = useState<PublicUserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState<'paginated' | 'list'>('paginated');
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const itemsPerPage = 10;
 
   useEffect(() => {
-    fetchSubscribers();
+    fetchUsers();
   }, []);
 
-  const fetchSubscribers = async () => {
+  const fetchUsers = async () => {
     try {
-      const response = await fetch('/api/newsletter');
+      const response = await fetch('/admin/api/users');
       const data = await response.json();
-      
+
       if (response.ok) {
-        setSubscribers(data.subscribers);
+        setUsers(data.users ?? []);
       } else {
-        setError(data.error || 'Failed to fetch subscribers');
+        setError(data.error || 'Failed to fetch users');
       }
     } catch {
       setError('Network error');
@@ -41,33 +41,36 @@ export default function SubscribersAdmin() {
     }
   };
 
-  const updateStatus = async (id: string, newStatus: string) => {
+  const toggleBlock = async (id: string, currentStatus: 'active' | 'blocked') => {
+    const newStatus = currentStatus === 'blocked' ? 'active' : 'blocked';
+    setUpdatingId(id);
     try {
-      const response = await fetch('/api/newsletter', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ id, status: newStatus }),
+      const response = await fetch(`/admin/api/users/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
       });
 
       if (response.ok) {
-        fetchSubscribers(); // Refresh the list
+        fetchUsers();
       } else {
-        alert('Failed to update status');
+        const data = await response.json().catch(() => ({}));
+        alert(data.error || 'Failed to update user');
       }
     } catch {
       alert('Network error');
+    } finally {
+      setUpdatingId(null);
     }
   };
 
   // Pagination logic
-  const totalPages = Math.ceil(subscribers.length / itemsPerPage);
+  const totalPages = Math.ceil(users.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentSubscribers = viewMode === 'paginated' 
-    ? subscribers.slice(startIndex, endIndex) 
-    : subscribers;
+  const currentUsers = viewMode === 'paginated'
+    ? users.slice(startIndex, endIndex)
+    : users;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -83,7 +86,7 @@ export default function SubscribersAdmin() {
       <div className="space-y-6">
         <div className="text-center py-12">
           <div className="w-8 h-8 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading subscribers...</p>
+          <p className="text-slate-400">Loading users...</p>
         </div>
       </div>
     );
@@ -95,10 +98,10 @@ export default function SubscribersAdmin() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="text-center sm:text-left mb-4 sm:mb-0">
           <h1 className="text-3xl font-bold text-white mb-2">
-            Subscribers Management
+            User Management
           </h1>
           <p className="text-slate-400">
-            Manage your newsletter subscribers and their status
+            Manage users who have signed up to the website
           </p>
         </div>
         
@@ -137,12 +140,12 @@ export default function SubscribersAdmin() {
         </div>
       )}
 
-      {/* Subscribers Table */}
+      {/* Users Table */}
       <div className="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
         <div className="px-6 py-4 border-b border-slate-700">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-white">
-              Subscribers ({subscribers.length})
+              Users ({users.length})
               {viewMode === 'paginated' && (
                 <span className="text-sm text-slate-400 ml-2">
                   (Page {currentPage} of {totalPages})
@@ -151,7 +154,7 @@ export default function SubscribersAdmin() {
             </h2>
             {viewMode === 'paginated' && (
               <span className="text-sm text-slate-400">
-                Showing {startIndex + 1}-{Math.min(endIndex, subscribers.length)} of {subscribers.length}
+                Showing {startIndex + 1}-{Math.min(endIndex, users.length)} of {users.length}
               </span>
             )}
           </div>
@@ -165,13 +168,7 @@ export default function SubscribersAdmin() {
                   Email
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
-                  Subscriptions
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
-                  Subscribed
+                  Date joined
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">
                   Actions
@@ -179,45 +176,36 @@ export default function SubscribersAdmin() {
               </tr>
             </thead>
             <tbody className="bg-slate-800 divide-y divide-slate-700">
-              {currentSubscribers.map((subscriber) => (
-                <tr key={subscriber._id} className="hover:bg-slate-700/50 transition-colors">
+              {currentUsers.map((user) => (
+                <tr key={user._id} className="hover:bg-slate-700/50 transition-colors">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-white">
-                    {subscriber.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex flex-wrap gap-1">
-                      {(subscriber.subscriptions || ['newsletter']).map((subscription, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex px-2 py-1 text-xs font-medium rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                        >
-                          {subscription}
-                        </span>
-                      ))}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      subscriber.status === 'sent' 
-                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                        : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                    }`}>
-                      {subscriber.status}
-                    </span>
+                    {user.email}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
-                    {new Date(subscriber.createdAt).toLocaleDateString()}
+                    {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <button
-                      onClick={() => updateStatus(subscriber.id, subscriber.status === 'sent' ? 'unsent' : 'sent')}
-                      className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
-                        subscriber.status === 'sent'
-                          ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30'
-                          : 'bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30'
+                      onClick={() => toggleBlock(user._id, user.status)}
+                      disabled={updatingId === user._id}
+                      title={user.status === 'blocked' ? 'Unblock user' : 'Block user'}
+                      className={`p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
+                        user.status === 'blocked'
+                          ? 'text-green-400 hover:bg-green-500/20 border border-green-500/30'
+                          : 'text-red-400 hover:bg-red-500/20 border border-red-500/30'
                       }`}
                     >
-                      Mark as {subscriber.status === 'sent' ? 'Unsent' : 'Sent'}
+                      {updatingId === user._id ? (
+                        <span className="inline-block w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      ) : user.status === 'blocked' ? (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                      )}
                     </button>
                   </td>
                 </tr>
@@ -226,20 +214,20 @@ export default function SubscribersAdmin() {
           </table>
         </div>
 
-        {subscribers.length === 0 && (
+        {users.length === 0 && (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <p className="text-slate-400">No subscribers yet.</p>
-            <p className="text-slate-500 text-sm mt-1">Subscribers will appear here once they sign up for your newsletter.</p>
+            <p className="text-slate-400">No users yet.</p>
+            <p className="text-slate-500 text-sm mt-1">Users will appear here once they sign up to the website.</p>
           </div>
         )}
 
         {/* Pagination Controls */}
-        {viewMode === 'paginated' && subscribers.length > itemsPerPage && (
+        {viewMode === 'paginated' && users.length > itemsPerPage && (
           <div className="px-6 py-4 border-t border-slate-700">
             <div className="flex items-center justify-between">
               <div className="text-sm text-slate-400">

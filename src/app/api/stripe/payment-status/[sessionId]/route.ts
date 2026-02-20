@@ -129,6 +129,14 @@ export async function GET(
       }
     }
 
+    // TypeScript: at this point we have either a DB record or one built from Stripe
+    if (!record) {
+      return NextResponse.json(
+        { error: 'Payment session not found' },
+        { status: 404 }
+      );
+    }
+
     // SECURITY: Check if payment has expired
     const now = new Date();
     const expired = record.expiresAt && now > record.expiresAt;
@@ -247,8 +255,80 @@ export async function GET(
         meetingName: record.meetingName,
         meetingDescription: record.meetingDescription
       };
-      // Return saved form data so client can restore after redirect when sessionStorage/localStorage was lost
-      if (record.customerName != null || record.customerEmail != null || record.selectedAnalyst != null || record.selectedMeeting != null || record.selectedDate != null || record.selectedTime != null || record.selectedTimezone != null || record.notes != null) {
+      // FormData source order: (1) booking_drafts (2) DB record (3) Stripe metadata (4) minimal from record (Fix 1)
+      // SECURITY: We only return formData when payment is already verified (410/409 checks passed) and recordType is booking.
+
+      // (1) Try booking_drafts first — full data stored at checkout creation; most reliable.
+      if (!response.formData) {
+        try {
+          const draftClient = new MongoClient(MONGODB_URI);
+          await draftClient.connect();
+          const draftDb = draftClient.db(DB_NAME);
+          const draft = await draftDb.collection('booking_drafts').findOne({ stripeSessionId: sessionId });
+          if (draft) {
+            response.formData = {
+              fullName: draft.fullName ?? '',
+              email: draft.email ?? '',
+              notes: draft.notes ?? '',
+              selectedAnalyst: draft.selectedAnalyst ?? null,
+              selectedMeeting: draft.selectedMeeting ?? null,
+              selectedDate: draft.selectedDate ?? '',
+              selectedTime: draft.selectedTime ?? '',
+              selectedTimezone: draft.selectedTimezone ?? ''
+            };
+            await draftDb.collection('booking_drafts').deleteOne({ stripeSessionId: sessionId });
+            console.log(`✅ Payment-status: formData from booking_drafts for session ${sessionId} (draft deleted)`);
+          }
+          await draftClient.close();
+        } catch (draftErr: any) {
+          console.warn('Payment-status: booking_drafts lookup failed:', draftErr?.message || draftErr);
+        }
+      }
+
+      // (2) Use DB booking record if we have form fields and no draft was used.
+      if (!response.formData) {
+        const hasFormDataFromRecord = record.customerName != null || record.customerEmail != null || record.selectedAnalyst != null || record.selectedMeeting != null || record.selectedDate != null || record.selectedTime != null || record.selectedTimezone != null || record.notes != null;
+        if (hasFormDataFromRecord) {
+          response.formData = {
+            fullName: record.customerName ?? '',
+            email: record.customerEmail ?? '',
+            notes: record.notes ?? '',
+            selectedAnalyst: record.selectedAnalyst ?? null,
+            selectedMeeting: record.selectedMeeting ?? null,
+            selectedDate: record.selectedDate ?? '',
+            selectedTime: record.selectedTime ?? '',
+            selectedTimezone: record.selectedTimezone ?? ''
+          };
+        }
+      }
+
+      // (3) Stripe metadata fallback (Fix 2: relax type — use mode + booking-like metadata if type missing).
+      if (!response.formData) {
+        try {
+          const stripeSession = await stripe.checkout.sessions.retrieve(sessionId, { expand: [] });
+          const metadata = stripeSession.metadata || {};
+          const isBookingSession = metadata.type === 'booking' ||
+            (stripeSession.mode === 'payment' && (metadata.meetingTypeId != null || metadata.bookingSelectedAnalyst !== undefined));
+          if (stripeSession.payment_status === 'paid' && isBookingSession) {
+            response.formData = {
+              fullName: (metadata.customerName as string) ?? '',
+              email: (metadata.customer_email || metadata.customerEmail) as string ?? '',
+              notes: (metadata.bookingNotes as string) ?? '',
+              selectedAnalyst: metadata.bookingSelectedAnalyst === '' || metadata.bookingSelectedAnalyst === undefined ? null : (parseInt(String(metadata.bookingSelectedAnalyst), 10) || null),
+              selectedMeeting: metadata.bookingSelectedMeeting === '' || metadata.bookingSelectedMeeting === undefined ? null : (parseInt(String(metadata.bookingSelectedMeeting), 10) || null),
+              selectedDate: (metadata.bookingSelectedDate as string) ?? '',
+              selectedTime: (metadata.bookingSelectedTime as string) ?? '',
+              selectedTimezone: (metadata.bookingSelectedTimezone as string) ?? ''
+            };
+            console.log(`✅ Payment-status: formData from Stripe metadata for session ${sessionId}`);
+          }
+        } catch (stripeErr: any) {
+          console.warn('Payment-status: could not fill formData from Stripe:', stripeErr?.message || stripeErr);
+        }
+      }
+
+      // (4) Fix 1: Last resort — partial formData from record so we never return 200 with no formData when we have at least name/email.
+      if (!response.formData && (record.customerName != null || record.customerEmail != null)) {
         response.formData = {
           fullName: record.customerName ?? '',
           email: record.customerEmail ?? '',
@@ -259,6 +339,7 @@ export async function GET(
           selectedTime: record.selectedTime ?? '',
           selectedTimezone: record.selectedTimezone ?? ''
         };
+        console.log(`✅ Payment-status: minimal formData from record for session ${sessionId} (Stripe/draft unavailable)`);
       }
     } else {
       response.bootcampDetails = {

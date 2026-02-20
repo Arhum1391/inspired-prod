@@ -972,25 +972,28 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     }, []);
 
     // Helper function to verify payment with server (returns formData when available for post-redirect restore)
-    const verifyPayment = async (sessionId: string): Promise<{ isValid: boolean; error?: string; formData?: Record<string, unknown> }> => {
+    // Returns retryable: true for 404, 5xx, or network errors so caller can retry with backoff
+    const verifyPayment = async (sessionId: string): Promise<{ isValid: boolean; error?: string; formData?: Record<string, unknown>; retryable?: boolean }> => {
         try {
             const response = await fetch(`/api/stripe/payment-status/${sessionId}`);
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
                 console.error('Payment verification failed:', response.status, errorData);
-                
-                // Handle specific error cases
+                const retryable = response.status === 404 || response.status >= 500;
+                // Handle specific error cases (do not retry)
                 if (response.status === 410) {
-                    return { isValid: false, error: 'This payment session has expired. Please create a new booking.' };
+                    return { isValid: false, error: 'This payment session has expired. Please create a new booking.', retryable: false };
                 }
                 if (response.status === 409) {
-                    return { isValid: false, error: 'This payment session has already been used.' };
+                    return { isValid: false, error: 'This payment session has already been used.', retryable: false };
                 }
                 if (response.status === 404) {
-                    return { isValid: false, error: 'Payment session not found. Please complete payment first.' };
+                    return { isValid: false, error: 'Payment session not found. Please complete payment first.', retryable: true };
                 }
-                
-                return { isValid: false, error: 'Payment verification failed. Please try again.' };
+                if (response.status >= 500) {
+                    return { isValid: false, error: 'Payment verification failed. Please try again.', retryable: true };
+                }
+                return { isValid: false, error: 'Payment verification failed. Please try again.', retryable: false };
             }
             const data = await response.json();
             
@@ -1018,23 +1021,25 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
             return { isValid: isPaid, formData: data.formData };
         } catch (error) {
             console.error('Error verifying payment:', error);
-            return { isValid: false, error: 'Error verifying payment. Please try again.' };
+            return { isValid: false, error: 'Error verifying payment. Please try again.', retryable: true };
         }
     };
 
-    // Verify payment with retries on 404 (webhook may not have written the booking yet)
-    const verifyPaymentWithRetry = async (sessionId: string, maxRetries = 5, delayMs = 2000): Promise<{ isValid: boolean; error?: string; formData?: Record<string, unknown> }> => {
+    // Verify payment with retries on 404 (webhook delay), 5xx (server/network), and network errors. Exponential backoff.
+    const verifyPaymentWithRetry = async (sessionId: string, maxRetries = 5, baseDelayMs = 2000): Promise<{ isValid: boolean; error?: string; formData?: Record<string, unknown> }> => {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             const result = await verifyPayment(sessionId);
             if (result.isValid) return result;
-            if (result.error?.includes('Payment session not found') && attempt < maxRetries) {
-                console.log(`⏳ Payment session not in DB yet (attempt ${attempt}/${maxRetries}), retrying in ${delayMs}ms...`);
+            const shouldRetry = result.retryable === true && attempt < maxRetries;
+            if (shouldRetry) {
+                const delayMs = Math.min(baseDelayMs * Math.pow(2, attempt - 1), 15000);
+                console.log(`⏳ Payment verification failed (attempt ${attempt}/${maxRetries}), retrying in ${delayMs}ms...`, result.error);
                 await new Promise(resolve => setTimeout(resolve, delayMs));
                 continue;
             }
             return result;
         }
-        return { isValid: false, error: 'Payment session not found. Please complete payment first.' };
+        return { isValid: false, error: 'Payment verification failed after several attempts. Please refresh the page or try again later.' };
     };
 
     // Check payment status and restore form data on mount (run only once)
@@ -1069,27 +1074,29 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 // Payment verified - proceed with normal flow
                 console.log('✅ Payment verified successfully!');
             
-                // Restore form data: sessionStorage first, then localStorage by sessionId, then server (formData from payment-status)
-                let savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
-                if (!savedFormData && sessionId && typeof localStorage !== 'undefined') {
-                    savedFormData = localStorage.getItem(`meetings-form-${sessionId}`);
-                    if (savedFormData) {
-                        try {
-                            localStorage.removeItem(`meetings-form-${sessionId}`);
-                        } catch (_) { /* ignore */ }
-                        console.log('📦 Restored form data from localStorage (sessionStorage was empty)');
-                    }
-                }
+                // Restore form data: prefer server (result.formData) when present so we use data for this session_id and avoid stale storage.
+                // Order: server first (booking_drafts / API), then sessionStorage, then localStorage.
                 let formData: Record<string, unknown> | null = null;
-                if (savedFormData) {
-                    try {
-                        formData = JSON.parse(savedFormData);
-                    } catch (_) {
-                        formData = null;
-                    }
-                } else if (result.formData && typeof result.formData === 'object') {
+                if (result.formData && typeof result.formData === 'object') {
                     formData = result.formData as Record<string, unknown>;
-                    console.log('📦 Restored form data from server (sessionStorage and localStorage were empty)');
+                    console.log('📦 Restored form data from server (preferred for this session)');
+                }
+                if (!formData) {
+                    const savedFormData = typeof sessionStorage !== 'undefined' ? sessionStorage.getItem(formDataKey) : null;
+                    const fromStorage = savedFormData || (sessionId && typeof localStorage !== 'undefined' ? localStorage.getItem(`meetings-form-${sessionId}`) : null);
+                    if (fromStorage) {
+                        try {
+                            formData = JSON.parse(fromStorage) as Record<string, unknown>;
+                            if (sessionId && fromStorage === localStorage.getItem(`meetings-form-${sessionId}`)) {
+                                try { localStorage.removeItem(`meetings-form-${sessionId}`); } catch (_) { /* ignore */ }
+                                console.log('📦 Restored form data from localStorage');
+                            } else {
+                                console.log('📦 Restored form data from sessionStorage');
+                            }
+                        } catch (_) {
+                            formData = null;
+                        }
+                    }
                 }
                 console.log('📦 Checking for saved form data:', formData ? 'FOUND' : 'NOT FOUND');
                 

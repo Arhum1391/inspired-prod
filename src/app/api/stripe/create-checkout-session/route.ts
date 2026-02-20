@@ -305,6 +305,32 @@ export async function POST(request: NextRequest) {
       });
       
       console.log('Stripe session created successfully:', session.id);
+
+      // Store form data in booking_drafts for reliable restore after redirect (avoids reliance on sessionStorage/localStorage).
+      // Cleanup: draft is deleted when used in payment-status. For unused drafts (abandoned checkout), create a TTL index on expiresAt: db.collection('booking_drafts').createIndex({ expiresAt: 1 }, { expireAfterSeconds: 0 })
+      if (body.type === 'booking') {
+        try {
+          const db = await getDatabase();
+          const draft = {
+            stripeSessionId: session.id,
+            fullName: body.customerName || '',
+            email: body.customerEmail,
+            notes: (body.bookingFormData && body.bookingFormData.notes != null) ? String(body.bookingFormData.notes).slice(0, 500) : '',
+            selectedAnalyst: body.bookingFormData?.selectedAnalyst ?? null,
+            selectedMeeting: body.bookingFormData?.selectedMeeting ?? null,
+            selectedDate: (body.bookingFormData?.selectedDate ?? '').slice(0, 50),
+            selectedTime: (body.bookingFormData?.selectedTime ?? '').slice(0, 50),
+            selectedTimezone: (body.bookingFormData?.selectedTimezone ?? '').slice(0, 100),
+            createdAt: new Date(),
+            expiresAt: new Date((session.expires_at || 0) * 1000),
+          };
+          await db.collection('booking_drafts').insertOne(draft);
+          console.log('✅ Booking draft saved for session', session.id);
+        } catch (draftErr: any) {
+          console.warn('Booking draft save failed (non-blocking):', draftErr?.message || draftErr);
+          // Do not fail checkout; restore can fall back to Stripe metadata
+        }
+      }
     } catch (stripeError: any) {
       console.error('Stripe API error:', {
         message: stripeError.message,

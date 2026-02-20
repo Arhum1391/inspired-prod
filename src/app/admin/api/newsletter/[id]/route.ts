@@ -3,6 +3,8 @@ import { withAuth } from '@/lib/middleware';
 import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 async function updateNewsletter(req: NextRequest, userId: string, { params }: { params: { id: string } }) {
   try {
     const { id } = params;

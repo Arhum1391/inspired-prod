@@ -2,7 +2,7 @@ import Stripe from 'stripe';
 
 // Initialize Stripe with secret key
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia', // Use latest stable API version
+  apiVersion: '2025-10-29.clover',
   typescript: true,
 });
 
@@ -11,7 +11,7 @@ export const STRIPE_CONFIG = {
   currency: 'usd',
   mode: 'payment' as const,
   successUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/booking-success?session_id={CHECKOUT_SESSION_ID}`,
-  cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/book?payment=cancelled`,
+  cancelUrl: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/?payment=cancelled`,
 };
 
 // Dynamic success URLs based on payment type
@@ -28,7 +28,7 @@ export function getCancelUrl(type: 'booking' | 'bootcamp'): string {
   if (type === 'bootcamp') {
     return `${baseUrl}/bootcamp/crypto-trading/register?payment=cancelled`;
   }
-  return `${baseUrl}/book?payment=cancelled`;
+  return `${baseUrl}/?payment=cancelled`;
 }
 
 // Helper function to create line items for different product types

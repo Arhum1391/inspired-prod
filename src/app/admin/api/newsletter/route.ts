@@ -3,6 +3,8 @@ import { withAuth } from '@/lib/middleware';
 import { getDatabase } from '@/lib/mongodb';
 import { Newsletter } from '@/types/admin';
 
+export const dynamic = 'force-dynamic';
+
 async function getNewsletters(req: NextRequest, userId: string) {
   try {
     const db = await getDatabase();

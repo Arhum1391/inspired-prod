@@ -1,35 +1,38 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
 import HeroSection from '@/components/sections/HeroSection';
-import TailoredGuidanceSection from '@/components/sections/TailoredGuidanceSection';
-import LatestVideos from '@/components/sections/LatestVideos';
 import FeaturesSection from '@/components/sections/FeaturesSection';
 import SocialStats from '@/components/sections/SocialStats';
-import BrandStories from '@/components/sections/BrandStories';
-import CollaborationForm from '@/components/sections/CollaborationForm';
 import Footer from '@/components/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 
+// Lazy-load below-fold sections to reduce initial JS and improve TBT
+const TailoredGuidanceSection = dynamic(() => import('@/components/sections/TailoredGuidanceSection'), { ssr: true });
+const LatestVideos = dynamic(() => import('@/components/sections/LatestVideos'), { ssr: true });
+const BrandStories = dynamic(() => import('@/components/sections/BrandStories'), { ssr: true });
+const CollaborationForm = dynamic(() => import('@/components/sections/CollaborationForm'), { ssr: true });
+
 export default function Home() {
-  // Pre-fetch team data when landing page loads
+  // Pre-fetch team data when idle (defer to avoid blocking main thread)
   useEffect(() => {
-    const fetchTeamData = async () => {
-      try {
-        const response = await fetch('/api/team');
-        if (response.ok) {
-          const data = await response.json();
-          // Store in sessionStorage for use in meetings page
-          sessionStorage.setItem('teamData', JSON.stringify(data.team));
-        }
-      } catch (error) {
-        console.error('Error pre-fetching team data:', error);
-      }
+    const fetchTeamData = () => {
+      fetch('/api/team')
+        .then((res) => res.ok ? res.json() : null)
+        .then((data) => {
+          if (data?.team) sessionStorage.setItem('teamData', JSON.stringify(data.team));
+        })
+        .catch(() => {});
     };
 
-    fetchTeamData();
+    if ('requestIdleCallback' in window) {
+      (window as Window & { requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => void }).requestIdleCallback(fetchTeamData, { timeout: 3000 });
+    } else {
+      setTimeout(fetchTeamData, 2000);
+    }
   }, []);
 
   // Handle hash-based scrolling when navigating from other pages
@@ -64,12 +67,13 @@ export default function Home() {
         <div className="animate-zoom-wave w-full h-full">
           <Image
             src="/Vector 1.png"
-            alt="Abstract gradient background"
-            quality={100}
+            alt=""
+            role="presentation"
+            quality={50}
             fill
             sizes="100vw"
             className="object-cover"
-            priority
+            loading="lazy"
           />
         </div>
       </div>

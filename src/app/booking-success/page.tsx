@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
+import PageLoader from '@/components/PageLoader';
 
 // Analyst data - should match the data from MeetingsPage
 const analysts = [
@@ -360,14 +361,7 @@ const BookingSuccessContent: React.FC = () => {
 
 const BookingSuccessPage: React.FC = () => {
     return (
-        <Suspense fallback={
-            <div className="bg-[#0D0D0D] min-h-screen text-white font-sans flex items-center justify-center">
-                <div className="text-center">
-                    <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <p>Loading...</p>
-                </div>
-            </div>
-        }>
+        <Suspense fallback={<PageLoader message="Loading..." />}>
             <BookingSuccessContent />
         </Suspense>
     );

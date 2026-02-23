@@ -8,11 +8,14 @@ interface LoadingScreenProps {
 
 export default function LoadingScreen({ message = 'Loading...' }: LoadingScreenProps) {
   return (
-    <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden flex items-center justify-center">
+    <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden flex flex-col">
       <Navbar variant="hero" />
-      <div className="flex flex-col items-center gap-4">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-        <p className="text-white" style={{ fontFamily: 'Gilroy-Regular' }}>
+      <div className="flex-1 flex flex-col items-center justify-center gap-6">
+        <div
+          className="h-12 w-12 rounded-full border-2 border-white/10 border-t-indigo-500 animate-spin"
+          aria-hidden
+        />
+        <p className="text-white/80 text-sm font-medium tracking-wide">
           {message}
         </p>
       </div>

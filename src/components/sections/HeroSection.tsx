@@ -1,8 +1,22 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
+import OptimizedHeroImage from '@/components/OptimizedHeroImage';
 
 const HeroSection = () => {
+  // Only 1 image should have priority (LCP). Use viewport to avoid loading 6 priority images.
+  const [isDesktop, setIsDesktop] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    setIsDesktop(mq.matches);
+    const fn = () => setIsDesktop(mq.matches);
+    mq.addEventListener('change', fn);
+    return () => mq.removeEventListener('change', fn);
+  }, []);
+
+  const lcpPriorityMobile = !isDesktop;
+  const lcpPriorityDesktop = isDesktop;
   return (
     // Hero section container with responsive height
     <section className="relative min-h-[70vh] sm:min-h-[75vh] lg:min-h-[80vh]">
@@ -63,236 +77,38 @@ const HeroSection = () => {
             <div className="lg:hidden relative w-full overflow-hidden">
               <div className="fade-mask">
                 <div className="flex flex-col gap-2">
-                  {/* Row 1 */}
+                  {/* Row 1 - Only first image gets priority on mobile (LCP) - unoptimized for faster TTFB */}
                   <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
-                    {/* First set of images */}
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/6.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/5.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    {/* Duplicate set for seamless loop */}
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/6.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/5.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
+                    <OptimizedHeroImage src="/team-mob/6.jpg" variant="mobile" priority={lcpPriorityMobile} unoptimized={lcpPriorityMobile} />
+                    <OptimizedHeroImage src="/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/5.png" variant="mobile" />
+                    <OptimizedHeroImage src="/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/6.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/5.png" variant="mobile" />
+                    <OptimizedHeroImage src="/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg" variant="mobile" />
                   </div>
-                  {/* Row 2 */}
+                  {/* Row 2 - Offscreen: lazy load */}
                   <div className="animate-scrollDown flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
-                    {/* First set of images */}
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/1.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/2 improved.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    {/* Duplicate set for seamless loop */}
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/1.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/2 improved.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
+                    <OptimizedHeroImage src="/team-mob/1.png" variant="mobile" />
+                    <OptimizedHeroImage src="/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/2 improved.png" variant="mobile" />
+                    <OptimizedHeroImage src="/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/1.png" variant="mobile" />
+                    <OptimizedHeroImage src="/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/2 improved.png" variant="mobile" />
+                    <OptimizedHeroImage src="/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg" variant="mobile" />
                   </div>
-                  {/* Row 3 */}
+                  {/* Row 3 - Offscreen: lazy load */}
                   <div className="animate-scrollUp flex h-16 sm:h-20 md:h-24 flex-row gap-3 sm:gap-4">
-                    {/* First set of images */}
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/3.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/4 - colored.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/7.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    {/* Duplicate set for seamless loop */}
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/3.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/4 - colored.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1.95/1] h-full rounded-full overflow-hidden bg-zinc-800 flex-shrink-0 w-28"
-                      style={{
-                        backgroundImage: 'url("/team-mob/7.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
+                    <OptimizedHeroImage src="/team-mob/3.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/4 - colored.png" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/7.png" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/3.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/4 - colored.png" variant="mobile" />
+                    <OptimizedHeroImage src="/team-mob/7.png" variant="mobile" />
                   </div>
                 </div>
               </div>
@@ -302,236 +118,38 @@ const HeroSection = () => {
             <div className="hidden lg:block relative w-full max-w-[15.5rem] xl:max-w-[17.5rem] ml-auto mr-8 overflow-hidden" style={{aspectRatio: '305/702'}}>
               <div className="absolute inset-0 fade-mask overflow-hidden">
                 <div className="flex h-[200%] w-full gap-4">
-                  {/* Column 1 */}
+                  {/* Column 1 - Only first image gets priority on desktop (LCP) - unoptimized for faster TTFB */}
                   <div className="animate-scrollUp flex w-1/3 flex-col gap-2 sm:gap-3 lg:gap-4">
-                    {/* First set of images */}
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/6.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/5.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    {/* Duplicate set for seamless loop */}
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/6.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/5.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
+                    <OptimizedHeroImage src="/team-mob/6.jpg" variant="desktop" sizes="165px" priority={lcpPriorityDesktop} unoptimized={lcpPriorityDesktop} />
+                    <OptimizedHeroImage src="/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/5.png" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/6.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/rectangle 1/57e0ff4971c44d340158dd76e84f4e1677eacc77.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/5.png" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/rectangle 1/ff58303fb8ee3c463d0e11521f0df2d4414b9022.jpg" variant="desktop" sizes="165px" />
                   </div>
                   {/* Column 2 */}
                   <div className="animate-scrollDown flex w-1/3 flex-col gap-2 sm:gap-3 lg:gap-4">
-                    {/* First set of images */}
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/1.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/2 improved.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    {/* Duplicate set for seamless loop */}
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/1.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/2 improved.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
+                    <OptimizedHeroImage src="/team-mob/1.png" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/2 improved.png" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/1.png" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/rectangle 2/35d259aa3566f583840eee2ac6b1184268dff7ec.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/2 improved.png" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/rectangle 2/e98d95025c673e0467f8be4c1a95fe9b294c4d26.jpg" variant="desktop" sizes="165px" />
                   </div>
                   {/* Column 3 */}
                   <div className="animate-scrollUp flex w-1/3 flex-col gap-2 sm:gap-3 lg:gap-4">
-                    {/* First set of images */}
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/3.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/4 - colored.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/7.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    {/* Duplicate set for seamless loop */}
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/3.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/4 - colored.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
-                    <div
-                      className="aspect-[1/1.95] w-full rounded-full bg-zinc-800"
-                      style={{
-                        backgroundImage: 'url("/team-mob/7.png")',
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center',
-                        backgroundRepeat: 'no-repeat'
-                      }}
-                    ></div>
+                    <OptimizedHeroImage src="/team-mob/3.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/4 - colored.png" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/7.png" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/3.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/rectangle 3/6f56bacd424b99039a802a8a0f9f6cc53ed558a0.jpg" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/4 - colored.png" variant="desktop" sizes="165px" />
+                    <OptimizedHeroImage src="/team-mob/7.png" variant="desktop" sizes="165px" />
                   </div>
                 </div>
               </div>

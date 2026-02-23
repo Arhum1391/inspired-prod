@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* Gilroy fonts loaded locally from public/fonts */
+/* Gilroy fonts - swap = text shows immediately with fallback, no render block */
 @font-face {
   font-family: 'Gilroy-Medium';
   src: url('/fonts/Gilroy-Medium.ttf') format('truetype');

@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import PartnerPage from '@/components/pages/PartnerPage';
+import PageLoader from '@/components/PageLoader';
 import { getPartnerBySlug } from '@/data/partners';
 
 export default function PartnerDetailPage({
@@ -9,7 +10,7 @@ export default function PartnerDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<PageLoader />}>
       <PartnerPageContent params={params} />
     </Suspense>
   );

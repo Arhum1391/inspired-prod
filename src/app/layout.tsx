@@ -22,13 +22,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          rel="preload"
-          href="/fonts/Gilroy-Medium.ttf"
-          as="font"
-          type="font/ttf"
-          crossOrigin="anonymous"
-        />
+        {/* LCP image - preload before React to avoid 27s delay */}
+        <link rel="preload" href="/team-mob/6.jpg" as="image" />
+        {/* Single font preload - SemiBold for h1 (LCP candidate). Medium loads async. */}
         <link
           rel="preload"
           href="/fonts/Gilroy-SemiBold.ttf"
@@ -36,6 +32,7 @@ export default function RootLayout({
           type="font/ttf"
           crossOrigin="anonymous"
         />
+        <meta name="theme-color" content="#0A0A0A" />
       </head>
       <body
         className="font-gilroy antialiased bg-[#0A0A0A] text-white"

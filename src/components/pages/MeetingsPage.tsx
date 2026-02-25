@@ -2237,8 +2237,9 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                 const data = await res.json();
                                 const slotUrls = data.slotUrls || {};
                                 const dateTimeKey = `${selectedDate}|${selectedTime}`;
-                                const stillAvailable = slotUrls[dateTimeKey] === calendlyUrl;
-                                return !!stillAvailable;
+                                // Only check that this date/time is still offered (Calendly often returns different URLs per request, so strict URL match causes false "slot gone")
+                                const stillAvailable = !!(slotUrls[dateTimeKey]);
+                                return stillAvailable;
                             } catch {
                                 return true;
                             }

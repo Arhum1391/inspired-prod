@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
@@ -30,6 +30,7 @@ const BookingSuccessContent: React.FC = () => {
     const [bookingDetails, setBookingDetails] = useState<any>(null);
     const [calendlyLoaded, setCalendlyLoaded] = useState(false);
     const [calendlyOpened, setCalendlyOpened] = useState(false);
+    const detailsInitializedRef = useRef(false);
 
     // Format the date
     const formatDate = (dateString: string) => {
@@ -42,54 +43,50 @@ const BookingSuccessContent: React.FC = () => {
         });
     };
 
-    // Load Calendly script
+    // Load booking details once on mount (ref prevents re-run and infinite loop)
     useEffect(() => {
-        // Get booking details from sessionStorage (only on client-side)
+        if (detailsInitializedRef.current) return;
+        detailsInitializedRef.current = true;
+
         if (typeof window !== 'undefined') {
             const storedDetails = sessionStorage.getItem('bookingDetails');
-            
             if (storedDetails) {
-                const details = JSON.parse(storedDetails);
-                setBookingDetails(details);
-                console.log('Booking details loaded:', details);
-                
-                // If analyst has Calendly integration, load the script
-                if (details.hasCalendlyIntegration && details.calendlyUrl) {
-                    loadCalendlyScript();
+                try {
+                    const details = JSON.parse(storedDetails);
+                    setBookingDetails(details);
+                    if (details.hasCalendlyIntegration && details.calendlyUrl) {
+                        loadCalendlyScript();
+                    }
+                } catch {
+                    const details = buildDetailsFromSearchParams(searchParams);
+                    setBookingDetails(details);
                 }
             } else {
-                // Fallback to URL parameters if no sessionStorage
-                const details = {
-                    analystName: analysts.find(a => a.id === parseInt(searchParams.get('analyst') || '0'))?.name || 'Unknown',
-                    meetingTitle: meetings.find(m => m.id === parseInt(searchParams.get('meeting') || '2'))?.title || 'Unknown',
-                    meetingDuration: meetings.find(m => m.id === parseInt(searchParams.get('meeting') || '2'))?.duration || 'Unknown',
-                    date: searchParams.get('date') || '',
-                    time: searchParams.get('time') || '',
-                    timezone: searchParams.get('timezone') || '',
-                    notes: searchParams.get('notes') || '',
-                    hasCalendlyIntegration: false
-                };
-                setBookingDetails(details);
+                setBookingDetails(buildDetailsFromSearchParams(searchParams));
             }
         } else {
-            // Server-side: use URL parameters only
-            const details = {
-                analystName: analysts.find(a => a.id === parseInt(searchParams.get('analyst') || '0'))?.name || 'Unknown',
-                meetingTitle: meetings.find(m => m.id === parseInt(searchParams.get('meeting') || '2'))?.title || 'Unknown',
-                meetingDuration: meetings.find(m => m.id === parseInt(searchParams.get('meeting') || '2'))?.duration || 'Unknown',
-                date: searchParams.get('date') || '',
-                time: searchParams.get('time') || '',
-                timezone: searchParams.get('timezone') || '',
-                notes: searchParams.get('notes') || '',
-                hasCalendlyIntegration: false
-            };
-            setBookingDetails(details);
+            setBookingDetails(buildDetailsFromSearchParams(searchParams));
         }
+    }, []);
 
-        // Animate the success checkmark
+    function buildDetailsFromSearchParams(params: ReturnType<typeof useSearchParams>) {
+        return {
+            analystName: analysts.find(a => a.id === parseInt(params.get('analyst') || '0'))?.name || 'Unknown',
+            meetingTitle: meetings.find(m => m.id === parseInt(params.get('meeting') || '2'))?.title || 'Unknown',
+            meetingDuration: meetings.find(m => m.id === parseInt(params.get('meeting') || '2'))?.duration || 'Unknown',
+            date: params.get('date') || '',
+            time: params.get('time') || '',
+            timezone: params.get('timezone') || '',
+            notes: params.get('notes') || '',
+            hasCalendlyIntegration: false
+        };
+    }
+
+    // Animate the success checkmark once
+    useEffect(() => {
         const timer = setTimeout(() => setShowSuccess(true), 300);
         return () => clearTimeout(timer);
-    }, [searchParams]);
+    }, []);
 
     const loadCalendlyScript = () => {
         // Only run on client-side
@@ -319,7 +316,7 @@ const BookingSuccessContent: React.FC = () => {
                                 <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Date & Time</p>
                                 <div className="flex flex-col">
                                     <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{formatDate(bookingDetails.date)}</p>
-                                    <p className="text-white mt-1 text-base sm:text-lg" style={{ fontSize: '16px' }}>{bookingDetails.time} {bookingDetails.timezone && `(${bookingDetails.timezone})`}</p>
+                                    <p className="text-white mt-1 text-base sm:text-lg" style={{ fontSize: '16px' }}>{bookingDetails.time} {(bookingDetails.timezone || bookingDetails.timezoneValue) && `(${bookingDetails.timezone || bookingDetails.timezoneValue})`}</p>
                                 </div>
                             </div>
 

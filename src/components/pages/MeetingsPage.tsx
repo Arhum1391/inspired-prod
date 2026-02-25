@@ -14,6 +14,8 @@ type Meeting = {
   price: string;
   description: string;
   color: string;
+  /** Stable Calendly event type URI for lookup (no index dependency) */
+  eventTypeUri?: string;
 };
 
 type Analyst = {
@@ -525,6 +527,7 @@ const MeetingCard: React.FC<MeetingCardProps> = ({ meeting, isSelected, onSelect
 const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const hasPaymentReturnParams = !!searchParams.get('session_id') && (searchParams.get('payment') === 'success' || searchParams.get('payment') === 'cancelled');
     
     // Ref to track if slug routing has been initialized (prevents re-running on step changes)
     const slugInitializedRef = useRef<boolean>(false);
@@ -623,6 +626,11 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     const [analystsWithCalendly, setAnalystsWithCalendly] = useState<Set<number>>(new Set());
     const [selectedEventTypeUri, setSelectedEventTypeUri] = useState<string>('');
     const [isCreatingBooking, setIsCreatingBooking] = useState<boolean>(false);
+    const [calendlyScriptReady, setCalendlyScriptReady] = useState<boolean>(false);
+    const [needsReschedule, setNeedsReschedule] = useState<boolean>(false);
+    const [showSchedulingIncompleteModal, setShowSchedulingIncompleteModal] = useState<boolean>(false);
+    const [isContinueProcessing, setIsContinueProcessing] = useState<boolean>(false);
+    const calendlyScheduledThisSessionRef = useRef<boolean>(false);
 
     // Function to fetch analyst about data from MongoDB
     const fetchAnalystAbout = async (analystName: string) => {
@@ -837,6 +845,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         price: getMeetingPriceForAnalyst(eventType.duration, selectedAnalystName),
                         description: eventType.description || 'A focused session to address specific challenges.',
                         color: index % 2 === 0 ? 'text-purple-400' : 'text-yellow-400',
+                        eventTypeUri: eventType.id, // Stable Calendly URI for availability lookup
                     };
                 });
                 
@@ -846,12 +855,14 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     setCalendlyMeetings(transformedMeetings);
                     console.log('✅ Set Calendly meetings successfully');
                     
-                    // Select 30 min meeting as default
-                    const thirtyMinMeeting = transformedMeetings.find(meeting => meeting.duration === '30 minutes');
-                    if (thirtyMinMeeting) {
-                        setSelectedMeeting(thirtyMinMeeting.id);
-                        console.log('✅ Selected 30 min meeting as default:', thirtyMinMeeting.id);
-                    }
+                    // Only set default 30 min when no valid selection exists (preserve selection when returning from payment)
+                    setSelectedMeeting(prev => {
+                        if (prev != null && transformedMeetings.some(m => m.id === prev)) return prev;
+                        const thirtyMinMeeting = transformedMeetings.find(meeting => meeting.duration === '30 minutes');
+                        const defaultId = thirtyMinMeeting?.id ?? transformedMeetings[0]?.id ?? null;
+                        if (defaultId != null) console.log('✅ Selected default meeting:', defaultId);
+                        return defaultId;
+                    });
                 } else {
                     console.log('⚠️ No transformed meetings found - setting empty array');
                     setCalendlyMeetings([]);
@@ -947,6 +958,11 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         // Only run on client-side
         if (typeof window === 'undefined') return;
         
+        if (document.querySelector('script[src*="calendly"]') && (window as any).Calendly) {
+            setCalendlyScriptReady(true);
+            return;
+        }
+        
         // Load Calendly CSS
         const link = document.createElement('link');
         link.href = 'https://assets.calendly.com/assets/external/widget.css';
@@ -957,6 +973,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         const script = document.createElement('script');
         script.src = 'https://assets.calendly.com/assets/external/widget.js';
         script.async = true;
+        script.onload = () => setCalendlyScriptReady(true);
         document.body.appendChild(script);
         
         return () => {
@@ -1518,16 +1535,16 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     } else {
                         console.log('🔄 Timezone changed - refetching availability with new timezone');
                     }
+                    const selectedMeetingData = calendlyMeetings.find(m => m.id === selectedMeeting);
+                    const eventTypeUri = selectedMeetingData?.eventTypeUri;
+                    const selectedEventType = eventTypeUri ? calendlyEventTypes.find((et: { id: string }) => et.id === eventTypeUri) : undefined;
                     console.log('Attempting to fetch availability:', {
                         selectedMeeting,
-                        calendlyEventTypesLength: calendlyEventTypes.length,
-                        calculatedIndex: selectedMeeting - 2,
+                        eventTypeUri,
+                        selectedEventType,
                         selectedTimezone,
                         currentMonth: currentMonth.toISOString().split('T')[0]
                     });
-            
-            const selectedEventType = calendlyEventTypes[selectedMeeting - 2]; // Adjust index
-            console.log('Selected event type:', selectedEventType);
             
             if (selectedEventType && selectedEventType.id) {
                 setSelectedEventTypeUri(selectedEventType.id);
@@ -1686,7 +1703,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     console.log('✅ Calendly availability fetch completed');
                 });
             } else {
-                console.error('No valid event type found at index', selectedMeeting - 2);
+                console.error('No valid event type found for selected meeting', { selectedMeeting, eventTypeUri });
             }
                 } else {
                     console.log('Skipping Calendly fetch:', {
@@ -1699,7 +1716,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
         };
         
         handleAvailabilityFetch();
-    }, [selectedMeeting, currentMonth, selectedAnalyst, calendlyEventTypes, selectedTimezone]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [selectedMeeting, currentMonth, selectedAnalyst, calendlyEventTypes, calendlyMeetings, selectedTimezone]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Handle step and selectedAnalyst parameters from URL (for navigation back from reviews page)
     useEffect(() => {
@@ -1909,8 +1926,15 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     const timeSlots = getTimeSlots();
     const timeSlotObjects = getTimeSlotObjects();
 
-    const isContinueDisabled = currentStep === 2 ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime) : 
-                               currentStep === 3 ? (!fullName || !email || !notes || !!nameError || !!emailError || !!notesError || !paymentCompleted || isLoadingAvailability) : false;
+    const selectedSlotHasSchedulingUrl = selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst)
+        ? !!timeSlotObjects.find(s => s.displayTime === selectedTime)?.schedulingUrl
+        : true;
+    const isContinueDisabled = currentStep === 2
+        ? (selectedMeeting === null || !selectedTimezone || !selectedDate || !selectedTime || !selectedSlotHasSchedulingUrl)
+        : currentStep === 3
+            ? (!fullName || !email || !notes || !!nameError || !!emailError || !!notesError || !paymentCompleted || isLoadingAvailability ||
+                (paymentCompleted && selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && !calendlyScriptReady))
+            : false;
 
     const handleStripePayment = async () => {
         if (!fullName || !email || !notes || !!nameError || !!emailError || !!notesError) {
@@ -2086,12 +2110,14 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
             } else if (currentStep === 3 && paymentCompleted) {
                 // Payment completed, process booking submission
                 console.log('🎯 Processing final step after payment completion');
+                setIsContinueProcessing(true);
                 
                 // SECURITY: Double-check payment before opening Calendly
                 const urlParams = new URLSearchParams(window.location.search);
                 const sessionId = urlParams.get('session_id');
                 
                 if (!sessionId) {
+                    setIsContinueProcessing(false);
                     console.error('❌ No session ID found - cannot verify payment');
                     alert('Payment session not found. Please complete payment first.');
                     setPaymentError('Payment session not found');
@@ -2103,6 +2129,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 // Verify payment before proceeding
                 verifyPayment(sessionId).then((result) => {
                     if (!result.isValid) {
+                        setIsContinueProcessing(false);
                         console.error('❌ Payment verification failed before opening Calendly:', result.error);
                         alert(result.error || 'Payment verification failed. Please complete payment before booking.');
                         setPaymentError(result.error || 'Payment not verified');
@@ -2184,98 +2211,128 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         sessionStorage.removeItem(formDataKey);
                     }
                     
-                    // If analyst has Calendly integration, open Calendly popup
+                    // Analyst has Calendly but no valid slot URL: do not proceed to success
+                    if (selectedAnalyst !== null && hasCalendlyIntegration(selectedAnalyst) && !calendlyUrl) {
+                        setIsContinueProcessing(false);
+                        setPaymentError('Please select a valid date and time slot.');
+                        alert('Please select a valid date and time slot.');
+                        return;
+                    }
+                    
+                    // If analyst has Calendly integration, re-validate slot then open Calendly popup
                     if (calendlyUrl) {
-                        console.log('Opening Calendly popup for analyst booking with URL:', calendlyUrl);
+                        const selectedMeetingDataForUri = getSelectedMeetingData();
+                        const eventTypeUriForValidation = selectedMeetingDataForUri?.eventTypeUri || selectedEventTypeUri;
+                        const revalidateSlot = async (): Promise<boolean> => {
+                            if (!eventTypeUriForValidation || !selectedDate || !selectedTimezone) return true;
+                            try {
+                                const url = new URL('/api/calendly/availability', typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+                                url.searchParams.append('eventTypeUri', eventTypeUriForValidation);
+                                url.searchParams.append('startDate', selectedDate);
+                                url.searchParams.append('endDate', selectedDate);
+                                url.searchParams.append('analystId', selectedAnalyst!.toString());
+                                url.searchParams.append('timezone', selectedTimezone);
+                                const res = await fetch(url.toString());
+                                if (!res.ok) return true;
+                                const data = await res.json();
+                                const slotUrls = data.slotUrls || {};
+                                const dateTimeKey = `${selectedDate}|${selectedTime}`;
+                                const stillAvailable = slotUrls[dateTimeKey] === calendlyUrl;
+                                return !!stillAvailable;
+                            } catch {
+                                return true;
+                            }
+                        };
                         
-                        // Check if Calendly is available
-                        // @ts-ignore
-                        if (typeof window !== 'undefined' && window.Calendly && typeof window.Calendly.initPopupWidget === 'function') {
-                            console.log('Calendly is loaded, opening popup...');
+                        revalidateSlot().then((slotStillAvailable) => {
+                            if (!slotStillAvailable) {
+                                setIsContinueProcessing(false);
+                                setNeedsReschedule(true);
+                                setCurrentStep(2);
+                                setPaymentError('This time slot is no longer available. Please choose another time.');
+                                alert('This time slot is no longer available. Please choose another time below.');
+                                return;
+                            }
                             
-                            // Open Calendly popup with a slight delay to ensure DOM is ready
-                            setTimeout(() => {
-                                // @ts-ignore
-                                window.Calendly.initPopupWidget({
-                                    url: calendlyUrl,
-                                    prefill: {
-                                        name: fullName || '',
-                                        email: email || '',
-                                        customAnswers: {
-                                            a1: notes || ''
-                                        }
-                                    },
-                                    utm: {
-                                        utmSource: 'inspired-analyst',
-                                        utmMedium: 'booking',
-                                        utmCampaign: 'mentorship'
-                                    }
-                                });
-                                console.log('Calendly popup initiated');
-                            }, 300);
+                            console.log('Opening Calendly popup for analyst booking with URL:', calendlyUrl);
+                            const win = typeof window !== 'undefined' ? window : null;
+                            if (win && (win as any).Calendly && typeof (win as any).Calendly.initPopupWidget === 'function') {
+                                console.log('Calendly is loaded, opening popup...');
+                                calendlyScheduledThisSessionRef.current = false;
+                                
+                                setTimeout(() => {
+                                    (win as any).Calendly.initPopupWidget({
+                                        url: calendlyUrl,
+                                        prefill: {
+                                            name: fullName || '',
+                                            email: email || '',
+                                            customAnswers: { a1: notes || '' }
+                                        },
+                                        utm: { utmSource: 'inspired-analyst', utmMedium: 'booking', utmCampaign: 'mentorship' }
+                                    });
+                                    console.log('Calendly popup initiated');
+                                }, 300);
 
-                            // Listen for Calendly event completion
-                            const handleCalendlyEvent = (e: MessageEvent) => {
-                                if (e.data.event && e.data.event === 'calendly.event_scheduled') {
-                                    console.log('Calendly booking completed:', e.data);
-                                    
-                                    // Save Calendly event details to sessionStorage for booking-success page
-                                    if (e.data.payload && typeof sessionStorage !== 'undefined') {
-                                        sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
-                                        
-                                        // Also update bookingDetails with URIs so booking-success can save them
-                                        const storedDetails = sessionStorage.getItem('bookingDetails');
-                                        if (storedDetails) {
-                                            try {
-                                                const bookingDetails = JSON.parse(storedDetails);
-                                                const updatedDetails = {
-                                                    ...bookingDetails,
-                                                    calendlyEventUri: e.data.payload?.event?.uri || '',
-                                                    calendlyInviteeUri: e.data.payload?.invitee?.uri || '',
-                                                    bookingConfirmed: true
-                                                };
-                                                sessionStorage.setItem('bookingDetails', JSON.stringify(updatedDetails));
-                                            } catch (error) {
-                                                console.error('Error updating bookingDetails:', error);
+                                const handleCalendlyEvent = (e: MessageEvent) => {
+                                    const eventName = typeof e.data?.event === 'string' ? e.data.event : '';
+                                    if (eventName.indexOf('calendly') !== 0) return;
+                                    if (eventName === 'calendly.event_scheduled') {
+                                        calendlyScheduledThisSessionRef.current = true;
+                                        console.log('Calendly booking completed:', e.data);
+                                        if (e.data?.payload && typeof sessionStorage !== 'undefined') {
+                                            sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
+                                            const storedDetails = sessionStorage.getItem('bookingDetails');
+                                            if (storedDetails) {
+                                                try {
+                                                    const bookingDetails = JSON.parse(storedDetails);
+                                                    const updated = {
+                                                        ...bookingDetails,
+                                                        calendlyEventUri: e.data.payload?.event?.uri || '',
+                                                        calendlyInviteeUri: e.data.payload?.invitee?.uri || '',
+                                                        bookingConfirmed: true
+                                                    };
+                                                    sessionStorage.setItem('bookingDetails', JSON.stringify(updated));
+                                                } catch (err) {
+                                                    console.error('Error updating bookingDetails:', err);
+                                                }
                                             }
                                         }
+                                        if ((win as any).Calendly?.closePopupWidget) (win as any).Calendly.closePopupWidget();
+                                        window.removeEventListener('message', handleCalendlyEvent);
+                                        const doRedirect = () => {
+                                            try {
+                                                router.push('/booking-success');
+                                            } catch {
+                                                window.location.href = '/booking-success';
+                                            }
+                                        };
+                                        setTimeout(doRedirect, 400);
                                     }
-                                    
-                                    // Close the Calendly popup automatically
-                                    console.log('Closing Calendly popup automatically...');
-                                    // @ts-ignore
-                                    if (window.Calendly && window.Calendly.closePopupWidget) {
-                                        // @ts-ignore
-                                        window.Calendly.closePopupWidget();
+                                    const isPopupClosedEvent = eventName === 'calendly.popup_closed' ||
+                                        eventName === 'calendly.profile_page_closed' ||
+                                        eventName === 'calendly.popup.close';
+                                    if (isPopupClosedEvent) {
+                                        if (e.origin !== 'https://calendly.com' && e.origin !== 'https://assets.calendly.com') return;
+                                        window.removeEventListener('message', handleCalendlyEvent);
+                                        if (!calendlyScheduledThisSessionRef.current) {
+                                            setShowSchedulingIncompleteModal(true);
+                                        }
                                     }
-                                    
-                                    // Redirect to success page after Calendly booking
-                                    console.log('Redirecting to success page...');
-                                    setTimeout(() => {
-                                        router.push('/booking-success');
-                                    }, 500);
-                                    
-                                    // Clean up event listener
-                                    window.removeEventListener('message', handleCalendlyEvent);
-                                }
-                            };
-
-                            window.addEventListener('message', handleCalendlyEvent);
-                        } else {
-                            // @ts-ignore
-                            console.error('Calendly script not loaded or not available. Window.Calendly:', typeof window !== 'undefined' ? window.Calendly : 'undefined');
-                            alert('Unable to open booking calendar. Redirecting to confirmation page...');
-                            // Fall back to direct redirect if Calendly fails
-                            setTimeout(() => {
-                                router.push('/booking-success');
-                            }, 1000);
-                        }
+                                };
+                                window.addEventListener('message', handleCalendlyEvent);
+                                setIsContinueProcessing(false);
+                            } else {
+                                setIsContinueProcessing(false);
+                                console.error('Calendly script not loaded or not available');
+                                alert('Unable to open booking calendar. Please refresh and try again.');
+                            }
+                        });
                     } else {
-                        console.log('No Calendly URL found, redirecting directly to success page');
-                        // No Calendly integration, redirect directly to success page
+                        console.log('No Calendly integration, redirecting directly to success page');
                         router.push('/booking-success');
                     }
                 }).catch((error) => {
+                    setIsContinueProcessing(false);
                     console.error('Payment verification error before Calendly:', error);
                     alert('Error verifying payment. Please try again.');
                     setPaymentError('Payment verification error');
@@ -2526,6 +2583,15 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
 
     const handleTimeSelect = (time: string) => {
         setSelectedTime(time);
+    };
+
+    // When user switches meeting type, reset date and slot so selections stay valid for the new type
+    const handleMeetingTypeSelect = (id: number) => {
+        if (selectedMeeting !== id) {
+            setSelectedMeeting(id);
+            setSelectedDate('');
+            setSelectedTime('');
+        }
     };
 
     // Helper functions for booking summary
@@ -3236,13 +3302,14 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 
                 {/* Right Side: Booking Form */}
                 <div className="w-full lg:col-span-2 px-2 sm:px-0">
-                    {/* Back Button */}
+                    {/* Back Button - kept for spacing; hidden + unclickable after payment verification */}
                     <div className="mb-1 mt-24 lg:mt-20">
                         <button 
-                            onClick={handleBack} 
-                            className="flex items-center text-white hover:text-gray-300 transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20"
+                            onClick={paymentCompleted ? undefined : handleBack}
+                            disabled={!!paymentCompleted}
+                            className={`flex items-center text-white transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20 ${paymentCompleted ? 'invisible pointer-events-none cursor-default' : 'hover:text-gray-300'}`}
                             style={{ outline: 'none', boxShadow: 'none' }}
-                            onFocus={(e) => e.target.blur()}
+                            onFocus={(e) => paymentCompleted || e.target.blur()}
                         >
                         <ChevronLeft size={20} className="mr-1" />
                         Back...
@@ -3380,8 +3447,8 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         <h1 className="text-3xl sm:text-4xl font-bold" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Book Mentorship</h1>
                     </div>
 
-                    {/* Payment verification loading - show instead of step 1 while verifying after redirect */}
-                    {isVerifyingPayment && (
+                    {/* Payment verification loading - show instead of step 1 while verifying after redirect (no flash: show when URL has payment params and not yet verified) */}
+                    {(isVerifyingPayment || (hasPaymentReturnParams && !paymentCompleted)) && (
                         <div className="flex flex-col items-center justify-center py-16 sm:py-24 px-6">
                             <div className="bg-[#1F1F1F] border border-gray-600/50 rounded-2xl p-8 sm:p-12 max-w-md w-full flex flex-col items-center gap-6 text-center">
                                 <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center">
@@ -3396,8 +3463,8 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         </div>
                     )}
 
-                    {/* Step 1: Analyst Selection */}
-                    {!isVerifyingPayment && currentStep === 1 && (
+                    {/* Step 1: Analyst Selection - hidden when returning from payment until verified */}
+                    {!isVerifyingPayment && currentStep === 1 && !(hasPaymentReturnParams && !paymentCompleted) && (
                         <div className="space-y-6">
                             <div>
                                 <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-2" style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}>Select Your Analyst</h2>
@@ -3500,8 +3567,8 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         </div>
                     )}
 
-                    {/* Step 2: Meeting Selection, Timezone, Date & Time */}
-                    {!isVerifyingPayment && currentStep === 2 && (
+                    {/* Step 2: Meeting Selection, Timezone, Date & Time - hidden while verifying payment */}
+                    {!isVerifyingPayment && currentStep === 2 && !(hasPaymentReturnParams && !paymentCompleted) && (
                         <div className="space-y-8">
                             {/* Meeting Selection */}
                     <div className="space-y-6">
@@ -3526,12 +3593,15 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                     </p>
                                 </div>
                             ) : (
-                                calendlyMeetings.map((meeting) => (
+                                (needsReschedule
+                                    ? calendlyMeetings.filter((m) => m.id === selectedMeeting)
+                                    : calendlyMeetings
+                                ).map((meeting) => (
                                     <MeetingCard
                                         key={meeting.id}
                                         meeting={meeting}
                                         isSelected={selectedMeeting === meeting.id}
-                                        onSelect={setSelectedMeeting}
+                                        onSelect={handleMeetingTypeSelect}
                                     />
                                 ))
                             )}
@@ -3904,7 +3974,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     )}
 
                     {/* Step 3: Pay & Confirm */}
-                    {!isVerifyingPayment && currentStep === 3 && (
+                    {!isVerifyingPayment && currentStep === 3 && !(hasPaymentReturnParams && !paymentCompleted) && (
                         <div className="space-y-6">
                             <div className="flex flex-col lg:flex-row gap-8 items-start">
                                 {/* Left side - Payment Form */}
@@ -4131,18 +4201,20 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     {/* Action Buttons */}
                     {currentStep !== 1 && (
                     <div className="mt-12 flex justify-end gap-4 relative z-[9999]">
+                            {/* Back button always in DOM for spacing; hidden + unclickable after payment */}
                             {(currentStep === 2 || currentStep === 3) && (
                             <button
-                                onClick={handleBack}
-                                className="w-44 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white border border-white hover:border-gray-300 focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-[9999]"
+                                onClick={paymentCompleted ? undefined : handleBack}
+                                disabled={!!paymentCompleted}
+                                className={`w-44 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white border border-white focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-[9999] ${paymentCompleted ? 'invisible pointer-events-none cursor-default' : 'hover:border-gray-300'}`}
                                 style={{ 
                                     outline: 'none', 
-                                    boxShadow: window.innerWidth < 768 ? '0 4px 20px rgba(0, 0, 0, 0.8)' : 'none',
+                                    boxShadow: typeof window !== 'undefined' && window.innerWidth < 768 ? '0 4px 20px rgba(0, 0, 0, 0.8)' : 'none',
                                     backgroundColor: 'rgb(0, 0, 0)'
                                 }}
-                                onMouseEnter={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'}
+                                onMouseEnter={(e) => { if (!paymentCompleted) (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'; }}
                                 onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgb(0, 0, 0)'}
-                                onFocus={(e) => e.target.blur()}
+                                onFocus={(e) => paymentCompleted || e.target.blur()}
                             >
                                 Back
                             </button>
@@ -4151,11 +4223,12 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                             onClick={handleContinue}
                             disabled={isContinueDisabled}
                             className={`w-44 py-3 rounded-3xl font-semibold transition-all duration-300 relative z-[9999]
-                            ${isContinueDisabled ? 'text-gray-600 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}`}
+                            ${isContinueDisabled ? 'text-gray-600 cursor-not-allowed' : 'bg-white text-black hover:bg-gray-200'}
+                            ${isContinueProcessing ? 'opacity-80 scale-[0.98]' : ''}`}
                             style={{ 
                                 backgroundColor: isContinueDisabled ? 'rgba(255, 255, 255, 0.62)' : 'rgb(255, 255, 255)',
                                 outline: 'none',
-                                boxShadow: window.innerWidth < 768 ? '0 4px 20px rgba(0, 0, 0, 0.8)' : 'none'
+                                boxShadow: typeof window !== 'undefined' && window.innerWidth < 768 ? '0 4px 20px rgba(0, 0, 0, 0.8)' : 'none'
                             }}
                         >
                                 {currentStep === 3 && isLoadingAvailability ? (
@@ -4166,13 +4239,51 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                         </svg>
                                         Loading...
                                     </span>
-                                ) : currentStep === 3 ? 'Continue' : 'Proceed to Pay'}
+                                ) : currentStep === 3 && isContinueProcessing ? 'Opening…' : currentStep === 3 ? 'Continue' : 'Proceed to Pay'}
                         </button>
                     </div>
                     )}
                 </div>
                 </div>
             </div>
+
+            {/* Scheduling incomplete modal - shown when user closes Calendly popup without booking */}
+            {showSchedulingIncompleteModal && (
+                <div
+                    className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
+                    style={{ background: 'rgba(0, 0, 0, 0.75)' }}
+                    onClick={() => setShowSchedulingIncompleteModal(false)}
+                >
+                    <div
+                        className="bg-[#1F1F1F] border border-gray-600/50 rounded-xl shadow-2xl max-w-lg w-full relative"
+                        style={{ maxHeight: '90vh', overflowY: 'auto' }}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={() => setShowSchedulingIncompleteModal(false)}
+                            className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10 bg-[#1F1F1F] rounded-full p-1"
+                            aria-label="Close modal"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                        <div className="p-6 pt-10">
+                            <p className="text-white text-base leading-relaxed">
+                                Scheduling wasn&apos;t completed. Your payment is confirmed. Please choose a time below to schedule your call.
+                            </p>
+                            <div className="mt-6 flex justify-end">
+                                <button
+                                    onClick={() => setShowSchedulingIncompleteModal(false)}
+                                    className="px-6 py-3 rounded-3xl font-semibold bg-white text-black hover:bg-gray-200 transition-colors"
+                                >
+                                    OK
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,0 +1,710 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+import NewsletterSubscription from '@/components/forms/NewsletterSubscription';
+import HeroSection from '@/components/sections/HeroSection';
+import FeaturesSection from '@/components/sections/FeaturesSection';
+import SocialStats from '@/components/sections/SocialStats';
+import Footer from '@/components/Footer';
+import Image from 'next/image';
+import Link from 'next/link';
+import React, { useEffect } from 'react';
+
+// Lazy-load below-fold sections to reduce initial JS and improve TBT
+const TailoredGuidanceSection = dynamic(() => import('@/components/sections/TailoredGuidanceSection'), { ssr: true });
+const LatestVideos = dynamic(() => import('@/components/sections/LatestVideos'), { ssr: true });
+const BrandStories = dynamic(() => import('@/components/sections/BrandStories'), { ssr: true });
+const CollaborationForm = dynamic(() => import('@/components/sections/CollaborationForm'), { ssr: true });
+
+export default function Home() {
+  // Pre-fetch team data when idle (defer to avoid blocking main thread)
+  useEffect(() => {
+    const fetchTeamData = () => {
+      fetch('/api/team')
+        .then((res) => res.ok ? res.json() : null)
+        .then((data) => {
+          if (data?.team) sessionStorage.setItem('teamData', JSON.stringify(data.team));
+        })
+        .catch(() => {});
+    };
+
+    if ('requestIdleCallback' in window) {
+      (window as Window & { requestIdleCallback: (cb: () => void, opts?: { timeout: number }) => void }).requestIdleCallback(fetchTeamData, { timeout: 3000 });
+    } else {
+      setTimeout(fetchTeamData, 2000);
+    }
+  }, []);
+
+  // Handle hash-based scrolling when navigating from other pages
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash === '#latest-videos') {
+      // Small delay to ensure DOM is fully rendered
+      setTimeout(() => {
+        const element = document.getElementById('latest-videos');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#0A0A0A] relative overflow-x-hidden">
+      {/* Vector Background Image */}
+      <div
+        className="absolute z-0"
+        style={{
+          width: '100%',
+          maxWidth: '1490.5px',
+          height: '100vh',
+          minHeight: '1000px',
+          left: '0px',
+          top: '2px',
+          filter: 'blur(100px)',
+        }}
+      >
+        <div className="animate-zoom-wave w-full h-full">
+          <Image
+            src="/Vector 1.png"
+            alt=""
+            role="presentation"
+            quality={50}
+            fill
+            sizes="100vw"
+            className="object-cover"
+            loading="lazy"
+          />
+        </div>
+      </div>
+
+      {/* HeroSection Component with background */}
+      <main className="relative">
+        <HeroSection />
+        {/* Social Media Stats Section */}
+        <div id="social-stats" className="mt-16 sm:mt-12 md:mt-16">
+          <SocialStats />
+        </div>
+      </main>
+
+
+
+
+      {/* Main Content Section - Improved padding for better readability */}
+      <section id="about" className="relative bg-[#0A0A0A] px-4 sm:px-6 md:px-8 lg:px-6 py-12 sm:py-16 md:py-20 mt-20 sm:mt-16 md:mt-20">
+        <div className="max-w-5xl mx-auto">
+          {/* Section Header with Inline Images */}
+          <div className="mb-12 sm:mb-16 lg:mb-20">
+            <h2 className="gilroy-heading text-white flex flex-wrap items-center justify-center px-2 sm:px-4">
+              <span>Breaking Down Markets, Crypto & Data Into Clear,</span>
+              <span className="w-full"></span>
+              <span>Actionable Insights - So You Can Learn, Grow & Succeed</span>
+              <span className="w-full"></span>
+              <span>Without The Jargon.</span>
+              {/* <img
+                src="\team images\group 1.svg"
+                alt="Chart"
+                className="inline-block w-12 sm:w-16 md:w-18 lg:w-20 h-8 sm:h-10 md:h-12 lg:h-14 rounded-xl transform rotate-4 object-contain"
+                style={{ imageRendering: 'crisp-edges' }}
+              /> */}
+              {/* <img
+                src="\charts\Rectangle 51.png"
+                alt="Chart"
+                className="inline-block w-12 sm:w-16 md:w-18 lg:w-20 h-8 sm:h-10 md:h-12 lg:h-14 rounded-xl transform rotate-6 object-contain"
+                style={{ imageRendering: 'crisp-edges' }}
+              /> */}
+              {/* <img
+                src="\team images\group 2.svg"
+                alt="Chart"
+                className="inline-block w-12 sm:w-16 md:w-18 lg:w-20 h-8 sm:h-10 md:h-12 lg:h-14 rounded-xl transform -rotate-3 object-contain"
+                style={{ imageRendering: 'crisp-edges' }}
+              /> */}
+            </h2>
+          </div>
+
+          {/* Frame 77 - Main Content Container */}
+            <div className="flex flex-col lg:flex-row items-start gap-6 sm:gap-8 lg:gap-10">
+            {/* Mobile: Text & CTA First, Desktop: Cards First */}
+            <div className="flex flex-col gap-6 sm:gap-8 w-full lg:hidden">
+              <p className="text-white text-sm sm:text-base leading-[150%] sm:leading-[160%]" style={{fontFamily: 'Gilroy'}}>
+                I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations.
+                <br /><br />
+                Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
+              </p>
+
+              <a
+                href="/meetings"
+                className="bg-white text-[#0A0A0A] px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 focus:bg-white/20 focus:border focus:border-white focus:text-white transition-all hover:scale-105 inline-flex items-center justify-center w-fit"
+                style={{fontFamily: 'Gilroy', fontWeight: 600}}
+              >
+                Book Mentorship
+              </a>
+            </div>
+
+            {/* Frame 85 - Left Column with Cards */}
+            <div className="flex flex-col gap-4 sm:gap-5 w-full lg:flex-1">
+              {/* Frame 84 - Top Row Cards */}
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
+                {/* Data-Driven Approach Card */}
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-5 sm:p-6 gap-4 sm:gap-5 rounded-2xl flex-1 relative min-h-[120px]">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Data-Driven Approach</h3>
+                  <p className="text-white text-sm sm:text-base leading-[140%] sm:leading-[150%] relative z-10" style={{fontFamily: 'Gilroy'}}>Every analysis is backed by comprehensive research</p>
+                </div>
+
+                {/* Educational Focus Card */}
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-5 sm:p-6 gap-4 sm:gap-5 rounded-2xl flex-1 relative min-h-[120px]">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Educational Focus</h3>
+                  <p className="text-white text-sm sm:text-base leading-[140%] sm:leading-[150%] relative z-10" style={{fontFamily: 'Gilroy'}}>Complex concepts broken down into actionable insights</p>
+                </div>
+              </div>
+
+              {/* Frame 83 - Bottom Row Cards */}
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-5">
+                {/* Real-Time Coverage Card */}
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-5 sm:p-6 gap-4 sm:gap-5 rounded-2xl flex-1 relative min-h-[120px]">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Real-Time Coverage</h3>
+                  <p className="text-white text-sm sm:text-base leading-[140%] sm:leading-[150%] relative z-10" style={{fontFamily: 'Gilroy'}}>Live trading sessions and immediate market commentary</p>
+                </div>
+
+                {/* Community-First Card */}
+                <div className="bg-[#1F1F1F] flex flex-col justify-between p-5 sm:p-6 gap-4 sm:gap-5 rounded-2xl flex-1 relative min-h-[120px]">
+                  {/* Curved Gradient Border */}
+                  <div
+                    className="absolute inset-0 pointer-events-none"
+                    style={{
+                      borderRadius: '16px',
+                      background: 'linear-gradient(226.35deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50.5%)',
+                      padding: '1px'
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-[15px]"
+                      style={{
+                        background: '#1F1F1F'
+                      }}
+                    ></div>
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-semibold text-white leading-tight relative z-10" style={{fontFamily: 'Gilroy', fontWeight: 600}}>Community-First</h3>
+                  <p className="text-white text-sm sm:text-base leading-[140%] sm:leading-[150%] relative z-10" style={{fontFamily: 'Gilroy'}}>Building a supportive learning environment</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Frame 74 - Right Column with Text & CTA - Desktop Only */}
+            <div className="hidden lg:flex flex-col gap-9.5 w-full lg:flex-1">
+              <p className="text-white text-sm sm:text-base leading-[160%]" style={{fontFamily: 'Gilroy'}}>
+                I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations.
+                <br /><br />
+                Whether you&apos;re a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making.
+              </p>
+
+              <a
+                href="/meetings"
+                className="bg-white text-[#0A0A0A] px-6 py-3 rounded-full text-sm font-semibold hover:bg-gray-100 focus:bg-white/20 focus:border focus:border-white focus:text-white transition-all hover:scale-105 inline-flex items-center justify-center w-fit mx-auto lg:mx-0"
+                style={{fontFamily: 'Gilroy', fontWeight: 600}}
+              >
+                Book Mentorship
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+
+
+      {/* Latest Videos Section */}
+      <div id="latest-videos" className="mt-16 sm:mt-12 md:mt-16">
+        <LatestVideos />
+      </div>
+
+      {/* Tailored Guidance Section with Calendar */}
+      <div id="tailored-guidance" className="mt-12 sm:mt-0">
+        <TailoredGuidanceSection />
+      </div>
+
+
+  {/* Our Affiliated Partners Connected Vector Grid Rows - Responsive */}
+  <section id="affiliated" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16 mt-12 sm:mt-0 sm:mb-0! sm:pb-0!">
+        <div className="max-w-6xl mx-auto">
+          {/* Our Valued Partners Header - Centered and smaller */}
+          <div className="text-center -mb-22 md:mb-8">
+            <h2
+              className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white"
+              style={{fontFamily: 'Gilroy', fontWeight: 600}}
+            >
+              Our Affiliated Partners
+            </h2>
+          </div>
+
+          {/* Mobile Carousel View */}
+          <div className="block md:hidden relative w-full mx-auto h-[340px]">
+            {/* Single Vector Background for Mobile */}
+            <div
+              className="absolute w-full top-1/2 transform -translate-y-1/2 max-w-2xl mx-auto left-0 right-0"
+              style={{
+                aspectRatio: '1064/310',
+                background: `
+                  url("/Vector (1).png"),
+                  linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                  radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+                `,
+                backgroundSize: '150%, cover, cover',
+                backgroundPosition: 'center, center, center',
+                backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+              }}
+            />
+
+            {/* Carousel Container */}
+            <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 w-full overflow-hidden">
+              <div className="flex animate-carousel gap-16 items-center">
+                {/* All brand logos in a row that will scroll */}
+               
+              
+              
+                <Link href="/partners/binance" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                <Link href="/partners/exness" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+               
+                
+               
+               
+               
+                <Link href="/partners/primexbt" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                <Link href="/partners/bitfunded" className="h-20 w-40 flex-shrink-0">
+                  <Image src="/brand_images/bitfunded.png" alt="BitFunded" width={160} height={80} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                {/* Duplicate for seamless loop */}
+                
+                <Link href="/partners/binance" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                <Link href="/partners/exness" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                
+               
+                <Link href="/partners/primexbt" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                <Link href="/partners/bitfunded" className="h-20 w-40 flex-shrink-0">
+                  <Image src="/brand_images/bitfunded.png" alt="BitFunded" width={160} height={80} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop/Tablet Grid View */}
+          <div className="hidden md:block relative w-full max-w-4xl mx-auto h-[400px]">
+
+            {/* Group 13 - First Vector Grid Background */}
+            <div
+              className="absolute w-full top-[-40px]"
+              style={{
+                aspectRatio: '1064/310',
+                background: `
+                  url("/Vector (1).png"),
+                  linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                  radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+                `,
+                backgroundSize: 'contain, cover, cover',
+                backgroundPosition: 'center, center, center',
+                backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+              }}
+            />
+            {/* Frame 26 - First Row Logos */}
+            <div className="absolute z-30 flex justify-center items-center left-1/2 transform -translate-x-1/2 top-[13%] sm:top-[16%] md:top-[18%] lg:top-[16%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
+              
+             
+              
+              <Link href="/partners/binance" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/binance.svg"
+                  alt="Binance"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </Link>
+              <Link href="/partners/exness" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/exness.svg"
+                  alt="Exness"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </Link>
+              <Link href="/partners/primexbt" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-36 2xl:w-40 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/primexbt.svg"
+                  alt="PrimeXBT"
+                  className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
+                />
+              </Link>
+              <Link href="/partners/bitfunded" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-32 2xl:w-36 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/bitfunded.png"
+                  alt="BitFunded"
+                  className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
+                />
+              </Link>
+            </div>
+
+           
+
+          
+
+          </div>
+        </div>
+      </section>
+      {/* Brand Logos Section with 3 Connected Vector Grid Rows - Responsive */}
+      <section id="partners" className="relative z-10 bg-[#0A0A0A] px-2 sm:px-3 md:px-4 lg:px-6 py-8 sm:py-12 lg:py-16 mt-12 sm:mt-0 sm:pt-0!">
+        <div className="max-w-6xl mx-auto">
+          {/* Our Valued Partners Header - Centered and smaller */}
+          <div className="text-center -mb-22 md:mb-8">
+            <h2
+              className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white"
+              style={{fontFamily: 'Gilroy', fontWeight: 600}}
+            >
+              Our Valued Partners
+            </h2>
+          </div>
+
+          {/* Mobile Carousel View */}
+          <div className="block md:hidden relative w-full mx-auto h-[340px]">
+            {/* Single Vector Background for Mobile */}
+            <div
+              className="absolute w-full top-1/2 transform -translate-y-1/2 max-w-2xl mx-auto left-0 right-0"
+              style={{
+                aspectRatio: '1064/310',
+                background: `
+                  url("/Vector (1).png"),
+                  linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                  radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+                `,
+                backgroundSize: '150%, cover, cover',
+                backgroundPosition: 'center, center, center',
+                backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+              }}
+            />
+
+            {/* Carousel Container */}
+            <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 w-full overflow-hidden">
+              <div className="flex animate-carousel gap-16 items-center">
+                {/* All brand logos in a row that will scroll */}
+                <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/Gridlock.svg" alt="Gridlock" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/memotech.svg" alt="Memotech" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/finvolution.svg" alt="Finvolution" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/creati.svg" alt="Creati" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/capcut.svg" alt="CapCut" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/algorand.svg" alt="Algorand" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/wegic.svg" alt="Wegic" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/lemfi.svg" alt="Lemfi" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/ledger.svg" alt="Ledger" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <Link href="/partners/bitfunded" className="h-20 w-40 flex-shrink-0">
+                  <Image src="/brand_images/bitfunded.png" alt="BitFunded" width={160} height={80} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+                {/* Duplicate for seamless loop */}
+                <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/Gridlock.svg" alt="Gridlock" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/memotech.svg" alt="Memotech" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/finvolution.svg" alt="Finvolution" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/creati.svg" alt="Creati" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/binance.svg" alt="Binance" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/exness.svg" alt="Exness" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/capcut.svg" alt="CapCut" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/algorand.svg" alt="Algorand" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/wegic.svg" alt="Wegic" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/lemfi.svg" alt="Lemfi" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/ledger.svg" alt="Ledger" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="h-14 w-28 flex-shrink-0">
+                  <Image src="/brand_images/primexbt.svg" alt="PrimeXBT" width={112} height={56} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </a>
+                <Link href="/partners/bitfunded" className="h-20 w-40 flex-shrink-0">
+                  <Image src="/brand_images/bitfunded.png" alt="BitFunded" width={160} height={80} className="h-full w-full object-contain opacity-80 hover:opacity-100 transition-opacity" />
+                </Link>
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop/Tablet Grid View */}
+          <div className="hidden md:block relative w-full max-w-4xl mx-auto h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] xl:h-[724px]">
+
+            {/* Group 13 - First Vector Grid Background */}
+            <div
+              className="absolute w-full top-0"
+              style={{
+                aspectRatio: '1064/310',
+                background: `
+                  url("/Vector (1).png"),
+                  linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                  radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+                `,
+                backgroundSize: 'contain, cover, cover',
+                backgroundPosition: 'center, center, center',
+                backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+              }}
+            />
+
+            {/* Group 14 - Second Vector Grid Background */}
+            <div
+              className="absolute w-full top-[28%] sm:top-[35%] md:top-[40%] lg:top-[207px]"
+              style={{
+                aspectRatio: '1064/310',
+                background: `
+                  url("/Vector (1).png"),
+                  linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                  radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+                `,
+                backgroundSize: 'contain, cover, cover',
+                backgroundPosition: 'center, center, center',
+                backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+              }}
+            />
+
+            {/* Group 15 - Third Vector Grid Background */}
+            <div
+              className="absolute w-full top-[56%] sm:top-[70%] md:top-[80%] lg:top-[414px]"
+              style={{
+                aspectRatio: '1064/310',
+                background: `
+                  url("/Vector (1).png"),
+                  linear-gradient(#0A0A0A, #0A0A0A) padding-box,
+                  radial-gradient(63% 50.19% at 50% 50.19%, rgba(255, 255, 255, 0.2) 0%, rgba(10, 10, 10, 0) 100%) border-box
+                `,
+                backgroundSize: 'contain, cover, cover',
+                backgroundPosition: 'center, center, center',
+                backgroundRepeat: 'no-repeat, no-repeat, no-repeat'
+              }}
+            />
+
+            {/* Frame 26 - First Row Logos */}
+            <div className="absolute z-30 flex justify-center items-center left-1/2 transform -translate-x-1/2 top-[13%] sm:top-[16%] md:top-[18%] lg:top-[16%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
+              <a href="https://gridlock.network/" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/Gridlock.svg"
+                  alt="Gridlock"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://memotech.ie" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/memotech.svg"
+                  alt="Memotech"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://ir.finvgroup.com/" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/finvolution.svg"
+                  alt="Finvolution"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://creati.ai" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/creati.svg"
+                  alt="Creati"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://www.binance.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/binance.svg"
+                  alt="Binance"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+            </div>
+
+            {/* Frame 26 - Second Row Logos */}
+            <div className="absolute z-30 flex justify-center items-center left-1/2 transform -translate-x-1/2 top-[41%] sm:top-[44%] md:top-[45%] lg:top-[45%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-2 sm:gap-4 md:gap-6 lg:gap-[104px] px-2 sm:px-4 lg:px-0">
+              <a href="https://www.exness.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/exness.svg"
+                  alt="Exness"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://www.capcut.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/capcut.svg"
+                  alt="CapCut"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://www.algorand.foundation" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/algorand.svg"
+                  alt="Algorand"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://wegic.ai" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/wegic.svg"
+                  alt="Wegic"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://www.lemfi.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/lemfi.svg"
+                  alt="Lemfi"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+            </div>
+
+            {/* Frame 26 - Third Row Logos */}
+            <div className="absolute z-30 flex justify-center items-center left-1/2 transform -translate-x-1/2 top-[67%] sm:top-[70%] md:top-[71%] lg:top-[73%] w-[85%] sm:w-[80%] md:w-[75%] lg:w-[859px] opacity-72 gap-8 sm:gap-12 md:gap-16 lg:gap-32 xl:gap-40 2xl:gap-48 px-2 sm:px-4 lg:px-0">
+              <a href="https://www.ledger.com" target="_blank" rel="noopener noreferrer" className="w-10 sm:w-12 md:w-16 lg:w-20 xl:w-28 2xl:w-32 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/ledger.svg"
+                  alt="Ledger"
+                  className="opacity-80 w-full h-auto object-contain max-h-6 sm:max-h-7 md:max-h-8 lg:max-h-10 xl:max-h-12"
+                />
+              </a>
+              <a href="https://primexbt.com" target="_blank" rel="noopener noreferrer" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-36 2xl:w-40 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/primexbt.svg"
+                  alt="PrimeXBT"
+                  className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
+                />
+              </a>
+              <Link href="/partners/bitfunded" className="w-12 sm:w-16 md:w-20 lg:w-28 xl:w-32 2xl:w-36 h-auto flex-shrink-0 hover:opacity-100 transition-opacity cursor-pointer">
+                <img
+                  src="/brand_images/bitfunded.png"
+                  alt="BitFunded"
+                  className="opacity-80 w-full h-auto object-contain max-h-7 sm:max-h-8 md:max-h-10 lg:max-h-12 xl:max-h-14"
+                />
+              </Link>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Brand Stories Section */}
+      <div id="brand-stories" className="mt-12 sm:mt-0">
+        <BrandStories />
+      </div>
+
+      {/* Features Section */}
+      <div id="features" className="mt-12 sm:mt-0">
+        <FeaturesSection />
+      </div>
+
+      {/* Newsletter Subscription - More responsive */}
+      <div id="newsletter" className="px-3 sm:px-5 md:px-8 lg:px-12 py-12 sm:py-14 lg:py-16 mt-12 sm:mt-0">
+        <NewsletterSubscription />
+      </div>
+
+      {/* Collaboration Form */}
+      <div id="collaboration" className="mt-12 sm:mt-0">
+        <CollaborationForm />
+      </div>
+
+      {/* Footer */}
+      <Footer />
+    </div>
+  );
+}

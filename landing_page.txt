@@ -1,0 +1,5850 @@
+You are an expert front-end developer specializing in creating clean, modern, and fully responsive websites using Tailwind CSS.
+
+Your task is to build a single landing page based on the provided Figma design and CSS code.
+
+Crucially, you must NOT use the provided CSS as-is. The CSS is a static design export. Instead, use it only as a style reference for colors, fonts, spacing, sizes, and border-radius. You will build the entire page from scratch using Tailwind CSS.
+
+Your implementation MUST follow these critical instructions:
+
+
+HTML Structure:
+
+Use semantic HTML5 elements (<header>, <nav>, <main>, <section>, <footer>, etc.).
+
+Ensure the structure is logical and accessible. All text from the design must be included as actual text.
+
+Styling with Tailwind CSS (The Most Important Part):
+
+Implement all styling directly in the HTML using Tailwind CSS utility classes.
+
+Use Tailwind's Flexbox and Grid utilities (flex, grid, gap-4, justify-center, etc.) to build the entire page layout. Do not use absolute positioning for the main layout.
+
+The code must be mobile-first. Use Tailwind's responsive prefixes (md:, lg:, xl:) to adapt the layout for larger screens.
+
+For specific colors, fonts, or spacing from the reference CSS that are not in the default Tailwind palette, use Tailwind's arbitrary value syntax (e.g., bg-[#0A0A0A], p-[24px]).
+
+Assets and Placeholders:
+
+Fonts: The design uses 'Gilroy'. Use a similar, high-quality font from Google Fonts, such as 'Inter'. Include the <link> tag for it in the <head>.
+
+Images & Icons: For all images (logos, thumbnails, etc.), use placeholders from https://placehold.co/. Use the dimensions from the design and add descriptive alt tags.
+
+Interactivity & Custom CSS:
+
+Use Tailwind's state modifiers for interactivity, such as hover:scale-105 or hover:brightness-110 for all buttons and links.
+
+The "Latest Videos" section should be a horizontally scrollable container. Use Tailwind classes like flex, overflow-x-auto, and snap-x to achieve this.
+
+For the continuous vertical scrolling animation in the hero section or any complex gradients that are not possible with utilities alone, add a small amount of custom CSS in a <style> block inside the <head>.
+
+Final Code Quality:
+
+The final code should be clean, well-organized, and commented where necessary to explain complex parts, like the custom animation logic.
+
+Here is the design image and the reference CSS code to use for styling properties. Begin creating the landing page now.
+
+Following is the figma design's CSS:
+
+/* Landing */
+
+position: relative;
+width: 1440px;
+height: 4950px;
+
+background: #0A0A0A;
+
+
+/* Vector 1 */
+
+position: absolute;
+width: 1490.5px;
+height: 776.34px;
+left: 0px;
+top: 2px;
+
+filter: blur(100px);
+
+
+/* Frame 31 */
+
+position: absolute;
+width: 1280px;
+height: 36px;
+left: 80px;
+top: 24px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 212px;
+height: 32px;
+left: 0px;
+top: 2px;
+
+background: #FFFFFF;
+
+
+/* Frame 18 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+position: absolute;
+width: 390px;
+height: 14px;
+left: 445px;
+top: 11px;
+
+
+
+/* Research */
+
+width: 60px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Calculator */
+
+width: 68px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Portfolio */
+
+width: 53px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Shariah */
+
+width: 50px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Our Team */
+
+width: 63px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+flex-grow: 0;
+
+
+/* Frame 23 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px 16px;
+gap: 10px;
+
+position: absolute;
+width: 139px;
+height: 36px;
+left: 1141px;
+top: 0px;
+
+background: #FFFFFF;
+border-radius: 100px;
+
+
+/* Book 1:1 Meeting */
+
+width: 107px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+
+color: #0A0A0A;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 25 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+position: absolute;
+width: 630px;
+height: 286px;
+left: 186px;
+top: 262px;
+
+
+
+/* Making Finance & Tech Accessible Through Data-Driven Content */
+
+width: 630px;
+height: 174px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 48px;
+line-height: 120%;
+/* or 58px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Expert analysis on stocks, crypto, and data science - delivered with clarity and humor */
+
+width: 630px;
+height: 16px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 100%;
+/* identical to box height, or 16px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 47 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+gap: 20px;
+
+width: 414px;
+height: 48px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Frame 22 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 18px 12px;
+gap: 10px;
+
+width: 197px;
+height: 48px;
+
+background: #FFFFFF;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Book a 1v1 Call */
+
+width: 96px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+
+color: #0A0A0A;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 23 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 18px 12px;
+gap: 10px;
+
+width: 197px;
+height: 48px;
+
+border: 1px solid #FFFFFF;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Learn More */
+
+width: 96px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Mask group */
+
+position: absolute;
+width: 305px;
+height: 702px;
+left: 1055px;
+top: 84px;
+
+
+
+/* Rectangle 49 */
+
+position: absolute;
+width: 305px;
+height: 702px;
+left: 1055px;
+top: 84px;
+
+background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 24%, #FFFFFF 86%, rgba(255, 255, 255, 0) 100%);
+
+
+/* Frame 46 */
+
+position: absolute;
+width: 305px;
+height: 834.21px;
+left: 1055px;
+top: 98.9px;
+
+
+
+/* Frame 43 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+position: absolute;
+width: 88px;
+height: 872px;
+left: 217px;
+top: -60.39px;
+
+
+
+/* Frame 30 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 47 */
+
+position: absolute;
+width: 88px;
+height: 202px;
+left: 0px;
+top: -1px;
+
+background: url(IMG-20250421-WA0105);
+
+
+/* Frame 34 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 45 */
+
+position: absolute;
+width: 88px;
+height: 202px;
+left: 0px;
+top: -1px;
+
+background: url(WhatsApp Image 2025-05-08 at 13.10.25_e1db978e);
+
+
+/* Frame 37 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 46 */
+
+position: absolute;
+width: 88px;
+height: 202px;
+left: 0px;
+top: -1px;
+
+background: url(IMG-20250506-WA0025);
+
+
+/* Frame 40 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* WhatsApp Image 2025-03-13 at 09.43.01_59fd0122 */
+
+position: absolute;
+width: 150px;
+height: 200px;
+left: -16px;
+top: 0px;
+
+background: url(WhatsApp Image 2025-03-13 at 09.43.01_59fd0122);
+
+
+/* Frame 45 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+position: absolute;
+width: 88px;
+height: 872px;
+left: 0px;
+top: -36.39px;
+
+
+
+/* Frame 32 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 47 */
+
+position: absolute;
+width: 88px;
+height: 202px;
+left: 0px;
+top: -1px;
+
+background: url(IMG-20250506-WA0039);
+
+
+/* Frame 35 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 45 */
+
+position: absolute;
+width: 110px;
+height: 252px;
+left: -11px;
+top: -26px;
+
+background: url(WhatsApp Image 2025-03-13 at 09.42.57_806c7df6);
+
+
+/* Frame 38 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 46 */
+
+position: absolute;
+width: 88px;
+height: 202px;
+left: 0px;
+top: -1px;
+
+background: url(IMG-20250506-WA0057);
+
+
+/* Frame 41 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* WhatsApp Image 2025-03-13 at 09.43.00_5f3795ff */
+
+position: absolute;
+width: 150px;
+height: 200px;
+left: -31px;
+top: 0px;
+
+background: url(WhatsApp Image 2025-03-13 at 09.43.00_5f3795ff);
+
+
+/* Frame 44 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+position: absolute;
+width: 88px;
+height: 872px;
+left: 109px;
+top: -159.9px;
+
+
+
+/* Frame 40 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 47 */
+
+position: absolute;
+width: 88px;
+height: 202px;
+left: 0px;
+top: -1px;
+
+background: url(WhatsApp Image 2025-03-13 at 09.42.52_59a08f7f);
+
+
+/* Frame 33 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* WhatsApp Image 2025-03-13 at 09.42.55_c04ab3c9 1 */
+
+position: absolute;
+width: 266px;
+height: 200px;
+left: -72px;
+top: 0px;
+
+background: url(WhatsApp Image 2025-03-13 at 09.42.55_c04ab3c9);
+
+
+/* Frame 36 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 45 */
+
+position: absolute;
+width: 88px;
+height: 202px;
+left: 0px;
+top: -1px;
+
+background: url(IMG-20250506-WA0029);
+
+
+/* Frame 39 */
+
+width: 88px;
+height: 200px;
+
+background: #FFFFFF;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Rectangle 46 */
+
+position: absolute;
+width: 88px;
+height: 202px;
+left: 0px;
+top: -1px;
+
+background: url(IMG-20250506-WA0034);
+
+
+/* Newsletter Banner */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 40px;
+gap: 10px;
+isolation: isolate;
+
+position: absolute;
+width: 1064px;
+height: 314px;
+left: 188px;
+top: 4197px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+
+/* Ellipse 2 */
+
+position: absolute;
+width: 588px;
+height: 588px;
+left: -203px;
+top: -456px;
+
+background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+filter: blur(200px);
+transform: rotate(90deg);
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+z-index: 0;
+
+
+/* Frame 25 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 40px;
+
+width: 461px;
+height: 234px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+z-index: 1;
+
+
+/* Frame 81 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+width: 461px;
+height: 98px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Stay Ahead of the Markets */
+
+width: 461px;
+height: 32px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 32px;
+line-height: 100%;
+/* identical to box height, or 32px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Join 25,000+ subscribers who rely on our research-backed analysis to make smarter investment decisions. */
+
+width: 461px;
+height: 42px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 22 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding: 4px 4px 4px 16px;
+gap: 10px;
+
+width: 461px;
+height: 40px;
+
+border: 1px solid rgba(255, 255, 255, 0.4);
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Enter your email address */
+
+margin: 0 auto;
+width: 157px;
+height: 14px;
+
+font-family: 'Gilroy-Regular';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 23 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 8px 24px;
+gap: 10px;
+
+margin: 0 auto;
+width: 112px;
+height: 32px;
+
+background: #FFFFFF;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Subscribe */
+
+width: 64px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+
+color: #0A0A0A;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* NO SPAM. I never send spam. You can unsubscribe at any time! */
+
+width: 461px;
+height: 16px;
+
+font-family: 'Gilroy-Bold';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 100%;
+/* identical to box height, or 16px */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+opacity: 0.8;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+width: 373.16px;
+height: 519.64px;
+left: 622px;
+top: -138px;
+
+background: linear-gradient(180deg, #333333 0%, #1F1F1F 100%);
+transform: rotate(15deg);
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+z-index: 2;
+
+
+/* Frame 86 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 64px;
+
+position: absolute;
+width: 1064px;
+height: 541px;
+left: 188px;
+top: 944px;
+
+
+
+/* Group 12 */
+
+width: 1064px;
+height: 195px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Breaking Down Markets, Crypto & Data Into Clear, Actionable Insights - So You Can Learn, Grow & Succeed Without The Jargon. */
+
+position: absolute;
+width: 1064px;
+height: 195px;
+left: 0px;
+top: 0px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 36px;
+line-height: 180%;
+/* or 65px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+
+/* Rectangle 50 */
+
+position: absolute;
+width: 87px;
+height: 50px;
+left: 201.99px;
+top: 65.3px;
+
+background: url(IMG-20250506-WA0039);
+border-radius: 8px;
+transform: rotate(5deg);
+
+
+/* Rectangle 52 */
+
+position: absolute;
+width: 87px;
+height: 50px;
+left: 524.99px;
+top: 129.3px;
+
+background: url(IMG-20250506-WA0021);
+border-radius: 8px;
+transform: rotate(-5deg);
+
+
+/* Rectangle 51 */
+
+position: absolute;
+width: 85px;
+height: 50px;
+left: 476.75px;
+top: 1.81px;
+
+background: url(WhatsApp Image 2025-03-13 at 09.43.00_5f3795ff);
+border-radius: 8px;
+transform: rotate(3deg);
+
+
+/* Frame 77 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 40px;
+
+width: 1064px;
+height: 282px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 85 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 20px;
+
+width: 512px;
+height: 282px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 84 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+gap: 20px;
+
+width: 512px;
+height: 131px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 32 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+align-items: flex-start;
+padding: 16px;
+gap: 16px;
+
+width: 246px;
+height: 131px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* Frame 66 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+margin: 0 auto;
+width: 214px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Data-Driven Approach */
+
+width: 214px;
+height: 20px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 20px;
+line-height: 100%;
+/* identical to box height, or 20px */
+letter-spacing: -0.02em;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Every analysis is backed by comprehensive research */
+
+margin: 0 auto;
+width: 214px;
+height: 42px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 75 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 16px;
+gap: 16px;
+
+width: 246px;
+height: 131px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* Frame 66 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 214px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Educational Focus */
+
+width: 214px;
+height: 20px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 20px;
+line-height: 100%;
+/* identical to box height, or 20px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Complex concepts broken down into actionable insights */
+
+width: 214px;
+height: 63px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 83 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+gap: 20px;
+
+width: 512px;
+height: 131px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 32 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 16px;
+gap: 16px;
+
+width: 246px;
+height: 131px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Frame 66 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 214px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Real-Time Coverage */
+
+width: 214px;
+height: 20px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 20px;
+line-height: 100%;
+/* identical to box height, or 20px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Live trading sessions and immediate market commentary */
+
+width: 214px;
+height: 63px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 75 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+align-items: flex-start;
+padding: 16px;
+gap: 16px;
+
+width: 246px;
+height: 131px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* Frame 66 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+margin: 0 auto;
+width: 214px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Community-First */
+
+width: 214px;
+height: 20px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 20px;
+line-height: 100%;
+/* identical to box height, or 20px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 1;
+
+
+/* Building a supportive learning environment */
+
+margin: 0 auto;
+width: 214px;
+height: 42px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 74 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+width: 512px;
+height: 282px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 1;
+
+
+/* I transform complex financial concepts into actionable insights that drive real results. As a content creator specializing in market analysis, cryptocurrency trends, and data science applications in finance, my approach combines rigorous technical analysis with clear, engaging explanations. Whether you're a beginner taking your first steps into investing or an experienced trader looking for fresh perspectives, my content bridges the gap between complex market dynamics and practical decision-making. */
+
+margin: 0 auto;
+width: 512px;
+height: 202px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 23 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 12px 16px;
+gap: 10px;
+
+margin: 0 auto;
+width: 187px;
+height: 48px;
+
+background: #FFFFFF;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Book 1:1 Meeting */
+
+width: 107px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+
+color: #0A0A0A;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Group 13 */
+
+position: absolute;
+width: 1064px;
+height: 310px;
+left: 188px;
+top: 1589px;
+
+
+
+/* Frame 26 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: center;
+padding: 0px;
+gap: 104px;
+
+position: absolute;
+width: 859.29px;
+height: 36.19px;
+left: 290px;
+top: 1725.3px;
+
+opacity: 0.72;
+
+
+/* Group 10 */
+
+margin: 0 auto;
+width: 90.3px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Clip path group */
+
+position: absolute;
+left: 0%;
+right: 97.59%;
+top: 16.84%;
+bottom: 16.84%;
+
+
+
+/* clip0_953_7607 */
+
+position: absolute;
+left: 0%;
+right: 97.59%;
+top: 16.84%;
+bottom: 16.84%;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 97.59%;
+top: 16.84%;
+bottom: 16.84%;
+
+background: #000000;
+
+
+/* Group */
+
+position: absolute;
+left: 0%;
+right: 97.59%;
+top: 16.84%;
+bottom: 16.84%;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 97.59%;
+top: 16.84%;
+bottom: 52.38%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 97.59%;
+top: 52.38%;
+bottom: 16.84%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 0.56%;
+right: 98.15%;
+top: 32.55%;
+bottom: 32.67%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 1.21%;
+right: 98.15%;
+top: 41.61%;
+bottom: 32.47%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 0.56%;
+right: 98.79%;
+top: 41.61%;
+bottom: 32.49%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 3.14%;
+right: 95.48%;
+top: 30.96%;
+bottom: 33.74%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 4.63%;
+right: 94.74%;
+top: 40.91%;
+bottom: 34.32%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 5.28%;
+right: 94.39%;
+top: 30.57%;
+bottom: 34.32%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 5.68%;
+right: 93.21%;
+top: 30.57%;
+bottom: 33.74%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 6.91%;
+right: 92.82%;
+top: 30.57%;
+bottom: 34.32%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 7.27%;
+right: 91.68%;
+top: 40.91%;
+bottom: 33.74%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 8.38%;
+right: 90.59%;
+top: 40.91%;
+bottom: 33.74%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 9.51%;
+right: 89.49%;
+top: 30.57%;
+bottom: 34.32%;
+
+background: #FFFFFF;
+
+
+/* image 2 */
+
+margin: 0 auto;
+width: 111px;
+height: 30px;
+
+background: url(upscale_image [Upscaled]);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Vector */
+
+margin: 0 auto;
+width: 102px;
+height: 16px;
+
+background: #FFFFFF;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* image 4 */
+
+margin: 0 auto;
+width: 97px;
+height: 24px;
+
+background: url(upscale_image [Upscaled]);
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+width: 1064px;
+height: 310px;
+left: 188px;
+top: 1589px;
+
+
+
+/* Frame 68 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 20px;
+
+position: absolute;
+width: 1064px;
+height: 476px;
+left: 188px;
+top: 3481px;
+
+
+
+/* Frame 54 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 20px;
+
+width: 1064px;
+height: 228px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 32 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 24px;
+gap: 24px;
+isolation: isolate;
+
+width: 522px;
+height: 228px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 92 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 16px;
+
+width: 474px;
+height: 140px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+z-index: 0;
+
+
+/* Frame 59 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 474px;
+height: 40px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 62 */
+
+width: 40px;
+height: 40px;
+
+background: #333333;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Sparks--Streamline-Iconoir */
+
+position: absolute;
+width: 20px;
+height: 20px;
+left: 10px;
+top: 10px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 32.53%;
+right: 6.32%;
+top: 32.53%;
+bottom: 6.32%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 6.32%;
+right: 54.37%;
+top: 6.32%;
+bottom: 54.37%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Premium Research */
+
+width: 291px;
+height: 24px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 24px;
+line-height: 100%;
+/* identical to box height, or 24px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* Frame 89 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 10px;
+gap: 10px;
+
+width: 95px;
+height: 32px;
+
+background: #0A0A0A;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Coming Soon */
+
+width: 75px;
+height: 10px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 100%;
+/* or 12px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Access exclusive market analysis and data-driven insights that go beyond surface-level trends. Our research combines technical analysis with fundamental metrics to identify high-probability opportunities before they become mainstream. */
+
+width: 474px;
+height: 84px;
+
+font-family: 'Gilroy-Regular';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 90 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 97px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+z-index: 1;
+
+
+/* Learn More */
+
+width: 73px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Arrow-Up-Right--Streamline-Iconoir */
+
+width: 16px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 7.9%;
+right: 7.9%;
+top: 7.9%;
+bottom: 7.9%;
+
+border: 1.5px solid #FFFFFF;
+
+
+/* Ellipse 2 */
+
+position: absolute;
+width: 588px;
+height: 588px;
+left: 489px;
+top: -376px;
+
+background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+filter: blur(100px);
+transform: rotate(90deg);
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+z-index: 2;
+
+
+/* Frame 33 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 24px;
+gap: 24px;
+isolation: isolate;
+
+width: 522px;
+height: 228px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 91 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 16px;
+
+width: 474px;
+height: 140px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+z-index: 0;
+
+
+/* Frame 61 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 474px;
+height: 40px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 63 */
+
+width: 40px;
+height: 40px;
+
+background: #333333;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Calculator--Streamline-Iconoir */
+
+position: absolute;
+width: 20px;
+height: 20px;
+left: 10px;
+top: 10px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 6.08%;
+right: 6.08%;
+top: 6.08%;
+bottom: 6.08%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 61.98%;
+right: 22.05%;
+top: 30.03%;
+bottom: 69.97%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 61.98%;
+right: 22.05%;
+top: 63.98%;
+bottom: 36.02%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 61.98%;
+right: 22.05%;
+top: 75.95%;
+bottom: 24.05%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 22.05%;
+right: 61.98%;
+top: 22.05%;
+bottom: 61.98%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 24.39%;
+right: 64.32%;
+top: 64.32%;
+bottom: 24.39%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Position Sizing Calculator */
+
+width: 291px;
+height: 24px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 24px;
+line-height: 100%;
+/* identical to box height, or 24px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* Frame 89 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 10px;
+gap: 10px;
+
+width: 95px;
+height: 32px;
+
+background: #0A0A0A;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Coming Soon */
+
+width: 75px;
+height: 10px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 100%;
+/* or 12px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Take the guesswork out of risk management with our proprietary calculator that determines optimal trade sizes. Never risk too much on a single position again - protect your capital while maximizing growth potential. */
+
+width: 474px;
+height: 84px;
+
+font-family: 'Gilroy-Regular';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 90 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 97px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+z-index: 1;
+
+
+/* Learn More */
+
+width: 73px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Arrow-Up-Right--Streamline-Iconoir */
+
+width: 16px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 7.9%;
+right: 7.9%;
+top: 7.9%;
+bottom: 7.9%;
+
+border: 1.5px solid #FFFFFF;
+
+
+/* Ellipse 2 */
+
+position: absolute;
+width: 588px;
+height: 588px;
+left: 367.22px;
+top: -497.78px;
+
+background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+filter: blur(100px);
+transform: rotate(135deg);
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+z-index: 2;
+
+
+/* Frame 55 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 20px;
+
+width: 1064px;
+height: 228px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 32 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 24px;
+gap: 24px;
+isolation: isolate;
+
+width: 522px;
+height: 228px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 93 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 16px;
+
+width: 474px;
+height: 140px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+z-index: 0;
+
+
+/* Frame 66 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 474px;
+height: 40px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 64 */
+
+width: 40px;
+height: 40px;
+
+background: #333333;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* User-Star--Streamline-Iconoir */
+
+position: absolute;
+width: 20px;
+height: 20px;
+left: 10px;
+top: 10px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 23.51%;
+right: 37.96%;
+top: 6.65%;
+bottom: 54.82%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 9.06%;
+right: 42.77%;
+top: 45.18%;
+bottom: 16.29%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 52.41%;
+right: 9.06%;
+top: 54.82%;
+bottom: 6.65%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Portfolio */
+
+width: 291px;
+height: 24px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 24px;
+line-height: 100%;
+/* identical to box height, or 24px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* Frame 89 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 10px;
+gap: 10px;
+
+width: 95px;
+height: 32px;
+
+background: #0A0A0A;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Coming Soon */
+
+width: 75px;
+height: 10px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 100%;
+/* or 12px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Get transparent access to real portfolio performance and trade rationale behind every decision. Learn from actual positions, wins, losses, and the strategic thinking that drives long-term wealth building. */
+
+width: 474px;
+height: 84px;
+
+font-family: 'Gilroy-Regular';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 90 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 97px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+z-index: 1;
+
+
+/* Learn More */
+
+width: 73px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Arrow-Up-Right--Streamline-Iconoir */
+
+width: 16px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 7.9%;
+right: 7.9%;
+top: 7.9%;
+bottom: 7.9%;
+
+border: 1.5px solid #FFFFFF;
+
+
+/* Ellipse 2 */
+
+position: absolute;
+width: 588px;
+height: 588px;
+left: 422.92px;
+top: -442.07px;
+
+background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+filter: blur(100px);
+transform: rotate(15deg);
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+z-index: 2;
+
+
+/* Frame 33 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 24px;
+gap: 24px;
+isolation: isolate;
+
+width: 522px;
+height: 228px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 94 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 16px;
+
+width: 474px;
+height: 140px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+z-index: 0;
+
+
+/* Frame 67 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 24px;
+
+width: 474px;
+height: 40px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 65 */
+
+width: 40px;
+height: 40px;
+
+background: #333333;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Bright-Crown--Streamline-Iconoir */
+
+position: absolute;
+width: 20px;
+height: 20px;
+left: 10px;
+top: 10px;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 89.93%;
+right: 6.08%;
+top: 50%;
+bottom: 50%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 50%;
+right: 50%;
+top: 6.08%;
+bottom: 89.93%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 50%;
+right: 50%;
+top: 89.93%;
+bottom: 6.08%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 77.95%;
+right: 18.06%;
+top: 77.95%;
+bottom: 18.06%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 77.95%;
+right: 18.06%;
+top: 18.06%;
+bottom: 77.95%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 18.06%;
+right: 77.95%;
+top: 77.95%;
+bottom: 18.06%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 18.06%;
+right: 77.95%;
+top: 18.06%;
+bottom: 77.95%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 6.08%;
+right: 89.93%;
+top: 50%;
+bottom: 50%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 26.04%;
+right: 26.04%;
+top: 36.02%;
+bottom: 36.02%;
+
+border: 1px solid #FFFFFF;
+
+
+/* Shariah Projects */
+
+width: 291px;
+height: 24px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 24px;
+line-height: 100%;
+/* identical to box height, or 24px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 1;
+
+
+/* Frame 89 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 10px;
+gap: 10px;
+
+width: 95px;
+height: 32px;
+
+background: #0A0A0A;
+border-radius: 80px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Coming Soon */
+
+width: 75px;
+height: 10px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 100%;
+/* or 12px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Discover halal investment opportunities that align with Islamic principles without compromising on returns. Comprehensive analysis of Shariah-compliant stocks, crypto projects, and alternative investments for the conscious Muslim investor. */
+
+width: 474px;
+height: 84px;
+
+font-family: 'Gilroy-Regular';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 90 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 97px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+z-index: 1;
+
+
+/* Learn More */
+
+width: 73px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Arrow-Up-Right--Streamline-Iconoir */
+
+width: 16px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 7.9%;
+right: 7.9%;
+top: 7.9%;
+bottom: 7.9%;
+
+border: 1.5px solid #FFFFFF;
+
+
+/* Ellipse 2 */
+
+position: absolute;
+width: 588px;
+height: 588px;
+left: 381.39px;
+top: -483.61px;
+
+background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+filter: blur(100px);
+transform: rotate(-30deg);
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+z-index: 2;
+
+
+/* Frame 96 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 40px;
+isolation: isolate;
+
+position: absolute;
+width: 846px;
+height: 406px;
+left: 297px;
+top: 2139px;
+
+
+
+/* Frame 74 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+width: 846px;
+height: 133px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+z-index: 0;
+
+
+/* Frame 95 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 0px;
+gap: 16px;
+
+width: 846px;
+height: 67.51px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Prefer */
+
+width: 97px;
+height: 30px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 36px;
+line-height: 100%;
+/* or 36px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Rectangle 50 */
+
+width: 94px;
+height: 58px;
+
+background: url(IMG-20250506-WA0025);
+border-radius: 8px;
+transform: rotate(-6deg);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Tailored Guidance? */
+
+width: 323px;
+height: 30px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 36px;
+line-height: 100%;
+/* or 36px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Get personalized support through a 1:1 session - you’re exploring your first investment or refining advanced strategies. Book a meeting and get advice tailored to your goals. */
+
+width: 846px;
+height: 42px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Group 20 */
+
+width: 650px;
+height: 233px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+z-index: 1;
+
+
+/* Group 19 */
+
+position: absolute;
+width: 650px;
+height: 233px;
+left: 98px;
+top: 173px;
+
+
+
+/* Rectangle 62 */
+
+position: absolute;
+width: 634.59px;
+height: 217.6px;
+left: 105.7px;
+top: 180.7px;
+
+background: #1F1F1F;
+border-radius: 12px;
+
+
+/* Rectangle 63 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 650px;
+height: 233px;
+left: 98px;
+top: 173px;
+
+border-radius: 16px;
+
+
+/* Group 18 */
+
+position: absolute;
+width: 590.58px;
+height: 178.51px;
+left: 125.47px;
+top: 200.53px;
+
+
+
+/* Group 17 */
+
+position: absolute;
+width: 243.54px;
+height: 14.06px;
+left: 125.47px;
+top: 200.53px;
+
+
+
+/* September, 2025 */
+
+position: absolute;
+width: 118.9px;
+height: 14.06px;
+left: 125.47px;
+top: 200.53px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 7.44px;
+height: 10.98px;
+left: 236.93px;
+top: 200.73px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.13px;
+height: 10.98px;
+left: 228.91px;
+top: 200.53px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 8.47px;
+height: 11.18px;
+left: 219.6px;
+top: 200.53px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.13px;
+height: 10.98px;
+left: 211.43px;
+top: 200.53px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 2.47px;
+height: 4.01px;
+left: 203.87px;
+top: 209.66px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 4.04px;
+height: 7.84px;
+left: 199.84px;
+top: 203.67px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.93px;
+height: 8.1px;
+left: 190.44px;
+top: 203.61px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 8.2px;
+height: 10.98px;
+left: 181.17px;
+top: 200.73px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 11.32px;
+height: 7.9px;
+left: 168.06px;
+top: 203.61px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.93px;
+height: 8.1px;
+left: 158.66px;
+top: 203.61px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 4.99px;
+height: 9.93px;
+left: 152.91px;
+top: 201.65px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 8.2px;
+height: 10.98px;
+left: 144.05px;
+top: 203.61px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.93px;
+height: 8.1px;
+left: 134.65px;
+top: 203.61px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.99px;
+height: 11.18px;
+left: 125.47px;
+top: 200.53px;
+
+background: #FFFFFF;
+
+
+/* Ellipse 3 */
+
+position: absolute;
+width: 6.74px;
+height: 6.74px;
+left: 256.89px;
+top: 204.29px;
+
+background: #D9D9D9;
+
+
+/* Schedule a call */
+
+position: absolute;
+width: 93.34px;
+height: 10.02px;
+left: 275.67px;
+top: 201.67px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 1.17px;
+height: 9.84px;
+left: 367.84px;
+top: 201.67px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 1.17px;
+height: 9.84px;
+left: 364.88px;
+top: 201.67px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.13px;
+height: 7.09px;
+left: 355.97px;
+top: 204.6px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 6.58px;
+height: 7.09px;
+left: 348.7px;
+top: 204.6px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.13px;
+height: 7.09px;
+left: 336.8px;
+top: 204.6px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 6.89px;
+height: 7.09px;
+left: 325.57px;
+top: 204.6px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 1.17px;
+height: 9.84px;
+left: 322.98px;
+top: 201.67px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 5.97px;
+height: 6.91px;
+left: 315.23px;
+top: 204.77px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.13px;
+height: 9.61px;
+left: 306.47px;
+top: 202.08px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 6.89px;
+height: 7.09px;
+left: 298.62px;
+top: 204.6px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 5.97px;
+height: 9.44px;
+left: 291.39px;
+top: 202.08px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 6.58px;
+height: 7.09px;
+left: 283.65px;
+top: 204.6px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 6.84px;
+height: 9.79px;
+left: 275.67px;
+top: 201.9px;
+
+background: #909090;
+
+
+/* Group 16 */
+
+position: absolute;
+width: 587.46px;
+height: 132.3px;
+left: 128.59px;
+top: 246.74px;
+
+
+
+/* Group 14 */
+
+position: absolute;
+width: 571.5px;
+height: 82.8px;
+left: 139.57px;
+top: 296.24px;
+
+
+
+/* Rectangle 54 */
+
+position: absolute;
+width: 34.67px;
+height: 34.66px;
+left: 214.52px;
+top: 296.24px;
+
+background: #404040;
+border-radius: 8px;
+
+
+/* Rectangle 59 */
+
+position: absolute;
+width: 34.67px;
+height: 34.66px;
+left: 403.26px;
+top: 344.38px;
+
+background: #404040;
+border-radius: 8px;
+
+
+/* Rectangle 55 */
+
+position: absolute;
+width: 34.67px;
+height: 34.66px;
+left: 308.89px;
+top: 296.24px;
+
+background: #404040;
+border-radius: 8px;
+
+
+/* Rectangle 60 */
+
+position: absolute;
+width: 34.67px;
+height: 34.66px;
+left: 308.89px;
+top: 344.38px;
+
+background: #404040;
+border-radius: 8px;
+
+
+/* Rectangle 58 */
+
+position: absolute;
+width: 34.67px;
+height: 34.66px;
+left: 592px;
+top: 296.24px;
+
+background: #404040;
+border-radius: 8px;
+
+
+/* Rectangle 61 */
+
+position: absolute;
+width: 34.67px;
+height: 34.66px;
+left: 592px;
+top: 344.38px;
+
+background: #404040;
+border-radius: 8px;
+
+
+/* 1 */
+
+position: absolute;
+width: 4.07px;
+height: 10.78px;
+left: 140.73px;
+top: 307.6px;
+
+background: #909090;
+
+
+/* 8 */
+
+position: absolute;
+width: 7.38px;
+height: 11.18px;
+left: 139.57px;
+top: 355.54px;
+
+background: #909090;
+
+
+/* 2 */
+
+position: absolute;
+width: 6.96px;
+height: 10.98px;
+left: 228.34px;
+top: 307.4px;
+
+background: #FFFFFF;
+
+
+/* 9 */
+
+position: absolute;
+width: 7.43px;
+height: 10.98px;
+left: 228.14px;
+top: 355.54px;
+
+background: #909090;
+
+
+/* 3 */
+
+position: absolute;
+width: 7.24px;
+height: 10.98px;
+left: 322.53px;
+top: 307.6px;
+
+background: #FFFFFF;
+
+
+/* 10 */
+
+position: absolute;
+width: 14.29px;
+height: 11.18px;
+left: 318.84px;
+top: 355.54px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 8.32px;
+height: 11.18px;
+left: 324.81px;
+top: 355.54px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 4.07px;
+height: 10.78px;
+left: 318.84px;
+top: 355.74px;
+
+background: #FFFFFF;
+
+
+/* 4 */
+
+position: absolute;
+width: 8.24px;
+height: 10.78px;
+left: 416.49px;
+top: 307.6px;
+
+background: #909090;
+
+
+/* 11 */
+
+position: absolute;
+width: 9.56px;
+height: 10.78px;
+left: 415.32px;
+top: 355.74px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 4.07px;
+height: 10.78px;
+left: 420.81px;
+top: 355.74px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 4.07px;
+height: 10.78px;
+left: 415.32px;
+top: 355.74px;
+
+background: #FFFFFF;
+
+
+/* 5 */
+
+position: absolute;
+width: 7.26px;
+height: 10.98px;
+left: 511.32px;
+top: 307.6px;
+
+background: #909090;
+
+
+/* 12 */
+
+position: absolute;
+width: 12.79px;
+height: 10.98px;
+left: 508.85px;
+top: 355.54px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 6.96px;
+height: 10.98px;
+left: 514.68px;
+top: 355.54px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 4.07px;
+height: 10.78px;
+left: 508.85px;
+top: 355.74px;
+
+background: #909090;
+
+
+/* 6 */
+
+position: absolute;
+width: 7.43px;
+height: 10.98px;
+left: 605.62px;
+top: 307.6px;
+
+background: #FFFFFF;
+
+
+/* 13 */
+
+position: absolute;
+width: 12.95px;
+height: 10.98px;
+left: 603.16px;
+top: 355.74px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 7.24px;
+height: 10.98px;
+left: 608.87px;
+top: 355.74px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 4.07px;
+height: 10.78px;
+left: 603.16px;
+top: 355.74px;
+
+background: #FFFFFF;
+
+
+/* 7 */
+
+position: absolute;
+width: 6.73px;
+height: 10.78px;
+left: 700.2px;
+top: 307.6px;
+
+background: #909090;
+
+
+/* 14 */
+
+position: absolute;
+width: 13.89px;
+height: 10.78px;
+left: 697.19px;
+top: 355.74px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 8.24px;
+height: 10.78px;
+left: 702.83px;
+top: 355.74px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 4.07px;
+height: 10.78px;
+left: 697.19px;
+top: 355.74px;
+
+background: #909090;
+
+
+/* Group 15 */
+
+position: absolute;
+width: 587.46px;
+height: 11.18px;
+left: 128.59px;
+top: 246.74px;
+
+
+
+/* SUN */
+
+position: absolute;
+width: 27.78px;
+height: 11.18px;
+left: 128.59px;
+top: 246.74px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 8.14px;
+height: 10.78px;
+left: 148.24px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 8.09px;
+height: 10.98px;
+left: 137.96px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.81px;
+height: 11.18px;
+left: 128.59px;
+top: 246.74px;
+
+background: #909090;
+
+
+/* MON */
+
+position: absolute;
+width: 32.86px;
+height: 11.18px;
+left: 214.94px;
+top: 246.74px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 8.14px;
+height: 10.78px;
+left: 239.67px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 11.17px;
+height: 11.18px;
+left: 226.77px;
+top: 246.74px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 10.09px;
+height: 10.78px;
+left: 214.94px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* TUE */
+
+position: absolute;
+width: 25.78px;
+height: 10.98px;
+left: 312.7px;
+top: 246.94px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 6.44px;
+height: 10.78px;
+left: 332.04px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 8.09px;
+height: 10.98px;
+left: 321.76px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.78px;
+height: 10.78px;
+left: 312.7px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* WED */
+
+position: absolute;
+width: 33.67px;
+height: 10.78px;
+left: 403.18px;
+top: 246.94px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 9.32px;
+height: 10.78px;
+left: 427.53px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 6.44px;
+height: 10.78px;
+left: 419.36px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 14.64px;
+height: 10.78px;
+left: 403.18px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* THU */
+
+position: absolute;
+width: 27.55px;
+height: 10.98px;
+left: 500.33px;
+top: 246.94px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 8.09px;
+height: 10.98px;
+left: 519.79px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 8.09px;
+height: 10.78px;
+left: 509.53px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.78px;
+height: 10.78px;
+left: 500.33px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* FRI */
+
+position: absolute;
+width: 18.8px;
+height: 10.78px;
+left: 599.45px;
+top: 246.94px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 1.43px;
+height: 10.78px;
+left: 616.82px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.98px;
+height: 10.78px;
+left: 607.4px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 6.21px;
+height: 10.78px;
+left: 599.45px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* SAT */
+
+position: absolute;
+width: 25.36px;
+height: 11.18px;
+left: 690.69px;
+top: 246.74px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 7.78px;
+height: 10.78px;
+left: 708.27px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 9.66px;
+height: 10.78px;
+left: 699px;
+top: 246.94px;
+
+background: #909090;
+
+
+/* Vector */
+
+position: absolute;
+width: 7.81px;
+height: 11.18px;
+left: 690.69px;
+top: 246.74px;
+
+background: #909090;
+
+
+/* Rectangle 64 */
+
+position: absolute;
+width: 650px;
+height: 233px;
+left: 98px;
+top: 173px;
+
+background: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, #0A0A0A 100%);
+
+
+/* Frame 22 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 18px 12px;
+gap: 10px;
+
+position: absolute;
+width: 197px;
+height: 48px;
+left: 597px;
+top: -47px;
+
+background: #FFFFFF;
+border-radius: 100px;
+transform: rotate(-4deg);
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+z-index: 2;
+
+
+/* Book a 1v1 Call */
+
+width: 96px;
+height: 12px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* or 14px */
+
+color: #0A0A0A;
+
+transform: rotate(-4deg);
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 101 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 64px;
+
+position: absolute;
+width: 1716px;
+height: 456px;
+left: -138px;
+top: 2785px;
+
+
+
+/* Check Out My Latest Videos */
+
+width: 1716px;
+height: 30px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 36px;
+line-height: 100%;
+/* or 36px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 100 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 20px;
+
+width: 1716px;
+height: 362.62px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 99 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 24px;
+gap: 24px;
+
+width: 414px;
+height: 362.62px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Screenshot 2025-09-18 at 12.17.27 PM 1 */
+
+width: 366px;
+height: 204.62px;
+
+background: url(Screenshot 2025-09-18 at 12.17.27 PM.png);
+border-radius: 8px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 92 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 16px;
+
+width: 366px;
+height: 42px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68 */
+
+width: 366px;
+height: 42px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 90 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 112px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Watch Video */
+
+width: 84px;
+height: 14px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Arrow-Up-Right--Streamline-Iconoir */
+
+width: 20px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 7.9%;
+right: 7.9%;
+top: 7.9%;
+bottom: 7.9%;
+
+border: 1.5px solid #FFFFFF;
+
+
+/* Frame 32 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 24px;
+gap: 24px;
+
+width: 414px;
+height: 362.62px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Screenshot 2025-09-18 at 12.17.27 PM 1 */
+
+width: 366px;
+height: 204.62px;
+
+background: url(Screenshot 2025-09-18 at 12.17.27 PM.png);
+border-radius: 8px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 92 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 16px;
+
+width: 366px;
+height: 42px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68 */
+
+width: 366px;
+height: 42px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 90 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 112px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Watch Video */
+
+width: 84px;
+height: 14px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Arrow-Up-Right--Streamline-Iconoir */
+
+width: 20px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 7.9%;
+right: 7.9%;
+top: 7.9%;
+bottom: 7.9%;
+
+border: 1.5px solid #FFFFFF;
+
+
+/* Frame 97 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 24px;
+gap: 24px;
+
+width: 414px;
+height: 362.62px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Screenshot 2025-09-18 at 12.17.27 PM 1 */
+
+width: 366px;
+height: 204.62px;
+
+background: url(Screenshot 2025-09-18 at 12.17.27 PM.png);
+border-radius: 8px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 92 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 16px;
+
+width: 366px;
+height: 42px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68 */
+
+width: 366px;
+height: 42px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 90 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 112px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Watch Video */
+
+width: 84px;
+height: 14px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Arrow-Up-Right--Streamline-Iconoir */
+
+width: 20px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 7.9%;
+right: 7.9%;
+top: 7.9%;
+bottom: 7.9%;
+
+border: 1.5px solid #FFFFFF;
+
+
+/* Frame 98 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 24px;
+gap: 24px;
+
+width: 414px;
+height: 362.62px;
+
+background: #1F1F1F;
+border-radius: 16px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Screenshot 2025-09-18 at 12.17.27 PM 1 */
+
+width: 366px;
+height: 204.62px;
+
+background: url(Screenshot 2025-09-18 at 12.17.27 PM.png);
+border-radius: 8px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 92 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 16px;
+
+width: 366px;
+height: 42px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* CPI Data Sparks Stagflation Fears? | 50bps Rate Cuts Ahead? | BTC Update | Ep 68 */
+
+width: 366px;
+height: 42px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 90 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 112px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Watch Video */
+
+width: 84px;
+height: 14px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Arrow-Up-Right--Streamline-Iconoir */
+
+width: 20px;
+height: 20px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 7.9%;
+right: 7.9%;
+top: 7.9%;
+bottom: 7.9%;
+
+border: 1.5px solid #FFFFFF;
+
+
+/* Rectangle 64 */
+
+position: absolute;
+width: 363px;
+height: 277px;
+left: 1163px;
+top: 2879px;
+
+background: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, #0A0A0A 71.52%, #0A0A0A 100%);
+transform: rotate(-90deg);
+
+
+/* Rectangle 66 */
+
+position: absolute;
+width: 363px;
+height: 277px;
+left: 0px;
+top: 2879px;
+
+background: linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, #0A0A0A 71.52%, #0A0A0A 100%);
+transform: matrix(0, -1, -1, 0, 0, 0);
+
+
+/* Footer */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 40px 40px 24px;
+gap: 24px;
+isolation: isolate;
+
+position: absolute;
+width: 1280px;
+height: 335px;
+left: 80px;
+top: 4591px;
+
+background: #141414;
+border-radius: 16px;
+
+
+/* Vector 2 (Stroke) */
+
+position: absolute;
+width: 1803.93px;
+height: 1029.26px;
+left: -457px;
+top: -342px;
+
+background: linear-gradient(107.68deg, #3813F3 9.35%, #05B0B3 34.7%, #4B25FD 60.06%, #B9B9E9 72.73%, #DE50EC 88.58%);
+filter: blur(100px);
+transform: rotate(-30deg);
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+z-index: 0;
+
+
+/* Frame 88 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: flex-start;
+padding: 0px;
+gap: 240px;
+
+width: 1200px;
+height: 209px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+z-index: 1;
+
+
+/* Frame 25 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+width: 389px;
+height: 209px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Group 9 */
+
+width: 211.6px;
+height: 32px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+width: 187.68px;
+height: 24.93px;
+left: 23.92px;
+top: 7.07px;
+
+background: #FFFFFF;
+
+
+/* Mask group */
+
+position: absolute;
+width: 19.21px;
+height: 26.95px;
+left: 0px;
+top: 0px;
+
+
+
+/* Vector */
+
+position: absolute;
+width: 19.21px;
+height: 26.95px;
+left: 0px;
+top: 0px;
+
+background: #FFFFFF;
+
+
+/* —Pngtree—color gradient of blue-purple laser_990586 1 */
+
+position: absolute;
+width: 87.2px;
+height: 27.2px;
+left: -12.4px;
+top: 0px;
+
+background: url(—Pngtree—color gradient of blue-purple laser_990586.png);
+
+
+/* I simplify stocks, crypto, and data science with humor and clarity. My content turns complex ideas into practical tips-helping you stand out, level up, and crush your goals without the boring jargon. */
+
+width: 352px;
+height: 105px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 16px;
+line-height: 130%;
+/* or 21px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Frame 19 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+width: 152px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Frame */
+
+width: 24px;
+height: 24px;
+
+background: #1F1F1F;
+border-radius: 4px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 27%;
+right: 27%;
+top: 29.17%;
+bottom: 29.05%;
+
+background: #FFFFFF;
+
+
+/* Frame */
+
+width: 24px;
+height: 24px;
+
+background: #1F1F1F;
+border-radius: 4px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Subtract */
+
+position: absolute;
+left: 23.76%;
+right: 23.76%;
+top: 20.83%;
+bottom: 18.99%;
+
+background: #FFFFFF;
+
+
+/* Rectangle 42 */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 13.42%;
+bottom: 11.58%;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0.92%;
+bottom: -0.92%;
+
+background: #000000;
+
+
+/* Frame */
+
+width: 24px;
+height: 24px;
+
+background: #1F1F1F;
+border-radius: 4px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Subtract */
+
+position: absolute;
+left: 33.67%;
+right: 32.86%;
+top: 20.83%;
+bottom: 19.19%;
+
+background: #FFFFFF;
+
+
+/* Rectangle 43 */
+
+position: absolute;
+left: 16.45%;
+right: 19.3%;
+top: 16.56%;
+bottom: 19.19%;
+
+background: #FFFFFF;
+border-radius: 7px;
+
+
+/* Vector */
+
+position: absolute;
+left: 13.39%;
+right: 13.18%;
+top: 7.39%;
+bottom: 19.19%;
+
+background: #000000;
+
+
+/* Frame */
+
+width: 24px;
+height: 24px;
+
+background: #1F1F1F;
+border-radius: 4px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Frame */
+
+position: absolute;
+left: 20.83%;
+right: 20.83%;
+top: 20.83%;
+bottom: 20.83%;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+background: #FFFFFF;
+
+
+/* Frame */
+
+width: 24px;
+height: 24px;
+
+background: #1F1F1F;
+border-radius: 4px;
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+flex-grow: 0;
+
+
+/* Frame */
+
+position: absolute;
+left: 20.83%;
+right: 20.83%;
+top: 20.83%;
+bottom: 20.83%;
+
+
+
+/* Vector */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 14.83%;
+bottom: 14.83%;
+
+background: #FFFFFF;
+
+
+/* Frame 26 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+width: 159px;
+height: 166px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* General */
+
+width: 159px;
+height: 24px;
+
+font-family: 'Gilroy';
+font-style: normal;
+font-weight: 600;
+font-size: 20px;
+line-height: 120%;
+/* identical to box height, or 24px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 18 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: flex-start;
+padding: 0px;
+gap: 12px;
+
+width: 159px;
+height: 118px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Research */
+
+width: 159px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #909090;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Calculator */
+
+width: 159px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #909090;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Portfolio */
+
+width: 159px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #909090;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Shariah */
+
+width: 159px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #909090;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Our Team */
+
+width: 159px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #909090;
+
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Vector 76 */
+
+width: 1200px;
+height: 0px;
+
+border: 1px solid #404040;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+z-index: 2;
+
+
+/* Frame 103 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+align-items: flex-start;
+padding: 0px;
+gap: 24px;
+
+width: 1200px;
+height: 14px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+z-index: 3;
+
+
+/* © 2025 Inspired Analyst. All Rights Reserved */
+
+margin: 0 auto;
+width: 279px;
+height: 14px;
+
+font-family: 'Gilroy-Medium';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+display: flex;
+align-items: center;
+
+color: #FFFFFF;
+
+opacity: 0.8;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame 18 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 16px;
+
+margin: 0 auto;
+width: 220px;
+height: 14px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Privacy Policy */
+
+width: 87px;
+height: 14px;
+
+font-family: 'Gilroy-Regular';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Terms & Condition */
+
+width: 117px;
+height: 14px;
+
+font-family: 'Gilroy-Regular';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 100%;
+/* identical to box height, or 14px */
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;

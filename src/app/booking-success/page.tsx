@@ -43,6 +43,25 @@ const BookingSuccessContent: React.FC = () => {
         });
     };
 
+    // Derive date/time from Calendly event payload (so we show the slot actually booked, not step 2 selection)
+    function applyCalendlySlotToDetails(details: Record<string, unknown>): Record<string, unknown> {
+        if (!details?.bookingConfirmed) return details;
+        try {
+            const raw = typeof window !== 'undefined' ? sessionStorage.getItem('calendlyEventDetails') : null;
+            if (!raw) return details;
+            const payload = JSON.parse(raw);
+            const startTimeIso = payload?.invitee?.start_time || payload?.event?.start_time;
+            if (!startTimeIso || typeof startTimeIso !== 'string') return details;
+            const tz = (details.timezoneValue as string) || (details.timezone as string) || 'UTC';
+            const start = new Date(startTimeIso);
+            const date = start.toLocaleDateString('en-CA', { timeZone: tz });
+            const time = start.toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true });
+            return { ...details, date, time };
+        } catch {
+            return details;
+        }
+    }
+
     // Load booking details once on mount (ref prevents re-run and infinite loop)
     useEffect(() => {
         if (detailsInitializedRef.current) return;
@@ -53,7 +72,8 @@ const BookingSuccessContent: React.FC = () => {
             if (storedDetails) {
                 try {
                     const details = JSON.parse(storedDetails);
-                    setBookingDetails(details);
+                    const detailsWithCalendlySlot = applyCalendlySlotToDetails(details);
+                    setBookingDetails(detailsWithCalendlySlot);
                     if (details.hasCalendlyIntegration && details.calendlyUrl) {
                         loadCalendlyScript();
                     }

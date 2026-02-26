@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ChevronDown, ChevronLeft, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
+import { getCalendlySlotFromPayload } from '@/lib/calendlyPayload';
 
 // --- TYPE DEFINITIONS ---
 type Meeting = {
@@ -2246,32 +2247,33 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                                 if (eventName.indexOf('calendly') !== 0) return;
                                 if (eventName === 'calendly.event_scheduled') {
                                     calendlyScheduledThisSessionRef.current = true;
-                                    console.log('Calendly booking completed:', e.data);
-                                    if (e.data?.payload && typeof sessionStorage !== 'undefined') {
-                                        const payload = e.data.payload;
+                                    const rawData = e.data;
+                                    console.log('Calendly booking completed:', rawData);
+                                    if (typeof sessionStorage !== 'undefined') {
+                                        const payload = (rawData as any)?.payload ?? rawData;
                                         sessionStorage.setItem('calendlyEventDetails', JSON.stringify(payload));
+                                        const { startTimeIso, inviteeUri } = getCalendlySlotFromPayload(rawData);
                                         const storedDetails = sessionStorage.getItem('bookingDetails');
                                         if (storedDetails) {
                                             try {
                                                 const bookingDetails = JSON.parse(storedDetails);
-                                                // Use the slot actually booked in Calendly (handles race where user picked a different slot)
-                                                const startTimeIso = payload?.invitee?.start_time || payload?.event?.start_time;
                                                 const tz = selectedTimezone || bookingDetails.timezoneValue || 'UTC';
                                                 let date = bookingDetails.date;
                                                 let time = bookingDetails.time;
-                                                if (startTimeIso && typeof startTimeIso === 'string') {
+                                                if (startTimeIso) {
                                                     try {
                                                         const start = new Date(startTimeIso);
-                                                        date = start.toLocaleDateString('en-CA', { timeZone: tz }); // YYYY-MM-DD
+                                                        date = start.toLocaleDateString('en-CA', { timeZone: tz });
                                                         time = start.toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true });
-                                                    } catch (_) { /* keep existing date/time */ }
+                                                    } catch (_) { /* keep existing */ }
                                                 }
+                                                const eventUri = (payload?.event as any)?.uri ?? (rawData as any)?.event?.uri ?? '';
                                                 const updated = {
                                                     ...bookingDetails,
                                                     date,
                                                     time,
-                                                    calendlyEventUri: payload?.event?.uri || '',
-                                                    calendlyInviteeUri: payload?.invitee?.uri || '',
+                                                    calendlyEventUri: eventUri,
+                                                    calendlyInviteeUri: inviteeUri ?? '',
                                                     bookingConfirmed: true
                                                 };
                                                 sessionStorage.setItem('bookingDetails', JSON.stringify(updated));

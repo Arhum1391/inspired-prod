@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Navbar from '@/components/Navbar';
 import PageLoader from '@/components/PageLoader';
+import { getCalendlySlotFromPayload } from '@/lib/calendlyPayload';
 
 // Analyst data - should match the data from MeetingsPage
 const analysts = [
@@ -44,23 +45,38 @@ const BookingSuccessContent: React.FC = () => {
         });
     };
 
-    // Fetch the actual booked slot from Calendly API when we have an invitee URI (so we show what the user really booked, not step 2 selection)
+    // Get the actual booked slot: first from stored Calendly payload, else from API by invitee URI
     const inviteeFetchedRef = useRef(false);
     useEffect(() => {
-        if (!bookingDetails?.calendlyInviteeUri || !bookingDetails?.analyst || inviteeFetchedRef.current) return;
+        if (!bookingDetails) return;
+        const tz = bookingDetails.timezoneValue || bookingDetails.timezone || 'UTC';
+        const applySlot = (startTimeIso: string) => {
+            const start = new Date(startTimeIso);
+            const date = start.toLocaleDateString('en-CA', { timeZone: tz });
+            const time = start.toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true });
+            setBookingDetails((prev: any) => (prev ? { ...prev, date, time } : prev));
+        };
+        if (typeof window === 'undefined') return;
+        const raw = sessionStorage.getItem('calendlyEventDetails');
+        if (raw) {
+            try {
+                const stored = JSON.parse(raw);
+                const { startTimeIso } = getCalendlySlotFromPayload(stored);
+                if (startTimeIso) {
+                    applySlot(startTimeIso);
+                    return;
+                }
+            } catch (_) { /* ignore */ }
+        }
+        if (!bookingDetails.calendlyInviteeUri || !bookingDetails.analyst || inviteeFetchedRef.current) return;
         inviteeFetchedRef.current = true;
         setSlotLoading(true);
-        const tz = bookingDetails.timezoneValue || bookingDetails.timezone || 'UTC';
         const url = `/api/calendly/invitee-details?inviteeUri=${encodeURIComponent(bookingDetails.calendlyInviteeUri)}&analystId=${encodeURIComponent(bookingDetails.analyst)}`;
         fetch(url)
             .then((res) => (res.ok ? res.json() : Promise.reject(new Error('Failed to fetch'))))
             .then((data) => {
                 const startTimeIso = data?.start_time;
-                if (!startTimeIso || typeof startTimeIso !== 'string') return;
-                const start = new Date(startTimeIso);
-                const date = start.toLocaleDateString('en-CA', { timeZone: tz });
-                const time = start.toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true });
-                setBookingDetails((prev: any) => (prev ? { ...prev, date, time } : prev));
+                if (startTimeIso && typeof startTimeIso === 'string') applySlot(startTimeIso);
             })
             .catch(() => { inviteeFetchedRef.current = false; })
             .finally(() => { setSlotLoading(false); });

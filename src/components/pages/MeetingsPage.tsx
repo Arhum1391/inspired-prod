@@ -929,6 +929,7 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
     const [paymentInitiating, setPaymentInitiating] = useState<boolean>(false);
     const [paymentError, setPaymentError] = useState<string>('');
     const [isVerifyingPayment, setIsVerifyingPayment] = useState<boolean>(false);
+    const hideBackButton = paymentCompleted || isVerifyingPayment || (hasPaymentReturnParams && !paymentCompleted);
 
     // Detect user's timezone once on mount and auto-select it
     useEffect(() => {
@@ -2219,115 +2220,95 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                         return;
                     }
                     
-                    // If analyst has Calendly integration, re-validate slot then open Calendly popup
+                    // If analyst has Calendly integration, open Calendly popup
                     if (calendlyUrl) {
-                        const selectedMeetingDataForUri = getSelectedMeetingData();
-                        const eventTypeUriForValidation = selectedMeetingDataForUri?.eventTypeUri || selectedEventTypeUri;
-                        const revalidateSlot = async (): Promise<boolean> => {
-                            if (!eventTypeUriForValidation || !selectedDate || !selectedTimezone) return true;
-                            try {
-                                const url = new URL('/api/calendly/availability', typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
-                                url.searchParams.append('eventTypeUri', eventTypeUriForValidation);
-                                url.searchParams.append('startDate', selectedDate);
-                                url.searchParams.append('endDate', selectedDate);
-                                url.searchParams.append('analystId', selectedAnalyst!.toString());
-                                url.searchParams.append('timezone', selectedTimezone);
-                                const res = await fetch(url.toString());
-                                if (!res.ok) return true;
-                                const data = await res.json();
-                                const slotUrls = data.slotUrls || {};
-                                const dateTimeKey = `${selectedDate}|${selectedTime}`;
-                                // Only check that this date/time is still offered (Calendly often returns different URLs per request, so strict URL match causes false "slot gone")
-                                const stillAvailable = !!(slotUrls[dateTimeKey]);
-                                return stillAvailable;
-                            } catch {
-                                return true;
-                            }
-                        };
-                        
-                        revalidateSlot().then((slotStillAvailable) => {
-                            if (!slotStillAvailable) {
-                                setIsContinueProcessing(false);
-                                setNeedsReschedule(true);
-                                setCurrentStep(2);
-                                setPaymentError('This time slot is no longer available. Please choose another time.');
-                                alert('This time slot is no longer available. Please choose another time below.');
-                                return;
-                            }
-                            
-                            console.log('Opening Calendly popup for analyst booking with URL:', calendlyUrl);
-                            const win = typeof window !== 'undefined' ? window : null;
-                            if (win && (win as any).Calendly && typeof (win as any).Calendly.initPopupWidget === 'function') {
-                                console.log('Calendly is loaded, opening popup...');
-                                calendlyScheduledThisSessionRef.current = false;
-                                
-                                setTimeout(() => {
-                                    (win as any).Calendly.initPopupWidget({
-                                        url: calendlyUrl,
-                                        prefill: {
-                                            name: fullName || '',
-                                            email: email || '',
-                                            customAnswers: { a1: notes || '' }
-                                        },
-                                        utm: { utmSource: 'inspired-analyst', utmMedium: 'booking', utmCampaign: 'mentorship' }
-                                    });
-                                    console.log('Calendly popup initiated');
-                                }, 300);
+                        console.log('Opening Calendly popup for analyst booking with URL:', calendlyUrl);
+                        const win = typeof window !== 'undefined' ? window : null;
+                        if (win && (win as any).Calendly && typeof (win as any).Calendly.initPopupWidget === 'function') {
+                            console.log('Calendly is loaded, opening popup...');
+                            calendlyScheduledThisSessionRef.current = false;
 
-                                const handleCalendlyEvent = (e: MessageEvent) => {
-                                    const eventName = typeof e.data?.event === 'string' ? e.data.event : '';
-                                    if (eventName.indexOf('calendly') !== 0) return;
-                                    if (eventName === 'calendly.event_scheduled') {
-                                        calendlyScheduledThisSessionRef.current = true;
-                                        console.log('Calendly booking completed:', e.data);
-                                        if (e.data?.payload && typeof sessionStorage !== 'undefined') {
-                                            sessionStorage.setItem('calendlyEventDetails', JSON.stringify(e.data.payload));
-                                            const storedDetails = sessionStorage.getItem('bookingDetails');
-                                            if (storedDetails) {
-                                                try {
-                                                    const bookingDetails = JSON.parse(storedDetails);
-                                                    const updated = {
-                                                        ...bookingDetails,
-                                                        calendlyEventUri: e.data.payload?.event?.uri || '',
-                                                        calendlyInviteeUri: e.data.payload?.invitee?.uri || '',
-                                                        bookingConfirmed: true
-                                                    };
-                                                    sessionStorage.setItem('bookingDetails', JSON.stringify(updated));
-                                                } catch (err) {
-                                                    console.error('Error updating bookingDetails:', err);
-                                                }
-                                            }
-                                        }
-                                        if ((win as any).Calendly?.closePopupWidget) (win as any).Calendly.closePopupWidget();
-                                        window.removeEventListener('message', handleCalendlyEvent);
-                                        const doRedirect = () => {
+                            setTimeout(() => {
+                                (win as any).Calendly.initPopupWidget({
+                                    url: calendlyUrl,
+                                    prefill: {
+                                        name: fullName || '',
+                                        email: email || '',
+                                        customAnswers: { a1: notes || '' }
+                                    },
+                                    utm: { utmSource: 'inspired-analyst', utmMedium: 'booking', utmCampaign: 'mentorship' }
+                                });
+                                console.log('Calendly popup initiated');
+                            }, 300);
+
+                            const handleCalendlyEvent = (e: MessageEvent) => {
+                                const eventName = typeof e.data?.event === 'string' ? e.data.event : '';
+                                if (eventName.indexOf('calendly') !== 0) return;
+                                if (eventName === 'calendly.event_scheduled') {
+                                    calendlyScheduledThisSessionRef.current = true;
+                                    console.log('Calendly booking completed:', e.data);
+                                    if (e.data?.payload && typeof sessionStorage !== 'undefined') {
+                                        const payload = e.data.payload;
+                                        sessionStorage.setItem('calendlyEventDetails', JSON.stringify(payload));
+                                        const storedDetails = sessionStorage.getItem('bookingDetails');
+                                        if (storedDetails) {
                                             try {
-                                                router.push('/booking-success');
-                                            } catch {
-                                                window.location.href = '/booking-success';
+                                                const bookingDetails = JSON.parse(storedDetails);
+                                                // Use the slot actually booked in Calendly (handles race where user picked a different slot)
+                                                const startTimeIso = payload?.invitee?.start_time || payload?.event?.start_time;
+                                                const tz = selectedTimezone || bookingDetails.timezoneValue || 'UTC';
+                                                let date = bookingDetails.date;
+                                                let time = bookingDetails.time;
+                                                if (startTimeIso && typeof startTimeIso === 'string') {
+                                                    try {
+                                                        const start = new Date(startTimeIso);
+                                                        date = start.toLocaleDateString('en-CA', { timeZone: tz }); // YYYY-MM-DD
+                                                        time = start.toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true });
+                                                    } catch (_) { /* keep existing date/time */ }
+                                                }
+                                                const updated = {
+                                                    ...bookingDetails,
+                                                    date,
+                                                    time,
+                                                    calendlyEventUri: payload?.event?.uri || '',
+                                                    calendlyInviteeUri: payload?.invitee?.uri || '',
+                                                    bookingConfirmed: true
+                                                };
+                                                sessionStorage.setItem('bookingDetails', JSON.stringify(updated));
+                                            } catch (err) {
+                                                console.error('Error updating bookingDetails:', err);
                                             }
-                                        };
-                                        setTimeout(doRedirect, 400);
-                                    }
-                                    const isPopupClosedEvent = eventName === 'calendly.popup_closed' ||
-                                        eventName === 'calendly.profile_page_closed' ||
-                                        eventName === 'calendly.popup.close';
-                                    if (isPopupClosedEvent) {
-                                        if (e.origin !== 'https://calendly.com' && e.origin !== 'https://assets.calendly.com') return;
-                                        window.removeEventListener('message', handleCalendlyEvent);
-                                        if (!calendlyScheduledThisSessionRef.current) {
-                                            setShowSchedulingIncompleteModal(true);
                                         }
                                     }
-                                };
-                                window.addEventListener('message', handleCalendlyEvent);
-                                setIsContinueProcessing(false);
-                            } else {
-                                setIsContinueProcessing(false);
-                                console.error('Calendly script not loaded or not available');
-                                alert('Unable to open booking calendar. Please refresh and try again.');
-                            }
-                        });
+                                    if ((win as any).Calendly?.closePopupWidget) (win as any).Calendly.closePopupWidget();
+                                    window.removeEventListener('message', handleCalendlyEvent);
+                                    const doRedirect = () => {
+                                        try {
+                                            router.push('/booking-success');
+                                        } catch {
+                                            window.location.href = '/booking-success';
+                                        }
+                                    };
+                                    setTimeout(doRedirect, 400);
+                                }
+                                const isPopupClosedEvent = eventName === 'calendly.popup_closed' ||
+                                    eventName === 'calendly.profile_page_closed' ||
+                                    eventName === 'calendly.popup.close';
+                                if (isPopupClosedEvent) {
+                                    if (e.origin !== 'https://calendly.com' && e.origin !== 'https://assets.calendly.com') return;
+                                    window.removeEventListener('message', handleCalendlyEvent);
+                                    if (!calendlyScheduledThisSessionRef.current) {
+                                        setShowSchedulingIncompleteModal(true);
+                                    }
+                                }
+                            };
+                            window.addEventListener('message', handleCalendlyEvent);
+                            setIsContinueProcessing(false);
+                        } else {
+                            setIsContinueProcessing(false);
+                            console.error('Calendly script not loaded or not available');
+                            alert('Unable to open booking calendar. Please refresh and try again.');
+                        }
                     } else {
                         console.log('No Calendly integration, redirecting directly to success page');
                         router.push('/booking-success');
@@ -3303,14 +3284,14 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                 
                 {/* Right Side: Booking Form */}
                 <div className="w-full lg:col-span-2 px-2 sm:px-0">
-                    {/* Back Button - kept for spacing; hidden + unclickable after payment verification */}
+                    {/* Back Button - kept for spacing; hidden + unclickable during verification and after payment */}
                     <div className="mb-1 mt-24 lg:mt-20">
                         <button 
-                            onClick={paymentCompleted ? undefined : handleBack}
-                            disabled={!!paymentCompleted}
-                            className={`flex items-center text-white transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20 ${paymentCompleted ? 'invisible pointer-events-none cursor-default' : 'hover:text-gray-300'}`}
+                            onClick={hideBackButton ? undefined : handleBack}
+                            disabled={!!hideBackButton}
+                            className={`flex items-center text-white transition-colors focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-20 ${hideBackButton ? 'invisible pointer-events-none cursor-default' : 'hover:text-gray-300'}`}
                             style={{ outline: 'none', boxShadow: 'none' }}
-                            onFocus={(e) => paymentCompleted || e.target.blur()}
+                            onFocus={(e) => hideBackButton || e.target.blur()}
                         >
                         <ChevronLeft size={20} className="mr-1" />
                         Back...
@@ -4202,20 +4183,20 @@ const MeetingsPage = ({ slug }: { slug?: string } = {}) => {
                     {/* Action Buttons */}
                     {currentStep !== 1 && (
                     <div className="mt-12 flex justify-end gap-4 relative z-[9999]">
-                            {/* Back button always in DOM for spacing; hidden + unclickable after payment */}
+                            {/* Back button always in DOM for spacing; hidden + unclickable during verification and after payment */}
                             {(currentStep === 2 || currentStep === 3) && (
                             <button
-                                onClick={paymentCompleted ? undefined : handleBack}
-                                disabled={!!paymentCompleted}
-                                className={`w-44 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white border border-white focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-[9999] ${paymentCompleted ? 'invisible pointer-events-none cursor-default' : 'hover:border-gray-300'}`}
+                                onClick={hideBackButton ? undefined : handleBack}
+                                disabled={!!hideBackButton}
+                                className={`w-44 py-3 rounded-3xl font-semibold transition-all duration-300 bg-black text-white border border-white focus:outline-none focus:ring-0 focus:border-none active:outline-none relative z-[9999] ${hideBackButton ? 'invisible pointer-events-none cursor-default' : 'hover:border-gray-300'}`}
                                 style={{ 
                                     outline: 'none', 
                                     boxShadow: typeof window !== 'undefined' && window.innerWidth < 768 ? '0 4px 20px rgba(0, 0, 0, 0.8)' : 'none',
                                     backgroundColor: 'rgb(0, 0, 0)'
                                 }}
-                                onMouseEnter={(e) => { if (!paymentCompleted) (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'; }}
+                                onMouseEnter={(e) => { if (!hideBackButton) (e.target as HTMLButtonElement).style.backgroundColor = 'rgba(255, 255, 255, 0.2)'; }}
                                 onMouseLeave={(e) => (e.target as HTMLButtonElement).style.backgroundColor = 'rgb(0, 0, 0)'}
-                                onFocus={(e) => paymentCompleted || e.target.blur()}
+                                onFocus={(e) => hideBackButton || e.target.blur()}
                             >
                                 Back
                             </button>

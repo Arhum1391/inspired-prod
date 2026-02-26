@@ -28,6 +28,7 @@ const BookingSuccessContent: React.FC = () => {
     const searchParams = useSearchParams();
     const [showSuccess, setShowSuccess] = useState(false);
     const [bookingDetails, setBookingDetails] = useState<any>(null);
+    const [slotLoading, setSlotLoading] = useState(false);
     const [calendlyLoaded, setCalendlyLoaded] = useState(false);
     const [calendlyOpened, setCalendlyOpened] = useState(false);
     const detailsInitializedRef = useRef(false);
@@ -43,24 +44,27 @@ const BookingSuccessContent: React.FC = () => {
         });
     };
 
-    // Derive date/time from Calendly event payload (so we show the slot actually booked, not step 2 selection)
-    function applyCalendlySlotToDetails(details: Record<string, unknown>): Record<string, unknown> {
-        if (!details?.bookingConfirmed) return details;
-        try {
-            const raw = typeof window !== 'undefined' ? sessionStorage.getItem('calendlyEventDetails') : null;
-            if (!raw) return details;
-            const payload = JSON.parse(raw);
-            const startTimeIso = payload?.invitee?.start_time || payload?.event?.start_time;
-            if (!startTimeIso || typeof startTimeIso !== 'string') return details;
-            const tz = (details.timezoneValue as string) || (details.timezone as string) || 'UTC';
-            const start = new Date(startTimeIso);
-            const date = start.toLocaleDateString('en-CA', { timeZone: tz });
-            const time = start.toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true });
-            return { ...details, date, time };
-        } catch {
-            return details;
-        }
-    }
+    // Fetch the actual booked slot from Calendly API when we have an invitee URI (so we show what the user really booked, not step 2 selection)
+    const inviteeFetchedRef = useRef(false);
+    useEffect(() => {
+        if (!bookingDetails?.calendlyInviteeUri || !bookingDetails?.analyst || inviteeFetchedRef.current) return;
+        inviteeFetchedRef.current = true;
+        setSlotLoading(true);
+        const tz = bookingDetails.timezoneValue || bookingDetails.timezone || 'UTC';
+        const url = `/api/calendly/invitee-details?inviteeUri=${encodeURIComponent(bookingDetails.calendlyInviteeUri)}&analystId=${encodeURIComponent(bookingDetails.analyst)}`;
+        fetch(url)
+            .then((res) => (res.ok ? res.json() : Promise.reject(new Error('Failed to fetch'))))
+            .then((data) => {
+                const startTimeIso = data?.start_time;
+                if (!startTimeIso || typeof startTimeIso !== 'string') return;
+                const start = new Date(startTimeIso);
+                const date = start.toLocaleDateString('en-CA', { timeZone: tz });
+                const time = start.toLocaleTimeString('en-US', { timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true });
+                setBookingDetails((prev: any) => (prev ? { ...prev, date, time } : prev));
+            })
+            .catch(() => { inviteeFetchedRef.current = false; })
+            .finally(() => { setSlotLoading(false); });
+    }, [bookingDetails?.calendlyInviteeUri, bookingDetails?.analyst, bookingDetails?.timezoneValue, bookingDetails?.timezone]);
 
     // Load booking details once on mount (ref prevents re-run and infinite loop)
     useEffect(() => {
@@ -72,8 +76,7 @@ const BookingSuccessContent: React.FC = () => {
             if (storedDetails) {
                 try {
                     const details = JSON.parse(storedDetails);
-                    const detailsWithCalendlySlot = applyCalendlySlotToDetails(details);
-                    setBookingDetails(detailsWithCalendlySlot);
+                    setBookingDetails(details);
                     if (details.hasCalendlyIntegration && details.calendlyUrl) {
                         loadCalendlyScript();
                     }
@@ -335,8 +338,17 @@ const BookingSuccessContent: React.FC = () => {
                             <div>
                                 <p className="text-gray-400 text-sm sm:text-base mb-1" style={{ fontSize: '14px' }}>Date & Time</p>
                                 <div className="flex flex-col">
-                                    <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{formatDate(bookingDetails.date)}</p>
-                                    <p className="text-white mt-1 text-base sm:text-lg" style={{ fontSize: '16px' }}>{bookingDetails.time} {(bookingDetails.timezone || bookingDetails.timezoneValue) && `(${bookingDetails.timezone || bookingDetails.timezoneValue})`}</p>
+                                    {slotLoading ? (
+                                        <>
+                                            <div className="h-5 w-48 bg-gray-600/40 rounded animate-pulse" />
+                                            <div className="h-5 w-36 bg-gray-600/40 rounded animate-pulse mt-2" />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <p className="text-white font-bold text-base sm:text-lg" style={{ fontSize: '16px' }}>{formatDate(bookingDetails.date)}</p>
+                                            <p className="text-white mt-1 text-base sm:text-lg" style={{ fontSize: '16px' }}>{bookingDetails.time} {(bookingDetails.timezone || bookingDetails.timezoneValue) && `(${bookingDetails.timezone || bookingDetails.timezoneValue})`}</p>
+                                        </>
+                                    )}
                                 </div>
                             </div>
 

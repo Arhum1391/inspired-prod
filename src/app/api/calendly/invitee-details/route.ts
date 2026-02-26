@@ -2,17 +2,18 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/;
 
+/** Only these keys mean "when the meeting is scheduled"; ignore created_at, updated_at, etc. */
+const START_TIME_KEYS = ['start_time', 'scheduled_event_start_time', 'scheduled_start_time'];
+
 function findStartTimeInResponse(obj: unknown, depth = 0): string | null {
-  if (depth > 6 || obj == null) return null;
-  if (typeof obj === 'string' && ISO_DATE_RE.test(obj)) return obj;
-  if (typeof obj !== 'object') return null;
+  if (depth > 6 || obj == null || typeof obj !== 'object') return null;
   const o = obj as Record<string, unknown>;
-  for (const key of ['start_time', 'scheduled_event_start_time', 'start', 'scheduled_start_time']) {
+  for (const key of START_TIME_KEYS) {
     const v = o[key];
     if (typeof v === 'string' && ISO_DATE_RE.test(v)) return v;
   }
-  for (const v of Object.values(o)) {
-    const found = findStartTimeInResponse(v, depth + 1);
+  for (const key of ['resource', 'invitee', 'event', 'payload', 'data']) {
+    const found = findStartTimeInResponse(o[key], depth + 1);
     if (found) return found;
   }
   return null;

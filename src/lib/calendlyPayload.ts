@@ -3,13 +3,17 @@ function isIsoDateString(v: unknown): v is string {
   return typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(v);
 }
 
-/** Recursively find a value for key "start_time" that looks like an ISO date */
+/** Only these keys mean "when the meeting is scheduled"; do not use created_at, updated_at, etc. */
+const START_TIME_KEYS = ['start_time', 'scheduled_event_start_time', 'scheduled_start_time'];
+
+/** Recursively find a value for a start_time-like key (never created_at / updated_at). */
 function findStartTime(obj: unknown, depth = 0): string | null {
   if (depth > 5 || !obj || typeof obj !== 'object') return null;
   const o = obj as Record<string, unknown>;
-  if (isIsoDateString(o.start_time)) return o.start_time;
-  if (isIsoDateString(o.scheduled_event_start_time)) return o.scheduled_event_start_time;
-  for (const key of ['invitee', 'event', 'payload', 'data']) {
+  for (const key of START_TIME_KEYS) {
+    if (isIsoDateString(o[key])) return o[key] as string;
+  }
+  for (const key of ['invitee', 'event', 'payload', 'data', 'resource']) {
     const found = findStartTime(o[key], depth + 1);
     if (found) return found;
   }

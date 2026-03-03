@@ -3,6 +3,8 @@ import { withAuth } from '@/lib/middleware';
 import { listAllReviews } from '@/lib/reviews';
 import { ReviewStatus } from '@/types/admin';
 
+export const dynamic = 'force-dynamic';
+
 async function getReviews(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);

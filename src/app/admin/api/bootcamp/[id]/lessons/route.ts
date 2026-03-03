@@ -4,6 +4,8 @@ import { verifyToken } from '@/lib/auth';
 import { BootcampLesson } from '@/types/admin';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 // Helper function to find bootcamp by id or _id for backward compatibility
 async function findBootcampById(db: any, id: string) {
   // Try by numeric string id first

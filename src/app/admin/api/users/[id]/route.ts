@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken, getUserById, updatePublicUser } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 async function verifyAdmin(request: NextRequest) {
   const token = request.cookies.get('auth-token')?.value;
   if (!token) {

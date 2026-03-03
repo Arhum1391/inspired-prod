@@ -3,6 +3,8 @@ import { verifyToken } from '@/lib/auth';
 import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 const COLLECTION_NAME = 'scenarios';
 
 export async function PUT(

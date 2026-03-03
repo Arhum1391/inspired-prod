@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/middleware';
 import { getDatabase } from '@/lib/mongodb';
 
+export const dynamic = 'force-dynamic';
+
 async function handler(req: NextRequest, userId: string) {
   try {
     const db = await getDatabase();

@@ -12,6 +12,8 @@ import {
 } from '@/lib/binance';
 import type { BinanceClient } from '@/lib/binance';
 
+export const dynamic = 'force-dynamic';
+
 type HistoryRange = '1Hr' | '1D' | '1W' | '1M' | '1Y';
 
 type RangeConfig = {

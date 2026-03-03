@@ -3,6 +3,8 @@ import { verifyToken, getUserById } from '@/lib/auth';
 import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 // Helper function to verify admin authentication
 async function verifyAdmin(request: NextRequest) {
   const token = request.cookies.get('auth-token')?.value;

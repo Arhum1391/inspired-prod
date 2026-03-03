@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/analysts/calendly-credentials
  * Fetches Calendly credentials for a specific analyst from MongoDB

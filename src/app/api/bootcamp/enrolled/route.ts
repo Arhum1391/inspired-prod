@@ -3,6 +3,8 @@ import { getDatabase } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/authHelpers';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 // GET all enrolled bootcamps for the authenticated user
 export async function GET(request: NextRequest) {
   try {

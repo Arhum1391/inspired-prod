@@ -6,6 +6,8 @@ import {
   upsertBinanceCredentials,
 } from '@/lib/binanceCredentials';
 
+export const dynamic = 'force-dynamic';
+
 type CredentialsRequestBody = {
   apiKey?: unknown;
   apiSecret?: unknown;

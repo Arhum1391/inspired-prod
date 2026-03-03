@@ -5,9 +5,9 @@ import LoadingScreen from '@/components/LoadingScreen';
 export default async function MeetingsWithSlug({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;
+  const { slug } = params;
   
   return (
     <Suspense fallback={<LoadingScreen message="Loading..." />}>

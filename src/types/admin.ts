@@ -139,6 +139,7 @@ export interface Bootcamp {
   registrationStartDate: Date;
   registrationEndDate: Date;
   bootcampStartDate?: Date; // When the bootcamp actually starts
+  zoomLink?: string; // Zoom meeting URL for live sessions
   tags: string[];
   gradientPosition: {
     left: string;

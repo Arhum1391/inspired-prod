@@ -87,7 +87,7 @@ async function deleteNewsletter(req: NextRequest, userId: string, { params }: { 
   }
 }
 
-export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const token = req.cookies.get('auth-token')?.value;
 
@@ -107,7 +107,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       );
     }
 
-    const resolvedParams = await params;
+    const resolvedParams = params;
     return updateNewsletter(req, decoded.userId, { params: resolvedParams });
   } catch (error) {
     console.error('Auth error:', error);
@@ -118,7 +118,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const token = req.cookies.get('auth-token')?.value;
 
@@ -138,7 +138,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       );
     }
 
-    const resolvedParams = await params;
+    const resolvedParams = params;
     return deleteNewsletter(req, decoded.userId, { params: resolvedParams });
   } catch (error) {
     console.error('Auth error:', error);

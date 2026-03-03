@@ -656,12 +656,12 @@ export default function BootcampRegisterPage() {
                   Payment Details
                 </h3>
 
-                {/* Stripe Payment Button */}
+                {/* Card Payment Button (same style as meetings page) */}
                 <div className="flex flex-col gap-3">
                   <button
                     onClick={handleStripePayment}
                     disabled={!isFormValid || paymentInitiating || paymentCompleted}
-                    className={`w-fit flex items-center justify-center px-4 py-3 border rounded-lg transition-all duration-300 ${
+                    className={`w-fit flex items-center justify-center gap-2 px-4 py-3 border rounded-lg transition-all duration-300 ${
                       paymentCompleted
                         ? 'border-green-500/50 bg-green-500/10 cursor-not-allowed'
                         : !isFormValid || paymentInitiating
@@ -669,13 +669,21 @@ export default function BootcampRegisterPage() {
                         : 'border-white/30 hover:border-white/60 hover:bg-white/5 cursor-pointer hover:scale-105'
                     }`}
                   >
-                    <Image
-                      src="/stripe.svg"
-                      alt="Stripe"
-                      width={80}
-                      height={20}
-                      className="h-5 w-auto"
-                    />
+                    <svg
+                      className="w-5 h-5 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect x="3" y="5" width="18" height="14" rx="2" ry="2" />
+                      <path d="M3 10h18" />
+                    </svg>
+                  <span
+                      className="text-white font-semibold"
+                      style={{ fontFamily: 'Gilroy-SemiBold, sans-serif' }}
+                    >
+                      Card Payment
+                    </span>
                   </button>
                   
                   {paymentCompleted && (
@@ -700,7 +708,7 @@ export default function BootcampRegisterPage() {
                   
                   {!paymentCompleted && !paymentInitiating && (
                     <p className="text-xs text-white/60" style={{fontFamily: 'Gilroy-Medium'}}>
-                      {isFormValid ? 'Click to complete payment via Stripe' : 'Fill in your details above to proceed with payment'}
+                      {isFormValid ? 'Click to complete payment via card' : 'Fill in your details above to proceed with payment'}
                     </p>
                   )}
                   
@@ -821,21 +829,7 @@ export default function BootcampRegisterPage() {
                       </span>
                     </div>
 
-                    {/* Tax */}
-                    <div className="flex justify-between items-center">
-                      <span
-                        className="text-sm text-[#909090]"
-                        style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
-                      >
-                        Tax
-                      </span>
-                      <span
-                        className="text-sm text-white"
-                        style={{fontFamily: 'Gilroy-Medium', fontWeight: 400, lineHeight: '100%'}}
-                      >
-                        10%
-                      </span>
-                    </div>
+                  {/* Tax removed for this flow */}
                   </div>
 
                   {/* Total Section */}

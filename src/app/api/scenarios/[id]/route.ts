@@ -7,7 +7,7 @@ const COLLECTION_NAME = 'scenarios';
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     // 1. Get and verify token
@@ -22,7 +22,7 @@ export async function PUT(
     }
 
     // 2. Get scenario ID from params
-    const { id: scenarioId } = await params;
+    const { id: scenarioId } = params;
     if (!scenarioId) {
       return NextResponse.json(
         { error: 'Scenario ID is required' },
@@ -102,7 +102,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     // 1. Get and verify token
@@ -117,7 +117,7 @@ export async function DELETE(
     }
 
     // 2. Get scenario ID from params
-    const { id: scenarioId } = await params;
+    const { id: scenarioId } = params;
     if (!scenarioId) {
       return NextResponse.json(
         { error: 'Scenario ID is required' },

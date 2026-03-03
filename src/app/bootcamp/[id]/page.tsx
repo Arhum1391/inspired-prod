@@ -11,7 +11,7 @@ import { Bootcamp, TeamMember } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 import { getTeamMemberAbout, getTeamMemberById } from '@/lib/teamUtils';
 import { getCanonicalMentorImagePath } from '@/lib/mentorImages';
-import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target, LucideIcon } from 'lucide-react';
+import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target, Video, LucideIcon } from 'lucide-react';
 
 // Helper function to get icon component dynamically
 const getIconComponent = (iconName: string): LucideIcon => {
@@ -227,8 +227,8 @@ export default function BootcampDetailPage() {
                   )}
                 </div>
 
-                {/* CTA Button */}
-                <div className="flex">
+                {/* CTA Buttons */}
+                <div className="flex flex-wrap gap-3">
                   <button
                     onClick={() => router.push(`/bootcamp/${bootcamp.id}/register`)}
                     className="bg-white rounded-full px-6 py-4 text-sm text-[#0A0A0A] hover:bg-gray-100 transition-colors"

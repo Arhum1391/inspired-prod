@@ -20,7 +20,7 @@ async function verifyAdmin(request: NextRequest) {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const auth = await verifyAdmin(request);
@@ -28,7 +28,7 @@ export async function PATCH(
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
-    const { id } = await params;
+    const { id } = params;
     if (!id) {
       return NextResponse.json(
         { error: 'User ID is required' },

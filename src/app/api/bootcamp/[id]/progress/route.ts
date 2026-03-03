@@ -17,10 +17,10 @@ interface ProgressLesson {
 // GET user's progress for a bootcamp
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { id } = await params;
+    const { id } = params;
     
     // Check authentication
     const { error: authError, userId } = await requireAuth(request);

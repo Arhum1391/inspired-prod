@@ -38,6 +38,13 @@ SMTP_PASS=your-app-password
 # SMTP_USER=your-username
 # SMTP_PASS=your-password
 
+# Zoom Meeting SDK (OPTIONAL - for "Join in App" embed on bootcamp pages)
+# Get from: marketplace.zoom.us → Develop → Build App → General app (enable Meeting SDK)
+# Use Client ID as SDK Key, Client Secret as SDK Secret
+# See docs/ZOOM_EMBEDDING_NOTES.md for setup
+# ZOOM_MEETING_SDK_KEY=your_client_id
+# ZOOM_MEETING_SDK_SECRET=your_client_secret
+
 # Base URL (OPTIONAL - defaults to localhost:3000 in development, VERCEL_URL in production)
 # Set this if you need a custom base URL for email links
 # NEXT_PUBLIC_BASE_URL=https://yourdomain.com

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getPublicUserById, updatePublicUser, verifyToken, verifyPassword, hashPassword } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function PUT(request: NextRequest) {
   try {
     // Get token from cookie

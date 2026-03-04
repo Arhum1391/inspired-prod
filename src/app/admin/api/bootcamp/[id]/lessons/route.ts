@@ -4,6 +4,8 @@ import { verifyToken } from '@/lib/auth';
 import { BootcampLesson } from '@/types/admin';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 // Helper function to find bootcamp by id or _id for backward compatibility
 async function findBootcampById(db: any, id: string) {
   // Try by numeric string id first
@@ -97,7 +99,7 @@ function extractYouTubeVideoId(input: string): string | null {
 // GET all lessons for a bootcamp
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { error } = await authenticateAdmin(request);
@@ -105,7 +107,7 @@ export async function GET(
       return NextResponse.json({ error }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { id } = params;
     const db = await getDatabase();
 
     // Verify bootcamp exists (support both id and _id for backward compatibility)
@@ -139,7 +141,7 @@ export async function GET(
 // POST create new lesson
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { error } = await authenticateAdmin(request);
@@ -147,7 +149,7 @@ export async function POST(
       return NextResponse.json({ error }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { id } = params;
     const body = await request.json();
     const db = await getDatabase();
 
@@ -232,7 +234,7 @@ export async function POST(
 // PUT update lesson
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { error } = await authenticateAdmin(request);
@@ -240,7 +242,7 @@ export async function PUT(
       return NextResponse.json({ error }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { id } = params;
     const body = await request.json();
     const db = await getDatabase();
 
@@ -336,7 +338,7 @@ export async function PUT(
 // DELETE lesson
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     const { error } = await authenticateAdmin(request);
@@ -344,7 +346,7 @@ export async function DELETE(
       return NextResponse.json({ error }, { status: 401 });
     }
 
-    const { id } = await params;
+    const { id } = params;
     const searchParams = request.nextUrl.searchParams;
     const lessonId = searchParams.get('lessonId');
 

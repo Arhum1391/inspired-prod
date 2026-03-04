@@ -4,10 +4,10 @@ import { getDatabase } from '@/lib/mongodb';
 // GET single research report by slug for public access
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: { slug: string } }
 ) {
   try {
-    const { slug } = await params;
+    const { slug } = params;
     const db = await getDatabase();
     
     const report = await db.collection('researchReports').findOne({ slug });

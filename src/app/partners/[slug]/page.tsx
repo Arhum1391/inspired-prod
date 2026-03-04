@@ -7,7 +7,7 @@ import { getPartnerBySlug } from '@/data/partners';
 export default function PartnerDetailPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
   return (
     <Suspense fallback={<PageLoader />}>
@@ -19,9 +19,9 @@ export default function PartnerDetailPage({
 async function PartnerPageContent({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: { slug: string };
 }) {
-  const { slug } = await params;
+  const { slug } = params;
   const partner = getPartnerBySlug(slug);
 
   if (!partner) {

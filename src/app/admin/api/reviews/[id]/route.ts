@@ -20,14 +20,14 @@ async function authenticate(req: NextRequest): Promise<{ userId: string } | Next
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   const auth = await authenticate(req);
   if (auth instanceof NextResponse) {
     return auth;
   }
 
-  const { id } = await params;
+  const { id } = params;
 
   if (!ObjectId.isValid(id)) {
     return NextResponse.json({ error: 'Invalid review ID' }, { status: 400 });
@@ -61,14 +61,14 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   const auth = await authenticate(req);
   if (auth instanceof NextResponse) {
     return auth;
   }
 
-  const { id } = await params;
+  const { id } = params;
 
   if (!ObjectId.isValid(id)) {
     return NextResponse.json({ error: 'Invalid review ID' }, { status: 400 });

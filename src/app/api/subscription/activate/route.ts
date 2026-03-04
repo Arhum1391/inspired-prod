@@ -4,6 +4,8 @@ import { getDatabase } from '@/lib/mongodb';
 import { verifyToken, getPublicUserById } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();

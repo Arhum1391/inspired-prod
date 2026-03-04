@@ -3,6 +3,8 @@ import { getDatabase } from '@/lib/mongodb';
 import { requireAuth } from '@/lib/authHelpers';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 // GET all enrolled bootcamps for the authenticated user
 export async function GET(request: NextRequest) {
   try {
@@ -56,9 +58,20 @@ export async function GET(request: NextRequest) {
       }, { status: 200 });
     }
 
-    // Get bootcamp details for each enrollment and progress data
+    // Deduplicate by bootcampId (keep latest enrollment per bootcamp)
+    const latestByBootcamp = new Map<string, any>();
+    for (const enrollment of enrollments) {
+      const key = String(enrollment.bootcampId);
+      if (!latestByBootcamp.has(key)) {
+        latestByBootcamp.set(key, enrollment);
+      }
+    }
+
+    const uniqueEnrollments = Array.from(latestByBootcamp.values());
+
+    // Get bootcamp details for each unique enrollment and progress data
     const enrolledBootcamps = await Promise.all(
-      enrollments.map(async (enrollment) => {
+      uniqueEnrollments.map(async (enrollment) => {
         const bootcamp = await db.collection('bootcamps').findOne({
           id: enrollment.bootcampId,
           isActive: true

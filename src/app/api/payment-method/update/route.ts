@@ -3,6 +3,8 @@ import { verifyToken } from '@/lib/auth';
 import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const token = request.cookies.get('user-auth-token')?.value;

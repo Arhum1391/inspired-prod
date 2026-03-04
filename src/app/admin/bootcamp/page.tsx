@@ -18,6 +18,7 @@ export default function BootcampPage() {
     priceAmount: '',
     duration: '',
     format: 'Online' as 'Online' | 'In-Person' | 'Hybrid',
+    zoomLink: '',
     mentors: [] as string[],
     registrationStartDate: '',
     registrationEndDate: '',
@@ -207,6 +208,7 @@ export default function BootcampPage() {
         priceAmount: parseFloat(formData.priceAmount) || 0,
         duration: formData.duration,
         format: formData.format,
+        zoomLink: formData.zoomLink?.trim() || undefined,
         mentors: formData.mentors,
         gradientPosition: formData.gradientPosition,
         isActive: formData.isActive,
@@ -222,6 +224,7 @@ export default function BootcampPage() {
       // Handle optional fields - always include for updates to allow clearing, only include meaningful content for creates
       if (editingBootcamp) {
         // For updates, always include optional fields (even if empty) so they can be cleared
+        bootcampData.zoomLink = formData.zoomLink?.trim() || undefined;
         bootcampData.heroSubheading = formData.heroSubheading;
         bootcampData.heroDescription = formData.heroDescription;
         bootcampData.mentorDetails = formData.mentorDetails;
@@ -229,6 +232,9 @@ export default function BootcampPage() {
         bootcampData.targetAudience = formData.targetAudience;
       } else {
         // For creates, only include fields with meaningful content
+        if (formData.zoomLink && formData.zoomLink.trim()) {
+          bootcampData.zoomLink = formData.zoomLink.trim();
+        }
         if (formData.heroSubheading && formData.heroSubheading.trim()) {
           bootcampData.heroSubheading = formData.heroSubheading;
         }
@@ -366,6 +372,7 @@ export default function BootcampPage() {
       priceAmount: bootcamp.priceAmount ? bootcamp.priceAmount.toString() : '',
       duration: bootcamp.duration,
       format: bootcamp.format,
+      zoomLink: bootcamp.zoomLink || '',
       mentors: bootcamp.mentors,
       registrationStartDate: formatDateForInput(bootcamp.registrationStartDate),
       registrationEndDate: formatDateForInput(bootcamp.registrationEndDate),
@@ -430,6 +437,7 @@ export default function BootcampPage() {
       priceAmount: '',
       duration: '',
       format: 'Online',
+      zoomLink: '',
       mentors: [],
       registrationStartDate: '',
       registrationEndDate: '',
@@ -1070,6 +1078,21 @@ export default function BootcampPage() {
                     <p className="text-red-400 text-xs mt-1">{validationErrors.title}</p>
                   )}
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Zoom Link
+                </label>
+                <input
+                  type="url"
+                  value={formData.zoomLink}
+                  onChange={(e) => setFormData({ ...formData, zoomLink: e.target.value })}
+                  onKeyDown={handleKeyDown}
+                  placeholder="https://zoom.us/j/..."
+                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">Optional. For live sessions.</p>
               </div>
 
               <div>

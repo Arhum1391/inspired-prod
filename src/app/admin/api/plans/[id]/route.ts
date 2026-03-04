@@ -3,6 +3,8 @@ import { verifyToken, getUserById } from '@/lib/auth';
 import { getDatabase } from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
 
+export const dynamic = 'force-dynamic';
+
 // Helper function to verify admin authentication
 async function verifyAdmin(request: NextRequest) {
   const token = request.cookies.get('auth-token')?.value;
@@ -26,11 +28,11 @@ async function verifyAdmin(request: NextRequest) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     // Await params first to ensure it's resolved
-    const { id } = await params;
+    const { id } = params;
     
     if (!id) {
       return NextResponse.json(
@@ -86,7 +88,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
   try {
     console.log('PUT /admin/api/plans/[id] - Route handler called');
@@ -94,7 +96,7 @@ export async function PUT(
     // Await params first to ensure it's resolved
     let id: string;
     try {
-      const resolvedParams = await params;
+      const resolvedParams = params;
       id = resolvedParams.id;
       console.log('Resolved plan ID:', id);
     } catch (paramsError) {

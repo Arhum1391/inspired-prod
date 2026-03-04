@@ -11,6 +11,7 @@ import LoadingScreen from '@/components/LoadingScreen';
 import { Bootcamp } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 import { useAuth } from '@/contexts/AuthContext';
+import { Video } from 'lucide-react';
 
 interface EnrolledBootcamp {
   bootcamp: Bootcamp;
@@ -177,6 +178,28 @@ export default function BootcampPage() {
     const enrollmentDate = formatDateWithOrdinal(enrolledData.enrollment.enrolledAt) || '1st Oct, 2025';
     const { overallProgress, completedLessons, totalLessons } = enrolledData.progress;
 
+    const handleOpenZoomInNewTab = async () => {
+      try {
+        const res = await fetch(`/api/bootcamp/${bootcamp.id}/zoom`, {
+          credentials: 'include',
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          alert(data?.error || 'Unable to open Zoom link.');
+          return;
+        }
+        const zoomLink = data.zoomLink as string | undefined;
+        if (!zoomLink) {
+          alert('Zoom link not available for this bootcamp.');
+          return;
+        }
+        window.open(zoomLink, '_blank', 'noopener,noreferrer');
+      } catch (e) {
+        console.error('Failed to open Zoom link:', e);
+        alert('Failed to open Zoom link. Please try again.');
+      }
+    };
+
     return (
       <div key={enrolledData.enrollment.bootcampId} className="relative bg-[#1F1F1F] rounded-2xl p-4 sm:p-6 lg:p-8 overflow-hidden isolate">
         {/* Curved Gradient Border */}
@@ -262,26 +285,43 @@ export default function BootcampPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-4 items-center">
-              <p className="text-base" style={{ fontFamily: 'Gilroy-Regular' }}>
-                Enrolled on: {enrollmentDate}
-              </p>
-              <Link
-                href={`/bootcamp/${bootcamp.id}/progress`}
-                className="flex items-center gap-2 rounded-full border border-white px-5 py-2 text-sm font-semibold"
-                style={{ fontFamily: 'Gilroy-SemiBold' }}
-              >
-                View Full Progress
-                <Image
-                  src="/logo/backhome.png"
-                  alt="View progress"
-                  width={16}
-                  height={16}
-                  className="w-4 h-4"
-                  style={{ filter: 'brightness(0) invert(1)' }}
-                />
-              </Link>
-            </div>
+          <div className="flex flex-wrap gap-4 items-center">
+            <p className="text-base" style={{ fontFamily: 'Gilroy-Regular' }}>
+              Enrolled on: {enrollmentDate}
+            </p>
+            <Link
+              href={`/bootcamp/${bootcamp.id}/progress`}
+              className="flex items-center gap-2 rounded-full border border-white px-5 py-2 text-sm font-semibold"
+              style={{ fontFamily: 'Gilroy-SemiBold' }}
+            >
+              View Full Progress
+              <Image
+                src="/logo/backhome.png"
+                alt="View progress"
+                width={16}
+                height={16}
+                className="w-4 h-4"
+                style={{ filter: 'brightness(0) invert(1)' }}
+              />
+            </Link>
+            <button
+              type="button"
+              onClick={() => window.location.assign(`/zoom?bootcampId=${encodeURIComponent(bootcamp.id)}`)}
+              className="flex items-center gap-2 rounded-full border border-white/60 px-5 py-2 text-sm font-semibold hover:bg-white/10"
+              style={{ fontFamily: 'Gilroy-SemiBold' }}
+            >
+              <Video className="w-4 h-4" />
+              Join in App
+            </button>
+            <button
+              type="button"
+              onClick={handleOpenZoomInNewTab}
+              className="flex items-center gap-2 rounded-full border border-white/30 px-5 py-2 text-sm font-semibold hover:bg-white/5 text-white/80 hover:text-white"
+              style={{ fontFamily: 'Gilroy-SemiBold' }}
+            >
+              Open zoom in new tab
+            </button>
+          </div>
           </div>
         </div>
       </div>
@@ -354,7 +394,7 @@ export default function BootcampPage() {
         </div>
 
         {/* Coming Soon Overlay - Can be removed later by deleting this section */}
-        <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none "
+        {/* <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none "
         style={{
           background:' linear-gradient(180deg, rgba(10, 10, 10, 0) 0%, #0A0A0A 100%)',
           // backdropFilter: 'blur(8px)',
@@ -363,10 +403,10 @@ export default function BootcampPage() {
           <span className="text-lg  text-white font-semibold" >
             Coming Soon
           </span>
-        </div>
+        </div> */}
 
         {/* Content with blur effect - Remove blur style when removing Coming Soon */}
-        <div className="relative z-10" style={{ filter: 'blur(4px)', pointerEvents: 'none' }}>
+        <div className="relative z-10">
           {/* Description */}
           <p className="text-base text-white leading-[130%]" style={{ fontFamily: 'Gilroy' }}>
             {bootcamp.description}
@@ -432,7 +472,12 @@ export default function BootcampPage() {
     </div>
   );
 
-  const showEnrolledHero = isAuthenticated && !authLoading && !enrolledLoading && enrolledBootcamps.length > 0;
+  const showEnrolledHero =
+    isAuthenticated && !authLoading && !enrolledLoading && enrolledBootcamps.length > 0;
+
+  // Hide enrolled bootcamps from trending list
+  const enrolledIds = new Set(enrolledBootcamps.map((eb) => eb.bootcamp.id));
+  const visibleBootcamps = bootcamps.filter((b) => !enrolledIds.has(b.id));
 
   // Show loading state while checking enrollment status for authenticated users
   const isLoadingEnrollment = isAuthenticated && !authLoading && enrolledLoading;
@@ -1039,7 +1084,7 @@ export default function BootcampPage() {
               ) : (
                 // Dynamic bootcamp cards (always has data due to fallback)
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {bootcamps.map((bootcamp) => renderBootcampCard(bootcamp))}
+                  {visibleBootcamps.map((bootcamp) => renderBootcampCard(bootcamp))}
                 </div>
               )}
             </div>

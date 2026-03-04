@@ -7,10 +7,10 @@ const DB_NAME = 'inspired-analyst';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ sessionId: string }> }
+  { params }: { params: { sessionId: string } }
 ) {
   try {
-    const { sessionId } = await params;
+    const { sessionId } = params;
 
     if (!sessionId) {
       return NextResponse.json(
@@ -379,10 +379,10 @@ export async function GET(
 // Optional: Add a POST endpoint for manual status refresh
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ sessionId: string }> }
+  { params }: { params: { sessionId: string } }
 ) {
   try {
-    const { sessionId } = await params;
+    const { sessionId } = params;
 
     if (!sessionId) {
       return NextResponse.json(

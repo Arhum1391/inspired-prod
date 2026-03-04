@@ -149,14 +149,32 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Auto-generate numeric ID with uniqueness check
-    // Find the highest numeric ID and increment, then verify uniqueness
+    // Auto-generate numeric ID with strong uniqueness check
+    // IMPORTANT: Never reuse an ID that has ever been used in registrations,
+    // so historical payments cannot accidentally unlock a new bootcamp.
     const allBootcamps = await db.collection('bootcamps').find({}).toArray();
+    const allRegistrations = await db
+      .collection('bootcamp_registrations')
+      .find({}, { projection: { bootcampId: 1 } })
+      .toArray();
+
     let maxId = 0;
-    
+
+    // Consider existing bootcamps
     for (const bootcamp of allBootcamps) {
-      // Handle both string numeric IDs and actual numbers
-      const idValue = typeof bootcamp.id === 'number' ? bootcamp.id : parseInt(bootcamp.id);
+      const idValue =
+        typeof bootcamp.id === 'number' ? bootcamp.id : parseInt(bootcamp.id);
+      if (!isNaN(idValue) && idValue > maxId) {
+        maxId = idValue;
+      }
+    }
+
+    // Also consider any bootcampId that has appeared in registrations
+    for (const reg of allRegistrations) {
+      const idValue =
+        typeof reg.bootcampId === 'number'
+          ? reg.bootcampId
+          : parseInt(reg.bootcampId);
       if (!isNaN(idValue) && idValue > maxId) {
         maxId = idValue;
       }

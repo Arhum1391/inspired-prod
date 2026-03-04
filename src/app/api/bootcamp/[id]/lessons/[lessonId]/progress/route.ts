@@ -6,10 +6,10 @@ import { ObjectId } from 'mongodb';
 // POST: Update user's progress for a specific lesson
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string; lessonId: string }> }
+  { params }: { params: { id: string; lessonId: string } }
 ) {
   try {
-    const { id, lessonId } = await params;
+    const { id, lessonId } = params;
     const body = await request.json();
     
     // Check authentication

@@ -531,16 +531,18 @@ export default function BootcampRegisterPage() {
         <div className="mx-auto max-w-7xl">
           {/* Back Button and Header */}
           <div className="flex flex-col gap-6 sm:gap-4 lg:gap-6 mb-8 sm:mb-6 lg:mb-8">
-            {/* Back Button */}
-            <button
-              onClick={handleBack}
-              className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors w-fit cursor-pointer focus:outline-none"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
-                <path d="M10 13L5 8L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span style={{fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '100%'}}>Back</span>
-            </button>
+            {/* Back Button (hidden after successful payment) */}
+            {!paymentCompleted && (
+              <button
+                onClick={handleBack}
+                className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors w-fit cursor-pointer focus:outline-none"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none">
+                  <path d="M10 13L5 8L10 3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span style={{fontFamily: 'Gilroy-Medium', fontSize: '16px', lineHeight: '100%'}}>Back</span>
+              </button>
+            )}
 
             {/* Page Title */}
             <h1
@@ -860,14 +862,16 @@ export default function BootcampRegisterPage() {
 
           {/* Action Buttons - Desktop (Separate from card, more spacing) */}
           <div className="hidden lg:flex justify-end gap-2 mt-8 lg:min-w-[380px] lg:max-w-[420px] lg:ml-auto">
-            <button
-              onClick={handleBack}
-              className="flex items-center justify-center px-4 py-3 border border-white rounded-full text-white hover:bg-white/10 transition-colors cursor-pointer focus:outline-none"
-              style={{fontFamily: 'Gilroy-SemiBold', minWidth: '187px'}}
-              disabled={isSubmitting}
-            >
-              Back
-            </button>
+            {!paymentCompleted && (
+              <button
+                onClick={handleBack}
+                className="flex items-center justify-center px-4 py-3 border border-white rounded-full text-white hover:bg-white/10 transition-colors cursor-pointer focus:outline-none"
+                style={{fontFamily: 'Gilroy-SemiBold', minWidth: '187px'}}
+                disabled={isSubmitting}
+              >
+                Back
+              </button>
+            )}
             <button
               onClick={handleCompleteBooking}
               disabled={!isFormValid || isSubmitting || !paymentCompleted}
@@ -890,14 +894,16 @@ export default function BootcampRegisterPage() {
 
           {/* Action Buttons - Mobile (Below Summary Card, responsive width) */}
           <div className="flex lg:hidden w-full gap-2 mt-8">
-            <button
-              onClick={handleBack}
-              className="flex-1 flex items-center justify-center py-3 border border-white rounded-full text-white hover:bg-white/10 transition-colors cursor-pointer focus:outline-none"
-              style={{fontFamily: 'Gilroy-SemiBold'}}
-              disabled={isSubmitting}
-            >
-              Back
-            </button>
+            {!paymentCompleted && (
+              <button
+                onClick={handleBack}
+                className="flex-1 flex items-center justify-center py-3 border border-white rounded-full text-white hover:bg-white/10 transition-colors cursor-pointer focus:outline-none"
+                style={{fontFamily: 'Gilroy-SemiBold'}}
+                disabled={isSubmitting}
+              >
+                Back
+              </button>
+            )}
             <button
               onClick={handleCompleteBooking}
               disabled={!isFormValid || isSubmitting || !paymentCompleted}

@@ -397,6 +397,15 @@ export default function CryptoTradingBootcampPage() {
                         })}`
                       }
                     </p>
+                    {bootcamp.bootcampStartDate && (
+                      <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                        Bootcamp starts: {new Date(bootcamp.bootcampStartDate).toLocaleDateString('en-US', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </p>
+                    )}
                   </div>
 
                   {/* Indicator Dot */}
@@ -557,19 +566,30 @@ export default function CryptoTradingBootcampPage() {
 
                         {/* Header */}
                         <div className="flex items-start gap-4 relative z-10">
-                          {/* Icon */}
-                          <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center flex-shrink-0">
-                            <IconComponent className="w-5 h-5 text-white" />
+                          {/* Icon (with weekRange next to it when no title) */}
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center">
+                              <IconComponent className="w-5 h-5 text-white" />
+                            </div>
+                            {!section.title && (
+                              <span className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
+                                {section.weekRange}
+                              </span>
+                            )}
                           </div>
 
                           {/* Title */}
                           <div className="flex flex-col gap-2 flex-1">
-                            <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
-                              {section.weekRange}
-                            </p>
-                            <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
-                              {section.title}
-                            </h3>
+                            {section.title && (
+                              <>
+                                <p className="text-sm text-white" style={{fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%'}}>
+                                  {section.weekRange}
+                                </p>
+                                <h3 className="text-xl text-white" style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em'}}>
+                                  {section.title}
+                                </h3>
+                              </>
+                            )}
                           </div>
                         </div>
 

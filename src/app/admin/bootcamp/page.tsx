@@ -629,10 +629,14 @@ export default function BootcampPage() {
 
   // Curriculum sections management
   const addCurriculumSection = () => {
-    if (newCurriculumSection.weekRange && newCurriculumSection.title && newCurriculumSection.items.length > 0) {
+    if (newCurriculumSection.weekRange && newCurriculumSection.items.length > 0) {
+      const sectionToAdd = {
+        ...newCurriculumSection,
+        title: newCurriculumSection.title.trim() || undefined
+      };
       setFormData({
         ...formData,
-        curriculumSections: [...formData.curriculumSections, { ...newCurriculumSection }]
+        curriculumSections: [...formData.curriculumSections, sectionToAdd]
       });
       setNewCurriculumSection({
         weekRange: '',
@@ -1549,7 +1553,7 @@ export default function BootcampPage() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-300 mb-1">
-                          Title
+                          Title (Optional)
                         </label>
                         <input
                           type="text"
@@ -1630,7 +1634,7 @@ export default function BootcampPage() {
                     <button
                       type="button"
                       onClick={addCurriculumSection}
-                      disabled={!newCurriculumSection.weekRange || !newCurriculumSection.title || newCurriculumSection.items.length === 0}
+                      disabled={!newCurriculumSection.weekRange || newCurriculumSection.items.length === 0}
                       className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed"
                     >
                       Add Curriculum Section
@@ -1645,7 +1649,7 @@ export default function BootcampPage() {
                         <div key={index} className="bg-slate-800 rounded-lg p-4">
                           <div className="flex justify-between items-start mb-3">
                             <div>
-                              <h5 className="text-white font-medium">{section.weekRange} - {section.title}</h5>
+                              <h5 className="text-white font-medium">{section.weekRange}{section.title ? ` - ${section.title}` : ''}</h5>
                               <p className="text-gray-400 text-sm">Icon: {section.icon}</p>
                             </div>
                             <button

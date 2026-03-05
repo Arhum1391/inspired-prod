@@ -257,19 +257,27 @@ export default function BootcampPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3 gap-y-2">
             <span
-              className="rounded-full border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] px-4 py-1 text-xs font-medium"
+              className="rounded-full border border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] px-4 py-1 my-1 text-xs font-medium"
               style={{ fontFamily: 'Gilroy-Medium' }}
             >
               {bootcamp.duration}
             </span>
             <span
-              className="rounded-full border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC] px-4 py-1 text-xs font-medium"
+              className="rounded-full border border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC] px-4 py-1 my-1 text-xs font-medium"
               style={{ fontFamily: 'Gilroy-Medium' }}
             >
               {bootcamp.format}
             </span>
+            {bootcamp.bootcampStartDate && (
+              <span
+                className="rounded-full border border-white/40 bg-white/5 text-white px-4 py-1 my-1 text-xs font-medium"
+                style={{ fontFamily: 'Gilroy-Medium' }}
+              >
+                Starts {new Date(bootcamp.bootcampStartDate).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+            )}
           </div>
 
           <div className="flex flex-col gap-3">
@@ -421,10 +429,10 @@ export default function BootcampPage() {
           </div>
 
           {/* Tags - Dynamic Duration and Format */}
-          <div className="flex gap-2 relative z-10">
+          <div className="flex flex-wrap gap-2 gap-y-2 relative z-10">
             {/* Duration tag */}
             <span
-              className="border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] border rounded-full px-2.5 py-1 text-xs"
+              className="border-[#05B0B3] bg-[rgba(5,176,179,0.12)] text-[#05B0B3] border rounded-full px-2.5 py-1 my-1 text-xs"
               style={{ fontFamily: 'Gilroy', fontWeight: 500 }}
             >
               {bootcamp.duration}
@@ -432,7 +440,7 @@ export default function BootcampPage() {
 
             {/* Format tag */}
             <span
-              className="border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC] border rounded-full px-2.5 py-1 text-xs"
+              className="border-[#DE50EC] bg-[rgba(222,80,236,0.12)] text-[#DE50EC] border rounded-full px-2.5 py-1 my-1 text-xs"
               style={{ fontFamily: 'Gilroy', fontWeight: 500 }}
             >
               {bootcamp.format}
@@ -440,17 +448,28 @@ export default function BootcampPage() {
           </div>
 
           {/* Registration Dates */}
-          <p className="text-base text-white leading-[130%] relative z-10" style={{ fontFamily: 'Gilroy' }}>
-            Registration Dates: {new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric'
-            })} - {new Date(bootcamp.registrationEndDate).toLocaleDateString('en-US', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric'
-            })}
-          </p>
+          <div className="flex flex-col gap-1 relative z-10">
+            <p className="text-base text-white leading-[130%]" style={{ fontFamily: 'Gilroy' }}>
+              Registration Dates: {new Date(bootcamp.registrationStartDate).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+              })} - {new Date(bootcamp.registrationEndDate).toLocaleDateString('en-US', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+              })}
+            </p>
+            {bootcamp.bootcampStartDate && (
+              <p className="text-base text-white leading-[130%]" style={{ fontFamily: 'Gilroy' }}>
+                Starts: {new Date(bootcamp.bootcampStartDate).toLocaleDateString('en-US', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric'
+                })}
+              </p>
+            )}
+          </div>
 
           {/* Buttons */}
           <div className="flex gap-4 relative z-10 mt-10">

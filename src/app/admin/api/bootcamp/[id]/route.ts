@@ -51,8 +51,8 @@ function validateDetailedContentFields(body: any) {
         if (!section.weekRange || typeof section.weekRange !== 'string') {
           errors.push(`curriculumSections[${index}].weekRange is required and must be a string`);
         }
-        if (!section.title || typeof section.title !== 'string') {
-          errors.push(`curriculumSections[${index}].title is required and must be a string`);
+        if (section.title !== undefined && section.title !== null && typeof section.title !== 'string') {
+          errors.push(`curriculumSections[${index}].title must be a string when provided`);
         }
         if (!section.icon || typeof section.icon !== 'string') {
           errors.push(`curriculumSections[${index}].icon is required and must be a string`);

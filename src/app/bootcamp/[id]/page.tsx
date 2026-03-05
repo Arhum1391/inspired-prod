@@ -495,6 +495,15 @@ export default function BootcampDetailPage() {
                         })}`
                       }
                     </p>
+                    {bootcamp.bootcampStartDate && (
+                      <p className="text-sm text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
+                        Bootcamp starts: {new Date(bootcamp.bootcampStartDate).toLocaleDateString('en-US', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric'
+                        })}
+                      </p>
+                    )}
                   </div>
 
                   {/* Indicator Dot */}
@@ -509,13 +518,15 @@ export default function BootcampDetailPage() {
       {/* Meet Your Mentors Section */}
       <section className="relative z-0 py-12 sm:py-16 lg:py-20">
         <div className="w-full px-4 sm:px-6 lg:px-6">
-          <div className="mx-auto max-w-[846px]">
+          <div className="mx-auto max-w-[1064px]">
             <div className="flex flex-col items-center gap-6 sm:gap-8 lg:gap-16">
               {/* Section Header */}
               <div className="flex flex-col items-center gap-6 w-full">
                 {/* Title */}
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl text-white text-center w-full" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}>
-                  Meet Your Mentors
+                  {((bootcamp.mentorDetails?.length ?? 0) || (bootcamp.mentors?.length ?? 0)) === 1
+                    ? 'Meet Your Mentor'
+                    : 'Meet Your Mentors'}
                 </h2>
 
                 {/* Subtitle */}
@@ -525,7 +536,7 @@ export default function BootcampDetailPage() {
               </div>
 
               {/* Mentor Cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full">
+              <div className={`grid grid-cols-1 gap-6 w-full ${((bootcamp.mentorDetails?.length ?? 0) || (bootcamp.mentors?.length ?? 0)) === 1 ? 'max-w-md mx-auto' : 'lg:grid-cols-2'}`}>
                 {bootcamp.mentorDetails && bootcamp.mentorDetails.length > 0 ? (
                   bootcamp.mentorDetails.map((mentor, index) => (
                     <div key={index} className="bg-[#1F1F1F] rounded-2xl p-4 flex flex-col items-center gap-4 relative">
@@ -712,19 +723,30 @@ export default function BootcampDetailPage() {
 
                         {/* Header */}
                         <div className="flex items-start gap-4 relative z-10">
-                          {/* Icon */}
-                          <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center flex-shrink-0">
-                            <IconComponent className="w-5 h-5 text-white" />
+                          {/* Icon (with weekRange next to it when no title) */}
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <div className="w-10 h-10 bg-[#333333] rounded-full flex items-center justify-center">
+                              <IconComponent className="w-5 h-5 text-white" />
+                            </div>
+                            {!section.title && (
+                              <span className="text-xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em' }}>
+                                {section.weekRange}
+                              </span>
+                            )}
                           </div>
 
                           {/* Title */}
                           <div className="flex flex-col gap-2 flex-1">
-                            <p className="text-sm text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
-                              {section.weekRange}
-                            </p>
-                            <h3 className="text-xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em' }}>
-                              {section.title}
-                            </h3>
+                            {section.title && (
+                              <>
+                                <p className="text-sm text-white" style={{ fontFamily: 'Gilroy', fontWeight: 400, lineHeight: '100%' }}>
+                                  {section.weekRange}
+                                </p>
+                                <h3 className="text-xl text-white" style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%', letterSpacing: '-0.02em' }}>
+                                  {section.title}
+                                </h3>
+                              </>
+                            )}
                           </div>
                         </div>
 

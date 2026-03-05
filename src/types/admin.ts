@@ -79,7 +79,7 @@ export interface MentorDetail {
 
 export interface CurriculumSection {
   weekRange: string; // e.g., "Week 1-2"
-  title: string;
+  title?: string; // optional - when absent, weekRange is shown next to icon
   icon: string; // icon name for rendering
   items: string[];
 }

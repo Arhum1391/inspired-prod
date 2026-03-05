@@ -137,10 +137,10 @@ export default function BootcampPage() {
     if (!item.trim()) {
       return 'Target audience item cannot be empty';
     }
-    // Check for alphanumeric only (letters and numbers, no spaces or special characters)
-    const alphanumericRegex = /^[a-zA-Z0-9]+$/;
-    if (!alphanumericRegex.test(item.trim())) {
-      return 'Target audience items can only contain letters and numbers (no spaces or special characters)';
+    // Allow letters, numbers, spaces, and common punctuation for sentence input
+    const sentenceRegex = /^[\w\s.,!?'-]+$/;
+    if (!sentenceRegex.test(item.trim())) {
+      return 'Target audience items can contain letters, numbers, spaces, and common punctuation (.,!?\'-)';
     }
     return '';
   };
@@ -1734,7 +1734,7 @@ export default function BootcampPage() {
                             setValidationErrors(newErrors);
                           }
                         }}
-                        placeholder="Add target audience item (alphanumeric only)..."
+                        placeholder="Add target audience item (e.g., a sentence)..."
                         className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                         onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTargetAudienceItem())}
                       />

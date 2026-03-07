@@ -28,6 +28,18 @@ const getIconComponent = (iconName: string): LucideIcon => {
   return icons[iconName] || BookOpen;
 };
 
+// Extract YouTube video ID from Shorts URL, youtu.be, watch?v=, embed, or raw ID
+function extractYoutubeVideoId(input: string | undefined): string | null {
+  if (!input || typeof input !== 'string') return null;
+  const s = input.trim();
+  if (!s) return null;
+  if (/^[a-zA-Z0-9_-]{11}$/.test(s)) return s;
+  const match = s.match(
+    /(?:youtube\.com\/shorts\/|youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/
+  );
+  return match ? match[1] : null;
+}
+
 export default function BootcampDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -773,6 +785,25 @@ export default function BootcampDetailPage() {
                   </div>
                 )}
               </div>
+
+              {/* Optional YouTube Short - inline 9:16; centered on mobile, left-aligned from md up */}
+              {bootcamp.youtubeShortUrl && (() => {
+                const shortVideoId = extractYoutubeVideoId(bootcamp.youtubeShortUrl);
+                if (!shortVideoId) return null;
+                return (
+                  <div className="w-full flex flex-col items-center md:items-start">
+                    <div className="w-full max-w-[315px] aspect-[9/16] rounded-2xl overflow-hidden bg-[#1F1F1F] border border-slate-700/50">
+                      <iframe
+                        className="w-full h-full"
+                        src={`https://www.youtube.com/embed/${shortVideoId}?rel=0&modestbranding=1`}
+                        title="YouTube Short"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>

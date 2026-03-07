@@ -157,6 +157,8 @@ export interface Bootcamp {
   mentorDetails?: MentorDetail[];
   curriculumSections?: CurriculumSection[];
   targetAudience?: TargetAudience;
+  /** Optional YouTube Short link; displayed under "What You'll Learn" on the detail page (9:16 inline). */
+  youtubeShortUrl?: string;
 }
 
 export interface DashboardStats {

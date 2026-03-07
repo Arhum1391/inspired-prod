@@ -39,7 +39,8 @@ export default function BootcampPage() {
       title: '',
       subtitle: '',
       items: [] as string[]
-    }
+    },
+    youtubeShortUrl: ''
   });
   const [newHeroDescription, setNewHeroDescription] = useState('');
   
@@ -230,6 +231,7 @@ export default function BootcampPage() {
         bootcampData.mentorDetails = formData.mentorDetails;
         bootcampData.curriculumSections = formData.curriculumSections;
         bootcampData.targetAudience = formData.targetAudience;
+        bootcampData.youtubeShortUrl = formData.youtubeShortUrl?.trim() || undefined;
       } else {
         // For creates, only include fields with meaningful content
         if (formData.zoomLink && formData.zoomLink.trim()) {
@@ -249,6 +251,9 @@ export default function BootcampPage() {
         }
         if (formData.targetAudience && (formData.targetAudience.title.trim() || formData.targetAudience.subtitle.trim() || formData.targetAudience.items.length > 0)) {
           bootcampData.targetAudience = formData.targetAudience;
+        }
+        if (formData.youtubeShortUrl && formData.youtubeShortUrl.trim()) {
+          bootcampData.youtubeShortUrl = formData.youtubeShortUrl.trim();
         }
       }
 
@@ -387,7 +392,8 @@ export default function BootcampPage() {
         title: '',
         subtitle: '',
         items: []
-      }
+      },
+      youtubeShortUrl: bootcamp.youtubeShortUrl || ''
     });
     setShowModal(true);
     
@@ -456,7 +462,8 @@ export default function BootcampPage() {
         title: '',
         subtitle: '',
         items: []
-      }
+      },
+      youtubeShortUrl: ''
     });
     setNewHeroDescription('');
     setSelectedMentorForDetail('');
@@ -1367,11 +1374,14 @@ export default function BootcampPage() {
                   <input
                     type="date"
                     required
-                    min={new Date().toISOString().split('T')[0]}
+                    min={editingBootcamp ? undefined : new Date().toISOString().split('T')[0]}
                     value={formData.registrationStartDate}
                     onChange={(e) => setFormData({ ...formData, registrationStartDate: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
+                  {editingBootcamp && (
+                    <p className="text-xs text-gray-500 mt-1">Past dates allowed when updating.</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-1">
@@ -1380,7 +1390,7 @@ export default function BootcampPage() {
                   <input
                     type="date"
                     required
-                    min={formData.registrationStartDate || new Date().toISOString().split('T')[0]}
+                    min={editingBootcamp ? formData.registrationStartDate || undefined : (formData.registrationStartDate || new Date().toISOString().split('T')[0])}
                     value={formData.registrationEndDate}
                     onChange={(e) => setFormData({ ...formData, registrationEndDate: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -1393,7 +1403,7 @@ export default function BootcampPage() {
                   <input
                     type="date"
                     required
-                    min={formData.registrationEndDate || new Date().toISOString().split('T')[0]}
+                    min={editingBootcamp ? formData.registrationEndDate || undefined : (formData.registrationEndDate || new Date().toISOString().split('T')[0])}
                     value={formData.bootcampStartDate}
                     onChange={(e) => setFormData({ ...formData, bootcampStartDate: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -1672,6 +1682,22 @@ export default function BootcampPage() {
                       ))}
                     </div>
                   )}
+                </div>
+
+                {/* YouTube Short (optional) - shown under "What You'll Learn" on detail page */}
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    YouTube Short link (optional)
+                  </label>
+                  <input
+                    type="url"
+                    value={formData.youtubeShortUrl}
+                    onChange={(e) => setFormData({ ...formData, youtubeShortUrl: e.target.value })}
+                    onKeyDown={handleKeyDown}
+                    placeholder="https://youtube.com/shorts/... or https://youtu.be/..."
+                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder-slate-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Displayed under &quot;What You&apos;ll Learn&quot; in 9:16 aspect ratio, inline (no popup).</p>
                 </div>
               </div>
 

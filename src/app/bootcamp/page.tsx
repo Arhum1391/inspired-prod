@@ -11,6 +11,7 @@ import LoadingScreen from '@/components/LoadingScreen';
 import { Bootcamp } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 import { useAuth } from '@/contexts/AuthContext';
+import { isRegistrationOpen } from '@/lib/bootcampUtils';
 import { Video } from 'lucide-react';
 
 interface EnrolledBootcamp {
@@ -178,28 +179,6 @@ export default function BootcampPage() {
     const enrollmentDate = formatDateWithOrdinal(enrolledData.enrollment.enrolledAt) || '1st Oct, 2025';
     const { overallProgress, completedLessons, totalLessons } = enrolledData.progress;
 
-    const handleOpenZoomInNewTab = async () => {
-      try {
-        const res = await fetch(`/api/bootcamp/${bootcamp.id}/zoom`, {
-          credentials: 'include',
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          alert(data?.error || 'Unable to open Zoom link.');
-          return;
-        }
-        const zoomLink = data.zoomLink as string | undefined;
-        if (!zoomLink) {
-          alert('Zoom link not available for this bootcamp.');
-          return;
-        }
-        window.open(zoomLink, '_blank', 'noopener,noreferrer');
-      } catch (e) {
-        console.error('Failed to open Zoom link:', e);
-        alert('Failed to open Zoom link. Please try again.');
-      }
-    };
-
     return (
       <div key={enrolledData.enrollment.bootcampId} className="relative bg-[#1F1F1F] rounded-2xl p-4 sm:p-6 lg:p-8 overflow-hidden isolate">
         {/* Curved Gradient Border */}
@@ -320,14 +299,6 @@ export default function BootcampPage() {
             >
               <Video className="w-4 h-4" />
               Join in App
-            </button>
-            <button
-              type="button"
-              onClick={handleOpenZoomInNewTab}
-              className="flex items-center gap-2 rounded-full border border-white/30 px-5 py-2 text-sm font-semibold hover:bg-white/5 text-white/80 hover:text-white"
-              style={{ fontFamily: 'Gilroy-SemiBold' }}
-            >
-              Open zoom in new tab
             </button>
           </div>
           </div>
@@ -483,7 +454,11 @@ export default function BootcampPage() {
                 className="w-5 h-5"
               />
             </Link>
-            <Link href={`/bootcamp/${bootcamp.id}/register`} className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{ fontFamily: 'Gilroy', fontWeight: 600 }}>Register Now</Link>
+            {isRegistrationOpen(bootcamp.registrationStartDate, bootcamp.registrationEndDate) ? (
+              <Link href={`/bootcamp/${bootcamp.id}/register`} className="flex-1 bg-white border border-white rounded-full py-2.5 px-4 text-sm text-[#1F1F1F] text-center hover:bg-gray-100 transition-colors" style={{ fontFamily: 'Gilroy', fontWeight: 600 }}>Register Now</Link>
+            ) : (
+              <span className="flex-1 bg-white/50 border border-white/50 rounded-full py-2.5 px-4 text-sm text-[#1F1F1F]/70 text-center cursor-not-allowed select-none" style={{ fontFamily: 'Gilroy', fontWeight: 600 }}>Register Now</span>
+            )}
           </div>
         </div>
       </div >

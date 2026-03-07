@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Bootcamp } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
+import { isRegistrationOpen } from '@/lib/bootcampUtils';
 
 // Helper function to get icon component dynamically
 const getIconComponent = (iconName: string): LucideIcon => {
@@ -138,8 +139,10 @@ export default function CryptoTradingBootcampPage() {
                 {/* CTA Button */}
                 <div className="flex">
                   <button
-                    onClick={() => router.push(`/bootcamp/${bootcamp.id}/register`)}
-                    className="bg-white rounded-full px-6 py-4 text-sm text-[#0A0A0A] hover:bg-gray-100 transition-colors"
+                    type="button"
+                    onClick={() => isRegistrationOpen(bootcamp.registrationStartDate, bootcamp.registrationEndDate) && router.push(`/bootcamp/${bootcamp.id}/register`)}
+                    disabled={!isRegistrationOpen(bootcamp.registrationStartDate, bootcamp.registrationEndDate)}
+                    className="bg-white rounded-full px-6 py-4 text-sm text-[#0A0A0A] hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
                     style={{fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%'}}
                   >
                     Register Now - {bootcamp.price}

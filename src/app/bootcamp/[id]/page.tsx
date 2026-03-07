@@ -11,6 +11,7 @@ import { Bootcamp, TeamMember } from '@/types/admin';
 import { getFallbackBootcamps } from '@/lib/fallbackBootcamps';
 import { getTeamMemberAbout, getTeamMemberById } from '@/lib/teamUtils';
 import { getCanonicalMentorImagePath } from '@/lib/mentorImages';
+import { isRegistrationOpen } from '@/lib/bootcampUtils';
 import { Clock, Globe, Calendar, Award, BookOpen, TrendingUp, Target, Video, LucideIcon } from 'lucide-react';
 
 // Helper function to get icon component dynamically
@@ -230,8 +231,10 @@ export default function BootcampDetailPage() {
                 {/* CTA Buttons */}
                 <div className="flex flex-wrap gap-3">
                   <button
-                    onClick={() => router.push(`/bootcamp/${bootcamp.id}/register`)}
-                    className="bg-white rounded-full px-6 py-4 text-sm text-[#0A0A0A] hover:bg-gray-100 transition-colors"
+                    type="button"
+                    onClick={() => isRegistrationOpen(bootcamp.registrationStartDate, bootcamp.registrationEndDate) && router.push(`/bootcamp/${bootcamp.id}/register`)}
+                    disabled={!isRegistrationOpen(bootcamp.registrationStartDate, bootcamp.registrationEndDate)}
+                    className="bg-white rounded-full px-6 py-4 text-sm text-[#0A0A0A] hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white"
                     style={{ fontFamily: 'Gilroy', fontWeight: 600, lineHeight: '100%' }}
                   >
                     Register Now - {bootcamp.price}
